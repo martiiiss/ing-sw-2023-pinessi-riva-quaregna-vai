@@ -9,7 +9,7 @@ public class ModelGame {
     private ModelPlayer playerInTurn;
     private ModelPlayer firstPlayerToFinish;
     private boolean isLastTurn;
-
+//Hello world
 
     public void assignPersonalCards() {
         try{/*code*/
