@@ -1,0 +1,32 @@
+{
+    "first tile": {
+        "x" : 1,
+        "y" : 3,
+        "type" : "light-blue"
+    },
+    "second tile": {
+        "x" : 1,
+        "y" : 6,
+        "type" : "green"
+    },
+    "third tile": {
+        "x" : 2,
+        "y" : 4,
+        "type" : "pink"
+    },
+    "fourth tile": {
+        "x" : 3,
+        "y" : 1,
+        "type" : "white"
+    },
+    "fifth tile": {
+        "x" : 4,
+        "y" : 5,
+        "type" : "blue"
+    },
+    "sixth tile": {
+        "x" : 5,
+        "y" : 2,
+        "type" : "yellow"
+    }
+}

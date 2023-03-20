@@ -1,0 +1,42 @@
+INIZIO PARTITA:
+ Si contano i giocatori
+ Si scelgono e distribuiscono le carte obiettivo personale
+ si scelgono le due carte obiettivo comune (considerare il fatto che in base al numero di giocatori bisogna disporre più o meno token)
+ si assegnano le librerie
+ si decreta il primo giocatore
+ si dispongono le tile sulla plancia (sempre in base al numero di giocatori)
+
+
+INIZIA IL PRIMO TURNO (i seguenti seguiranno lo stesso pattern)
+
+ viene controllata la plancia
+    se rispetta le regole (non ha solo tessere non adiacenti ad altre tessere) continua
+    se non rispetta le regole:
+        metti le tessere sulla plancia nella bag e miscela
+            se la bag contiene tutte le tessere che servono per riempire la plancia continua
+            se la bag non contiene tutte le tessere che servono a riempire la plancia
+                segna flag con bag vuota -> bag disabilitata, la prossima volta se si dovessero rimescolare le tessere lo si farà direttamente sulla plancia
+                    !!!se non è più possibile pescare dalla plancia -> chiama il fine partita !!!
+    riempi la plancia
+ il primo giocatore è il primo a iniziare
+ il giocatore sceglie una, due o tre tile
+    controlla che il giocatore riesca ad inserire le tile nella sua libreria, in caso contrario lancia errore e fai rifare la mossa
+ il giocatore inserisce una alla volta (è più comodo), sulla stessa colonna, le tile scelte al punto precedente
+ viene controllato l'obiettivo personale
+    se necessario viene aggiornato il punteggio
+ vengono controllati i due obiettivi comuni
+    se necessario viene pescato uno dei token punteggio
+    viene quindi rimosso fisicamente il token dallo stack presente in carta obiettivo comune
+    viene segnato un flag sul giocatore che ha prelevato il token in modo che non possa più prelevarne un altro dallo stesso stack
+    viene infine sommato il punteggio del token al punteggio del giocatore
+ viene controllata l'adiacenza di tre o più tile dello stesso colore
+    se necessario viene aggiornato il punteggio
+ viene controllato che la libreria non sia piena
+    se ancora non piena continua
+    se piena aggiorna punteggio del giocatore che per primo ha riempito la libreria
+    disabilita token del primo a finire
+    inizia procedura fine partita
+ finisci turno e passa il giocatore numero uno dallo stato attivo a passivo
+ passa il gicatore numero due dallo stato passivo ad attivo
+---------------> ripeti il ciclo fino a quando i flag non attivano il fine partita in qualche modo
+
