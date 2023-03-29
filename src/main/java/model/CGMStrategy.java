@@ -196,16 +196,18 @@ class CommonGoalCard12 implements CGMStrategy {
                     result = true;
                 }
             }
-        }
-        //this controls through the matrix from top to bottom and from right to left
-        for (i=6; i>1; i--){
-            for (j=5;j>0;j--){
-                if (bookshelf[i][j].getType() == NOTHING){
-                    result = true;
+        } if (result == false) {
+            //this controls through the matrix from top to bottom and from right to left
+            for (i=6; i>1; i--){
+                for (j=5;j>0;j--){
+                    if (bookshelf[i][j].getType() == NOTHING){
+                        result = true;
+                    }
                 }
             }
         }
+            return result;
         //try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-        return result;
+
     }
 }
