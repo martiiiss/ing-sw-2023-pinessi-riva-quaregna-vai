@@ -1,6 +1,6 @@
 package model;
 
-enum Type {
+public enum Type {
     CAT,
     BOOK,
     GAME,

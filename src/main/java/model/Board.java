@@ -31,7 +31,7 @@ public class Board {
 
     public void initializeBoard(int nOfPlayers){ // at the beginning
         // set cells (livingRoomBoard[][]) that cannot be used during the game to BLOCKED
-        Tile blocked = new Tile();
+        Tile blocked = new Tile(Type.BLOCKED);
         blocked.setType(Type.BLOCKED);
         //set delle celle sempre blocked (azzurre)
         for(int r=0; r<=3; r++){

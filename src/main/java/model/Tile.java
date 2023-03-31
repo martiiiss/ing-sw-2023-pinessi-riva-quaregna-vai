@@ -4,7 +4,11 @@ public class Tile {
     private Type type;
     private int NumType;
 
-    private static final int MaxTiles = 22;
+    private static final int MAX_TILES_ONE_TYPE = 22;
+
+    public Tile (Type t){
+        this.type =t;
+    }
 
     public Type getType() {
         return this.type;

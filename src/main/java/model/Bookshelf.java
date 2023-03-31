@@ -43,5 +43,6 @@ public class Bookshelf {
         return this.bookshelf;
     }
 
+    public void setBookshelf(Tile[][] bks){ this.bookshelf = bks; }
 }
 
