@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 
 /*same type 8 tiles*/
-class CGC11 implements CGMStrategy {
+public class CGC11 implements CGMStrategy {
     public boolean compareRule(Bookshelf bks, int id){
         Tile[][] bookshelf = bks.getBookshelf();
         int i, j;

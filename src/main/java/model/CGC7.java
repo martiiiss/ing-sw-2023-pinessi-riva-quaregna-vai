@@ -1,7 +1,7 @@
 package model;
 
 
-class CGC7 implements CGMStrategy {
+public class CGC7 implements CGMStrategy {
     public boolean compareRule(Bookshelf bks, int id){
         int counter = 0;
         int numOfBlocks = 0;
