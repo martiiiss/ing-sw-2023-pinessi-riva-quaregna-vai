@@ -76,16 +76,23 @@ public class Game {
     }
 
     public void assignPersonalGoalCard(int nOfPlayers){
-        for (Player player : players) { // iterating through the array of players
+        int i;
+        int idOfPersonalGoalCard;
+        for (i=0;i<nOfPlayers;i++) { // iterating through the array of players
              // We have to choose a random number (the pgc) and assign it  to the player
+            idOfPersonalGoalCard = (new Random()).nextInt(12);
+            //TODO implement this code referring to Player and PersonalGoalCard
 
+            /*  After choosing a PCG we should set it with a method in player
+                We need a method that sets the PGC in Player, with that we can invoke that method inside
+                assignPersonalGoalCard and set the random number generated as the PGC
+            */
         }
         /** I don't know if what I've done here is right **/
     }
 
     public void addPlayer(Player p){
         players.add(p); // it adds the player into the array
-        /** I have the idea that this method is involved with the server part */
     }
 
 }
