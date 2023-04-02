@@ -20,10 +20,16 @@ public class CGC68 implements CGMStrategy {
             found=1;
             for (i1 = 0; i1 < maxI && found != 0; i1++) {
                 for (i2 = i1 + 1; i2 < maxI && found!=0; i2++) {
-                    if (bookshelf[i1][j] == bookshelf[i2][j] || bookshelf[i1][j].getType() == NOTHING || bookshelf[i2][j].getType() == NOTHING && id==6)
-                        found=0;
-                    if (bookshelf[j][i1] == bookshelf[j][i2] || bookshelf[j][i1].getType() == NOTHING || bookshelf[j][i2].getType() == NOTHING && id==8)
-                        found=0;
+                    switch (id) {
+                        case 6:
+                            if (bookshelf[i1][j] == bookshelf[i2][j] || bookshelf[i1][j].getType() == NOTHING || bookshelf[i2][j].getType() == NOTHING)
+                            found = 0;
+                            break;
+                        case 8:
+                            if (bookshelf[j][i1] == bookshelf[j][i2] || bookshelf[j][i1].getType() == NOTHING || bookshelf[j][i2].getType() == NOTHING)
+                            found = 0;
+                            break;
+                    }
                 }
             }
             if (found==1)
