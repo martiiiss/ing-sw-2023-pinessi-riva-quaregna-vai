@@ -25,14 +25,20 @@ public class CGC49 implements CGMStrategy {
             found=1;
             ArrayList<Type> countType = new ArrayList<Type>();
             for (i = 0; i < maxI && found != 0; i++) {
-                if (bookshelf[i][j].getType() == NOTHING || bookshelf[i][j].getType() == BLOCKED && id==9)
-                    found=0;
-                if (bookshelf[j][i].getType() == NOTHING || bookshelf[j][i].getType() == BLOCKED && id==4)
-                    found=0;
-                if(id == 9 && !countType.contains(bookshelf[i][j].getType()))
-                    countType.add(bookshelf[i][j].getType());
-                if (id == 4 && !countType.contains(bookshelf[j][i].getType()))
-                    countType.add(bookshelf[j][i].getType());
+                switch(id) {
+                    case 9:
+                        if (bookshelf[i][j].getType() == NOTHING || bookshelf[i][j].getType() == BLOCKED)
+                            found = 0;
+                        break;
+                    case 4:
+                        if (bookshelf[j][i].getType() == NOTHING || bookshelf[j][i].getType() == BLOCKED)
+                            found = 0;
+                        break;
+                }
+                    if (id == 9 && !countType.contains(bookshelf[i][j].getType()))
+                        countType.add(bookshelf[i][j].getType());
+                    if (id == 4 && !countType.contains(bookshelf[j][i].getType()))
+                        countType.add(bookshelf[j][i].getType());
 
             }
             if (found != 0)

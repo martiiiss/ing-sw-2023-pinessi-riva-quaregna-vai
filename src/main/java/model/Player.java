@@ -99,20 +99,23 @@ public class Player {
         this.tilesInHand = chosenTiles;
     }
 
-    public int checkCommonGoal(CommonGoalCard cgc){
+    public int checkCommonGoalCard(CommonGoalCard cgc){
         // se il flag della commonGoalCard (cgc: 1 o 2) è false, verifica se la common goal card cgc è soddisfatta invocando compare di CGC
         //  se lo è setta il flag corrispondente e ritorna il punteggio da aggiungere
         return 0;
+        //TODO implement this method
     }
 
     public int checkCompletePGC(){
         //verifica la personal con le nuove carte aggiunte in bookshelf e ritorna il punteggio da aggiungere.
         return 0;
+        //TODO implement this method
     }
 
     public int checkAdjacentBookshelf(){
         // controlla e ritorno il punteggio delle tessere adiacenti (punteggio da aggiungere)
         return 0;
+        //TODO implement this method
     }
 
     public boolean checkBookshelf(){
@@ -123,6 +126,19 @@ public class Player {
         }
         myBookshelf.setAsFull();
         return true;  //return true if myBookshelf is full
+    }
+
+    public ArrayList<String> readChat(){
+        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
+
+        return null;
+        //TODO implement this method
+    }
+
+    public void writeChat(){
+        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
+
+        //TODO implement this method
     }
 }
 

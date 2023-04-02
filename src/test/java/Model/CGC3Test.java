@@ -26,7 +26,7 @@ class CGC3Test {
             { cat, game, trophy, plant, cat}
     };
     Tile[][] bookshelfF1 = {
-            { cat, nothing, nothing, nothing,  },
+            { cat, nothing, nothing, nothing, nothing },
             { plant, cat, game, book, game},
             { frame, trophy, cat, book, game},
             { plant, trophy, cat, cat, book},
