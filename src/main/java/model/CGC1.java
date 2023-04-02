@@ -1,7 +1,7 @@
 package model;
 import java.util.ArrayList;
 import jdk.jshell.spi.ExecutionControl;
-
+//
     public class CGC1 implements CGMStrategy {
             class Cord{
                 private int x;
