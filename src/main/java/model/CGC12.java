@@ -36,7 +36,6 @@ public class CGC12 implements CGMStrategy {
             (bookshelf[1][3].getType() != NOTHING && bookshelf[0][3].getType() == NOTHING) &&
             (bookshelf[0][4].getType() != NOTHING)
         ) {flag = true;}
-
         return flag;
     }
 }

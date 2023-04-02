@@ -64,9 +64,7 @@ class CGC12Test {
             {cat, plant, trophy, cat, plant}
     };
 
-
     private final CGC12 cgc12 = new CGC12();
-
 
     @org.junit.jupiter.api.Test
     void compareRule() {
