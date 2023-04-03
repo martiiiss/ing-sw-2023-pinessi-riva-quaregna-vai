@@ -1,7 +1,5 @@
 package model;
 
-import jdk.jshell.spi.ExecutionControl;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -20,6 +18,9 @@ public class Game {
 
 
     public Game() { // added the constructor
+        CommonGoalCard cgc = new CommonGoalCard();
+        PersonalGoalCard pgc = new PersonalGoalCard();
+
     }
 
     public void setCommonGoalCards(){ //choose 2 commonGoalCard
@@ -76,9 +77,8 @@ public class Game {
     }
 
     public void assignPersonalGoalCard(int nOfPlayers){
-        int i;
         int idOfPersonalGoalCard;
-        for (i=0;i<nOfPlayers;i++) { // iterating through the array of players
+        for (int i=0;i<nOfPlayers;i++) { // iterating through the array of players
              // We have to choose a random number (the pgc) and assign it  to the player
             idOfPersonalGoalCard = (new Random()).nextInt(12);
             //TODO implement this code referring to Player and PersonalGoalCard
@@ -91,8 +91,33 @@ public class Game {
         /** I don't know if what I've done here is right **/
     }
 
-    public void addPlayer(Player p){
-        players.add(p); // it adds the player into the array
+    // it adds the player into the array
+    public void addPlayer(Player p){players.add(p);}
+
+    /* If st1 or st2 are FALSE, I verify if the player has completed one or both CGC
+     * -> if the player has completed the CGC i set the ScoringToken flag to TRUE and return scoreST, the score given by the CGC
+     */
+    public int checkCommonGoalCard(){
+        int scoreST = 0;
+        boolean st1 = playerInTurn.getScoringToken1();
+        boolean st2 = playerInTurn.getScoringToken2();
+
+        ArrayList<CommonGoalCard> c = this.getCommonGoalCard(); // -> maybe this is ok
+        if(st1 == false) {
+            if (c.get(0).compare(playerInTurn.getMyBookshelf())==true){
+                playerInTurn.setScoringToken1(true);
+                ScoringToken firstScoringTokenTile = c.get(0).popScoringToken();
+                scoreST += firstScoringTokenTile.getValue();
+            }
+        }
+        if (st2 == false){
+            if(c.get(1).compare(playerInTurn.getMyBookshelf())==true){
+                playerInTurn.setScoringToken2(true);
+                ScoringToken secondScoringTokenTile = c.get(1).popScoringToken();
+                scoreST += secondScoringTokenTile.getValue();
+            }
+        }
+        return scoreST;
     }
 
 }

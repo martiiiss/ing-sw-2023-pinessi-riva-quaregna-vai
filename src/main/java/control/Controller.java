@@ -9,7 +9,9 @@ public class Controller {
 
     //Before the game actually starts
     public void createGame(){
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
+        Game game = new Game(); /**I create the Game object -> MAYBE WRONG */
+        //TODO is this ok?
+        //try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
     }
 
     //this method needs to be error checked

@@ -1,8 +1,10 @@
 package model;
 
+import control.Controller;
 import jdk.jshell.spi.ExecutionControl;
 
 
+import java.awt.print.Book;
 import java.util.ArrayList;
 
 import static model.Type.NOTHING;
@@ -14,10 +16,13 @@ public class Player {
     private int score = 0;
     private Bookshelf myBookshelf;
     private ArrayList<Tile> tilesInHand; //This attribute saves the tiles selected by the player in chooseNTiles so that the bookshelf can be filled with fillBookshelf
-    private int completedPGC = 0;  //tiles of PGC in correct position
+    private int completedPGC = 0;  //tiles of PGC in correct position -> maybe useless
+    //TODO ask if this attribute is to delete
     private boolean scoringToken1 = false;
     private boolean scoringToken2 = false;
     // the last two attributes are used to control if the Player has already completed the CGC
+
+
 
 
     /*This method will be launched when the game starts once game chooses the first player. it will update isFirstPlayer*/
@@ -74,9 +79,8 @@ public class Player {
         return this.completedPGC;
     }
 
-    public boolean getScoringToken1(){
-        return this.scoringToken1;
-    }
+    public boolean getScoringToken1(){return this.scoringToken1;}
+
 
     /*Once the player completes a CommonGoalCard, they won't be able to collect other points from that CGC.
     /*This method updates the flag that keeps track of whether the player has already collected points from the first card or not*/
@@ -97,13 +101,6 @@ public class Player {
 
     public void setTilesInHand(ArrayList<Tile> chosenTiles){
         this.tilesInHand = chosenTiles;
-    }
-
-    public int checkCommonGoalCard(CommonGoalCard cgc){
-        // se il flag della commonGoalCard (cgc: 1 o 2) è false, verifica se la common goal card cgc è soddisfatta invocando compare di CGC
-        //  se lo è setta il flag corrispondente e ritorna il punteggio da aggiungere
-        return 0;
-        //TODO implement this method
     }
 
     public int checkCompletePGC(){
@@ -128,16 +125,19 @@ public class Player {
         return true;  //return true if myBookshelf is full
     }
 
+
+
+    /**This two methods refer to the chat, we have to chose if they're ok in Player
+     * and if they're ok as they are
+     */
     public ArrayList<String> readChat(){
         try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-
         return null;
         //TODO implement this method
     }
 
     public void writeChat(){
         try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-
         //TODO implement this method
     }
 }

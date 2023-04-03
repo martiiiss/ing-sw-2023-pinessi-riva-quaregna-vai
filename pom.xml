@@ -20,18 +20,12 @@
 
     <!--This dependency is needed to read JSON files-->
     <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>20090211</version>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
     </dependency>
 
 
-    <!--This dependency is needed to use some packages to read the JSON files-->
-    <dependency>
-      <groupId>com.googlecode.json-simple</groupId>
-      <artifactId>json-simple</artifactId>
-      <version>1.1.1</version>
-    </dependency>
 
     <!--This dependency is JUnit-->
     <dependency>

@@ -5,10 +5,12 @@ import java.util.Stack;
 public class CommonGoalCard {
     private Stack<ScoringToken> tokenStack;
     private int romanNumber;
-    private CGMStrategy strategy; // reference to CGMStrategy (an interface in control yet to be build)
+    private CGMStrategy strategy; // reference to CGMStrategy
     private int idCGC;
 
-
+    public CommonGoalCard(){
+        // added the generic constructor -> double constructor THIS IS WRONG
+    }
     //costruttore o un metodo initializeCGC?
     public CommonGoalCard(int id, int numPlayers, int romanNumber){
         this.idCGC = id;
@@ -35,9 +37,10 @@ public class CommonGoalCard {
     }
 
     public ScoringToken popScoringToken(){ //ScoringToken extraction (player scored)
-        return this.tokenStack.pop();//TO DO: we return the value of the popped Token
+        return this.tokenStack.pop();// we return the value of the popped Token
     }
 
+    //This method is called only at the beginning
     public void pushScoringToken(ScoringToken scToken){ //add ScoringToken (at the game start)
         this.tokenStack.push(scToken);
     }
@@ -47,7 +50,7 @@ public class CommonGoalCard {
     }
 
     public void setCGCStrategy(int id){
-        // in base al id implementa una strategy precisa (NB sono raggruppate alcune!)
+        //based on the id this method implements a precise strategy (!!! Some of them are in groups)
         // this.strategy = ; //set strategy --> the commonGoalCard choice
     }
 

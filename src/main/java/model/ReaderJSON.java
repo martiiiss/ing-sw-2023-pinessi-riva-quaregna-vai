@@ -1,39 +1,23 @@
 package model;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
+import java.lang.reflect.Type;
 
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import com.google.gson.*;
+
+
 
 
 public class ReaderJSON {
-    public void boh() {
-        JSONParser parser = new JSONParser();
-        try (Reader reader = new FileReader("1.json");) {
-            JSONObject jsonObject = (JSONObject) parser.parse(reader);
-            System.out.println(jsonObject);
-
-            String name = (String) jsonObject.get("first tile");
-            System.out.println(name);
-
-            int x = (Integer) jsonObject.get("x");
-            System.out.println(x);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-
-    }
+    //TODO implement this class
 }
 
 

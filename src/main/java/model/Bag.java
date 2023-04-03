@@ -13,9 +13,9 @@ public class Bag {
 
     public ArrayList<Tile> getBagTiles(int requestedTiles) {
         ArrayList<Tile> returnedTiles = new ArrayList<>();
-        for(int i=requestedTiles-1; i>0; i--)   {          // Seen that it removes from the arraylist I prefer it done from the end to the beginning
+        for(int i=requestedTiles-1; i>0; i--){// Seen that it removes from the arraylist I prefer it done from the end to the beginning
             returnedTiles.add(tilesContained.get(i));
-            tilesContained.remove(tilesContained.get(i));  //Remove the tiles from the ArrayList
+            tilesContained.remove(tilesContained.get(i));//Remove the tiles from the ArrayList
         }
         return returnedTiles;
     }

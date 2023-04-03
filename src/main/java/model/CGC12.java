@@ -7,6 +7,16 @@ public class CGC12 implements CGMStrategy {
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
         boolean flag = false;
+        int temp = 0;
+
+        /*
+         for (int i=0; i<6;i++){
+                for(int j=0; j<5;j++){
+
+                }
+           }
+
+         */
 
         //check first whole diagonal
         if ((bookshelf[0][0].getType() == NOTHING && bookshelf[1][0].getType() != NOTHING) &&
