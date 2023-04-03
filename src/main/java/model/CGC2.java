@@ -9,8 +9,7 @@ public class CGC2 implements CGMStrategy {
         Tile[][] bookshelf = bks.getBookshelf();
 
         for(int r=0; r<MAX_ROW; r++){
-            for(int c=0; c<MAX_COLUMN; c++){
-                if(c+5<=MAX_COLUMN){
+            for(int c=0; c+5<=MAX_COLUMN; c++){
                     if(r+4<=MAX_ROW){ //diag dec
                         if(checkDiagonal(r, c, bookshelf,+1))
                             return true;
@@ -18,7 +17,6 @@ public class CGC2 implements CGMStrategy {
                         if(checkDiagonal(r, c, bookshelf, -1))
                             return true;
                     }
-                }
             }
         }
         return false;
