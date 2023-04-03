@@ -43,7 +43,10 @@ public class Game {
 
     public void setNumOfPlayers(int nop){ //nop is chosen by the player who creates the game
         this.numberOfPlayers = nop;
+    }
 
+    public int getNumOfPlayers(){
+        return this.numberOfPlayers;
     }
 
     public void setPlayerInTurn(Player pit){

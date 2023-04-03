@@ -33,7 +33,6 @@ public class Board {
         // set cells (livingRoomBoard[][]) that cannot be used during the game to BLOCKED
         Tile blocked = new Tile(Type.BLOCKED);
         blocked.setType(Type.BLOCKED);
-        //set delle celle sempre blocked (azzurre)
         for(int r=0; r<=3; r++){
             for(int c=0; c<=2; c++){
                 if(r==0 || r==1 || (r==2 && c<=1) || (r==3 && c==0)){

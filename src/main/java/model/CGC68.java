@@ -23,11 +23,11 @@ public class CGC68 implements CGMStrategy {
                     switch (id) {
                         case 6:
                             if (bookshelf[i1][j] == bookshelf[i2][j] || bookshelf[i1][j].getType() == NOTHING || bookshelf[i2][j].getType() == NOTHING)
-                            found = 0;
+                                found = 0;
                             break;
                         case 8:
                             if (bookshelf[j][i1] == bookshelf[j][i2] || bookshelf[j][i1].getType() == NOTHING || bookshelf[j][i2].getType() == NOTHING)
-                            found = 0;
+                                found = 0;
                             break;
                     }
                 }

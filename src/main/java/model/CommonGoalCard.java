@@ -11,10 +11,10 @@ public class CommonGoalCard {
     public CommonGoalCard(){
         // added the generic constructor -> double constructor THIS IS WRONG
     }
-    //costruttore o un metodo initializeCGC?
     public CommonGoalCard(int id, int numPlayers, int romanNumber){
         this.idCGC = id;
         this.romanNumber = romanNumber;
+        this.tokenStack = new Stack<ScoringToken>();
         setCGCStrategy(id);
 
         //create scoringToken & push
@@ -45,14 +45,36 @@ public class CommonGoalCard {
         this.tokenStack.push(scToken);
     }
 
+    public Stack<ScoringToken> getTokenStack(){
+        return this.tokenStack;
+    }
+
     public int getRomanNumber(){
        return this.romanNumber;
     }
 
     public void setCGCStrategy(int id){
+        switch (id) {
+            case 1 -> this.strategy = new CGC1();
+            case 2 -> this.strategy = new CGC2();
+            case 3 -> this.strategy = new CGC3();
+            case 5 -> this.strategy = new CGC5();
+            case 7 -> this.strategy = new CGC7();
+            case 10 -> this.strategy = new CGC10();
+            case 11 -> this.strategy = new CGC11();
+            case 12 -> this.strategy = new CGC12();
+            case 4 -> this.strategy = new CGC49();
+            case 9 -> this.strategy = new CGC49();
+            case 6 -> this.strategy = new CGC68();
+            case 8 -> this.strategy = new CGC68();
+            default -> throw new IllegalStateException("Unexpected value: " + id);
+        }
         //based on the id this method implements a precise strategy (!!! Some of them are in groups)
-        // this.strategy = ; //set strategy --> the commonGoalCard choice
+        //set strategy --> the commonGoalCard choice
     }
+
+    public CGMStrategy getStrategy(){ return this.strategy; }
+
     // compare bookshelf and commonGoalCard
     public boolean compare(Bookshelf bookshelf){
         return this.strategy.compareRule(bookshelf, idCGC);
