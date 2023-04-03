@@ -104,14 +104,16 @@ public class Player {
     }
 
     public int checkCompletePGC(){
+        int PGCScore = 0;
         //verifica la personal con le nuove carte aggiunte in bookshelf e ritorna il punteggio da aggiungere.
-        return 0;
+        return PGCScore;
         //TODO implement this method
     }
 
     public int checkAdjacentBookshelf(){
+        int adjacencyScore = 0;
         // controlla e ritorno il punteggio delle tessere adiacenti (punteggio da aggiungere)
-        return 0;
+        return adjacencyScore;
         //TODO implement this method
     }
 

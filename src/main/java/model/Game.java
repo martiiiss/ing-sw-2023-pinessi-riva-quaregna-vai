@@ -12,15 +12,14 @@ public class Game {
 
     private int numOfPlayers;
 
+    private PersonalGoalCard personalGoalCard;
+
     private ArrayList<Player> players;
 
     private ArrayList<CommonGoalCard> commonGoalCards;
 
 
     public Game() { // added the constructor
-        CommonGoalCard cgc = new CommonGoalCard();
-        PersonalGoalCard pgc = new PersonalGoalCard();
-
     }
 
     public void setCommonGoalCards(){ //choose 2 commonGoalCard
@@ -45,25 +44,15 @@ public class Game {
         this.numberOfPlayers = nop;
     }
 
-    public int getNumOfPlayers(){
-        return this.numberOfPlayers;
-    }
+    public int getNumOfPlayers(){return this.numberOfPlayers;}
 
-    public void setPlayerInTurn(Player pit){
-        this.playerInTurn = pit;
-    }
+    public void setPlayerInTurn(Player pit){this.playerInTurn = pit;}
 
-    public Player getPlayerInTurn(){
-        return this.playerInTurn;
-    }
+    public Player getPlayerInTurn(){return this.playerInTurn;}
 
-    public void setWinner(Player win){
-        this.winner = win;
-    }
+    public void setWinner(Player win){this.winner = win;}
 
-    public Player getWinner(){
-        return this.winner;
-    }
+    public Player getWinner(){return this.winner;}
 
 
     public void setFinisher(Player finished){
@@ -71,28 +60,60 @@ public class Game {
         isLastTurn = true; // it updates the value of isLastTurn to TRUE
     }
 
-    public Player getFinisher(){
-        return this.finisher;
-    }
+    public Player getFinisher(){return this.finisher;}
 
-    public boolean getIsLastTurn(){
-        return this.isLastTurn;
-    }
+    public boolean getIsLastTurn(){return this.isLastTurn;}
 
+    /*Using the number of players I create different random number in between 1 and 12
+     *I control that every number is different
+     *I assign the corresponding card to every player
+     */
     public void assignPersonalGoalCard(int nOfPlayers){
-        int idOfPersonalGoalCard;
-        for (int i=0;i<nOfPlayers;i++) { // iterating through the array of players
-             // We have to choose a random number (the pgc) and assign it  to the player
-            idOfPersonalGoalCard = (new Random()).nextInt(12);
-            //TODO implement this code referring to Player and PersonalGoalCard
+        if (nOfPlayers==2){
+            int temp1 = (new Random()).nextInt(12)+1;
+            int temp2 = (new Random()).nextInt(12)+1;
+            while (temp1 == temp2){temp2 = (new Random()).nextInt(12)+1;}
+                PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
+                players.get(0).setPersonalGoalCard(pgc1);
+                PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
+                players.get(1).setPersonalGoalCard(pgc2);
 
-            /*  After choosing a PCG we should set it with a method in player
-                We need a method that sets the PGC in Player, with that we can invoke that method inside
-                assignPersonalGoalCard and set the random number generated as the PGC
-            */
+        } else if (nOfPlayers==3) {
+            int temp1 = (new Random()).nextInt(12)+1;
+            int temp2 = (new Random()).nextInt(12)+1;
+            int temp3 = (new Random()).nextInt(12)+1;
+            while (temp1 == temp2 && temp2 == temp3 && temp1 == temp3) {
+                temp2 = (new Random()).nextInt(12)+1;
+                temp3 = (new Random()).nextInt(12)+1;
+            }
+            PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
+            players.get(0).setPersonalGoalCard(pgc1);
+            PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
+            players.get(1).setPersonalGoalCard(pgc2);
+            PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
+            players.get(2).setPersonalGoalCard(pgc3);
+        } else if (nOfPlayers==4){
+            int temp1 = (new Random()).nextInt(12)+1;
+            int temp2 = (new Random()).nextInt(12)+1;
+            int temp3 = (new Random()).nextInt(12)+1;
+            int temp4 = (new Random()).nextInt(12)+1;
+
+            while (temp1 == temp2 && temp1 == temp3 && temp1 == temp4
+                && temp2 == temp3 && temp2 == temp4 && temp3 == temp4) {
+                temp2 = (new Random()).nextInt(12)+1;
+                temp3 = (new Random()).nextInt(12)+1;
+                temp4 = (new Random()).nextInt(12)+1;
+            }
+            PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
+            players.get(0).setPersonalGoalCard(pgc1);
+            PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
+            players.get(1).setPersonalGoalCard(pgc2);
+            PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
+            players.get(2).setPersonalGoalCard(pgc3);
+            PersonalGoalCard pgc4 = new PersonalGoalCard(temp4);
+            players.get(3).setPersonalGoalCard(pgc4);
         }
-        /** I don't know if what I've done here is right **/
-    }
+    } //TODO control if this method is ok
 
     // it adds the player into the array
     public void addPlayer(Player p){players.add(p);}

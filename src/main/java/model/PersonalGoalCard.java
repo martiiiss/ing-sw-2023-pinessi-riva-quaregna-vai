@@ -17,9 +17,14 @@ import com.google.gson.*;
 
 
 public class PersonalGoalCard {
+
     private Type[][] seed; //tiles position
     private boolean isCompleted;
 
+    public PersonalGoalCard (int id){
+    }
+
+    //Do we really need the seed?
     public Type[][] getSeed() {
         try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
         return seed;
