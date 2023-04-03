@@ -126,7 +126,6 @@ public class Player {
     }
 
 
-
     /**This two methods refer to the chat, we have to chose if they're ok in Player
      * and if they're ok as they are
      */

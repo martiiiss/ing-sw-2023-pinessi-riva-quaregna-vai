@@ -22,7 +22,6 @@ public class ReaderJSON {
 
 
 
-
 /** I'm still trying to understand how this actually works.
  *  Online I found plenty of different ways to write the code used to read JSON files
  *  but each one of them is different in some way, also I still have to think if having 12 different JSON

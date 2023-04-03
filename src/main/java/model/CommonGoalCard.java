@@ -53,7 +53,6 @@ public class CommonGoalCard {
         //based on the id this method implements a precise strategy (!!! Some of them are in groups)
         // this.strategy = ; //set strategy --> the commonGoalCard choice
     }
-
     // compare bookshelf and commonGoalCard
     public boolean compare(Bookshelf bookshelf){
         return this.strategy.compareRule(bookshelf, idCGC);
