@@ -54,7 +54,6 @@ class CGC2Test {
                                 { plant, trophy,  plant,   cat,     book},
                                 { game,  book,    book,    game,   frame},
                                 { book,  game,    trophy,  plant,   plant}};
-
     private final CGC2 cgc2 = new CGC2();
 
     @org.junit.jupiter.api.Test

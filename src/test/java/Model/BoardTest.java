@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 class BoardTest {
     private Board board2 = new Board(2);
-
     private final Bag bag = new Bag();
 
     Tile[][] livingRoom2;

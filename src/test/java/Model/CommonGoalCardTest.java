@@ -79,6 +79,7 @@ class CommonGoalCardTest {
      //   assertEquals(cgc2p.getStrategy(), cgc2p2.setCGCStrategy(2).getStrategy());
     }
 
+
     @Test
     void compare() {
     }

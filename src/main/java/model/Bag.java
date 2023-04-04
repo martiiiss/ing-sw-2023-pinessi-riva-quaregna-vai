@@ -10,8 +10,11 @@ import static java.lang.System.out;
 
 public class Bag {
     private boolean isBagEmpty;
+    private static final int MAX_TILES_ONE_TYPE = 22;
+
     private ArrayList<Tile> tilesContained;
     // Bag takes in the number of requested tiles and returns tilesContained
+
     /**
      *
      * @param requestedTiles
@@ -44,7 +47,7 @@ public class Bag {
         tilesContained = new ArrayList<>();
         int e=0;
         for(int i=0; i<6; i++){ //6 type
-            for(int j=0; j<22; j++){ //22 tiles for one type
+            for(int j=0; j<MAX_TILES_ONE_TYPE; j++){ //22 tiles for one type
                 switch (i) {
                     case 0 -> tilesContained.add(new Tile(Type.CAT, j % 3 + 1));
                     case 1 -> tilesContained.add(new Tile(Type.BOOK, j % 3 + 1));

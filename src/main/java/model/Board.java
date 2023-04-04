@@ -10,7 +10,6 @@ public class Board {
     public final int  BOARD_COLUMN = 9;
     private Tile[][] livingRoomBoard;
 
-
     public Board(int numOfPlayers){ //constructor
         this.livingRoomBoard = new Tile[BOARD_ROW][BOARD_COLUMN];
         setNumOfCells(numOfPlayers);

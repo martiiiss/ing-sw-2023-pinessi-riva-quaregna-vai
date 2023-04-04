@@ -2,8 +2,6 @@ package model;
 
 import jdk.jshell.spi.ExecutionControl;
 
-/* how do we manage the scoring token creation?*/
-
 public class ScoringToken {
     private final int romanNumber;
     private final int value;

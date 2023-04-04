@@ -18,7 +18,6 @@ class CGC12Test {
     Tile plant = new Tile(Type.PLANT,3);
     Tile nothing = new Tile(Type.NOTHING,0);
 
-
     /**
      * First test, should be TRUE -> Right to left, with first row empty
      */

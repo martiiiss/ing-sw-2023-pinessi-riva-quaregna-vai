@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ScoringTokenTest {
+
     ScoringToken sc1 = new ScoringToken(4, 1);
 
     @Test

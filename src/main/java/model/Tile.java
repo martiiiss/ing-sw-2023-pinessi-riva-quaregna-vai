@@ -4,8 +4,6 @@ public class Tile {
     private Type type;
     private int numType;
 
-    private static final int MAX_TILES_ONE_TYPE = 22;
-
     public Tile (Type t, int numType){
         this.type =t;
         this.setNumType(numType);

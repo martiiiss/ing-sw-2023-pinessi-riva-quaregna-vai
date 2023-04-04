@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class BagTest {
     private Bag bag = new Bag();
 
-    
     @Test
     void getBagTiles() {
     }
