@@ -1,0 +1,14 @@
+Since I cannot put comments in json files I'll add them in here:
+-The json Files are to be read from left to right and from top to bottom
+      0   1   2   3   4
+ 0  |   |   |   |   |   |
+ 1  |   |   |   |   |   |
+ 2  |   |   |   |   |   |    --> A schematic representation of how I intend the matrix
+ 3  |   |   |   |   |   |
+ 4  |   |   |   |   |   |
+ 5  |___|___|___|___|___|
+
+-The 12 JSON files are named following the numbers of the given Personal Goal Cards
+ inside the folder given by resources, I'll personally make sure that those png are easy
+ to link to the pgc (at the moment the only thing that you'll notice is that if you look for
+ Personal_Goals inside the folder 17_MyShelfy_BGA those are numbered as the JSON files I made)

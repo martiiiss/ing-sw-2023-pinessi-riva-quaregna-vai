@@ -1,32 +1,32 @@
-{
-    "first tile": {
+[
+    {
         "x" : 1,
-        "y" : 4,
-        "type" : "BOOK"
-    },
-    "second tile": {
-        "x" : 2,
-        "y" : 2,
+        "y" : 0,
         "type" : "FRAME"
     },
-    "third tile": {
-        "x" : 2,
-        "y" : 5,
+    {
+        "x" : 1,
+        "y" : 3,
         "type" : "GAME"
     },
-    "fourth tile": {
-        "x" : 4,
-        "y" : 1,
+    {
+        "x" : 2,
+        "y" : 2,
         "type" : "PLANT"
     },
-    "fifth tile": {
-        "x" : 4,
-        "y" : 3,
+    {
+        "x" : 3,
+        "y" : 1,
         "type" : "CAT"
     },
-    "sixth tile": {
-        "x" : 5,
-        "y" : 6,
+    {
+        "x" : 3,
+        "y" : 4,
         "type" : "TROPHY"
+    },
+    {
+        "x" : 5,
+        "y" : 0,
+        "type" : "BOOK"
     }
-}
+]
