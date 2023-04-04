@@ -15,64 +15,64 @@ public class CGC7 implements CGMStrategy {
                 mini[0][1] = bookshelf[i][j + 1];
                 mini[1][0] = bookshelf[i + 1][j];
                 mini[1][1] = bookshelf[i + 1][j + 1];
-                Type temp = bookshelf[i][j].getType();
+                Tile temp = bookshelf[i][j];
                 for (int x = 0; x < 2; x++) {
                     for (int y = 0; y < 2; y++) {
-                        if (temp.equals(mini[x][y].getType()) && temp.equals(Type.NOTHING))
+                        if (temp.getType() == mini[x][y].getType() && temp.getType() != Type.NOTHING)
                             counter++;
                     }
                 }
                 if (counter == 4 && j < 2 && i < 2)//TopLeft
-                    if (!temp.equals(bookshelf[i][j + 2].getType()) && !temp.equals(bookshelf[i + 1][j + 2].getType()) && !temp.equals(bookshelf[i + 2][j].getType()) && !temp.equals(bookshelf[i + 2][j + 1].getType())) {
+                    if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType())) {
                         numOfBlocks++;
                         counter = 0;
                         break;
                     }
-                if (counter == 4 && j < 2 && i >= 2) //Left side
-                    if (!temp.equals(bookshelf[i][j + 2].getType()) && !temp.equals(bookshelf[i + 1][j + 2].getType()) && !temp.equals(bookshelf[i + 2][j].getType()) && !temp.equals(bookshelf[i + 2][j + 1].getType()) && !temp.equals(bookshelf[i - 1][j].getType()) && temp.equals(bookshelf[i - 1][j + 1].getType())) {
+                if (counter == 4 && j > 2 && i >= 2 && i<4) //Left side
+                    if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()==(bookshelf[i - 1][j + 1].getType())) {
                         numOfBlocks++;
                         counter = 0;
                         break;
                     }
-                if (counter == 4 && j < 2 && i + 2 >= 6) //BotLeft
-                    if (!temp.equals(bookshelf[i][j + 2].getType()) && !temp.equals(bookshelf[i + 1][j + 2].getType()) && !temp.equals(bookshelf[i - 1][j].getType()) && !temp.equals(bookshelf[i - 1][j + 1].getType())) {
+                if (counter == 4 && j < 2 && i == 4) //BotLeft
+                    if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()!=(bookshelf[i - 1][j + 1].getType())) {
                         numOfBlocks++;
                         counter = 0;
                         break;
                     }
-                if (counter == 4 && j + 2 < 5 && i + 2 >= 6) //Bot side
-                    if (!temp.equals(bookshelf[i][j + 2].getType()) && !temp.equals(bookshelf[i + 1][j + 2].getType()) && !temp.equals(bookshelf[i - 1][j].getType()) && !temp.equals(bookshelf[i - 1][j + 1].getType()) && !temp.equals(bookshelf[i][j - 1].getType()) && !temp.equals(bookshelf[i + 1][j - 1].getType())) {
+                if (counter == 4 && j==2 && i >=3) //Bot side
+                    if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()!=(bookshelf[i - 1][j + 1].getType()) && temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType())) {
                         numOfBlocks++;
                         counter = 0;
                         break;
                     }
-                if (counter == 4 && j + 2 >= 5 && i + 2 >= 6) //BotRight
-                    if (!temp.equals(bookshelf[i - 1][j].getType()) && temp.equals(bookshelf[i - 1][j + 1].getType()) && !temp.equals(bookshelf[i][j - 1].getType()) && !temp.equals(bookshelf[i + 1][j - 1].getType())) {
+                if (counter == 4 && j==3 && i>=3) //BotRight
+                    if (temp.getType()!=(bookshelf[i - 1][j].getType()) && (temp.getType()!=(bookshelf[i - 1][j + 1].getType())) && (temp.getType()!=(bookshelf[i][j - 1].getType())) && (temp.getType()!=(bookshelf[i + 1][j - 1].getType()))) {
                         numOfBlocks++;
                         counter = 0;
                         break;
                     }
-                if (counter == 4 && j + 2 >= 5 && i >= 2) //R side
-                    if (!temp.equals(bookshelf[i - 1][j].getType()) && !temp.equals(bookshelf[i - 1][j + 1].getType()) && !temp.equals(bookshelf[i][j - 1].getType()) && !temp.equals(bookshelf[i + 1][j - 1].getType()) && !temp.equals(bookshelf[i + 2][j].getType()) && !temp.equals(bookshelf[i + 2][j + 1].getType())) {
+                if (counter == 4 && j==3 && i >= 2) //R side
+                    if ((temp.getType() != (bookshelf[i - 1][j].getType())) && (temp.getType() != (bookshelf[i - 1][j + 1].getType())) && (temp.getType() != (bookshelf[i][j - 1].getType())) && (temp.getType() != (bookshelf[i + 1][j - 1].getType())) && (temp.getType() != (bookshelf[i + 2][j].getType())) && (temp.getType() != (bookshelf[i + 2][j + 1].getType()))) {
                         numOfBlocks++;
                         counter = 0;
                         break;
                     }
-                if (counter == 4 && j + 2 >= 5 && i < 2) //TopRight
-                    if (!temp.equals(bookshelf[i][j - 1].getType()) && !temp.equals(bookshelf[i + 1][j - 1].getType()) && !temp.equals(bookshelf[i + 2][j].getType()) && !temp.equals(bookshelf[i + 2][j + 1].getType())) {
+                if (counter == 4 && j==3 && i < 2) //TopRight
+                    if (temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType())) {
                         numOfBlocks++;
                         counter = 0;
                         break;
                     }
-                if (counter == 4 && j >= 2 && i < 2) //Upper side
-                    if (!temp.equals(bookshelf[i][j - 1].getType()) && !temp.equals(bookshelf[i + 1][j - 1].getType()) && !temp.equals(bookshelf[i + 2][j].getType()) && !temp.equals(bookshelf[i + 2][j + 1].getType()) && !temp.equals(bookshelf[i][j + 2].getType()) && !temp.equals(bookshelf[i + 1][j + 2].getType())) {
+                if (counter == 4 && j==2 && i < 2) //Upper side
+                    if (temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType()) && temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType())) {
                         numOfBlocks++;
                         counter = 0;
                         break;
                     }
                 /**Effettivamente questa condizione è sempre falsa, nella versione semplificata che ho fatto usando una matrice di int però è necessaria...*/
-                if (counter == 4 && j>2 && i>2 && j+2<5 && i+2<6) //Not along the borders
-                    if (!temp.equals(bookshelf[i][j - 1].getType()) && !temp.equals(bookshelf[i + 1][j - 1].getType()) && !temp.equals(bookshelf[i + 2][j].getType()) && !temp.equals(bookshelf[i + 2][j + 1].getType()) && !temp.equals(bookshelf[i][j + 2].getType()) && !temp.equals(bookshelf[i + 1][j + 2].getType()) && !temp.equals(bookshelf[i - 1][j].getType()) && !temp.equals(bookshelf[i - 1][j + 1].getType())) {
+                if (counter == 4 && j==2 && i>=2 && i<4) //Not along the borders
+                    if (temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType()) && temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()!=(bookshelf[i - 1][j + 1].getType())) {
                         numOfBlocks++;
                         counter = 0;
                         break;
