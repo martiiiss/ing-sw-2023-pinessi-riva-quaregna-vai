@@ -2,12 +2,13 @@ package model;
 
 public class Tile {
     private Type type;
-    private int NumType;
+    private int numType;
 
     private static final int MAX_TILES_ONE_TYPE = 22;
 
-    public Tile (Type t){
+    public Tile (Type t, int numType){
         this.type =t;
+        this.setNumType(numType);
     }
 
     public Type getType() {
@@ -18,10 +19,10 @@ public class Tile {
     }
 
     public void setNumType(int n){
-        this.NumType=n;
+        this.numType=n;
     }
     public int getNumType(){
-        return this.NumType;
+        return this.numType;
     }
 
 }

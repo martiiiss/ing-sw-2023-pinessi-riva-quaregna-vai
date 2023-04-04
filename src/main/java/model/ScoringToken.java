@@ -5,8 +5,8 @@ import jdk.jshell.spi.ExecutionControl;
 /* how do we manage the scoring token creation?*/
 
 public class ScoringToken {
-    private int romanNumber;
-    private int value;
+    private final int romanNumber;
+    private final int value;
 
     public ScoringToken(int val, int rn){  //constructor
         this.value = val;

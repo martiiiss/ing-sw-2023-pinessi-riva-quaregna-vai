@@ -115,7 +115,7 @@ import static model.Type.NOTHING;
         boolean diff;
         boolean found;
         int score=0;
-        Tile nothing = new Tile(Type.NOTHING);
+        Tile nothing = new Tile(Type.NOTHING,0);
         for(int i=0; i<6; i++) {
             for (int j = 0; j < 5; j++) {
                 found = false;
