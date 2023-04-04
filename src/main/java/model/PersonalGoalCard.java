@@ -49,6 +49,7 @@ public class PersonalGoalCard {
                                 tileType[i] = Type.CAT;
                             }
                             case "BOOK": {
+
                                 tileType[i] = Type.BOOK;
                             }
                             case "GAME": {
