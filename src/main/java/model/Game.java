@@ -64,62 +64,68 @@ public class Game {
 
     public boolean getIsLastTurn(){return this.isLastTurn;}
 
-    /*Using the number of players I create different random number in between 1 and 12
-     *I control that every number is different
+    /**Using the number of players I create different random number in between 1 and 12
+     *I control that every number is different and
      *I assign the corresponding card to every player
      */
     public void assignPersonalGoalCard(int nOfPlayers){
-        if (nOfPlayers==2){
-            int temp1 = (new Random()).nextInt(12);
-            int temp2 = (new Random()).nextInt(12);
-            while (temp1 == temp2){temp2 = (new Random()).nextInt(12);}
+
+        switch(nOfPlayers){
+
+            case 2: {
+                int temp1 = (new Random()).nextInt(12);
+                int temp2 = (new Random()).nextInt(12);
+                while (temp1 == temp2){temp2 = (new Random()).nextInt(12);}
                 PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
                 players.get(0).setPersonalGoalCard(pgc1);
                 PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
                 players.get(1).setPersonalGoalCard(pgc2);
-
-        } else if (nOfPlayers==3) {
-            int temp1 = (new Random()).nextInt(12);
-            int temp2 = (new Random()).nextInt(12);
-            int temp3 = (new Random()).nextInt(12);
-            while (temp1 == temp2 && temp2 == temp3 && temp1 == temp3) {
-                temp2 = (new Random()).nextInt(12);
-                temp3 = (new Random()).nextInt(12);
             }
-            PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
-            players.get(0).setPersonalGoalCard(pgc1);
-            PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
-            players.get(1).setPersonalGoalCard(pgc2);
-            PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
-            players.get(2).setPersonalGoalCard(pgc3);
-        } else if (nOfPlayers==4){
-            int temp1 = (new Random()).nextInt(12);
-            int temp2 = (new Random()).nextInt(12);
-            int temp3 = (new Random()).nextInt(12);
-            int temp4 = (new Random()).nextInt(12);
 
-            while (temp1 == temp2 && temp1 == temp3 && temp1 == temp4
-                && temp2 == temp3 && temp2 == temp4 && temp3 == temp4) {
-                temp2 = (new Random()).nextInt(12);
-                temp3 = (new Random()).nextInt(12);
-                temp4 = (new Random()).nextInt(12);
+            case 3: {
+                int temp1 = (new Random()).nextInt(12);
+                int temp2 = (new Random()).nextInt(12);
+                int temp3 = (new Random()).nextInt(12);
+                while (temp1 == temp2 && temp2 == temp3 && temp1 == temp3) {
+                    temp2 = (new Random()).nextInt(12);
+                    temp3 = (new Random()).nextInt(12);
+                }
+                PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
+                players.get(0).setPersonalGoalCard(pgc1);
+                PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
+                players.get(1).setPersonalGoalCard(pgc2);
+                PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
+                players.get(2).setPersonalGoalCard(pgc3);
             }
-            PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
-            players.get(0).setPersonalGoalCard(pgc1);
-            PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
-            players.get(1).setPersonalGoalCard(pgc2);
-            PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
-            players.get(2).setPersonalGoalCard(pgc3);
-            PersonalGoalCard pgc4 = new PersonalGoalCard(temp4);
-            players.get(3).setPersonalGoalCard(pgc4);
+            case 4: {
+                int temp1 = (new Random()).nextInt(12);
+                int temp2 = (new Random()).nextInt(12);
+                int temp3 = (new Random()).nextInt(12);
+                int temp4 = (new Random()).nextInt(12);
+
+                while (temp1 == temp2 && temp1 == temp3 && temp1 == temp4
+                        && temp2 == temp3 && temp2 == temp4 && temp3 == temp4) {
+                    temp2 = (new Random()).nextInt(12);
+                    temp3 = (new Random()).nextInt(12);
+                    temp4 = (new Random()).nextInt(12);
+                }
+                PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
+                players.get(0).setPersonalGoalCard(pgc1);
+                PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
+                players.get(1).setPersonalGoalCard(pgc2);
+                PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
+                players.get(2).setPersonalGoalCard(pgc3);
+                PersonalGoalCard pgc4 = new PersonalGoalCard(temp4);
+                players.get(3).setPersonalGoalCard(pgc4);
+            }
         }
-    } //TODO control if this method is ok
+    }
 
     // it adds the player into the array
     public void addPlayer(Player p){players.add(p);}
 
-    /* If st1 or st2 are FALSE, I verify if the player has completed one or both CGC
-     * -> if the player has completed the CGC i set the ScoringToken flag to TRUE and return scoreST, the score given by the CGC
+    /** If st1 or st2 are FALSE, I verify if the player has completed one or both CGC
+     * -> if the player has completed the CGC I set the ScoringToken flag to TRUE and return scoreST, the score given by the CGC
      */
     public int checkCommonGoalCard(){
         int scoreST = 0;
