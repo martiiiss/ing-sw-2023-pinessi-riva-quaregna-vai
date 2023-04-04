@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class CGC2Test {
     private final int MAX_ROW = 6;
     private final int MAX_COLUMN = 5;
-    Tile cat = new Tile(Type.CAT);
-    Tile book = new Tile(Type.BOOK);
-    Tile game = new Tile(Type.GAME);
-    Tile frame = new Tile(Type.FRAME);
-    Tile trophy = new Tile(Type.TROPHY);
-    Tile plant = new Tile(Type.PLANT);
-    Tile nothing = new Tile(Type.NOTHING);
+    Tile cat = new Tile(Type.CAT,1);
+    Tile book = new Tile(Type.BOOK,2);
+    Tile game = new Tile(Type.GAME,3);
+    Tile frame = new Tile(Type.FRAME,2);
+    Tile trophy = new Tile(Type.TROPHY,1);
+    Tile plant = new Tile(Type.PLANT,3);
+    Tile nothing = new Tile(Type.NOTHING,0);
 
     //the first 4 bookshelf cover the true cases
     Tile[][] bookshelf1 = {{ cat, nothing, nothing, nothing, nothing },

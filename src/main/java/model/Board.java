@@ -6,22 +6,22 @@ import java.util.ArrayList;
 
 public class Board {
     private int numOfCells;
-    private final int  BOARD_ROW = 9;
-    private final int  BOARD_COLUMN = 9;
+    public final int  BOARD_ROW = 9;
+    public final int  BOARD_COLUMN = 9;
     private Tile[][] livingRoomBoard;
 
-
-
-    public Board(){ //constructor
+    public Board(int numOfPlayers){ //constructor
         this.livingRoomBoard = new Tile[BOARD_ROW][BOARD_COLUMN];
+        setNumOfCells(numOfPlayers);
+        initializeBoard(numOfPlayers);
     }
 
     public void setUpBoard(ArrayList<Tile> tilesToPutOnBoard) { //add tiles to the board.
         int iTiles=0;
         for(int i=0; i<BOARD_ROW; i++){
             for(int j=0; j<BOARD_COLUMN; j++){
-                if(livingRoomBoard[i][j].getType()==Type.NOTHING) { // no tile in this cell --> put a tile
-                    livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
+                if(this.livingRoomBoard[i][j]==null || this.livingRoomBoard[i][j].getType()==Type.NOTHING){
+                    this.livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
                     iTiles++;
                 }
             }
@@ -31,8 +31,7 @@ public class Board {
 
     public void initializeBoard(int nOfPlayers){ // at the beginning
         // set cells (livingRoomBoard[][]) that cannot be used during the game to BLOCKED
-        Tile blocked = new Tile(Type.BLOCKED);
-        blocked.setType(Type.BLOCKED);
+        Tile blocked = new Tile(Type.BLOCKED,0);
         for(int r=0; r<=3; r++){
             for(int c=0; c<=2; c++){
                 if(r==0 || r==1 || (r==2 && c<=1) || (r==3 && c==0)){
@@ -94,7 +93,9 @@ public class Board {
         return removedTile;
     }
 
-    Tile[][] getBoard(){
+    public Tile[][] getBoard(){
         return this.livingRoomBoard;
     }
+
+    public int getNumOfCells(){return this.numOfCells;}
 }
