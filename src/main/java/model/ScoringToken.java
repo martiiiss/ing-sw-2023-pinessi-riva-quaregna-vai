@@ -12,6 +12,7 @@ public class ScoringToken {
         this.value = val;
         this.romanNumber = rn;
     }
+
     /*returns the value of scoring token*/
     public int getValue(){
         return this.value;

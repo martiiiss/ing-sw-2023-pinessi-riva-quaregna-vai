@@ -9,6 +9,7 @@ import model.Game;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class CommonGoalCardTest {
     private final Game game = new Game();
     final CommonGoalCard cgc2p = new CommonGoalCard(2, 2, 1);

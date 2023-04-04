@@ -21,6 +21,7 @@ public class Tile {
     public void setNumType(int n){
         this.numType=n;
     }
+
     public int getNumType(){
         return this.numType;
     }

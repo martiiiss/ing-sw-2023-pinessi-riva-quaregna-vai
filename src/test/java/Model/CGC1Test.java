@@ -17,6 +17,7 @@ public class CGC1Test {
     Tile frame = new Tile(Type.FRAME,2);
     Tile trophy = new Tile(Type.TROPHY,1);
     Tile plant = new Tile(Type.PLANT,3);
+
     Tile nothing = new Tile(Type.NOTHING,0);
 
     //This bookshelf checks that if there are more than 6 groups it get's refused

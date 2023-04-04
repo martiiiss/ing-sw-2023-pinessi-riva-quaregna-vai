@@ -12,7 +12,6 @@ public class Bag {
     private boolean isBagEmpty;
     private ArrayList<Tile> tilesContained;
     // Bag takes in the number of requested tiles and returns tilesContained
-
     /**
      *
      * @param requestedTiles

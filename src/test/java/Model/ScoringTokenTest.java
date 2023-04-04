@@ -14,6 +14,7 @@ public class ScoringTokenTest {
         assertEquals(4, sc1.getValue());
     }
 
+
     @Test
     void getRomanNumber() {
         assertEquals(1, sc1.getRomanNumber());

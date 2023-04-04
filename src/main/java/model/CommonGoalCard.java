@@ -2,6 +2,7 @@ package model;
 
 import java.util.Stack;
 
+
 public class CommonGoalCard {
     private Stack<ScoringToken> tokenStack;
     private int romanNumber;

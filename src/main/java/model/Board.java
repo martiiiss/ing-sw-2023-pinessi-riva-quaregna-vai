@@ -11,7 +11,6 @@ public class Board {
     private Tile[][] livingRoomBoard;
 
 
-
     public Board(int numOfPlayers){ //constructor
         this.livingRoomBoard = new Tile[BOARD_ROW][BOARD_COLUMN];
         setNumOfCells(numOfPlayers);

@@ -17,6 +17,7 @@ class CGC49Test {
     Tile plant = new Tile(Type.PLANT,3);
     Tile nothing = new Tile(Type.NOTHING,0);
 
+
     Tile[][] bookshelfT1_4 = {
             { cat, nothing, nothing, nothing, cat },
             { plant, cat, game, cat, game},
