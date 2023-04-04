@@ -23,8 +23,8 @@ public class Game {
     }
 
     public void setCommonGoalCards(){ //choose 2 commonGoalCard
-        int n1 = (new Random()).nextInt(12)+1; //random number (1-12)
-        int n2 = (new Random()).nextInt(12)+1;
+        int n1 = (new Random()).nextInt(12); //random number (1-12)
+        int n2 = (new Random()).nextInt(12);
         if(n1==n2){
             n2++;
         }
@@ -70,21 +70,21 @@ public class Game {
      */
     public void assignPersonalGoalCard(int nOfPlayers){
         if (nOfPlayers==2){
-            int temp1 = (new Random()).nextInt(12)+1;
-            int temp2 = (new Random()).nextInt(12)+1;
-            while (temp1 == temp2){temp2 = (new Random()).nextInt(12)+1;}
+            int temp1 = (new Random()).nextInt(12);
+            int temp2 = (new Random()).nextInt(12);
+            while (temp1 == temp2){temp2 = (new Random()).nextInt(12);}
                 PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
                 players.get(0).setPersonalGoalCard(pgc1);
                 PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
                 players.get(1).setPersonalGoalCard(pgc2);
 
         } else if (nOfPlayers==3) {
-            int temp1 = (new Random()).nextInt(12)+1;
-            int temp2 = (new Random()).nextInt(12)+1;
-            int temp3 = (new Random()).nextInt(12)+1;
+            int temp1 = (new Random()).nextInt(12);
+            int temp2 = (new Random()).nextInt(12);
+            int temp3 = (new Random()).nextInt(12);
             while (temp1 == temp2 && temp2 == temp3 && temp1 == temp3) {
-                temp2 = (new Random()).nextInt(12)+1;
-                temp3 = (new Random()).nextInt(12)+1;
+                temp2 = (new Random()).nextInt(12);
+                temp3 = (new Random()).nextInt(12);
             }
             PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
             players.get(0).setPersonalGoalCard(pgc1);
@@ -93,16 +93,16 @@ public class Game {
             PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
             players.get(2).setPersonalGoalCard(pgc3);
         } else if (nOfPlayers==4){
-            int temp1 = (new Random()).nextInt(12)+1;
-            int temp2 = (new Random()).nextInt(12)+1;
-            int temp3 = (new Random()).nextInt(12)+1;
-            int temp4 = (new Random()).nextInt(12)+1;
+            int temp1 = (new Random()).nextInt(12);
+            int temp2 = (new Random()).nextInt(12);
+            int temp3 = (new Random()).nextInt(12);
+            int temp4 = (new Random()).nextInt(12);
 
             while (temp1 == temp2 && temp1 == temp3 && temp1 == temp4
                 && temp2 == temp3 && temp2 == temp4 && temp3 == temp4) {
-                temp2 = (new Random()).nextInt(12)+1;
-                temp3 = (new Random()).nextInt(12)+1;
-                temp4 = (new Random()).nextInt(12)+1;
+                temp2 = (new Random()).nextInt(12);
+                temp3 = (new Random()).nextInt(12);
+                temp4 = (new Random()).nextInt(12);
             }
             PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
             players.get(0).setPersonalGoalCard(pgc1);
