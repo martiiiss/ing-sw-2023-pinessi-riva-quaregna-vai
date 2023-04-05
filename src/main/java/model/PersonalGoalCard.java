@@ -19,7 +19,7 @@ public class PersonalGoalCard {
                 this.position[i][j] = 0;
             }
         }
-
+        readerJSON(numberOfPGC);
     }
     int i = 0;
     int j = 0;
