@@ -103,11 +103,35 @@ public class Player {
         this.tilesInHand = chosenTiles;
     }
 
+    //I have to understand how to do the control on the matrix
     public int checkCompletePGC(){
         int PGCScore = 0;
-        //verifica la personal con le nuove carte aggiunte in bookshelf e ritorna il punteggio da aggiungere.
+        int numberOfTilesCompleted = 0;
+        int r,c;
+
+       for (r=0;r<6;r++){
+           for (c=0;c<2;c++){
+               if(myBookshelf.getBookshelf()[myGoalCard.getPosition()[r][c]][myGoalCard.getPosition()[r][c]].getType() == myGoalCard.getTileType()[r]){
+                   numberOfTilesCompleted++;
+               }
+           }
+       }
+
+        /**Based on how many tiles are completed I assign the PGCScore
+         *This is good because I don't have to check everytime if
+         *I already completed that tile
+         */
+        switch (numberOfTilesCompleted) {
+            case 1 -> PGCScore = 1;
+            case 2 -> PGCScore = 2;
+            case 3 -> PGCScore = 4;
+            case 4 -> PGCScore = 6;
+            case 5 -> PGCScore = 9;
+            case 6 -> PGCScore = 12;
+            default -> throw new IllegalStateException("Unexpected value!");
+        }
         return PGCScore;
-        //TODO implement this method
+        //TODO create test
     }
 
     public int checkAdjacentBookshelf(){

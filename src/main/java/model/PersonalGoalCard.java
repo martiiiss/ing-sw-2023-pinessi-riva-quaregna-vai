@@ -47,8 +47,8 @@ public class PersonalGoalCard {
                             case "TROPHY" -> tileType[i] = Type.TROPHY;
                             case "PLANT"  -> tileType[i] = Type.PLANT;
                             default -> throw new IllegalStateException("Unexpected value!");
-
                         }
+                        i++;
                     }else{reader.skipValue();}
                 }
                 reader.endObject();
