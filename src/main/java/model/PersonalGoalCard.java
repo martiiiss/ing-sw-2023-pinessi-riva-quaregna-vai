@@ -6,8 +6,6 @@ import java.io.IOException;
 
 
 public class PersonalGoalCard {
-
-    private Type[][] seed; //tiles position
     private boolean isCompleted;
     private int position[][];
     private Type tileType[];
