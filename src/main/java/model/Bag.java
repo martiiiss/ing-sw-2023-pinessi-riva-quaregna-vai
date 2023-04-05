@@ -16,7 +16,6 @@ public class Bag {
     // Bag takes in the number of requested tiles and returns tilesContained
 
     /**
-     *
      * @param requestedTiles
      * @return
      */
