@@ -66,10 +66,8 @@ public class CommonGoalCard {
             case 10 -> this.strategy = new CGC10();
             case 11 -> this.strategy = new CGC11();
             case 12 -> this.strategy = new CGC12();
-            case 4 -> this.strategy = new CGC49();
-            case 9 -> this.strategy = new CGC49();
-            case 6 -> this.strategy = new CGC68();
-            case 8 -> this.strategy = new CGC68();
+            case 4, 9 -> this.strategy = new CGC49();
+            case 6, 8 -> this.strategy = new CGC68();
             default -> throw new IllegalStateException("Unexpected value: " + id);
         }
         //based on the id this method implements a precise strategy (!!! Some of them are in groups)

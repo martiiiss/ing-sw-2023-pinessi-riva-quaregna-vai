@@ -40,41 +40,23 @@ public class PersonalGoalCard {
                         j--;
                     } else if (parameter.equals("type")) {
                         switch (reader.nextString()){
-                            case "CAT": {
-                                tileType[i] = Type.CAT;
-                            }
-                            case "BOOK": {
+                            case "CAT"    -> tileType[i] = Type.CAT;
+                            case "BOOK"   -> tileType[i] = Type.BOOK;
+                            case "GAME"   -> tileType[i] = Type.GAME;
+                            case "FRAME"  -> tileType[i] = Type.FRAME;
+                            case "TROPHY" -> tileType[i] = Type.TROPHY;
+                            case "PLANT"  -> tileType[i] = Type.PLANT;
+                            default -> throw new IllegalStateException("Unexpected value!");
 
-                                tileType[i] = Type.BOOK;
-                            }
-                            case "GAME": {
-                                tileType[i] = Type.GAME;
-                            }
-                            case "FRAME": {
-                                tileType[i] = Type.FRAME;
-                            }
-                            case "TROPHY": {
-                                tileType[i] = Type.TROPHY;
-                            }
-                            case "PLANT": {
-                                tileType[i] = Type.PLANT;
-                            }
                         }
-                    }else {
-                        reader.skipValue();
-                    }
+                    }else{reader.skipValue();}
                 }
                 reader.endObject();
             }
             reader.endArray();
-
             reader.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (FileNotFoundException e) {e.printStackTrace();}
+          catch (IOException e) {e.printStackTrace();}
     }
     public int[][] getPosition(){return this.position;}
     public Type[] getTileType(){return this.tileType;}
