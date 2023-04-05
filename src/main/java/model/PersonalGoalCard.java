@@ -13,6 +13,8 @@ public class PersonalGoalCard {
     private Type tileType[];
 
     public PersonalGoalCard (int numberOfPGC){
+        this.tileType = new Type[5];
+        this.position = new int[5][2];
         for(int i=0;i<5;i++){
             this.tileType[i]= Type.NOTHING;
             for(int j=0;j<2;j++){
