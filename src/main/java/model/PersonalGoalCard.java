@@ -13,7 +13,6 @@ public class PersonalGoalCard {
     private Type tileType[];
 
     public PersonalGoalCard (int numberOfPGC){
-
         for(int i=0;i<5;i++){
             this.tileType[i]= Type.NOTHING;
             for(int j=0;j<2;j++){
@@ -22,21 +21,17 @@ public class PersonalGoalCard {
         }
 
     }
-
     int i = 0;
     int j = 0;
     public void readerJSON (int id){
         try {
-            JsonReader reader = new JsonReader(new FileReader(id +".json"));
+            JsonReader reader = new JsonReader(new FileReader("src/main/java/model/PersonalGoalCardDescription/"+id+".json"));
 
             reader.beginArray();
             while (reader.hasNext()) {
-
                 reader.beginObject();
                 while (reader.hasNext()) {
-
                     String parameter = reader.nextName();
-
                     if (parameter.equals("x")) {
                         position[i][j] = reader.nextInt();
                         j++;
@@ -81,5 +76,7 @@ public class PersonalGoalCard {
             e.printStackTrace();
         }
     }
+    public int[][] getPosition(){return this.position;}
+    public Type[] getTileType(){return this.tileType;}
 
 }
