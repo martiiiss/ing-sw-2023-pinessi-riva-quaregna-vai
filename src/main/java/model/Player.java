@@ -136,12 +136,146 @@ public class Player {
         return PGCScore;
     }
 
-    public int checkAdjacentBookshelf(){
-        int adjacencyScore = 0;
-        // controlla e ritorno il punteggio delle tessere adiacenti (punteggio da aggiungere)
-        return adjacencyScore;
-        //TODO implement this method
+    private int numOfAdj=0;
+    class Cord{
+        private int x;
+        private int y;
+
+        public void setCords(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getRowCord(){
+            return this.x;
+        }
+        public int getColCord(){
+            return this.y;
+        }
     }
+    public int checkAdjacentBookshelf(){
+        Tile[][] bookshelf = this.myBookshelf.getBookshelf();
+        boolean newCord;
+        Cord cord = new Cord();
+        Cord nextTo;
+        ArrayList<Cord> listOfCords = new ArrayList<>();
+        Tile nothing = new Tile(NOTHING,0);
+        int i,j;
+        int adj=0;
+
+        for (int x=0; x<6; x++) {
+            for (int y = 0; y <5; y++) {
+                for (int counter = 0; counter < listOfCords.size() || listOfCords.size() == 0; counter++) {
+                    newCord = true;
+                    if (listOfCords.isEmpty()) {
+                        i=x;
+                        j=y;
+                    } else {
+                        i = listOfCords.get(counter).getRowCord();
+                        j = listOfCords.get(counter).getColCord();
+                    }
+                    nextTo = new Cord();
+                    nextTo.setCords(i - 1, j);
+                    if (i > 0)
+                        if (bookshelf[i][j].getType() == bookshelf[i - 1][j].getType() && bookshelf[i][j].getType() != NOTHING) {
+                            if (!(listOfCords.contains(cord))) {
+                                cord.setCords(i, j);
+                                listOfCords.add(cord);
+                            }
+                            for (Cord listOfCord : listOfCords)
+                                if (listOfCord.getRowCord() == nextTo.getRowCord() && listOfCord.getColCord() == nextTo.getColCord()) {
+                                    newCord = false;
+                                    break;
+                                }
+                            if (newCord)
+                                listOfCords.add(nextTo);
+                        }
+                    newCord = true;
+                    nextTo = new Cord();
+                    nextTo.setCords(i, j + 1);
+                    if (j < 4)
+                        if (bookshelf[i][j].getType() == bookshelf[i][j + 1].getType() && bookshelf[i][j].getType() != NOTHING) {
+                            if (!(listOfCords.contains(cord))) {
+                                cord.setCords(i, j);
+                                listOfCords.add(cord);
+                            }
+                            for (Cord listOfCord : listOfCords)
+                                if (listOfCord.getRowCord() == nextTo.getRowCord() && listOfCord.getColCord() == nextTo.getColCord()) {
+                                    newCord = false;
+                                    break;
+                                }
+                            if (newCord)
+                                listOfCords.add(nextTo);
+                        }
+                    newCord = true;
+                    nextTo = new Cord();
+                    nextTo.setCords(i + 1, j);
+                    if (i < 5)
+                        if (bookshelf[i][j].getType() == bookshelf[i + 1][j].getType() && bookshelf[i][j].getType() != NOTHING) {
+                            if (!(listOfCords.contains(cord))) {
+                                cord.setCords(i, j);
+                                listOfCords.add(cord);
+                            }
+                            for (Cord listOfCord : listOfCords)
+                                if (listOfCord.getRowCord() == nextTo.getRowCord() && listOfCord.getColCord() == nextTo.getColCord()) {
+                                    newCord = false;
+                                    break;
+                                }
+                            if (newCord)
+                                listOfCords.add(nextTo);
+                        }
+                    newCord = true;
+                    nextTo = new Cord();
+                    nextTo.setCords(i, j - 1);
+                    if (j > 0)
+                        if (bookshelf[i][j].getType() == bookshelf[i][j - 1].getType() && bookshelf[i][j].getType() != NOTHING) {
+                            if (!(listOfCords.contains(cord))) {
+                                cord.setCords(i, j);
+                                listOfCords.add(cord);
+                            }
+                            for (Cord listOfCord : listOfCords)
+                                if (listOfCord.getRowCord() == nextTo.getRowCord() && listOfCord.getColCord() == nextTo.getColCord()) {
+                                    newCord = false;
+                                    break;
+                                }
+                            if (newCord)
+                                listOfCords.add(nextTo);
+                        }
+                    if (listOfCords.size() == 0)
+                        break;
+                }
+                for (int counter = 0; counter < listOfCords.size() && !(listOfCords.isEmpty()); counter++) {
+                    int row = listOfCords.get(counter).getRowCord();
+                    int col = listOfCords.get(counter).getColCord();
+                    bookshelf[row][col] = nothing;
+                }
+                switch (listOfCords.size()) {
+                    case 3 -> {
+                        adj += 2;
+                        break;
+                    }
+                    case 4 -> {
+                        adj += 3;
+                        break;
+                    }
+                    case 5 -> {
+                        adj += 5;
+                        break;
+                    }
+                    case 6 -> {
+                        adj += 8;
+                        break;
+                    }
+                }
+                listOfCords.clear();
+            }
+        }
+        System.out.println("Final result: "+ adj);
+        if(adj != this.numOfAdj)
+            return adj;
+        return 0;
+    }
+
 
     public boolean checkBookshelf(){
         for(int i=0; i<5; i++) {

@@ -207,8 +207,20 @@ public class PlayerTest {
         }
     };
 
+    Tile[][] bookshelfAdj = {
+            {cat, cat, frame, nothing, nothing},
+            {cat, nothing, nothing, nothing, cat},
+            {nothing, nothing, nothing, book, nothing},
+            {nothing, game, game, nothing, nothing},
+            {nothing,trophy,nothing,nothing,nothing},
+            {trophy, trophy, trophy, nothing, nothing}};
     @Test
     void checkAdjacentBookshelf() {
+        player.setMyBookshelf();
+
+        Bookshelf b = player.getMyBookshelf();
+        b.setBookshelf(bookshelfAdj);
+        assertEquals(player.checkAdjacentBookshelf(),5);
     }
 
     @Test
