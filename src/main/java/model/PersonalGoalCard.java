@@ -14,9 +14,9 @@ public class PersonalGoalCard {
         this.tileType = new Type[6];
         this.position = new int[6][2];
         for(int i=0;i<6;i++){
-            this.tileType[i]= Type.NOTHING;
+            tileType[i]= Type.NOTHING;
             for(int j=0;j<2;j++){
-                this.position[i][j] = 0;
+                position[i][j] = 0;
             }
         }
         readerJSON(numberOfPGC);
@@ -46,7 +46,7 @@ public class PersonalGoalCard {
                             case "FRAME"  -> tileType[i] = Type.FRAME;
                             case "TROPHY" -> tileType[i] = Type.TROPHY;
                             case "PLANT"  -> tileType[i] = Type.PLANT;
-                            default -> throw new IllegalStateException("Unexpected value!");
+                            default -> throw new IllegalStateException("Unexpected value:"+ reader.nextString());
                         }
                         i++;
                     }else{reader.skipValue();}

@@ -14,9 +14,14 @@ public class Bookshelf {
     private static final int SHELF_COLUMN = 5;
     private boolean isFull = false;
 
-    //constructor
+    //constructor -> it initializes the bookshelf at NOTHING tiles, without this I cannot test the Player class
     public Bookshelf(){
         this.bookshelf = new Tile[SHELF_ROW][SHELF_COLUMN];
+        for (int i=0;i<SHELF_ROW;i++){
+            for(int j=0; j<SHELF_COLUMN;j++){
+                bookshelf[i][j] = new Tile(NOTHING,0);
+            }
+        }
     }
 
     public boolean getStatus() {

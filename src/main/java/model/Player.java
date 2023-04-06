@@ -3,11 +3,10 @@ package model;
 import control.Controller;
 import jdk.jshell.spi.ExecutionControl;
 
-
-import java.awt.print.Book;
 import java.util.ArrayList;
 
-import static model.Type.NOTHING;
+import static model.Type.CAT;
+
 
 public class Player {
     private String nickname;
@@ -16,8 +15,8 @@ public class Player {
     private int score = 0;
     private Bookshelf myBookshelf;
     private ArrayList<Tile> tilesInHand; //This attribute saves the tiles selected by the player in chooseNTiles so that the bookshelf can be filled with fillBookshelf
-    private int completedPGC = 0;  //tiles of PGC in correct position -> maybe useless
-    //TODO ask if this attribute is to delete
+    private boolean completedPGC = false;  //tiles of PGC in correct position -> maybe useless
+    //TODO ask if this attribute is to delete -> modified into a boolean type
     private boolean scoringToken1 = false;
     private boolean scoringToken2 = false;
     // the last two attributes are used to control if the Player has already completed the CGC
@@ -58,6 +57,7 @@ public class Player {
     public void updateScore (int addScore) {
         this.score += addScore;
     }
+    //TODO control if this implementation is the best possible
 
     /*Each player gets assigned a personal goal card that they have to complete*/
     public void setPersonalGoalCard(PersonalGoalCard pgc) {
@@ -71,13 +71,14 @@ public class Player {
 
     /*completedPGC keeps track of "how much of the personal goal card" has been completed by the player,
     /*or how many tiles of the bookshelf are in the "right position" */
-    public void setCompletePGC(int updatedPGC){
-        this.completedPGC = updatedPGC;
+    public void setCompletePGC(){
+        this.completedPGC = true;
     }
-
-    public int getCompletePGC(){
+    //TODO -> modified into a boolean type
+    public boolean getCompletePGC(){
         return this.completedPGC;
     }
+    //TODO -> modified into a boolean type
 
     public boolean getScoringToken1(){return this.scoringToken1;}
 
@@ -103,35 +104,41 @@ public class Player {
         this.tilesInHand = chosenTiles;
     }
 
-    //I have to understand how to do the control on the matrix
+
     public int checkCompletePGC(){
+        Tile[][] bks = myBookshelf.getBookshelf();
         int PGCScore = 0;
         int numberOfTilesCompleted = 0;
-        int r,c;
-
-       for (r=0;r<6;r++){
-           for (c=0;c<2;c++){
-               if(myBookshelf.getBookshelf()[myGoalCard.getPosition()[r][c]][myGoalCard.getPosition()[r][c]].getType() == myGoalCard.getTileType()[r]){
-                   numberOfTilesCompleted++;
-               }
-           }
-       }
-
+        int r=0,c=0,t=0;// r and c are used to step into the position matrix; t is used to step nto the tileType vector
+        int tempx=0;//row index of the matrix
+        int tempy=0;//column index of the matrix
+        while (r<6){
+             tempx = myGoalCard.getPosition()[r][c];
+             c++;
+             tempy = myGoalCard.getPosition()[r][c];
+             Type tempType = bks[tempx][tempy].getType();
+            if(myGoalCard.getTileType()[t] == tempType){
+                numberOfTilesCompleted++;
+            }
+            r++;
+            c--;
+            t++;
+        }
         /**Based on how many tiles are completed I assign the PGCScore
          *This is good because I don't have to check everytime if
          *I already completed that tile
          */
         switch (numberOfTilesCompleted) {
+            case 0 -> PGCScore = 0;
             case 1 -> PGCScore = 1;
             case 2 -> PGCScore = 2;
             case 3 -> PGCScore = 4;
             case 4 -> PGCScore = 6;
             case 5 -> PGCScore = 9;
-            case 6 -> PGCScore = 12;
-            default -> throw new IllegalStateException("Unexpected value!");
+            case 6 -> {PGCScore = 12; setCompletePGC();} //TODO -> is this ok?
+            default -> throw new IllegalStateException("Unexpected value:"+ numberOfTilesCompleted);
         }
         return PGCScore;
-        //TODO create test
     }
 
     public int checkAdjacentBookshelf(){
