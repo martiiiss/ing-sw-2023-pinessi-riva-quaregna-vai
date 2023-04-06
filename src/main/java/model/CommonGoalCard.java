@@ -9,11 +9,6 @@ public class CommonGoalCard {
     private CGMStrategy strategy; // reference to CGMStrategy
     private int idCGC;
 
-
-    public CommonGoalCard(){
-        // added the generic constructor -> double constructor THIS IS WRONG
-    }
-
     public CommonGoalCard(int id, int numPlayers, int romanNumber){
         this.idCGC = id;
         this.romanNumber = romanNumber;

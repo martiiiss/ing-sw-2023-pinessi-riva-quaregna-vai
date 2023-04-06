@@ -43,20 +43,20 @@ class BoardTest {
     void initializeBoard() {
         //board.initializeBoard(2);
 
-    }
+    } //TODO do this test -> already tested
 
     @Test
     void setNumOfCells() {
 
-    }
+    } //TODO do this test
 
     @Test
     void removeTile() {
         //? Assertions.assertEquals(NOTHING, board.removeTile(2,5).getType());
 
-    }
+    } //TODO do this test
 
     @Test
     void getBoard() {
-    }
+    }//TODO do this test -> already tested
 }

@@ -77,10 +77,10 @@ class CommonGoalCardTest {
     @Test
     void setCGCStrategy() {
      //   assertEquals(cgc2p.getStrategy(), cgc2p2.setCGCStrategy(2).getStrategy());
-    }
+    }//TODO do this test -> already tested
 
 
     @Test
     void compare() {
-    }
+    } //TODO do this test -> already tested
 }
