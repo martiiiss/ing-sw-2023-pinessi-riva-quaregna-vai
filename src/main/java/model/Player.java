@@ -6,6 +6,7 @@ import jdk.jshell.spi.ExecutionControl;
 import java.util.ArrayList;
 
 import static model.Type.CAT;
+import static model.Type.NOTHING;
 
 
 public class Player {
@@ -109,20 +110,14 @@ public class Player {
         Tile[][] bks = myBookshelf.getBookshelf();
         int PGCScore = 0;
         int numberOfTilesCompleted = 0;
-        int r=0,c=0,t=0;// r and c are used to step into the position matrix; t is used to step nto the tileType vector
-        int tempx=0;//row index of the matrix
-        int tempy=0;//column index of the matrix
-        while (r<6){
-             tempx = myGoalCard.getPosition()[r][c];
-             c++;
-             tempy = myGoalCard.getPosition()[r][c];
-             Type tempType = bks[tempx][tempy].getType();
-            if(myGoalCard.getTileType()[t] == tempType){
-                numberOfTilesCompleted++;
+        int r,c;
+        for(r=0;r<6;r++){
+            for (c=0;c<5;c++){
+                if(myGoalCard.getPGC()[r][c].getType() == myBookshelf.getBookshelf()[r][c].getType()
+                        && myGoalCard.getPGC()[r][c].getType() != NOTHING){
+                    numberOfTilesCompleted++;
+                }
             }
-            r++;
-            c--;
-            t++;
         }
         /**Based on how many tiles are completed I assign the PGCScore
          *This is good because I don't have to check everytime if

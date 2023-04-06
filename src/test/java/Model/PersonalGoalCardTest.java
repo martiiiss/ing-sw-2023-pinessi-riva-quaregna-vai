@@ -21,6 +21,8 @@ class PersonalGoalCardTest {
         PersonalGoalCard personalGoalCard8 = new PersonalGoalCard(8);
         PersonalGoalCard personalGoalCard9 = new PersonalGoalCard(9);
         PersonalGoalCard personalGoalCard10 = new PersonalGoalCard(10);
+        PersonalGoalCard personalGoalCard11 = new PersonalGoalCard(11);
+        PersonalGoalCard personalGoalCard12 = new PersonalGoalCard(12);
 
         Tile cat = new Tile(Type.CAT, 1);
         Tile book = new Tile(Type.BOOK, 2);
@@ -40,6 +42,9 @@ class PersonalGoalCardTest {
         Tile[][] pgc8 = personalGoalCard8.getPGC();
         Tile[][] pgc9 = personalGoalCard9.getPGC();
         Tile[][] pgc10 = personalGoalCard10.getPGC();
+        Tile[][] pgc11 = personalGoalCard11.getPGC();
+        Tile[][] pgc12 = personalGoalCard12.getPGC();
+
 
         Tile[][] bookshelf1 = {
                 {plant, nothing, frame, nothing, nothing},
@@ -118,6 +123,18 @@ class PersonalGoalCardTest {
                 {nothing, plant, nothing, nothing, nothing},
                 {nothing, nothing, nothing, nothing, nothing},
                 {nothing, nothing, trophy, nothing, nothing}};
+        Tile[][] bookshelf11 = {{nothing, nothing, plant, nothing, nothing},
+                {nothing, book, nothing, nothing, nothing},
+                {game, nothing, nothing, nothing, nothing},
+                {nothing, nothing, frame, nothing, nothing},
+                {nothing,nothing,nothing,nothing,cat},
+                {nothing, nothing, nothing, trophy, nothing}};
+        Tile[][] bookshelf12 = {{nothing, nothing, book, nothing, nothing},
+                {nothing, plant, nothing, nothing, nothing},
+                {nothing, nothing, frame, nothing, nothing},
+                {nothing, nothing, nothing, trophy, nothing},
+                {nothing,nothing,nothing,nothing,game},
+                {cat, nothing, nothing, nothing, nothing}};
 
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 2; j++) {
@@ -131,6 +148,8 @@ class PersonalGoalCardTest {
                 assertEquals(bookshelf8[i][j].getType(), pgc8[i][j].getType());
                 assertEquals(bookshelf9[i][j].getType(), pgc9[i][j].getType());
                 assertEquals(bookshelf10[i][j].getType(), pgc10[i][j].getType());
+                assertEquals(bookshelf11[i][j].getType(), pgc11[i][j].getType());
+                assertEquals(bookshelf12[i][j].getType(), pgc12[i][j].getType());
                 assertNotSame(bookshelfNot[i][j],pgc1[i][j].getType());
             }
         }

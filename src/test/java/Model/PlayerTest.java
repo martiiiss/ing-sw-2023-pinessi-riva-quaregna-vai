@@ -183,15 +183,14 @@ public class PlayerTest {
             player.setMyBookshelf();
             bks = player.getMyBookshelf();
             assignName(id);
-            //bks.setBookshelf(bookshelf1);
             PersonalGoalCard pgc = new PersonalGoalCard(id);
             player.setPersonalGoalCard(pgc);
             assertEquals(player.checkCompletePGC(),12);
             id++;
         }
     }
-
-    public void assignName(int id) {
+    //method only used in test
+    private void assignName(int id) {
         switch (id){
             case 1 -> bks.setBookshelf(bookshelf1);
             case 2 -> bks.setBookshelf(bookshelf2);

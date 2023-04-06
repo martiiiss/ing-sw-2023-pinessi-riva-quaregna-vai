@@ -1,11 +1,10 @@
 package model;
 import com.google.gson.stream.JsonReader;
 
-import javax.swing.*;
-import java.io.FileNotFoundException;
+
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Spliterator;
+
 
 
 public class PersonalGoalCard {
@@ -17,13 +16,13 @@ public class PersonalGoalCard {
     //have a different card.
     public PersonalGoalCard (int numberOfPGC){
         this.seedOfCard = new Tile[6][5];
-        Tile mockTile = new Tile(Type.NOTHING,1);
+        Tile mockTile = new Tile(Type.NOTHING,0);
         for(int i=0;i<6;i++)
             for(int j=0;j<5;j++)
                 this.seedOfCard[i][j] = mockTile;
         readerJSON(numberOfPGC);
     }
-    public void readerJSON (int id) { //To be set as private once the tests are done
+    private void readerJSON (int id) { //To be set as private once the tests are done
         int i = 0, j = 0;
         Tile readTile;
         try {
