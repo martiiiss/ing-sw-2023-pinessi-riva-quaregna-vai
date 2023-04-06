@@ -22,9 +22,6 @@ public class Player {
     private boolean scoringToken2 = false;
     // the last two attributes are used to control if the Player has already completed the CGC
 
-
-
-
     /*This method will be launched when the game starts once game chooses the first player. it will update isFirstPlayer*/
     public void setAsFirstPlayer() {
         this.isFirstPlayer = true;
@@ -55,10 +52,7 @@ public class Player {
     }
 
     /*Updates the score: add addScore*/
-    public void updateScore (int addScore) {
-        this.score += addScore;
-    }
-    //TODO control if this implementation is the best possible
+    public void updateScore (int score) {this.score = score;}
 
     /*Each player gets assigned a personal goal card that they have to complete*/
     public void setPersonalGoalCard(PersonalGoalCard pgc) {
@@ -75,11 +69,10 @@ public class Player {
     public void setCompletePGC(){
         this.completedPGC = true;
     }
-    //TODO -> modified into a boolean type
+
     public boolean getCompletePGC(){
         return this.completedPGC;
     }
-    //TODO -> modified into a boolean type
 
     public boolean getScoringToken1(){return this.scoringToken1;}
 
@@ -130,7 +123,7 @@ public class Player {
             case 3 -> PGCScore = 4;
             case 4 -> PGCScore = 6;
             case 5 -> PGCScore = 9;
-            case 6 -> {PGCScore = 12; setCompletePGC();} //TODO -> is this ok?
+            case 6 -> {PGCScore = 12; setCompletePGC();}
             default -> throw new IllegalStateException("Unexpected value:"+ numberOfTilesCompleted);
         }
         return PGCScore;
