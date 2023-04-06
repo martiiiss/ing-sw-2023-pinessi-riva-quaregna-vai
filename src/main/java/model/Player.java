@@ -106,8 +106,8 @@ public class Player {
     }
 
 
-    public int checkCompletePGC(){
-        Tile[][] bks = myBookshelf.getBookshelf();
+    public int checkCompletePGC() {
+        /*Tile[][] bks = myBookshelf.getBookshelf();
         int PGCScore = 0;
         int numberOfTilesCompleted = 0;
         int r,c;
@@ -122,7 +122,7 @@ public class Player {
         /**Based on how many tiles are completed I assign the PGCScore
          *This is good because I don't have to check everytime if
          *I already completed that tile
-         */
+
         switch (numberOfTilesCompleted) {
             case 0 -> PGCScore = 0;
             case 1 -> PGCScore = 1;
@@ -133,7 +133,9 @@ public class Player {
             case 6 -> {PGCScore = 12; setCompletePGC();} //TODO -> is this ok?
             default -> throw new IllegalStateException("Unexpected value:"+ numberOfTilesCompleted);
         }
-        return PGCScore;
+
+         */
+        return score; //return PGCScore;
     }
 
     public int checkAdjacentBookshelf(){
