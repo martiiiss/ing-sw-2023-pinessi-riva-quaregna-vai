@@ -217,7 +217,7 @@ public class PlayerTest {
     @Test
     void checkAdjacentBookshelf() {
         player.setMyBookshelf();
-
+//z
         Bookshelf b = player.getMyBookshelf();
         b.setBookshelf(bookshelfAdj);
         assertEquals(player.checkAdjacentBookshelf(),5);

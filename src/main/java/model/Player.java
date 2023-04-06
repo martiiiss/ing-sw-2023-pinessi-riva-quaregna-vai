@@ -263,6 +263,7 @@ public class Player {
                 listOfCords.clear();
             }
         }
+        //p
         System.out.println("Final result: "+ adj);
         if(adj != this.numOfAdj)
             return adj;
