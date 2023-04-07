@@ -29,6 +29,8 @@ public class Game {
     public void setCommonGoalCards(){ //choose 2 commonGoalCard
         int n1 = (new Random()).nextInt(12); //random number (1-12)
         int n2 = (new Random()).nextInt(12);
+        if (n1 == 0){n1++;}
+        if (n2 == 0){n2++;}
         if(n1==n2){
             n2++;
         }
