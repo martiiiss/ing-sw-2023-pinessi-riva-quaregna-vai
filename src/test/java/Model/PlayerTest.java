@@ -255,10 +255,31 @@ public class PlayerTest {
     @Test
     void checkAdjacentBookshelf() {
         player.setMyBookshelf();
-//z
         Bookshelf b = player.getMyBookshelf();
         b.setBookshelf(bookshelfAdj);
         assertEquals(player.checkAdjacentBookshelf(),5);
+        assertNotEquals(player.checkAdjacentBookshelf(),5);
+        assertEquals(player.checkAdjacentBookshelf(),0);
+        Tile[][] bookshelfAdj = {
+                {cat, cat, frame, nothing, nothing},
+                {cat, nothing, nothing, nothing, cat},
+                {nothing, nothing, nothing, book, nothing},
+                {nothing, game, game, nothing, nothing},
+                {nothing,trophy,trophy,nothing,nothing},
+                {trophy, trophy, trophy, nothing, nothing}};
+        b = player.getMyBookshelf();
+        b.setBookshelf(bookshelfAdj);
+        assertEquals(player.checkAdjacentBookshelf(),7);
+        Tile[][] bookshelfAdj2 = {
+                {cat, cat, frame, nothing, cat},
+                {cat, nothing, nothing, nothing, cat},
+                {nothing, nothing, book, book, cat},
+                {nothing, game, game, nothing, nothing},
+                {nothing,trophy,trophy,nothing,nothing},
+                {trophy, trophy, trophy, nothing, nothing}};
+        b = player.getMyBookshelf();
+        b.setBookshelf(bookshelfAdj2);
+        assertEquals(player.checkAdjacentBookshelf(),9);
     }//TODO do this test
 
     @Test

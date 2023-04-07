@@ -4,6 +4,7 @@ import control.Controller;
 import jdk.jshell.spi.ExecutionControl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static model.Type.CAT;
 import static model.Type.NOTHING;
@@ -21,6 +22,7 @@ public class Player {
     private boolean scoringToken1;
     private boolean scoringToken2;
     // the last two attributes are used to control if the Player has already completed the CGC
+    private HashMap<ArrayList<Cord>,Integer> previousAdj = new HashMap<>(); //Used to check if after a turn the number of adjacencies has changed
 
     public Player () {
         scoringToken1 = false;
@@ -133,8 +135,7 @@ public class Player {
         return PGCScore;
     }
 
-    private int numOfAdj=0;
-    class Cord{
+     class Cord{
         private int x;
         private int y;
 
@@ -142,7 +143,6 @@ public class Player {
             this.x = x;
             this.y = y;
         }
-
         public int getRowCord(){
             return this.x;
         }
@@ -158,15 +158,18 @@ public class Player {
         ArrayList<Cord> listOfCords = new ArrayList<>();
         Tile nothing = new Tile(NOTHING,0);
         int i,j;
-        int adj=0;
+        int points=0;
+
+        if(previousAdj.isEmpty()) //initialize
+            previousAdj.put(new ArrayList<>(),0);
 
         for (int x=0; x<6; x++) {
             for (int y = 0; y <5; y++) {
                 for (int counter = 0; counter < listOfCords.size() || listOfCords.size() == 0; counter++) {
                     newCord = true;
                     if (listOfCords.isEmpty()) {
-                        i=x;
-                        j=y;
+                        i = x;
+                        j = y;
                     } else {
                         i = listOfCords.get(counter).getRowCord();
                         j = listOfCords.get(counter).getColCord();
@@ -246,32 +249,25 @@ public class Player {
                     int col = listOfCords.get(counter).getColCord();
                     bookshelf[row][col] = nothing;
                 }
-                switch (listOfCords.size()) {
-                    case 3 -> {
-                        adj += 2;
-                        break;
-                    }
-                    case 4 -> {
-                        adj += 3;
-                        break;
-                    }
-                    case 5 -> {
-                        adj += 5;
-                        break;
-                    }
-                    case 6 -> {
-                        adj += 8;
-                        break;
-                    }
+                if (previousAdj.getOrDefault(listOfCords,0)<listOfCords.size()) { //if the amount of ajdacencies has increased then increase the score
+                    if (listOfCords.size() == 3)
+                        points += 2;
+                    if (listOfCords.size() == 4)
+                        points += 3;
+                    if (listOfCords.size() == 5)
+                        points += 5;
+                    if (listOfCords.size() >= 6)
+                        points += 8;
+                    previousAdj.put(listOfCords,listOfCords.size());
                 }
-                listOfCords.clear();
+                else
+                    previousAdj.put(new ArrayList<>(),listOfCords.size());
             }
-        }
+            listOfCords.clear();
+            }
         //p
-        System.out.println("Final result: "+ adj);
-        if(adj != this.numOfAdj)
-            return adj;
-        return 0;
+        System.out.println("Final result: "+points);
+        return points;
     }
 
 
