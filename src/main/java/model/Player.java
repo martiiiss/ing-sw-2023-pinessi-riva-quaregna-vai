@@ -13,14 +13,21 @@ public class Player {
     private String nickname;
     private PersonalGoalCard myGoalCard;
     private boolean isFirstPlayer;
-    private int score = 0;
+    private int score;
     private Bookshelf myBookshelf;
     private ArrayList<Tile> tilesInHand; //This attribute saves the tiles selected by the player in chooseNTiles so that the bookshelf can be filled with fillBookshelf
     private boolean completedPGC = false;  //tiles of PGC in correct position -> maybe useless
     //TODO ask if this attribute is to delete -> modified into a boolean type
-    private boolean scoringToken1 = false;
-    private boolean scoringToken2 = false;
+    private boolean scoringToken1;
+    private boolean scoringToken2;
     // the last two attributes are used to control if the Player has already completed the CGC
+
+    public Player () {
+        scoringToken1 = false;
+        scoringToken2 = false;
+        score = 0;
+    }
+
 
     /*This method will be launched when the game starts once game chooses the first player. it will update isFirstPlayer*/
     public void setAsFirstPlayer() {
@@ -74,19 +81,20 @@ public class Player {
         return this.completedPGC;
     }
 
+
     public boolean getScoringToken1(){return this.scoringToken1;}
 
 
     /*Once the player completes a CommonGoalCard, they won't be able to collect other points from that CGC.
     /*This method updates the flag that keeps track of whether the player has already collected points from the first card or not*/
-    public void setScoringToken1(boolean st1){
-        this.scoringToken1 = st1;
+    public void setScoringToken1(){
+        this.scoringToken1 = true;
     }
 
     public boolean getScoringToken2(){ return this.scoringToken2; }
 
-    public void setScoringToken2(boolean st2){
-        this.scoringToken2 = st2;
+    public void setScoringToken2(){
+        this.scoringToken2 = true;
     }
 
     /*TilesInHand correspond to the tiles that the player wishes to add to their bookshelf*/

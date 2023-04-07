@@ -14,55 +14,55 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PlayerTest {
     @Test
     void setAsFirstPlayer() {
-    }
+    }//TODO do this test
 
     @Test
     void setNickname() {
-    }
+    }//TODO do this test
 
     @Test
     void getNickname() {
-    }
+    }//TODO do this test
 
     @Test
     void setMyBookshelf() {
-    }
+    }//TODO do this test -> already tested
 
     @Test
     void getMyBookshelf() {
-    }
+    }//TODO do this test -> already tested
 
     @Test
     void getScore() {
-    }
+    }//TODO do this test
 
     @Test
     void updateScore() {
-    }
+    }//TODO do this test
 
     @Test
     void setPersonalGoalCard() {
-    }
+    }//TODO do this test -> already tested
 
     @Test
     void getPersonalGoalCard() {
-    }
+    }//TODO do this test
 
     @Test
     void setCompletePGC() {
-    }
+    }//TODO do this test -> already tested
 
     @Test
     void getCompletePGC() {
-    }
+    }//TODO do this test
 
     @Test
     void getScoringToken1() {
-    }
+    }//TODO do this test
 
     @Test
     void setScoringToken1() {
-    }
+    }//TODO do this test
 
     @Test
     void getScoringToken2() {
@@ -70,15 +70,15 @@ public class PlayerTest {
 
     @Test
     void setScoringToken2() {
-    }
+    }//TODO do this test
 
     @Test
     void getTilesInHand() {
-    }
+    }//TODO do this test
 
     @Test
     void setTilesInHand() {
-    }
+    }//TODO do this test
 
 
     Tile cat = new Tile(Type.CAT,1);
@@ -188,7 +188,7 @@ public class PlayerTest {
             assertEquals(player.checkCompletePGC(),12);
             id++;
         }
-    }
+    }//TODO check different cases of this test
     //method only used in test
     private void assignName(int id) {
         switch (id){
@@ -221,9 +221,9 @@ public class PlayerTest {
         Bookshelf b = player.getMyBookshelf();
         b.setBookshelf(bookshelfAdj);
         assertEquals(player.checkAdjacentBookshelf(),5);
-    }
+    }//TODO do this test
 
     @Test
     void checkBookshelf() {
-    }
+    }//TODO do this test
 }
