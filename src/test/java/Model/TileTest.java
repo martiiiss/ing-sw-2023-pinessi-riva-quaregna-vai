@@ -12,13 +12,13 @@ class TileTest {
     void getType() {
         tile.setType(Type.PLANT);
         assertEquals(Type.PLANT,tile.getType());
-    }//TODO do this test -> already tested
+    }
 
     @Test
     void setType() {
         tile.setType(Type.PLANT);
         assertEquals(Type.PLANT,tile.getType());
-    }//TODO do this test
+    }
 
     @Test
     void setNumType() {
