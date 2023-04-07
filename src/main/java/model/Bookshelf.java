@@ -36,10 +36,15 @@ public class Bookshelf {
     * add to the columnToBeFilled. The method will throw an exception if the column is already full or if there isn't enough
     * space in the column */
     public void placeTile (int columnToBeFilled, ArrayList<Tile> tilesInHand) {
+        int j=0;
         try{
-            for(int i=0; i<SHELF_ROW; i++){
-                if(bookshelf[i][columnToBeFilled].getType()==NOTHING)
-                    bookshelf[i][columnToBeFilled] = tilesInHand.get(i);
+            for(int i=SHELF_ROW-1; i>-1; i--){
+                if(tilesInHand.size()==j)
+                    break;
+                if(bookshelf[i][columnToBeFilled].getType()==NOTHING) {
+                    bookshelf[i][columnToBeFilled] = tilesInHand.get(j);
+                    j++;
+                }
             }
             throw new NotEnoughSlotsAvailableException("Not enough slots available!");
         } catch (NotEnoughSlotsAvailableException ex) {}
