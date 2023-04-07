@@ -22,7 +22,7 @@ public class Bag {
     public ArrayList<Tile> getBagTiles(int requestedTiles) { //take tiles from bag
         ArrayList<Tile> returnedTiles = new ArrayList<>();
         for(int e=0; e<requestedTiles; e++) {
-            int i = (new Random()).nextInt(tilesContained.size());
+            int i = (new Random()).nextInt(tilesContained.size()+1);
             returnedTiles.add(tilesContained.get(i));
             tilesContained.remove(tilesContained.get(i));//Remove the tiles from the ArrayList
         }
@@ -32,6 +32,8 @@ public class Bag {
     public void addTile(Tile tileAdded) {
         this.tilesContained.add(tileAdded);
         }
+
+    public ArrayList<Tile> getTilesContained (){ return this.tilesContained; }
 
     public Bag(){ // the constructor creates ALL the tiles and adds them into tilesContained
         tilesContained = new ArrayList<>();
