@@ -1,7 +1,5 @@
 package Model;
 
-
-import model.Bookshelf;
 import model.Type;
 import model.Tile;
 import model.Player;
@@ -152,33 +150,35 @@ public class GameTest {
             switch (temp) {
                 case 1 -> {
                     game.setPlayerInTurn(p1);
-                    if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf()) == true
-                            || game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf()) == true) {
-                        int points = game.getCommonGoalCard().get(0).popScoringToken().getValue() + game.getCommonGoalCard().get(1).popScoringToken().getValue();
-                        assertEquals(points, game.checkCommonGoalCard());
-                    } else {
-                        assertEquals(0, game.checkCommonGoalCard());
+                    int points = 0;
+                    if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf())) {
+                        points += game.getCommonGoalCard().get(0).popScoringToken().getValue();
                     }
+                    if (game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf())){
+                        points += game.getCommonGoalCard().get(1).popScoringToken().getValue();
+                    }
+                    assertEquals(points, game.checkCommonGoalCard());
                 }
                 case 2 -> {
                     game.setPlayerInTurn(p2);
-                    if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf()) == true
-                            || game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf()) == true) {
-                        int points = game.getCommonGoalCard().get(0).popScoringToken().getValue() + game.getCommonGoalCard().get(1).popScoringToken().getValue();
-                        assertEquals(points, game.checkCommonGoalCard());
-                    } else {
-                        assertEquals(0, game.checkCommonGoalCard());
+                    int points = 0;
+                    if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf())) {
+                        points += game.getCommonGoalCard().get(0).popScoringToken().getValue();
                     }
+                    if (game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf())){
+                        points += game.getCommonGoalCard().get(1).popScoringToken().getValue();
+                    }
+                    assertEquals(points, game.checkCommonGoalCard());
                 }
                 case 3 -> {
-                    game.setPlayerInTurn(p3);
-                    if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf()) == true
-                            || game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf()) == true) {
-                        int points = game.getCommonGoalCard().get(0).popScoringToken().getValue() + game.getCommonGoalCard().get(1).popScoringToken().getValue();
-                        assertEquals(points, game.checkCommonGoalCard());
-                    } else {
-                        assertEquals(0, game.checkCommonGoalCard());
+                    int points = 0;
+                    if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf())) {
+                        points += game.getCommonGoalCard().get(0).popScoringToken().getValue();
                     }
+                    if (game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf())){
+                        points += game.getCommonGoalCard().get(1).popScoringToken().getValue();
+                    }
+                    assertEquals(points, game.checkCommonGoalCard());
                 }
             }
             temp++;
