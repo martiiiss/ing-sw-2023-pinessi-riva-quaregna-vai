@@ -1,11 +1,14 @@
 package Model;
 
-import model.CGC2;
+import model.Game;
+import model.CommonGoalCard;
+import model.Bookshelf;
 import model.ScoringToken;
+import model.Tile;
+import model.Type;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import model.CommonGoalCard;
-import model.Game;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,13 +17,21 @@ class CommonGoalCardTest {
     private final Game game = new Game();
     final CommonGoalCard cgc2p = new CommonGoalCard(2, 2, 1);
     final CommonGoalCard cgc3p = new CommonGoalCard(7, 3, 1);
-    final CommonGoalCard cgc4p = new CommonGoalCard(10, 4, 1);
+    final CommonGoalCard cgc4p = new CommonGoalCard(2, 4, 1);
     final CommonGoalCard cgc2p2 = new CommonGoalCard(9, 2, 2);
 
     final ScoringToken sc8 = new ScoringToken(8,1);
     final ScoringToken sc6 = new ScoringToken(6,1);
     final ScoringToken sc4 = new ScoringToken(4,1);
     final ScoringToken sc2 = new ScoringToken(2,1);
+
+    Tile cat = new Tile(Type.CAT,1);
+    Tile book = new Tile(Type.BOOK,2);
+    Tile gameTile = new Tile(Type.GAME,3);
+    Tile frame = new Tile(Type.FRAME,2);
+    Tile trophy = new Tile(Type.TROPHY,1);
+    Tile plant = new Tile(Type.PLANT,3);
+    Tile nothing = new Tile(Type.NOTHING,0);
 
     @Test
     void popScoringToken() { //test if it removes all the ScoringTokens
@@ -75,12 +86,32 @@ class CommonGoalCardTest {
     }
 
     @Test
-    void setCGCStrategy() {
-     //   assertEquals(cgc2p.getStrategy(), cgc2p2.setCGCStrategy(2).getStrategy());
-    }//TODO do this test -> already tested
+    void getTokenStackTest(){
+        assertNotNull(cgc4p.getTokenStack());
+        assertEquals(sc8, cgc4p.getTokenStack().peek());
+    }
 
+    @Test
+    void getRomanNumberTest(){
+        assertEquals(1, cgc4p.getRomanNumber());
+    }
+
+    @Test
+    void setCGCStrategy() { //exception -> invalid id (id<1 || id>12)
+        assertThrows(IllegalStateException.class, ()-> cgc2p2.setCGCStrategy(13));
+    }
 
     @Test
     void compare() {
-    } //TODO do this test -> already tested
+        Bookshelf bookshelf = new Bookshelf();
+        Tile[][] bookshelf1 = {{ cat,      nothing,  nothing,  nothing,  gameTile },
+                               { plant,    plant,    gameTile, gameTile, book},
+                               { frame,    trophy,   gameTile, cat,      gameTile},
+                               { plant,    gameTile, book,     gameTile, book},
+                               { gameTile, book,     book,     frame,    cat},
+                               { book,     gameTile, trophy,   plant,    plant}};
+        bookshelf.setBookshelf(bookshelf1);
+        assertTrue(cgc4p.compare(bookshelf));
+        assertEquals(cgc4p.getStrategy().compareRule(bookshelf, 2), cgc2p.compare(bookshelf));
+    }
 }

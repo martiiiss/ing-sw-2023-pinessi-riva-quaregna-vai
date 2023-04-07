@@ -1,7 +1,5 @@
 package model;
 
-
-import jdk.jshell.spi.ExecutionControl;
 import java.util.ArrayList;
 
 public class Board {
@@ -88,8 +86,7 @@ public class Board {
 
     public Tile removeTile(int row, int column) { //remove the tile in (row, column) --> NOTHING
         Tile removedTile = livingRoomBoard[row][column];
-        livingRoomBoard[row][column].setType(Type.NOTHING);
-        System.out.println();
+        livingRoomBoard[row][column] = new Tile(Type.NOTHING, 0);
         return removedTile;
     }
 

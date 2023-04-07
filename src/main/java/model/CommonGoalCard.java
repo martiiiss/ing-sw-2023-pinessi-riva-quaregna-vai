@@ -51,7 +51,7 @@ public class CommonGoalCard {
        return this.romanNumber;
     }
 
-    public void setCGCStrategy(int id){
+    public void setCGCStrategy(int id) throws IllegalStateException{
         switch (id) {
             case 1 -> this.strategy = new CGC1();
             case 2 -> this.strategy = new CGC2();
@@ -64,6 +64,7 @@ public class CommonGoalCard {
             case 4, 9 -> this.strategy = new CGC49();
             case 6, 8 -> this.strategy = new CGC68();
             default -> throw new IllegalStateException("Unexpected value: " + id);
+
         }
         //based on the id this method implements a precise strategy (!!! Some of them are in groups)
         //set strategy --> the commonGoalCard choice
