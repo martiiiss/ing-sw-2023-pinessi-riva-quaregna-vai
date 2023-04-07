@@ -128,7 +128,6 @@ public class GameTest {
                 }
             }
         }
-
     }
 
     @Test

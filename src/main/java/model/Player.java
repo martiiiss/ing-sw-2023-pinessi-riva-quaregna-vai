@@ -28,7 +28,6 @@ public class Player {
         score = 0;
     }
 
-
     /*This method will be launched when the game starts once game chooses the first player. it will update isFirstPlayer*/
     public void setAsFirstPlayer() {
         this.isFirstPlayer = true;

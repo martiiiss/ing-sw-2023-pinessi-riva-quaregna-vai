@@ -75,7 +75,6 @@ public class Game {
     public void assignPersonalGoalCard(int nOfPlayers){
 
         switch(nOfPlayers){
-
             case 2: {
                 int temp1 = (new Random()).nextInt(12)+1;
                 int temp2 = (new Random()).nextInt(12)+1;

@@ -80,7 +80,6 @@ public class PlayerTest {
     void setTilesInHand() {
     }//TODO do this test
 
-
     Tile cat = new Tile(Type.CAT,1);
     Tile book = new Tile(Type.BOOK,2);
     Tile game = new Tile(Type.GAME,3);
