@@ -15,6 +15,7 @@ public class PersonalGoalCard {
     //passed as a param since it needs to be different from all the previous and next generated numOfCards (Every player must
     //have a different card.
     public PersonalGoalCard (int numberOfPGC){
+        if(numberOfPGC<=0 || numberOfPGC>12) throw new IllegalArgumentException("Cannot access the card "+numberOfPGC+", it doesn't exist!");
         this.seedOfCard = new Tile[6][5];
         Tile mockTile = new Tile(Type.NOTHING,0);
         for(int i=0;i<6;i++)

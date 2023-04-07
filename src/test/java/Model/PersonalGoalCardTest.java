@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import model.PersonalGoalCard;
 import model.Type;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class PersonalGoalCardTest {
     @Test
@@ -24,6 +24,8 @@ class PersonalGoalCardTest {
         PersonalGoalCard personalGoalCard11 = new PersonalGoalCard(11);
         PersonalGoalCard personalGoalCard12 = new PersonalGoalCard(12);
 
+
+        
         Tile cat = new Tile(Type.CAT, 1);
         Tile book = new Tile(Type.BOOK, 2);
         Tile game = new Tile(Type.GAME, 3);

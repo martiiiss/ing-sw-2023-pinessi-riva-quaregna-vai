@@ -1,5 +1,5 @@
 package Model;
-import model.*;
+
 import model.Type;
 import model.PersonalGoalCard;
 import model.Bookshelf;
@@ -9,76 +9,115 @@ import model.Game;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
+    Player p = new Player();
     @Test
     void setAsFirstPlayer() {
-    }//TODO do this test
+    }//TODO do this test -> there isn't a get method to return the boolean, this method cannot be tested
 
+    //The next two methods are tested in the same way
     @Test
     void setNickname() {
-    }//TODO do this test
-
+        p.setNickname("Foo");
+        assertEquals("Foo",p.getNickname());
+        assertThrows(IllegalArgumentException.class, ()->p.setNickname(""));
+    }
     @Test
     void getNickname() {
-    }//TODO do this test
+        p.setNickname("Foo");
+        assertEquals("Foo",p.getNickname());
+    }
 
     @Test
     void setMyBookshelf() {
-    }//TODO do this test -> already tested
-
+        p.setMyBookshelf();
+        assertNotNull(p.getMyBookshelf());
+    }
     @Test
     void getMyBookshelf() {
-    }//TODO do this test -> already tested
+    } //I don't think is really useful to test this, it has already been tested
 
+    //the two methods are tested together
     @Test
     void getScore() {
-    }//TODO do this test
-
+    }
     @Test
     void updateScore() {
-    }//TODO do this test
+        p.updateScore(15);
+        assertEquals(15,p.getScore());
+    }
 
     @Test
     void setPersonalGoalCard() {
-    }//TODO do this test -> already tested
-
+        PersonalGoalCard pgc1 = new PersonalGoalCard(5);
+        p.setPersonalGoalCard(pgc1);
+        assertEquals(pgc1, p.getPersonalGoalCard());
+    }
     @Test
     void getPersonalGoalCard() {
-    }//TODO do this test
+        PersonalGoalCard pgc1 = new PersonalGoalCard(5);
+        p.setPersonalGoalCard(pgc1);
+        assertEquals(pgc1, p.getPersonalGoalCard());
+    }//same test as the method before
 
     @Test
     void setCompletePGC() {
-    }//TODO do this test -> already tested
-
+        p.setCompletePGC();
+        assertTrue(p.getCompletePGC());
+    }
     @Test
     void getCompletePGC() {
-    }//TODO do this test
+        p.setCompletePGC();
+        assertTrue(p.getCompletePGC());
+    }//tested in the same way as the method before
 
     @Test
     void getScoringToken1() {
-    }//TODO do this test
+        p.setScoringToken1();
+        assertTrue(p.getScoringToken1());
+    }
 
     @Test
     void setScoringToken1() {
-    }//TODO do this test
+        p.setScoringToken1();
+        assertTrue(p.getScoringToken1());
+    }
 
     @Test
     void getScoringToken2() {
+        p.setScoringToken2();
+        assertTrue(p.getScoringToken2());
     }
 
     @Test
     void setScoringToken2() {
-    }//TODO do this test
+        p.setScoringToken2();
+        assertTrue(p.getScoringToken2());
+    }
 
     @Test
     void getTilesInHand() {
-    }//TODO do this test
-
+        Tile t1 = new Tile(Type.CAT,3);
+        Tile t2 = new Tile(Type.PLANT,2);
+        Tile t3 = new Tile(Type.FRAME,1);
+        ArrayList<Tile> chosenOnes = new ArrayList<>();
+        chosenOnes.add(t1);
+        chosenOnes.add(t2);
+        chosenOnes.add(t3);
+        p.setTilesInHand(chosenOnes);
+        assertNotNull(chosenOnes);
+        assertEquals(t1, chosenOnes.get(0));
+        assertNotEquals(t1, chosenOnes.get(2));
+        assertEquals(t3, chosenOnes.get(2));
+    }
     @Test
     void setTilesInHand() {
-    }//TODO do this test
+    }//Tested with the method before this one
 
     Tile cat = new Tile(Type.CAT,1);
     Tile book = new Tile(Type.BOOK,2);
@@ -204,7 +243,7 @@ public class PlayerTest {
             case 11 -> bks.setBookshelf(bookshelf11);
             case 12 -> bks.setBookshelf(bookshelf12);
         }
-    };
+    }
 
     Tile[][] bookshelfAdj = {
             {cat, cat, frame, nothing, nothing},
@@ -224,5 +263,31 @@ public class PlayerTest {
 
     @Test
     void checkBookshelf() {
-    }//TODO do this test
+        Player p1 = new Player();
+        Player p2 = new Player();
+        p1.setMyBookshelf();
+        p2.setMyBookshelf();
+        p1.getMyBookshelf().setBookshelf(full);
+        assertTrue(p1.checkBookshelf());
+        p2.getMyBookshelf().setBookshelf(notFull);
+        assertFalse(p2.checkBookshelf());
+    }
+    Tile[][] full = {
+            {cat, plant, frame, plant, game},
+            {cat, trophy, cat, game, plant},
+            {plant, cat, trophy, plant, cat,},
+            {frame, trophy, cat, frame, cat,},
+            {frame, frame, plant, cat, frame,},
+            {cat, plant, trophy, cat, plant}
+    };
+
+    Tile[][] notFull = {
+            {cat, nothing, frame, nothing, game},
+            {cat, nothing, cat, game, plant},
+            {plant, cat, trophy, plant, cat,},
+            {frame, trophy, cat, frame, cat,},
+            {frame, frame, plant, cat, frame,},
+            {cat, plant, trophy, cat, plant}
+    };
+
 }

@@ -17,7 +17,7 @@ public class Player {
     private Bookshelf myBookshelf;
     private ArrayList<Tile> tilesInHand; //This attribute saves the tiles selected by the player in chooseNTiles so that the bookshelf can be filled with fillBookshelf
     private boolean completedPGC = false;  //tiles of PGC in correct position -> maybe useless
-    //TODO ask if this attribute is to delete -> modified into a boolean type
+
     private boolean scoringToken1;
     private boolean scoringToken2;
     // the last two attributes are used to control if the Player has already completed the CGC
@@ -26,6 +26,7 @@ public class Player {
         scoringToken1 = false;
         scoringToken2 = false;
         score = 0;
+        isFirstPlayer = false;
     }
 
     /*This method will be launched when the game starts once game chooses the first player. it will update isFirstPlayer*/
@@ -35,12 +36,10 @@ public class Player {
 
     /*Sets the player's nickname this method will be invoked by the view and will pass the arg "nickname"*/
     public void setNickname(String nickname) {
+        if (nickname.equals("")) throw new IllegalArgumentException("Ops! This isn't a valid name!"); //added a control, maybe useless
         this.nickname = nickname;
     }
-
-    public String getNickname(){
-        return this.nickname;
-    }
+    public String getNickname(){return this.nickname;}
 
     /*Assign to each player their bookshelf*/
     public void setMyBookshelf() {
@@ -61,9 +60,7 @@ public class Player {
     public void updateScore (int score) {this.score = score;}
 
     /*Each player gets assigned a personal goal card that they have to complete*/
-    public void setPersonalGoalCard(PersonalGoalCard pgc) {
-        this.myGoalCard = pgc;
-    }
+    public void setPersonalGoalCard(PersonalGoalCard pgc) {this.myGoalCard = pgc;}
 
     /*Returns the player's personal goal card*/
     public PersonalGoalCard getPersonalGoalCard() {
@@ -108,7 +105,7 @@ public class Player {
 
     public int checkCompletePGC(){
         Tile[][] bks = myBookshelf.getBookshelf();
-        int PGCScore = 0;
+        int PGCScore;
         int numberOfTilesCompleted = 0;
         int r,c;
         for(r=0;r<6;r++){
@@ -119,7 +116,7 @@ public class Player {
                 }
             }
         }
-        /**Based on how many tiles are completed I assign the PGCScore
+        /*Based on how many tiles are completed I assign the PGCScore
          *This is good because I don't have to check everytime if
          *I already completed that tile
          */
