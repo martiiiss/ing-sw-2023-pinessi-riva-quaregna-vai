@@ -6,14 +6,14 @@ import model.Type;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Random;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BookshelfTest {
 
     Bookshelf bks = new Bookshelf();
-    ArrayList<Tile> tiles = new ArrayList<Tile>();
+    ArrayList<Tile> tiles = new ArrayList<>();
 
 
     @Test
