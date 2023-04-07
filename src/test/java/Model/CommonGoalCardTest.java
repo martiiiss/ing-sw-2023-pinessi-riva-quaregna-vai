@@ -1,20 +1,18 @@
 package Model;
 
-import model.Game;
+//import model.Game;
 import model.CommonGoalCard;
 import model.Bookshelf;
 import model.ScoringToken;
 import model.Tile;
 import model.Type;
-
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
 class CommonGoalCardTest {
-    private final Game game = new Game();
+    //private final Game game = new Game();
     final CommonGoalCard cgc2p = new CommonGoalCard(2, 2, 1);
     final CommonGoalCard cgc3p = new CommonGoalCard(7, 3, 1);
     final CommonGoalCard cgc4p = new CommonGoalCard(2, 4, 1);
