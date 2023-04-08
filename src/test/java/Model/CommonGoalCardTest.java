@@ -88,7 +88,8 @@ class CommonGoalCardTest {
     @Test
     void getTokenStackTest(){
         assertNotNull(cgc4p.getTokenStack());
-        assertEquals(sc8, cgc4p.getTokenStack().peek());
+        assertEquals(sc8.getRomanNumber(), cgc4p.getTokenStack().peek().getRomanNumber());
+        assertEquals(sc8.getValue(), cgc4p.getTokenStack().peek().getValue());
     }
 
     @Test

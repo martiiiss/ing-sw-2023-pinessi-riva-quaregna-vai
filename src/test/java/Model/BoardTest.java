@@ -48,14 +48,14 @@ class BoardTest {
     Tile[][] livingRoom2;
     ArrayList<Tile> tiles = new ArrayList<Tile>();
 
-    private void setArraylist (){
-        tiles = bag.getBagTiles(board.getNumOfCells());
+    private void setArraylist (int num){
+        tiles = bag.getBagTiles(num);
     }
 
     @Test
     void setUpBoardTest() {
         int e=0;
-        setArraylist();
+        setArraylist(board.getNumOfCells());
         board.setUpBoard(tiles);
         livingRoom2 = board.getBoard();
         for(int i=0; i< board.BOARD_ROW; i++){
@@ -108,7 +108,7 @@ class BoardTest {
 
     @Test
     void removeTileTest() {
-        setArraylist();
+        setArraylist(board.getNumOfCells());
         board.setUpBoard(tiles);
         for(int i=0; i< board.BOARD_ROW; i++){
             for(int j=0; j< board.BOARD_COLUMN; j++){
@@ -123,7 +123,7 @@ class BoardTest {
 
     @Test
     void getBoard() {
-        setArraylist();
+        setArraylist(board.getNumOfCells());
         board.setUpBoard(tiles);
         int e = 0;
 

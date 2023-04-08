@@ -24,7 +24,6 @@ class BagTest {
 
         for(int i=0; i<10; i++){
             assertNotNull(tiles.get(i));
-            System.out.println(tiles.get(i).getType() + " " + tiles.get(i).getNumType());
             assertEquals(-1, bag.getTilesContained().indexOf(tiles.get(i))); //tile is not contained in bag
         }
 
