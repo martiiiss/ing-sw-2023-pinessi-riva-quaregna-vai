@@ -22,7 +22,7 @@ class CGC5Test {
     Tile plant = new Tile(Type.PLANT, 1);
     Tile nothing = new Tile(Type.NOTHING,0);
 
-    //This bookshelf checks that if there are more than 6 groups it get's refused
+    //This bookshelf checks that if there are more than 6 groups it gets refused
     Tile[][] bookshelf1 = { { cat, nothing, frame, game, game },
             { cat, nothing, frame, plant, plant},
             { frame, trophy, cat, trophy, trophy},

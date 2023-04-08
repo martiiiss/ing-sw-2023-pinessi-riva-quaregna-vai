@@ -19,7 +19,7 @@ public class Board {
         int iTiles=0;
         for(int i=0; i<BOARD_ROW; i++){
             for(int j=0; j<BOARD_COLUMN; j++){
-                if(this.livingRoomBoard[i][j]==null || this.livingRoomBoard[i][j].getType()==Type.NOTHING){
+                if(this.livingRoomBoard[i][j].getType()==Type.NOTHING){
                     this.livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
                     iTiles++;
                 }
@@ -64,6 +64,11 @@ public class Board {
                 }
             }
         }
+        Tile nothing = new Tile(Type.NOTHING,0);
+        for (int i=0; i<BOARD_ROW; i++)
+            for (int j=0; j<BOARD_COLUMN; j++)
+                if(!livingRoomBoard[i][j].equals(blocked))
+                    livingRoomBoard[i][j]=nothing;
     }
 
     public void setNumOfCells(int nOfPlayers) { //at the beginning
