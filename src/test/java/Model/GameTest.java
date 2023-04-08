@@ -132,62 +132,79 @@ public class GameTest {
     void addPlayer() {
     }//TODO do this test -> I cannot test this
 
+
     @Test
     void checkCommonGoalCard() {
         Player p1 = new Player();
         Player p2 = new Player();
         Player p3 = new Player();
-        game.setNumOfPlayers(3);
-        game.setCommonGoalCards();
+        Player p4 = new Player();
+        game.setNumOfPlayers(4);
+        //game.setCommonGoalCards();
+        CommonGoalCard cgc1 = new CommonGoalCard(1,4,1);
+        CommonGoalCard cgc2 = new CommonGoalCard(7,4,2);
+        game.getCommonGoalCard().clear();
+        game.getCommonGoalCard().add(cgc1);
+        game.getCommonGoalCard().add(cgc2);
         p1.setMyBookshelf();
         p2.setMyBookshelf();
         p3.setMyBookshelf();
+        p4.setMyBookshelf();
         p1.getMyBookshelf().setBookshelf(b1);
-        p2.getMyBookshelf().setBookshelf(b2);
-        p3.getMyBookshelf().setBookshelf(b3);
+        Tile[][] boh = p1.getMyBookshelf().getBookshelf();
+        for(int i=0; i<6; i++){
+            System.out.println();
+            for(int j=0;j<5;j++){
+                System.out.print(boh[i][j].getType()+" ");
+            }
+        }
+        p2.getMyBookshelf().setBookshelf(b1);
+        p3.getMyBookshelf().setBookshelf(b7);
+        p4.getMyBookshelf().setBookshelf(b4);
         int temp = 1;
         while (temp < 4) {
             switch (temp) {
                 case 1 -> {
                     game.setPlayerInTurn(p1);
-                    int points = 0;
-                    if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf())) {
-                        points += game.getCommonGoalCard().get(0).popScoringToken().getValue();
-                    }
-                    if (game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf())){
-                        points += game.getCommonGoalCard().get(1).popScoringToken().getValue();
-                    }
+                    int points = 8;
+                    //if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf())) {
+                    //    points += game.getCommonGoalCard().get(0).popScoringToken().getValue();
+                    //}
+                    //if (game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf())){
+                    //    points += game.getCommonGoalCard().get(1).popScoringToken().getValue();
+                    //}
                     assertEquals(points, game.checkCommonGoalCard());
+
                 }
                 case 2 -> {
                     game.setPlayerInTurn(p2);
-                    int points = 0;
-                    if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf())) {
+                    int points = 6;
+                    /*if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf())) {
                         points += game.getCommonGoalCard().get(0).popScoringToken().getValue();
                     }
                     if (game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf())){
                         points += game.getCommonGoalCard().get(1).popScoringToken().getValue();
                     }
+                     */
                     assertEquals(points, game.checkCommonGoalCard());
                 }
                 case 3 -> {
+                    game.setPlayerInTurn(p4);
                     int points = 0;
+                    /*
                     if (game.getCommonGoalCard().get(0).compare(game.getPlayerInTurn().getMyBookshelf())) {
                         points += game.getCommonGoalCard().get(0).popScoringToken().getValue();
                     }
                     if (game.getCommonGoalCard().get(1).compare(game.getPlayerInTurn().getMyBookshelf())){
                         points += game.getCommonGoalCard().get(1).popScoringToken().getValue();
                     }
+                    */
                     assertEquals(points, game.checkCommonGoalCard());
                 }
             }
             temp++;
         }//TODO this test does weird things and has to be fixed, it doesn't always work unfortunately
     }
-
-
-
-
 
     Tile c = new Tile(Type.CAT, 1);
     Tile b = new Tile(Type.BOOK, 2);

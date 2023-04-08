@@ -27,10 +27,9 @@ public class Game {
     }
 
     public void setCommonGoalCards(){ //choose 2 commonGoalCard
-        int n1 = (new Random()).nextInt(12); //random number (1-12)
-        int n2 = (new Random()).nextInt(12);
-        if (n1 == 0){n1++;}
-        if (n2 == 0){n2++;}
+        int n1 = (new Random()).nextInt(12)+1; //random number (1-12)
+        int n2 = (new Random()).nextInt(12)+1;
+        System.out.println(n1+" "+n2);
         if(n1==n2){
             n2++;
         }
@@ -75,72 +74,73 @@ public class Game {
      *I assign the corresponding card to every player
      */
     public void assignPersonalGoalCard(int nOfPlayers){
+        int id1,id2,id3,id4;
 
         switch(nOfPlayers){
             case 2: {
-                int temp1 = (new Random()).nextInt(12)+1;
-                int temp2 = (new Random()).nextInt(12)+1;
-                while (temp1 == temp2){temp2 = (new Random()).nextInt(12)+1;}
-                PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
-                players.get(1).setPersonalGoalCard(pgc1);
-                PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
-                players.get(2).setPersonalGoalCard(pgc2);
+                 id1 = (new Random()).nextInt(12)+1;
+                 id2 = (new Random()).nextInt(12)+1;
+                while (id1 == id2){id2 = (new Random()).nextInt(12)+1;}
+                PersonalGoalCard pgc1 = new PersonalGoalCard(id1);
+                players.get(0).setPersonalGoalCard(pgc1);
+                PersonalGoalCard pgc2 = new PersonalGoalCard(id2);
+                players.get(1).setPersonalGoalCard(pgc2);
                 /**The text three lines are used in tests*/
-                System.out.println("first two chosen temp:");
-                System.out.println(temp1);
-                System.out.println(temp2);
+                System.out.println("first two chosen id:");
+                System.out.println(id1);
+                System.out.println(id2);
             }
 
             case 3: {
-                int temp1 = (new Random()).nextInt(12)+1;
-                int temp2 = (new Random()).nextInt(12)+1;
-                int temp3 = (new Random()).nextInt(12)+1;
-                while(temp1==temp2){
-                    temp2 = (new Random()).nextInt(12)+1;
+                 id1 = (new Random()).nextInt(12)+1;
+                 id2 = (new Random()).nextInt(12)+1;
+                 id3 = (new Random()).nextInt(12)+1;
+                while(id1==id2){
+                    id2 = (new Random()).nextInt(12)+1;
                 }
-                while(temp1 == temp3 || temp2 == temp3) {
-                    temp3 = (new Random()).nextInt(12)+1;
+                while(id1 == id3 || id2 == id3) {
+                    id3 = (new Random()).nextInt(12)+1;
                 }
-                PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
+                PersonalGoalCard pgc1 = new PersonalGoalCard(id1);
                 players.get(0).setPersonalGoalCard(pgc1);
-                PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
+                PersonalGoalCard pgc2 = new PersonalGoalCard(id2);
                 players.get(1).setPersonalGoalCard(pgc2);
-                PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
+                PersonalGoalCard pgc3 = new PersonalGoalCard(id3);
                 players.get(2).setPersonalGoalCard(pgc3);
                 /**The text four lines are used in tests*/
-                System.out.println("Three chosen temp:");
-                System.out.println(temp1);
-                System.out.println(temp2);
-                System.out.println(temp3);
+                System.out.println("Three chosen id:");
+                System.out.println(id1);
+                System.out.println(id2);
+                System.out.println(id3);
             }
             case 4: {
-                int temp1 = (new Random()).nextInt(12) +1;
-                int temp2 = (new Random()).nextInt(12)+1;
-                int temp3 = (new Random()).nextInt(12)+1;
-                int temp4 = (new Random()).nextInt(12)+1;
-                while(temp1==temp2){
-                    temp2 = (new Random()).nextInt(12)+1;
+                 id1 = (new Random()).nextInt(12) +1;
+                 id2 = (new Random()).nextInt(12)+1;
+                 id3 = (new Random()).nextInt(12)+1;
+                 id4 = (new Random()).nextInt(12)+1;
+                while(id1==id2){
+                    id2 = (new Random()).nextInt(12)+1;
                 }
-                while(temp1 == temp3 || temp2 == temp3) {
-                    temp3 = (new Random()).nextInt(12)+1;
+                while(id1 == id3 || id2 == id3) {
+                    id3 = (new Random()).nextInt(12)+1;
                 }
-                while (temp1 == temp4 || temp2 == temp4 || temp3 == temp4) {
-                    temp4 = (new Random()).nextInt(12)+1;
+                while (id1 == id4 || id2 == id4 || id3 == id4) {
+                    id4 = (new Random()).nextInt(12)+1;
                 }
-                PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
+                PersonalGoalCard pgc1 = new PersonalGoalCard(id1);
                 players.get(0).setPersonalGoalCard(pgc1);
-                PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
+                PersonalGoalCard pgc2 = new PersonalGoalCard(id2);
                 players.get(1).setPersonalGoalCard(pgc2);
-                PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
+                PersonalGoalCard pgc3 = new PersonalGoalCard(id3);
                 players.get(2).setPersonalGoalCard(pgc3);
-                PersonalGoalCard pgc4 = new PersonalGoalCard(temp4);
+                PersonalGoalCard pgc4 = new PersonalGoalCard(id4);
                 players.get(3).setPersonalGoalCard(pgc4);
                 /**The text five lines are used in tests*/
-                System.out.println("four chosen temp:");
-                System.out.println(temp1);
-                System.out.println(temp2);
-                System.out.println(temp3);
-                System.out.println(temp4);
+                System.out.println("four chosen id:");
+                System.out.println(id1);
+                System.out.println(id2);
+                System.out.println(id3);
+                System.out.println(id4);
             }
         }
     }
@@ -155,23 +155,23 @@ public class Game {
         int scoreST = 0;
         boolean st1 = playerInTurn.getScoringToken1();
         boolean st2 = playerInTurn.getScoringToken2();
-
-        //ArrayList<CommonGoalCard> c = commonGoalCards;
-        if(st1 == false) {
-            if (commonGoalCards.get(0).compare(playerInTurn.getMyBookshelf())==true){
+        //System.out.println(commonGoalCards.get(0)+" "+commonGoalCards.get(1));
+        if(!st1) {
+            if (commonGoalCards.get(0).compare(playerInTurn.getMyBookshelf())){
                 playerInTurn.setScoringToken1();
                 ScoringToken firstScoringTokenTile = commonGoalCards.get(0).popScoringToken();
                 scoreST += firstScoringTokenTile.getValue();
             }
         }
-        if (st2 == false){
-            if(commonGoalCards.get(1).compare(playerInTurn.getMyBookshelf())==true){
+        if (!st2){
+            if(commonGoalCards.get(1).compare(playerInTurn.getMyBookshelf())){
                 playerInTurn.setScoringToken2();
                 ScoringToken secondScoringTokenTile = commonGoalCards.get(1).popScoringToken();
                 scoreST += secondScoringTokenTile.getValue();
             }
         }
         return scoreST;
+
     }
 }
 
