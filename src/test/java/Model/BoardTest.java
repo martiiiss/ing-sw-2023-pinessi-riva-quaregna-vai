@@ -46,7 +46,7 @@ class BoardTest {
     private final Bag bag = new Bag();
 
     Tile[][] livingRoom2;
-    ArrayList<Tile> tiles = new ArrayList<Tile>();
+    ArrayList<Tile> tiles = new ArrayList<>();
 
     private void setArraylist (int num){
         tiles = bag.getBagTiles(num);

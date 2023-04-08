@@ -1,8 +1,5 @@
 package model;
 
-import jdk.jshell.spi.ExecutionControl;
-
-
 import java.util.ArrayList;
 
 import static model.Type.NOTHING;
@@ -46,7 +43,8 @@ public class Bookshelf {
                 j++;
             }
             throw new NotEnoughSlotsAvailableException("Not enough slots available!");
-        } catch (NotEnoughSlotsAvailableException ex) {}
+        } catch (NotEnoughSlotsAvailableException ex) {
+        }
     }
     public Tile[][] getBookshelf(){
         return this.bookshelf;

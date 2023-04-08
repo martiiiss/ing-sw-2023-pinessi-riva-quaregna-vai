@@ -1,8 +1,6 @@
 package Model;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import model.*;
 import model.Tile;
 import model.Type;
 import model.CGC10;

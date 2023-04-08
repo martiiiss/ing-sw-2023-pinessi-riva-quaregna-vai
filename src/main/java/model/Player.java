@@ -5,8 +5,6 @@ import jdk.jshell.spi.ExecutionControl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static model.Type.CAT;
 import static model.Type.NOTHING;
 
 

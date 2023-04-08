@@ -1,12 +1,8 @@
 package model;
 
-import jdk.jshell.spi.ExecutionControl;
-
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static java.lang.System.out;
 
 public class Bag {
     private boolean isBagEmpty;

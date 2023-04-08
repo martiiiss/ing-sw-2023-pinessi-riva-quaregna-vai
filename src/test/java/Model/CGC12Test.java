@@ -4,15 +4,11 @@ import model.Bookshelf;
 import model.CGC12;
 import model.Tile;
 import model.Type;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CGC12Test {
 
     Tile cat = new Tile(Type.CAT,1);
-    Tile book = new Tile(Type.BOOK,2);
-    Tile game = new Tile(Type.GAME,3);
     Tile frame = new Tile(Type.FRAME,2);
     Tile trophy = new Tile(Type.TROPHY,1);
     Tile plant = new Tile(Type.PLANT,3);

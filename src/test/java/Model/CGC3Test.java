@@ -1,6 +1,5 @@
 package Model;
 
-import model.*;
 import model.Bookshelf;
 import model.Tile;
 import model.Type;

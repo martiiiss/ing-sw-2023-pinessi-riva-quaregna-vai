@@ -1,7 +1,5 @@
 package model;
 
-import jdk.jshell.spi.ExecutionControl;
-
 
 public class CGC2 implements CGMStrategy {
     /*DIAGONAL: 5 tiles of the same type*/

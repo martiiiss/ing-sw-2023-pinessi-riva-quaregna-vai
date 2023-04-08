@@ -12,7 +12,7 @@ public class CommonGoalCard {
     public CommonGoalCard(int id, int numPlayers, int romanNumber){
         this.idCGC = id;
         this.romanNumber = romanNumber;
-        this.tokenStack = new Stack<ScoringToken>();
+        this.tokenStack = new Stack<>();
         setCGCStrategy(id);
 
         //create scoringToken & push

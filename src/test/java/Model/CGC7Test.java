@@ -38,6 +38,17 @@ public class CGC7Test {
             { cat, cat, nothing, cat, cat}
     };
 
+    Tile[][] b8 = {
+            {cat,cat,nothing,nothing,cat},
+            {cat,cat,game,cat,cat},
+            {frame,trophy,game,cat,cat},
+            {cat,cat,cat,cat,cat},
+            {plant,trophy,book,game,cat},
+            {cat,trophy,game,plant,frame}
+    }; //TODO there's a bug in here, because the block of four tiles is at the border of the matrix
+       // it signals a java.lang.ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5
+       // at model.CGC7.compareRule(CGC7.java:32)
+
     private final CGC7 cgc7 = new CGC7();
 
     @Test
@@ -49,6 +60,11 @@ public class CGC7Test {
         Bookshelf bks2 = new Bookshelf();
         bks2.setBookshelf(bookshelf2);
         assertFalse(cgc7.compareRule(bks2, 1));
+
+        /**this test throws the error signaled in the TODO*/
+        Bookshelf bks3 = new Bookshelf();
+        bks3.setBookshelf(b8);
+        assertTrue(cgc7.compareRule(bks3,1));
 
     }
 }

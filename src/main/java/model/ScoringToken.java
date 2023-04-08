@@ -1,7 +1,5 @@
 package model;
 
-import jdk.jshell.spi.ExecutionControl;
-
 public class ScoringToken {
     private final int romanNumber;
     private final int value;

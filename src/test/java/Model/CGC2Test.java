@@ -5,8 +5,6 @@ import model.Tile;
 import model.Type;
 import model.CGC2;
 
-import java.awt.print.Book;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 

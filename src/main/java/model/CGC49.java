@@ -23,7 +23,7 @@ public class CGC49 implements CGMStrategy {
         }
         for (j = 0; j < maxJ; j++) {
             found=1;
-            ArrayList<Type> countType = new ArrayList<Type>();
+            ArrayList<Type> countType = new ArrayList<>();
             for (i = 0; i < maxI && found != 0; i++) {
                 switch(id) {
                     case 9:
@@ -45,9 +45,6 @@ public class CGC49 implements CGMStrategy {
                 if(countType.size()<=3)
                     count = count+1;
         }
-        if(count>=num)
-            return true;
-        else
-            return false;
+        return count >= num;
     }
 }

@@ -35,9 +35,6 @@ public class CGC68 implements CGMStrategy {
             if (found==1)
                 count= count+1;
         }
-        if (count>=2)
-            return true;
-        else
-            return false;
+        return count >= 2;
     }
 }

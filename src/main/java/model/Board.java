@@ -73,18 +73,10 @@ public class Board {
 
     public void setNumOfCells(int nOfPlayers) { //at the beginning
         //set numOfCell that can be used during the game (depends on nOfPlayers)
-        switch(nOfPlayers){
-            case 2:
-                this.numOfCells = 29;
-                break;
-
-            case 3:
-                this.numOfCells = 37;
-                break;
-
-            case 4:
-                this.numOfCells = 45;
-                break;
+        switch (nOfPlayers) {
+            case 2 -> this.numOfCells = 29;
+            case 3 -> this.numOfCells = 37;
+            case 4 -> this.numOfCells = 45;
         }
     }
 

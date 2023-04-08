@@ -5,7 +5,6 @@ import model.PersonalGoalCard;
 import model.Bookshelf;
 import model.Tile;
 import model.Player;
-import model.Game;
 
 import org.junit.jupiter.api.Test;
 
