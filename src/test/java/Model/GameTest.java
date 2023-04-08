@@ -135,33 +135,29 @@ public class GameTest {
 
     @Test
     void checkCommonGoalCard() {
-        Player p1 = new Player();
-        Player p2 = new Player();
-        Player p3 = new Player();
-        Player p4 = new Player();
-        game.setNumOfPlayers(4);
-        game.getCommonGoalCard().clear();
 
-        p1.setMyBookshelf();
-        p2.setMyBookshelf();
-        p3.setMyBookshelf();
-        p4.setMyBookshelf();
-
-        game.getCommonGoalCard().add(new CommonGoalCard(7,4,1));
-        game.getCommonGoalCard().add(new CommonGoalCard(3,4,2));
-
-        p1.getMyBookshelf().setBookshelf(b7);
-        p2.getMyBookshelf().setBookshelf(b1);
-        p3.getMyBookshelf().setBookshelf(b7);
-        p4.getMyBookshelf().setBookshelf(b4);
-
-        game.setPlayerInTurn(p1);
-        assertEquals(16, game.checkCommonGoalCard());
+        assertEquals(8,initializeTest(1,12,b12));
+        assertEquals(0,initializeTest(12,7,b9));
+        assertEquals(16,initializeTest(1,3,b1));
 
 
         //TODO this test did weird things and had to be fixed, now I have to stress test it a bit, probably it works properly;
         // in order to make this work I changed the method compare in the CommonGoalCard class
     }
+
+    //this function generalizes the test for a single player -> I have to improve this to be multiplayer TODO
+    private int initializeTest(int idCGC1, int idCGC2, Tile[][] playerBookshelf){
+        Player p1 = new Player();
+        game.setPlayerInTurn(p1);
+        game.setNumOfPlayers(4);
+        game.getCommonGoalCard().clear();
+        p1.setMyBookshelf();
+        game.getCommonGoalCard().add(new CommonGoalCard(idCGC1,4,1));
+        game.getCommonGoalCard().add(new CommonGoalCard(idCGC2,4,2));
+        p1.getMyBookshelf().setBookshelf(playerBookshelf);
+        return game.checkCommonGoalCard();
+    }
+
 
     Tile c = new Tile(Type.CAT, 1);
     Tile b = new Tile(Type.BOOK, 2);
