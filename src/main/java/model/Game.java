@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Random;
+import model.CommonGoalCard;
 
 public class Game {
     private Player winner;
@@ -20,11 +21,16 @@ public class Game {
 
 
     public Game() { // added the constructor
+        commonGoalCards = new ArrayList<CommonGoalCard>();
+        players = new ArrayList<Player>();
+        numberOfPlayers = 0;
     }
 
     public void setCommonGoalCards(){ //choose 2 commonGoalCard
         int n1 = (new Random()).nextInt(12); //random number (1-12)
         int n2 = (new Random()).nextInt(12);
+        if (n1 == 0){n1++;}
+        if (n2 == 0){n2++;}
         if(n1==n2){
             n2++;
         }
@@ -71,24 +77,29 @@ public class Game {
     public void assignPersonalGoalCard(int nOfPlayers){
 
         switch(nOfPlayers){
-
             case 2: {
-                int temp1 = (new Random()).nextInt(12);
-                int temp2 = (new Random()).nextInt(12);
-                while (temp1 == temp2){temp2 = (new Random()).nextInt(12);}
+                int temp1 = (new Random()).nextInt(12)+1;
+                int temp2 = (new Random()).nextInt(12)+1;
+                while (temp1 == temp2){temp2 = (new Random()).nextInt(12)+1;}
                 PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
-                players.get(0).setPersonalGoalCard(pgc1);
+                players.get(1).setPersonalGoalCard(pgc1);
                 PersonalGoalCard pgc2 = new PersonalGoalCard(temp2);
-                players.get(1).setPersonalGoalCard(pgc2);
+                players.get(2).setPersonalGoalCard(pgc2);
+                /**The text three lines are used in tests*/
+                System.out.println("first two chosen temp:");
+                System.out.println(temp1);
+                System.out.println(temp2);
             }
 
             case 3: {
-                int temp1 = (new Random()).nextInt(12);
-                int temp2 = (new Random()).nextInt(12);
-                int temp3 = (new Random()).nextInt(12);
-                while (temp1 == temp2 && temp2 == temp3 && temp1 == temp3) {
-                    temp2 = (new Random()).nextInt(12);
-                    temp3 = (new Random()).nextInt(12);
+                int temp1 = (new Random()).nextInt(12)+1;
+                int temp2 = (new Random()).nextInt(12)+1;
+                int temp3 = (new Random()).nextInt(12)+1;
+                while(temp1==temp2){
+                    temp2 = (new Random()).nextInt(12)+1;
+                }
+                while(temp1 == temp3 || temp2 == temp3) {
+                    temp3 = (new Random()).nextInt(12)+1;
                 }
                 PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
                 players.get(0).setPersonalGoalCard(pgc1);
@@ -96,18 +107,25 @@ public class Game {
                 players.get(1).setPersonalGoalCard(pgc2);
                 PersonalGoalCard pgc3 = new PersonalGoalCard(temp3);
                 players.get(2).setPersonalGoalCard(pgc3);
+                /**The text four lines are used in tests*/
+                System.out.println("Three chosen temp:");
+                System.out.println(temp1);
+                System.out.println(temp2);
+                System.out.println(temp3);
             }
             case 4: {
-                int temp1 = (new Random()).nextInt(12);
-                int temp2 = (new Random()).nextInt(12);
-                int temp3 = (new Random()).nextInt(12);
-                int temp4 = (new Random()).nextInt(12);
-
-                while (temp1 == temp2 && temp1 == temp3 && temp1 == temp4
-                        && temp2 == temp3 && temp2 == temp4 && temp3 == temp4) {
-                    temp2 = (new Random()).nextInt(12);
-                    temp3 = (new Random()).nextInt(12);
-                    temp4 = (new Random()).nextInt(12);
+                int temp1 = (new Random()).nextInt(12) +1;
+                int temp2 = (new Random()).nextInt(12)+1;
+                int temp3 = (new Random()).nextInt(12)+1;
+                int temp4 = (new Random()).nextInt(12)+1;
+                while(temp1==temp2){
+                    temp2 = (new Random()).nextInt(12)+1;
+                }
+                while(temp1 == temp3 || temp2 == temp3) {
+                    temp3 = (new Random()).nextInt(12)+1;
+                }
+                while (temp1 == temp4 || temp2 == temp4 || temp3 == temp4) {
+                    temp4 = (new Random()).nextInt(12)+1;
                 }
                 PersonalGoalCard pgc1 = new PersonalGoalCard(temp1);
                 players.get(0).setPersonalGoalCard(pgc1);
@@ -117,6 +135,12 @@ public class Game {
                 players.get(2).setPersonalGoalCard(pgc3);
                 PersonalGoalCard pgc4 = new PersonalGoalCard(temp4);
                 players.get(3).setPersonalGoalCard(pgc4);
+                /**The text five lines are used in tests*/
+                System.out.println("four chosen temp:");
+                System.out.println(temp1);
+                System.out.println(temp2);
+                System.out.println(temp3);
+                System.out.println(temp4);
             }
         }
     }
@@ -132,18 +156,18 @@ public class Game {
         boolean st1 = playerInTurn.getScoringToken1();
         boolean st2 = playerInTurn.getScoringToken2();
 
-        ArrayList<CommonGoalCard> c = this.getCommonGoalCard(); // -> maybe this is ok
+        //ArrayList<CommonGoalCard> c = commonGoalCards;
         if(st1 == false) {
-            if (c.get(0).compare(playerInTurn.getMyBookshelf())==true){
-                playerInTurn.setScoringToken1(true);
-                ScoringToken firstScoringTokenTile = c.get(0).popScoringToken();
+            if (commonGoalCards.get(0).compare(playerInTurn.getMyBookshelf())==true){
+                playerInTurn.setScoringToken1();
+                ScoringToken firstScoringTokenTile = commonGoalCards.get(0).popScoringToken();
                 scoreST += firstScoringTokenTile.getValue();
             }
         }
         if (st2 == false){
-            if(c.get(1).compare(playerInTurn.getMyBookshelf())==true){
-                playerInTurn.setScoringToken2(true);
-                ScoringToken secondScoringTokenTile = c.get(1).popScoringToken();
+            if(commonGoalCards.get(1).compare(playerInTurn.getMyBookshelf())==true){
+                playerInTurn.setScoringToken2();
+                ScoringToken secondScoringTokenTile = commonGoalCards.get(1).popScoringToken();
                 scoreST += secondScoringTokenTile.getValue();
             }
         }

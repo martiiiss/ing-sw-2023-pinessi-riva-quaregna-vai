@@ -4,6 +4,7 @@ import control.Controller;
 import jdk.jshell.spi.ExecutionControl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static model.Type.CAT;
 import static model.Type.NOTHING;
@@ -13,14 +14,22 @@ public class Player {
     private String nickname;
     private PersonalGoalCard myGoalCard;
     private boolean isFirstPlayer;
-    private int score = 0;
+    private int score;
     private Bookshelf myBookshelf;
     private ArrayList<Tile> tilesInHand; //This attribute saves the tiles selected by the player in chooseNTiles so that the bookshelf can be filled with fillBookshelf
     private boolean completedPGC = false;  //tiles of PGC in correct position -> maybe useless
-    //TODO ask if this attribute is to delete -> modified into a boolean type
-    private boolean scoringToken1 = false;
-    private boolean scoringToken2 = false;
+
+    private boolean scoringToken1;
+    private boolean scoringToken2;
     // the last two attributes are used to control if the Player has already completed the CGC
+    private HashMap<ArrayList<Cord>,Integer> previousAdj = new HashMap<>(); //Used to check if after a turn the number of adjacencies has changed
+
+    public Player () {
+        scoringToken1 = false;
+        scoringToken2 = false;
+        score = 0;
+        isFirstPlayer = false;
+    }
 
     /*This method will be launched when the game starts once game chooses the first player. it will update isFirstPlayer*/
     public void setAsFirstPlayer() {
@@ -29,12 +38,10 @@ public class Player {
 
     /*Sets the player's nickname this method will be invoked by the view and will pass the arg "nickname"*/
     public void setNickname(String nickname) {
+        if (nickname.equals("")) throw new IllegalArgumentException("Ops! This isn't a valid name!"); //added a control, maybe useless
         this.nickname = nickname;
     }
-
-    public String getNickname(){
-        return this.nickname;
-    }
+    public String getNickname(){return this.nickname;}
 
     /*Assign to each player their bookshelf*/
     public void setMyBookshelf() {
@@ -55,9 +62,7 @@ public class Player {
     public void updateScore (int score) {this.score = score;}
 
     /*Each player gets assigned a personal goal card that they have to complete*/
-    public void setPersonalGoalCard(PersonalGoalCard pgc) {
-        this.myGoalCard = pgc;
-    }
+    public void setPersonalGoalCard(PersonalGoalCard pgc) {this.myGoalCard = pgc;}
 
     /*Returns the player's personal goal card*/
     public PersonalGoalCard getPersonalGoalCard() {
@@ -74,19 +79,20 @@ public class Player {
         return this.completedPGC;
     }
 
+
     public boolean getScoringToken1(){return this.scoringToken1;}
 
 
     /*Once the player completes a CommonGoalCard, they won't be able to collect other points from that CGC.
     /*This method updates the flag that keeps track of whether the player has already collected points from the first card or not*/
-    public void setScoringToken1(boolean st1){
-        this.scoringToken1 = st1;
+    public void setScoringToken1(){
+        this.scoringToken1 = true;
     }
 
     public boolean getScoringToken2(){ return this.scoringToken2; }
 
-    public void setScoringToken2(boolean st2){
-        this.scoringToken2 = st2;
+    public void setScoringToken2(){
+        this.scoringToken2 = true;
     }
 
     /*TilesInHand correspond to the tiles that the player wishes to add to their bookshelf*/
@@ -101,7 +107,7 @@ public class Player {
 
     public int checkCompletePGC(){
         Tile[][] bks = myBookshelf.getBookshelf();
-        int PGCScore = 0;
+        int PGCScore;
         int numberOfTilesCompleted = 0;
         int r,c;
         for(r=0;r<6;r++){
@@ -112,7 +118,7 @@ public class Player {
                 }
             }
         }
-        /**Based on how many tiles are completed I assign the PGCScore
+        /*Based on how many tiles are completed I assign the PGCScore
          *This is good because I don't have to check everytime if
          *I already completed that tile
          */
@@ -129,8 +135,7 @@ public class Player {
         return PGCScore;
     }
 
-    private int numOfAdj=0;
-    class Cord{
+     class Cord{
         private int x;
         private int y;
 
@@ -138,7 +143,6 @@ public class Player {
             this.x = x;
             this.y = y;
         }
-
         public int getRowCord(){
             return this.x;
         }
@@ -154,15 +158,18 @@ public class Player {
         ArrayList<Cord> listOfCords = new ArrayList<>();
         Tile nothing = new Tile(NOTHING,0);
         int i,j;
-        int adj=0;
+        int points=0;
+
+        if(previousAdj.isEmpty()) //initialize
+            previousAdj.put(new ArrayList<>(),0);
 
         for (int x=0; x<6; x++) {
             for (int y = 0; y <5; y++) {
                 for (int counter = 0; counter < listOfCords.size() || listOfCords.size() == 0; counter++) {
                     newCord = true;
                     if (listOfCords.isEmpty()) {
-                        i=x;
-                        j=y;
+                        i = x;
+                        j = y;
                     } else {
                         i = listOfCords.get(counter).getRowCord();
                         j = listOfCords.get(counter).getColCord();
@@ -242,32 +249,25 @@ public class Player {
                     int col = listOfCords.get(counter).getColCord();
                     bookshelf[row][col] = nothing;
                 }
-                switch (listOfCords.size()) {
-                    case 3 -> {
-                        adj += 2;
-                        break;
-                    }
-                    case 4 -> {
-                        adj += 3;
-                        break;
-                    }
-                    case 5 -> {
-                        adj += 5;
-                        break;
-                    }
-                    case 6 -> {
-                        adj += 8;
-                        break;
-                    }
+                if (previousAdj.getOrDefault(listOfCords,0)<listOfCords.size()) { //if the amount of ajdacencies has increased then increase the score
+                    if (listOfCords.size() == 3)
+                        points += 2;
+                    if (listOfCords.size() == 4)
+                        points += 3;
+                    if (listOfCords.size() == 5)
+                        points += 5;
+                    if (listOfCords.size() >= 6)
+                        points += 8;
+                    previousAdj.put(listOfCords,listOfCords.size());
                 }
-                listOfCords.clear();
+                else
+                    previousAdj.put(new ArrayList<>(),listOfCords.size());
             }
-        }
+            listOfCords.clear();
+            }
         //p
-        System.out.println("Final result: "+ adj);
-        if(adj != this.numOfAdj)
-            return adj;
-        return 0;
+        System.out.println("Final result: "+points);
+        return points;
     }
 
 
