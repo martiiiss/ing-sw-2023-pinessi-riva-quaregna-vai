@@ -45,9 +45,7 @@ public class CGC7Test {
             {cat,cat,cat,cat,cat},
             {plant,trophy,book,game,cat},
             {cat,trophy,game,plant,frame}
-    }; //TODO there's a bug in here, because the block of four tiles is at the border of the matrix
-       // it signals a java.lang.ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5
-       // at model.CGC7.compareRule(CGC7.java:32)
+    };
 
     private final CGC7 cgc7 = new CGC7();
 
