@@ -67,7 +67,7 @@ public class Board {
         Tile nothing = new Tile(Type.NOTHING,0);
         for (int i=0; i<BOARD_ROW; i++)
             for (int j=0; j<BOARD_COLUMN; j++)
-                if(!livingRoomBoard[i][j].equals(blocked))
+                if(livingRoomBoard[i][j]==null)
                     livingRoomBoard[i][j]=nothing;
     }
 
