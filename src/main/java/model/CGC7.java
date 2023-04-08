@@ -28,7 +28,7 @@ public class CGC7 implements CGMStrategy {
                         counter = 0;
                         break;
                     }
-                if (counter == 4 && j > 2 && i >= 2 && i<4) //Left side
+                if (counter == 4 && j < 2 && i >= 2 && i<4) //Left side
                     if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()==(bookshelf[i - 1][j + 1].getType())) {
                         numOfBlocks++;
                         counter = 0;

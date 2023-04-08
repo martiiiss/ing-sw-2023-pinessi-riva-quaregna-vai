@@ -61,10 +61,10 @@ public class CGC7Test {
         bks2.setBookshelf(bookshelf2);
         assertFalse(cgc7.compareRule(bks2, 1));
 
-        /**this test throws the error signaled in the TODO*/
+        //This has to be false, there is only one group of 4
         Bookshelf bks3 = new Bookshelf();
         bks3.setBookshelf(b8);
-        assertTrue(cgc7.compareRule(bks3,1));
+        assertFalse(cgc7.compareRule(bks3,1));
 
     }
 }
