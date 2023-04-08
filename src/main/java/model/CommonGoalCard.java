@@ -3,6 +3,7 @@ package model;
 import java.util.Stack;
 
 
+
 public class CommonGoalCard {
     private Stack<ScoringToken> tokenStack;
     private int romanNumber;
@@ -73,7 +74,18 @@ public class CommonGoalCard {
     public CGMStrategy getStrategy(){ return this.strategy; }
 
     // compare bookshelf and commonGoalCard
-    public boolean compare(Bookshelf bookshelf){
-        return this.strategy.compareRule(bookshelf, idCGC);
-    }
+    public boolean compare(Bookshelf bookshelf)  {
+        Tile [][] test = new Tile[6][];
+
+        for(int i = 0; i < 6; i++)
+        {
+            Tile[] aMatrix = bookshelf.getBookshelf()[i];
+            int   aLength = 5;
+            test[i] = new Tile[5];
+            System.arraycopy(aMatrix, 0, test[i], 0, aLength);
+        }
+        Bookshelf mock = new Bookshelf();
+        mock.setBookshelf(test);
+        return this.strategy.compareRule(mock, idCGC);
+    } //TODO see if this method is ok or there's a better way to do this, it actually works well
 }
