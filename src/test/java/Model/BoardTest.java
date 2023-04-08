@@ -52,6 +52,7 @@ class BoardTest {
         tiles = bag.getBagTiles(num);
     }
 
+
     @Test
     void setUpBoardTest() {
         int e=0;

@@ -14,6 +14,7 @@ public class Board {
         initializeBoard(numOfPlayers);
     }
 
+
     public void setUpBoard(ArrayList<Tile> tilesToPutOnBoard) { //add tiles to the board.
         int iTiles=0;
         for(int i=0; i<BOARD_ROW; i++){

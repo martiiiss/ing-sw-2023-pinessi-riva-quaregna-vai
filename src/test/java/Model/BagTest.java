@@ -29,6 +29,7 @@ class BagTest {
 
     }
 
+
     @Test
     void addTileTest() {
         Tile cat = new Tile(Type.CAT, 1);
