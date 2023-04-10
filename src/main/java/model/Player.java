@@ -1,6 +1,5 @@
 package model;
 
-import control.Controller;
 import jdk.jshell.spi.ExecutionControl;
 
 import java.util.ArrayList;
