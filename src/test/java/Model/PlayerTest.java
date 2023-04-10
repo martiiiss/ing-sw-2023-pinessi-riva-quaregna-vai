@@ -125,7 +125,7 @@ public class PlayerTest {
     Tile trophy = new Tile(Type.TROPHY,1);
     Tile plant = new Tile(Type.PLANT,3);
     Tile nothing = new Tile(Type.NOTHING,0);
-
+    //the next 12 matrices are used to test if the 12 PGC do work properly
     Tile[][] bookshelf1 = { {plant, nothing, frame, nothing, nothing},
                             {nothing, nothing, nothing, nothing, cat},
                             {nothing, nothing, nothing, book, nothing},
@@ -199,7 +199,52 @@ public class PlayerTest {
                             {nothing, nothing, nothing, trophy, nothing},
                             {nothing,nothing,nothing,nothing,game},
                             {cat, nothing, nothing, nothing, nothing}};
+
+
+    //The next 6 matrices are used to test if I get the correct amount of points while the PGC isn't completed
+    Tile[][] bookshelfpt0 = { {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing}};
+
+    Tile[][] bookshelfpt1 = { {plant,   nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing}};
+
+    Tile[][] bookshelfpt2 = { {plant, nothing, frame, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing,nothing,nothing,nothing,nothing},
+                              {nothing, nothing, nothing, nothing, nothing}};
+
+    Tile[][] bookshelfpt4 = { {plant, nothing, frame, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, cat},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing,nothing,nothing,nothing,nothing},
+                              {nothing, nothing, nothing, nothing, nothing}};
+
+    Tile[][] bookshelfpt6 = { {plant, nothing, frame, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, cat},
+                              {nothing, nothing, nothing, book, nothing},
+                              {nothing, nothing, nothing, nothing, nothing},
+                              {nothing,nothing,nothing,nothing,nothing},
+                              {nothing, nothing, nothing, nothing, nothing}};
+
+    Tile[][] bookshelfpt9 = { {plant, nothing, frame, nothing, nothing},
+                              {nothing, nothing, nothing, nothing, cat},
+                              {nothing, nothing, nothing, book, nothing},
+                              {nothing, game, nothing, nothing, nothing},
+                              {nothing,nothing,nothing,nothing,nothing},
+                              {nothing, nothing, nothing, nothing, nothing}};
     private final Player player = new Player();
+    private final Player p2 = new Player();
     Bookshelf bks = null;
     @Test
     void checkCompletePGC() {
@@ -215,6 +260,7 @@ public class PlayerTest {
         PersonalGoalCard pgc10 = new PersonalGoalCard(10);
         PersonalGoalCard pgc11 = new PersonalGoalCard(11);
         PersonalGoalCard pgc12 = new PersonalGoalCard(12);
+        //here I test if I actually can get 12 points if the PGC is completed and test the boolean for getCompletePGC
         int id=1;
         while(id<13){
             player.setMyBookshelf();
@@ -222,10 +268,41 @@ public class PlayerTest {
             assignName(id);
             PersonalGoalCard pgc = new PersonalGoalCard(id);
             player.setPersonalGoalCard(pgc);
-            assertEquals(player.checkCompletePGC(),12);
+            assertEquals(12, player.checkCompletePGC());
+            assertTrue(player.getCompletePGC());
             id++;
         }
-    }//TODO check different cases of this test
+
+        //here I test the progression in points
+        PersonalGoalCard pgc = new PersonalGoalCard(1);
+        p2.setPersonalGoalCard(pgc);
+        p2.setMyBookshelf();
+        bks = p2.getMyBookshelf();
+        //0pt
+        bks.setBookshelf(bookshelfpt0);
+        assertEquals(0, p2.checkCompletePGC());
+        assertFalse(p2.getCompletePGC());
+        //1pt
+        bks.setBookshelf(bookshelfpt1);
+        assertEquals(1, p2.checkCompletePGC());
+        assertFalse(p2.getCompletePGC());
+        //2pt
+        bks.setBookshelf(bookshelfpt2);
+        assertEquals(2, p2.checkCompletePGC());
+        assertFalse(p2.getCompletePGC());
+        //4pt
+        bks.setBookshelf(bookshelfpt4);
+        assertEquals(4, p2.checkCompletePGC());
+        assertFalse(p2.getCompletePGC());
+        //6pt
+        bks.setBookshelf(bookshelfpt6);
+        assertEquals(6, p2.checkCompletePGC());
+        assertFalse(p2.getCompletePGC());
+        //9pt
+        bks.setBookshelf(bookshelfpt9);
+        assertEquals(9, p2.checkCompletePGC());
+        assertFalse(p2.getCompletePGC());
+    }
     //method only used in test
     private void assignName(int id) {
         switch (id){
@@ -279,7 +356,7 @@ public class PlayerTest {
         b = player.getMyBookshelf();
         b.setBookshelf(bookshelfAdj2);
         assertEquals(player.checkAdjacentBookshelf(),9);
-    }//TODO do this test
+    }
 
     @Test
     void checkBookshelf() {
@@ -300,7 +377,6 @@ public class PlayerTest {
             {frame, frame, plant, cat, frame,},
             {cat, plant, trophy, cat, plant}
     };
-
     Tile[][] notFull = {
             {cat, nothing, frame, nothing, game},
             {cat, nothing, cat, game, plant},

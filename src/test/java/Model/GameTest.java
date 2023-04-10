@@ -135,22 +135,45 @@ public class GameTest {
 
     @Test
     void checkCommonGoalCard() {
-
+        //tests with initialize test -> only one player, the first one to take a scoring token,
+        //using this function we can test every combination of CGC with every "winning" bookshelf,
+        //there are 12 bookshelves written after this test, we can use those
         assertEquals(8,initializeTest(1,12,b12));
         assertEquals(0,initializeTest(12,7,b9));
         assertEquals(16,initializeTest(1,3,b1));
 
-
-        //TODO this test did weird things and had to be fixed, now I have to stress test it a bit, probably it works properly;
-        // in order to make this work I changed the method compare in the CommonGoalCard class
+        //test with 3 players -> I try to get from the same CGC the scoring token
+        //here I simulate a full turn with 3 players
+        Player p2 = new Player();
+        Player p3 = new Player();
+        Player p4 = new Player();
+        p2.setMyBookshelf();
+        p3.setMyBookshelf();
+        p4.setMyBookshelf();
+        p2.getMyBookshelf().setBookshelf(b12);
+        p3.getMyBookshelf().setBookshelf(b12);
+        p4.getMyBookshelf().setBookshelf(b12);
+        game.setNumOfPlayers(3);
+        game.getCommonGoalCard().clear(); //this is only so that I can decide which CGC to test
+        game.getCommonGoalCard().add(new CommonGoalCard(12,3,1));
+        game.getCommonGoalCard().add(new CommonGoalCard(3,3,2));
+        //the first player gets 8 points -> it is the one that starts the turn
+        game.setPlayerInTurn(p2);
+        assertEquals(8,game.checkCommonGoalCard());
+        //the second player gets 6 points -> the second player in turn
+        game.setPlayerInTurn(p3);
+        assertEquals(6,game.checkCommonGoalCard());
+        //the third and last player gets 4 points -> the last one in turn
+        game.setPlayerInTurn(p4);
+        assertEquals(4,game.checkCommonGoalCard());
     }
 
-    //this function generalizes the test for a single player -> I have to improve this to be multiplayer TODO
+    //this function generalizes the test for a single player, it's useful to see if every CGC works
     private int initializeTest(int idCGC1, int idCGC2, Tile[][] playerBookshelf){
         Player p1 = new Player();
         game.setPlayerInTurn(p1);
         game.setNumOfPlayers(4);
-        game.getCommonGoalCard().clear();
+        game.getCommonGoalCard().clear();//this is only so that I can decide which CGC to test
         p1.setMyBookshelf();
         game.getCommonGoalCard().add(new CommonGoalCard(idCGC1,4,1));
         game.getCommonGoalCard().add(new CommonGoalCard(idCGC2,4,2));
@@ -167,8 +190,8 @@ public class GameTest {
     Tile p = new Tile(Type.PLANT, 3);
     Tile n = new Tile(Type.NOTHING, 0);
 
-
-
+    //the number of the bookshelf is linked to the CGC, for example: b1 is true for CGC1;
+    //be careful, some of these matrices are true for more than one CGC
     Tile[][] b1 = {
             {f,f,n,f,f},
             {f,t,n,t,f},
@@ -176,7 +199,7 @@ public class GameTest {
             {p,f,p,p,f},
             {p,f,p,p,c},
             {f,p,c,p,f}
-    };
+    };//CGC1 & CGC3
     Tile[][] b2 = {
             {c,b,t,t,f},
             {g,c,b,f,f},

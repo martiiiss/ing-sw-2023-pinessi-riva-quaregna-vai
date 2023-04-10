@@ -1,9 +1,7 @@
 package model;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.Random;
-import model.CommonGoalCard;
 
 public class Game {
     private Player winner;
@@ -149,8 +147,6 @@ public class Game {
     // it adds the player into the array
     public void addPlayer(Player p){players.add(p);}
 
-
-
     /** If st1 or st2 are FALSE, I verify if the player has completed one or both CGC
      * -> if the player has completed the CGC I set the ScoringToken flag to TRUE and return scoreST, the score given by the CGC
      */
@@ -159,7 +155,6 @@ public class Game {
         boolean st1 = playerInTurn.getScoringToken1();
         boolean st2 = playerInTurn.getScoringToken2();
 
-        //System.out.println(commonGoalCards.get(0)+" "+commonGoalCards.get(1));
         if(!st1) {
             if (commonGoalCards.get(0).compare(playerInTurn.getMyBookshelf())){
                 playerInTurn.setScoringToken1();
