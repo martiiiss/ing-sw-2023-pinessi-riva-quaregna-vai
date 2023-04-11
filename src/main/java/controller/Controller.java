@@ -2,10 +2,10 @@ package controller;
 
 import jdk.jshell.spi.ExecutionControl;
 import model.*;
-import view.MQVersion.UserInterface;
+import view.UserInterface;
 
 public class Controller {
-    //private UserInterface UI; -> we need to create this in the view TODO
+    private UserInterface UI;
     private Game game;
     private Bag bag;
     private Board board;
@@ -15,6 +15,7 @@ public class Controller {
          chooseNumOfPlayer();
          this.bag = new Bag();
          this.board = new Board(game.getNumOfPlayers());
+         this.UI = new view.UserInterface();
     }
     //this method needs to be error checked
     public void chooseNumOfPlayer(){
