@@ -51,31 +51,32 @@ public class Controller {
     }
 
     public void chooseProtocol(){ //maybe change the String into an int or char
-        String chosenProtocol = UI.webProtocol();
-        if(chosenProtocol.equals("socket")||chosenProtocol.equals("rmi")){
-            System.out.println("Ok!");
-        } else {
-            System.out.println("Sorry, try again...");
-            chosenProtocol = UI.webProtocol();
+        int chosenProtocol = UI.webProtocol();
+        switch(chosenProtocol){
+            case 1 -> System.out.println("You have chosen the Socket protocol!");
+            case 2 -> System.out.println("You have chosen the JavaRMI protocol!");
+            default -> {System.out.println("Sorry, try again...");
+                        chosenProtocol = UI.webProtocol();}
         }
     }//IDK how we will use this, but in this way we know witch one in between the two protocols is chosen by the player
+    //TODO the cases are useful, we need to implement the choice
 
     public void chooseUserInterface(){//maybe change the String into an int or char
-        String chosenInterface = UI.userInterface();
-        if(chosenInterface.equals("tui") || chosenInterface.equals("gui")){
-            System.out.println("Ok!");
-        } else {
-            System.out.println("Sorry, try again...");
-            chosenInterface = UI.userInterface();
+        int chosenInterface = UI.userInterface();
+        switch (chosenInterface){
+            case 1 -> System.out.println("You have chosen the TUI!");
+            case 2 -> System.out.println("You have chosen the GUI!");
+            default -> {System.out.println("Sorry, try again...");
+                        chosenInterface = UI.userInterface();}
         }
         //We will find a way to use this one
-    }
+    }//TODO the cases are useful, we need to implement the choice
+
     public void userChoices(){
         chooseNickname();
         chooseProtocol();
         chooseUserInterface();
     }
-
 
     public boolean countPlayers(){
         if(game.getPlayers().size() == game.getNumOfPlayers()){
