@@ -66,17 +66,6 @@ public class Player {
         return this.myGoalCard;
     }
 
-    /*completedPGC keeps track of "how much of the personal goal card" has been completed by the player,
-    /*or how many tiles of the bookshelf are in the "right position" */
-    public void setCompletePGC(){
-        this.completedPGC = true;
-    }
-
-    public boolean getCompletePGC(){
-        return this.completedPGC;
-    }
-
-
     public boolean getScoringToken1(){return this.scoringToken1;}
 
 
@@ -134,7 +123,7 @@ public class Player {
         int deltaScore = PGCScore-this.scorePGC;
         this.scorePGC=PGCScore;
         return deltaScore;
-    }//TODO sistemare sto metodo -> fare i test
+    }
 
      class Cord{
         private int x;

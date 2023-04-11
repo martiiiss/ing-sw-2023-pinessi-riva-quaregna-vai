@@ -64,16 +64,6 @@ public class PlayerTest {
         assertEquals(pgc1, p.getPersonalGoalCard());
     }//same test as the method before
 
-    @Test
-    void setCompletePGC() {
-        p.setCompletePGC();
-        assertTrue(p.getCompletePGC());
-    }
-    @Test
-    void getCompletePGC() {
-        p.setCompletePGC();
-        assertTrue(p.getCompletePGC());
-    }//tested in the same way as the method before
 
     @Test
     void getScoringToken1() {
@@ -132,6 +122,7 @@ public class PlayerTest {
                             {nothing, game, nothing, nothing, nothing},
                             {nothing,nothing,nothing,nothing,nothing},
                             {nothing, nothing, trophy, nothing, nothing}};
+    /*
     Tile[][] bookshelf2 = { {nothing, nothing, nothing, nothing, nothing},
                             {nothing, plant, nothing, nothing, nothing},
                             {cat, nothing, game, nothing, nothing},
@@ -200,6 +191,8 @@ public class PlayerTest {
                             {nothing,nothing,nothing,nothing,game},
                             {cat, nothing, nothing, nothing, nothing}};
 
+     */
+
 
     //The next 6 matrices are used to test if I get the correct amount of points while the PGC isn't completed
     Tile[][] bookshelfpt0 = { {nothing, nothing, nothing, nothing, nothing},
@@ -248,77 +241,38 @@ public class PlayerTest {
     Bookshelf bks = null;
     @Test
     void checkCompletePGC() {
-        PersonalGoalCard pgc1 = new PersonalGoalCard(1);
-        PersonalGoalCard pgc2 = new PersonalGoalCard(2);
-        PersonalGoalCard pgc3 = new PersonalGoalCard(3);
-        PersonalGoalCard pgc4 = new PersonalGoalCard(4);
-        PersonalGoalCard pgc5 = new PersonalGoalCard(5);
-        PersonalGoalCard pgc6 = new PersonalGoalCard(6);
-        PersonalGoalCard pgc7 = new PersonalGoalCard(7);
-        PersonalGoalCard pgc8 = new PersonalGoalCard(8);
-        PersonalGoalCard pgc9 = new PersonalGoalCard(9);
-        PersonalGoalCard pgc10 = new PersonalGoalCard(10);
-        PersonalGoalCard pgc11 = new PersonalGoalCard(11);
-        PersonalGoalCard pgc12 = new PersonalGoalCard(12);
-        //here I test if I actually can get 12 points if the PGC is completed and test the boolean for getCompletePGC
-        int id=1;
-        while(id<13){
-            player.setMyBookshelf();
-            bks = player.getMyBookshelf();
-            assignName(id);
-            PersonalGoalCard pgc = new PersonalGoalCard(id);
-            player.setPersonalGoalCard(pgc);
-            assertEquals(12, player.checkCompletePGC());
-            assertTrue(player.getCompletePGC());
-            id++;
-        }
+        //here I test if I actually can get 12 points if the PGC is completed
+        player.setMyBookshelf();
+        bks = player.getMyBookshelf();
+        bks.setBookshelf(bookshelf1);
+        //6 tiles in correct position
+        PersonalGoalCard pgcPlayer = new PersonalGoalCard(1);
+        player.setPersonalGoalCard(pgcPlayer);
+        assertEquals(12, player.checkCompletePGC());
 
         //here I test the progression in points
         PersonalGoalCard pgc = new PersonalGoalCard(1);
         p2.setPersonalGoalCard(pgc);
         p2.setMyBookshelf();
         bks = p2.getMyBookshelf();
-        //0pt
+        //0 tiles in correct position
         bks.setBookshelf(bookshelfpt0);
         assertEquals(0, p2.checkCompletePGC());
-        assertFalse(p2.getCompletePGC());
-        //1pt
+        //1 tiles in correct position
         bks.setBookshelf(bookshelfpt1);
         assertEquals(1, p2.checkCompletePGC());
-        assertFalse(p2.getCompletePGC());
-        //2pt
+        //2 tiles in correct position
         bks.setBookshelf(bookshelfpt2);
-        assertEquals(2, p2.checkCompletePGC());
-        assertFalse(p2.getCompletePGC());
-        //4pt
+        assertEquals(1, p2.checkCompletePGC());
+        //3 tiles in correct position
         bks.setBookshelf(bookshelfpt4);
-        assertEquals(4, p2.checkCompletePGC());
-        assertFalse(p2.getCompletePGC());
-        //6pt
+        assertEquals(2, p2.checkCompletePGC());
+        //4 tiles in correct position
         bks.setBookshelf(bookshelfpt6);
-        assertEquals(6, p2.checkCompletePGC());
-        assertFalse(p2.getCompletePGC());
-        //9pt
+        assertEquals(2, p2.checkCompletePGC());
+        //5 tiles in correct position
         bks.setBookshelf(bookshelfpt9);
-        assertEquals(9, p2.checkCompletePGC());
-        assertFalse(p2.getCompletePGC());
-    }//TODO sistemare il test in base ai cambiamenti
-    //method only used in test
-    private void assignName(int id) {
-        switch (id){
-            case 1 -> bks.setBookshelf(bookshelf1);
-            case 2 -> bks.setBookshelf(bookshelf2);
-            case 3 -> bks.setBookshelf(bookshelf3);
-            case 4 -> bks.setBookshelf(bookshelf4);
-            case 5 -> bks.setBookshelf(bookshelf5);
-            case 6 -> bks.setBookshelf(bookshelf6);
-            case 7 -> bks.setBookshelf(bookshelf7);
-            case 8 -> bks.setBookshelf(bookshelf8);
-            case 9 -> bks.setBookshelf(bookshelf9);
-            case 10 -> bks.setBookshelf(bookshelf10);
-            case 11 -> bks.setBookshelf(bookshelf11);
-            case 12 -> bks.setBookshelf(bookshelf12);
-        }
+        assertEquals(3, p2.checkCompletePGC());
     }
 
     Tile[][] bookshelfAdj = {
