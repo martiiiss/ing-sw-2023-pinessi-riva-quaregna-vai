@@ -93,4 +93,9 @@ public class Board {
     }
 
     public int getNumOfCells(){return this.numOfCells;}
+
+    public boolean checkBoardStatus(){
+       /*Scrivere il codice in modo che ritorni vero se la board deve essere riempita, falso altrimenti*/
+       return false;
+    }//TODO implement this function
 }

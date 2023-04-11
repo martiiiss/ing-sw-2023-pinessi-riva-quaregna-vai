@@ -44,7 +44,7 @@ public class Bookshelf {
             }
             throw new NotEnoughSlotsAvailableException("Not enough slots available!");
         } catch (NotEnoughSlotsAvailableException ex) {
-        }
+        }//Exception already checked
     }
     public Tile[][] getBookshelf(){
         return this.bookshelf;

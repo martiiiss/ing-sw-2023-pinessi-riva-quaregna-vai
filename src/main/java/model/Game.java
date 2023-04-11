@@ -25,6 +25,8 @@ public class Game {
         numberOfPlayers = 0;
     }
 
+    public ArrayList<Player> getPlayers(){return this.players;}
+
     public void setCommonGoalCards(){ //choose 2 commonGoalCard
         int n1 = (new Random()).nextInt(12)+1; //random number (1-12)
         int n2 = (new Random()).nextInt(12)+1;

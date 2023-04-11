@@ -14,7 +14,7 @@ public class Player {
     private int score;
     private Bookshelf myBookshelf;
     private ArrayList<Tile> tilesInHand; //This attribute saves the tiles selected by the player in chooseNTiles so that the bookshelf can be filled with fillBookshelf
-    private boolean completedPGC = false;  //tiles of PGC in correct position -> maybe useless
+    private int scorePGC = 0;  //progressive score of PGC
 
     private boolean scoringToken1;
     private boolean scoringToken2;
@@ -56,7 +56,7 @@ public class Player {
     }
 
     /*Updates the score: add addScore*/
-    public void updateScore (int score) {this.score = score;}
+    public void updateScore (int score) {this.score += score;}
 
     /*Each player gets assigned a personal goal card that they have to complete*/
     public void setPersonalGoalCard(PersonalGoalCard pgc) {this.myGoalCard = pgc;}
@@ -119,6 +119,7 @@ public class Player {
          *This is good because I don't have to check everytime if
          *I already completed that tile
          */
+
         switch (numberOfTilesCompleted) {
             case 0 -> PGCScore = 0;
             case 1 -> PGCScore = 1;
@@ -126,11 +127,14 @@ public class Player {
             case 3 -> PGCScore = 4;
             case 4 -> PGCScore = 6;
             case 5 -> PGCScore = 9;
-            case 6 -> {PGCScore = 12; setCompletePGC();}
+            case 6 -> PGCScore = 12;
             default -> throw new IllegalStateException("Unexpected value:"+ numberOfTilesCompleted);
         }
-        return PGCScore;
-    }
+        if(PGCScore<=this.scorePGC) {return 0;}
+        int deltaScore = PGCScore-this.scorePGC;
+        this.scorePGC=PGCScore;
+        return deltaScore;
+    }//TODO sistemare sto metodo -> fare i test
 
      class Cord{
         private int x;

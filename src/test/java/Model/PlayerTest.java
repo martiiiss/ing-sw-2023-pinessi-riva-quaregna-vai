@@ -302,7 +302,7 @@ public class PlayerTest {
         bks.setBookshelf(bookshelfpt9);
         assertEquals(9, p2.checkCompletePGC());
         assertFalse(p2.getCompletePGC());
-    }
+    }//TODO sistemare il test in base ai cambiamenti
     //method only used in test
     private void assignName(int id) {
         switch (id){
