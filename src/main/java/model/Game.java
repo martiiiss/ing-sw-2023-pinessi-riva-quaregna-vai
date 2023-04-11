@@ -29,8 +29,8 @@ public class Game {
         int n1 = (new Random()).nextInt(12)+1; //random number (1-12)
         int n2 = (new Random()).nextInt(12)+1;
         System.out.println(n1+" "+n2);
-        if(n1==n2){
-            n2++;
+        while(n1==n2){
+            n2 = (new Random()).nextInt(12)+1;
         }
 
         CommonGoalCard c1 = new CommonGoalCard(n1, numberOfPlayers, 1);
