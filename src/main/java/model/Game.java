@@ -74,15 +74,16 @@ public class Game {
      */
     public void assignPersonalGoalCard(int nOfPlayers){
         int id1,id2,id3,id4;
+        PersonalGoalCard pgc1,pgc2,pgc3,pgc4;
 
         switch(nOfPlayers){
             case 2: {
                  id1 = (new Random()).nextInt(12)+1;
                  id2 = (new Random()).nextInt(12)+1;
                 while (id1 == id2){id2 = (new Random()).nextInt(12)+1;}
-                PersonalGoalCard pgc1 = new PersonalGoalCard(id1);
+                pgc1 = new PersonalGoalCard(id1);
                 players.get(0).setPersonalGoalCard(pgc1);
-                PersonalGoalCard pgc2 = new PersonalGoalCard(id2);
+                pgc2 = new PersonalGoalCard(id2);
                 players.get(1).setPersonalGoalCard(pgc2);
                 /**The text three lines are used in tests*/
                 System.out.println("first two chosen id:");
@@ -100,11 +101,11 @@ public class Game {
                 while(id1 == id3 || id2 == id3) {
                     id3 = (new Random()).nextInt(12)+1;
                 }
-                PersonalGoalCard pgc1 = new PersonalGoalCard(id1);
+                pgc1 = new PersonalGoalCard(id1);
                 players.get(0).setPersonalGoalCard(pgc1);
-                PersonalGoalCard pgc2 = new PersonalGoalCard(id2);
+                pgc2 = new PersonalGoalCard(id2);
                 players.get(1).setPersonalGoalCard(pgc2);
-                PersonalGoalCard pgc3 = new PersonalGoalCard(id3);
+                pgc3 = new PersonalGoalCard(id3);
                 players.get(2).setPersonalGoalCard(pgc3);
                 /**The text four lines are used in tests*/
                 System.out.println("Three chosen id:");
@@ -126,13 +127,13 @@ public class Game {
                 while (id1 == id4 || id2 == id4 || id3 == id4) {
                     id4 = (new Random()).nextInt(12)+1;
                 }
-                PersonalGoalCard pgc1 = new PersonalGoalCard(id1);
+                pgc1 = new PersonalGoalCard(id1);
                 players.get(0).setPersonalGoalCard(pgc1);
-                PersonalGoalCard pgc2 = new PersonalGoalCard(id2);
+                pgc2 = new PersonalGoalCard(id2);
                 players.get(1).setPersonalGoalCard(pgc2);
-                PersonalGoalCard pgc3 = new PersonalGoalCard(id3);
+                pgc3 = new PersonalGoalCard(id3);
                 players.get(2).setPersonalGoalCard(pgc3);
-                PersonalGoalCard pgc4 = new PersonalGoalCard(id4);
+                pgc4 = new PersonalGoalCard(id4);
                 players.get(3).setPersonalGoalCard(pgc4);
                 /**The text five lines are used in tests*/
                 System.out.println("four chosen id:");
