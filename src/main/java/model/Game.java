@@ -23,6 +23,7 @@ public class Game {
         commonGoalCards = new ArrayList<>();
         players = new ArrayList<>();
         numberOfPlayers = 0;
+        isLastTurn = false;
     }
 
     public ArrayList<Player> getPlayers(){return this.players;}

@@ -106,28 +106,20 @@ public class Controller {
         chooseTiles();
         chooseColumn();
         chooseTilesDisposition();
-        calculateScore();
-
-
-
-
-
-        goToNext();
-
+        calculateScore();//I calculate the score every time a Player puts some tiles into its Bookshelf
+        checkIfGameEnd();//this method controls if the Bookshelf is full and determines how to proceed
     }
     public void checkBoardToBeFilled(){
         if(board.checkBoardStatus()){
             //Qui implementeremo il codice per riempire la board
             // sia che sia vuota sia che ci siano tessere sulla Board
-            //Indipentemente da fatto che siano prsenti tiles sulla board
+            //Indipentemente da fatto che siano presenti tiles sulla board
             //devo provare a raccoglierle
             //controllare se la bag contiene abbastanza tiles
         }
     }//TODO implement this function
 
 
-
-    //During the game
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
     public void chooseTiles(){
@@ -147,9 +139,9 @@ public class Controller {
     //with this method the tiles chosen will be put into tilesInHand, it is needed a button in view
     public void confirmYourChoice(){
         try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-    }
+    }//TODO decide if this is needed
 
-    //this method needs to be error checked
+
     public void chooseColumn(){
         //5.	Il playerInTurn sceglie la colonna in cui inserire le tiles
         //a.	Se ci stanno vai avanti
@@ -171,20 +163,34 @@ public class Controller {
     }
 
     public void checkIfGameEnd(){
-        if(game.getPlayerInTurn().getMyBookshelf().getStatus()){
-            //i.	Se isLastTurn == false
-            //•	Set isLastTurn, aggiorna lo score del playerInTurn assegnandogli il punto del primo a finire
-            //	Se nextPlayer != firstPlayer -> set playerInTurn(nextPlayer) -> vai al punto 1
-            //	Se nextPlayer == firstPlayer -> FINE PARTITA
-            //ii.	Se isLastTurn == true
-            //•	Se nextPlayer != firstPlayer -> vai al punto 1
-            //•	Se nextPlayer == firstPlayer -> FINE PARTITA
-        } else {
-            //i.	Se isLastTurn == false -> set playerInTurn(nextPlayer) -> vai al punto 1
-            //ii.	Se isLastTurn == true
-            //•	Se nextPlayer == firstPlayer -> FINE PARTITA
+        if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
+            if(game.getIsLastTurn()){//is last turn
+                int index = game.getPlayers().indexOf(game.getPlayerInTurn())+1;//index of the next player
+                if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
+                    endOfGame();/*CALL THE END OF GAME*/
+                }
+                goToNext(); //set next Player in turn
+            }
+            game.setFinisher(game.getPlayerInTurn());//I set the player that finished first and set isLastTurn -> I use a method from method.Game
+            game.getPlayerInTurn().updateScore(1);//I add an extra point to the first player to finish
+
+            int index = game.getPlayers().indexOf(game.getPlayerInTurn())+1;//index of the next player
+            if(game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
+                endOfGame();/*CALL THE END OF GAME*/
+            }
+            goToNext();//set next Player in turn
+
+        } else {//Bookshelf NOT full
+            if(game.getIsLastTurn()){
+                int index = game.getPlayers().indexOf(game.getPlayerInTurn())+1;//index of the next player
+                if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
+                    endOfGame();/*CALL END OF GAME*/
+                }
+                goToNext(); //set next Player in turn
+            }
         }
-    }//TODO implement this method -> it needs to be split into two different methods
+    }//TODO implement this method -> it needs to be split into two different method (MAYBE NOT)
+     // Control if how it's implemented now it's OK
 
 
      public void goToNext(){
@@ -199,12 +205,12 @@ public class Controller {
     //asks the player if he wants to play another time
     public void playAgain(){
         try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-
-    }
+    }//TODO implement this method
 
     public void endOfGame(){
         //1.	In base al punteggio dei Player viene stilata una classifica
         //a.	In caso di parità chiedere al tutor/su slack
         //2.	Viene terminata la partita e compare un tasto PlayAgain che ci riporta al punto di partenza.
-    }
+        playAgain();
+    }//TODO implement this method
 }

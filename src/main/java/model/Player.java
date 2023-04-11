@@ -32,6 +32,7 @@ public class Player {
     public void setAsFirstPlayer() {
         this.isFirstPlayer = true;
     }
+    public boolean getIsFirstPlayer(){return isFirstPlayer;}
 
     /*Sets the player's nickname this method will be invoked by the view and will pass the arg "nickname"*/
     public void setNickname(String nickname) {
