@@ -87,5 +87,5 @@ public class CommonGoalCard {
         Bookshelf mock = new Bookshelf();
         mock.setBookshelf(copy);
         return this.strategy.compareRule(mock, idCGC);
-    } //TODO see if this method is ok or there's a better way to do this, it actually works well
+    }
 }
