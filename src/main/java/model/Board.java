@@ -94,7 +94,7 @@ public class Board {
 
     public int getNumOfCells(){return this.numOfCells;}
 
-    public boolean checkBoardStatus(){
+    public boolean checkBoardStatus(){ //return true if board needs to be filled
         for(int i=0; i<BOARD_ROW; i++){
             for(int j=0; j<BOARD_COLUMN; j++){
                 if(livingRoomBoard[i][j].getType()!=Type.BLOCKED && livingRoomBoard[i][j].getType()!=Type.NOTHING){ //in this cell there is a tile
@@ -105,7 +105,6 @@ public class Board {
                 }
             }
         }
-       /*Scrivere il codice in modo che ritorni vero se la board deve essere riempita, falso altrimenti*/
        return true;
     }//TODO implement this function
 }

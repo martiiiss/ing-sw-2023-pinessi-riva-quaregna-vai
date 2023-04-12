@@ -72,6 +72,16 @@ class BoardTest {
                                              { blocked, blocked, blocked, nothing, nothing, gameTile, blocked, blocked, blocked},
                                              { blocked, blocked, blocked, blocked, nothing, plant  ,  blocked, blocked, blocked}};
 
+    private Tile[][] boardInGame4Players3 = {{ blocked, blocked, blocked, nothing, nothing, blocked,  blocked, blocked, blocked},
+                                             { blocked, blocked, blocked, cat,     nothing, nothing,  blocked, blocked, blocked},
+                                             { blocked, blocked, nothing, nothing, book,    nothing,  nothing, blocked, blocked},
+                                             { blocked, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, frame  },
+                                             { nothing, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, nothing},
+                                             { nothing, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, blocked},
+                                             { blocked, blocked, nothing, trophy,  nothing, nothing,  nothing, blocked, blocked},
+                                             { blocked, blocked, blocked, nothing, nothing, nothing, blocked, blocked, blocked},
+                                             { blocked, blocked, blocked, blocked, nothing, plant  ,  blocked, blocked, blocked}};
+
     private final Bag bag = new Bag();
 
     Tile[][] livingRoom2;
@@ -175,7 +185,7 @@ class BoardTest {
                 board4.getBoard()[i][j] = boardInGame4Players[i][j];
             }
         }
-        assertTrue(board.checkBoardStatus());
+        assertFalse(board4.checkBoardStatus());
 
 
         for (int i = 0; i < board4.BOARD_ROW; i++) {  //initialize board
@@ -183,7 +193,13 @@ class BoardTest {
                 board4.getBoard()[i][j] = boardInGame4Players2[i][j];
             }
         }
-        assertTrue(board.checkBoardStatus());
+        assertFalse(board4.checkBoardStatus());
 
+        for (int i = 0; i < board4.BOARD_ROW; i++) {  //initialize board
+            for (int j = 0; j < board4.BOARD_COLUMN; j++) {
+                board4.getBoard()[i][j] = boardInGame4Players3[i][j];
+            }
+        }
+        assertTrue(board4.checkBoardStatus()); //board must be filled
     }
 }
