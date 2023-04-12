@@ -53,6 +53,8 @@ public class UserInterface {
         return sc.nextInt();
     }//TODO implement this method
 
-
-
+    public int askPlayAgain(){
+        System.out.print("Dou you want to play again?\nPress 0 for 'No', 1 for 'Yes':");
+        return sc.nextInt();
+    }
 }

@@ -4,6 +4,9 @@ import jdk.jshell.spi.ExecutionControl;
 import model.*;
 import view.UserInterface;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class Controller {
     private UserInterface UI;
     private Game game;
@@ -39,7 +42,7 @@ public class Controller {
         }
         //control for the others
         for(int i = 0; i<game.getPlayers().size();i++) {
-            while(game.getPlayers().get(i).equals(nickname) || nickname.isEmpty()){
+            while(game.getPlayers().get(i).getNickname().equals(nickname) || nickname.isEmpty()){
                 System.out.println("Invalid nickname! Same as another user or empty.");
                 nickname = UI.askPlayerNickname();
                 i=0;
@@ -96,8 +99,8 @@ public class Controller {
         board.setUpBoard(bag.getBagTiles(board.getNumOfCells()));//filled the board
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
-        //game.getPlayers().get((new Random()).nextInt(game.getNumOfPlayers)).setAsFirstPlayer();
-    }//TODO check if we consider the first player in the ArrayList as the first player
+
+    }//TODO We consider the first player in the ArrayList as the first player
 
     //button START GAME somewhere
 
@@ -112,13 +115,32 @@ public class Controller {
     }
     public void checkBoardToBeFilled(){
         if(board.checkBoardStatus()){
+            for(int r=0;r<9;r++){
+                for(int c=0;c<9;c++){
+                    //I control if the board is empty
+                    if(board.getBoard()[r][c].getType()!=Type.NOTHING || board.getBoard()[r][c].getType()!=Type.BLOCKED){
+                        //I add the tiles that are on the board to the bag
+                        bag.addTile(board.removeTile(r,c));//TODO control that I don't remove NOTHING tiles
+                    }
+                        //I check if inside the bag I have enough Tiles
+                        if(bag.getTilesContained().size()>= board.getNumOfCells()){
+                            //I have enough tiles -> fill board
+                            board.setUpBoard(bag.getBagTiles(board.getNumOfCells()));
+                        } else {
+                            //I don't have enough tiles, I add to the board only the tiles I have inside the bag
+                            board.setUpBoard(bag.getBagTiles(bag.getTilesContained().size()));
+                        }
+                    }
+                }
+            }
             //Qui implementeremo il codice per riempire la board
             // sia che sia vuota sia che ci siano tessere sulla Board
             //Indipentemente da fatto che siano presenti tiles sulla board
             //devo provare a raccoglierle
             //controllare se la bag contiene abbastanza tiles
-        }
-    }//TODO implement this function
+    }//TODO control and optimize this function
+
+
 
 
 
@@ -136,12 +158,6 @@ public class Controller {
         //ii.	Se non dovessero starci -> lancio un errore e vai all'inizio del metodo
         try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
     }//TODO implement this method
-
-    //with this method the tiles chosen will be put into tilesInHand, it is needed a button in view
-    public void confirmYourChoice(){
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-    }//TODO decide if this is needed
-
 
     public void chooseColumn(){
         //5.	Il playerInTurn sceglie la colonna in cui inserire le tiles
@@ -196,9 +212,7 @@ public class Controller {
                 goToNext();
             }
         }
-    }//TODO implement this method -> it needs to be split into two different method (MAYBE NOT)
-     // Control if how it's implemented now it's OK
-
+    }//TODO optimize this method
 
      public void goToNext(){ //set player in turn
         int i = game.getPlayers().indexOf(game.getPlayerInTurn())+1;
@@ -211,13 +225,21 @@ public class Controller {
 
     //asks the player if he wants to play another time
     public void playAgain(){
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-    }//TODO implement this method
+        int startAgain = UI.askPlayAgain();
+        switch(startAgain){
+            case 1 -> System.out.println("Ok, stating a new game...");
+            case 0 -> System.out.println("Ok, bye bye!");
+            default -> {System.out.println("Sorry, try again...");
+                        startAgain = UI.userInterface();}
+        }
+    }//TODO the cases are useful, we need to implement the choice
 
     public void endOfGame(){
         //1.	In base al punteggio dei Player viene stilata una classifica
         //a.	In caso di parità chiedere al tutor/su slack
         //2.	Viene terminata la partita e compare un tasto PlayAgain che ci riporta al punto di partenza.
         playAgain();
-    }//TODO implement this method
+    }//TODO implement this method -> ask how to choose the winner if two players have the same score
+
+
 }
