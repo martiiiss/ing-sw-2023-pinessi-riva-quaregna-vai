@@ -164,37 +164,43 @@ public class Controller {
     }
 
     public void checkIfGameEnd(){
+        int index=0;
+        if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
+            index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
+        }
+
         if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
-            if(game.getIsLastTurn()){//is last turn
-                int index = game.getPlayers().indexOf(game.getPlayerInTurn())+1;//index of the next player
-                if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
+            if(game.getIsLastTurn()) {//is last turn
+                if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
                     endOfGame();/*CALL THE END OF GAME*/
+                } else {
+                    goToNext(); //set next Player in turn
                 }
-                goToNext(); //set next Player in turn
+            } else{
+                game.setFinisher(game.getPlayerInTurn());//I set the player that finished first and set isLastTurn -> I use a method from method.Game
+                game.getPlayerInTurn().updateScore(1);//I add an extra point to the first player to finish
+                if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
+                    endOfGame();/*CALL THE END OF GAME*/
+                } else {
+                    goToNext(); //set next Player in turn
+                }
             }
-            game.setFinisher(game.getPlayerInTurn());//I set the player that finished first and set isLastTurn -> I use a method from method.Game
-            game.getPlayerInTurn().updateScore(1);//I add an extra point to the first player to finish
-
-            int index = game.getPlayers().indexOf(game.getPlayerInTurn())+1;//index of the next player
-            if(game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                endOfGame();/*CALL THE END OF GAME*/
-            }
-            goToNext();//set next Player in turn
-
         } else {//Bookshelf NOT full
             if(game.getIsLastTurn()){
-                int index = game.getPlayers().indexOf(game.getPlayerInTurn())+1;//index of the next player
                 if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
                     endOfGame();/*CALL END OF GAME*/
+                } else{
+                    goToNext(); //set next Player in turn
                 }
-                goToNext(); //set next Player in turn
+            } else{ //not last turn
+                goToNext();
             }
         }
     }//TODO implement this method -> it needs to be split into two different method (MAYBE NOT)
      // Control if how it's implemented now it's OK
 
 
-     public void goToNext(){
+     public void goToNext(){ //set player in turn
         int i = game.getPlayers().indexOf(game.getPlayerInTurn())+1;
         if(i<game.getNumOfPlayers()){
             game.setPlayerInTurn(game.getPlayers().get(i));
