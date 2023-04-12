@@ -4,7 +4,8 @@ import model.Bag;
 import model.Board;
 import model.Tile;
 import static model.Type.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,7 +13,15 @@ import java.util.ArrayList;
 class BoardTest {
     Tile nothing = new Tile(NOTHING, 0);
     Tile blocked = new Tile(BLOCKED, 0);
+    Tile cat = new Tile(CAT, 1);
+    Tile gameTile = new Tile(GAME, 1);
+    Tile frame = new Tile(FRAME, 1);
+    Tile book = new Tile(BOOK, 1);
+    Tile plant = new Tile(PLANT, 1);
+    Tile trophy = new Tile(TROPHY, 1);
+
     private Board board = new Board(2);
+    private Board board4 = new Board(4);
     private Tile[][] board2Players = {{ blocked, blocked, blocked, blocked, blocked, blocked, blocked, blocked, blocked},
                                        { blocked, blocked, blocked, nothing, nothing, blocked, blocked, blocked, blocked},
                                        { blocked, blocked, blocked, nothing, nothing, nothing, blocked, blocked, blocked},
@@ -42,6 +51,26 @@ class BoardTest {
                                       { blocked, blocked, nothing, nothing, nothing, nothing, nothing, blocked, blocked},
                                       { blocked, blocked, blocked, nothing, nothing, nothing, blocked, blocked, blocked},
                                       { blocked, blocked, blocked, blocked, nothing, nothing, blocked, blocked, blocked}};
+
+    private Tile[][] boardInGame4Players = {{ blocked, blocked, blocked, nothing, nothing, blocked,  blocked, blocked, blocked},
+                                            { blocked, blocked, blocked, cat,     nothing, nothing,  blocked, blocked, blocked},
+                                            { blocked, blocked, nothing, nothing, book,    nothing,  nothing, blocked, blocked},
+                                            { blocked, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, frame  },
+                                            { nothing, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, plant  },
+                                            { nothing, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, blocked},
+                                            { blocked, blocked, nothing, trophy,  nothing, nothing,  nothing, blocked, blocked},
+                                            { blocked, blocked, blocked, nothing, nothing, gameTile, blocked, blocked, blocked},
+                                            { blocked, blocked, blocked, blocked, nothing, nothing,  blocked, blocked, blocked}};
+
+    private Tile[][] boardInGame4Players2 = {{ blocked, blocked, blocked, nothing, nothing, blocked,  blocked, blocked, blocked},
+                                             { blocked, blocked, blocked, cat,     nothing, nothing,  blocked, blocked, blocked},
+                                             { blocked, blocked, nothing, nothing, book,    nothing,  nothing, blocked, blocked},
+                                             { blocked, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, frame  },
+                                             { nothing, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, nothing},
+                                             { nothing, nothing, nothing, nothing, nothing, nothing,  nothing, nothing, blocked},
+                                             { blocked, blocked, nothing, trophy,  nothing, nothing,  nothing, blocked, blocked},
+                                             { blocked, blocked, blocked, nothing, nothing, gameTile, blocked, blocked, blocked},
+                                             { blocked, blocked, blocked, blocked, nothing, plant  ,  blocked, blocked, blocked}};
 
     private final Bag bag = new Bag();
 
@@ -137,5 +166,24 @@ class BoardTest {
                 }
             }
         }
+    }
+
+    @Test
+    void checkBoardStatusTest() {
+        for (int i = 0; i < board4.BOARD_ROW; i++) {  //initialize board
+            for (int j = 0; j < board4.BOARD_COLUMN; j++) {
+                board4.getBoard()[i][j] = boardInGame4Players[i][j];
+            }
+        }
+        assertTrue(board.checkBoardStatus());
+
+
+        for (int i = 0; i < board4.BOARD_ROW; i++) {  //initialize board
+            for (int j = 0; j < board4.BOARD_COLUMN; j++) {
+                board4.getBoard()[i][j] = boardInGame4Players2[i][j];
+            }
+        }
+        assertTrue(board.checkBoardStatus());
+
     }
 }
