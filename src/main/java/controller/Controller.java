@@ -6,9 +6,13 @@ import view.UserInterface;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.function.BiConsumer;
+
+import static java.lang.Integer.valueOf;
 
 public class Controller {
-    private UserInterface UI;
+    //private UserInterface UI;
     private Game game;
     private Bag bag;
     private Board board;
@@ -18,17 +22,24 @@ public class Controller {
          chooseNumOfPlayer();
          this.bag = new Bag();
          this.board = new Board(game.getNumOfPlayers());
-         this.UI = new view.UserInterface();
+         //this.UI = new view.UserInterface();
     }
+
+    UserInterface UI = new view.UserInterface();
     //this method needs to be error checked
     public void chooseNumOfPlayer(){
-        int numOfPlayers = UI.askNumOfPlayers();
-        if(numOfPlayers<2 || numOfPlayers>4){
+        ArrayList<Integer> numberOfPlayers = new ArrayList<>(); //I have to use this array because in Java you cannot store the value of an input and use it to do some controls
+        numberOfPlayers.add(UI.askNumOfPlayers());
+
+        while(numberOfPlayers.get(0)<2 || numberOfPlayers.get(0)>4){
             System.out.println("This number is wrong, retry!");
-            numOfPlayers=UI.askNumOfPlayers();
+            numberOfPlayers.remove(0);
+            numberOfPlayers.add(UI.askNumOfPlayers());
         }
-        game.setNumOfPlayers(numOfPlayers);
-    }
+        game.setNumOfPlayers(numberOfPlayers.get(0));
+    }//TODO: HUGE PROBLEM IN INVOCATION OF THESE METHODS THAT TAKE IN AN INTEGER -> Everytime I call the method from the view I call the input
+     // FIXED
+
 
 
     //this method needs to be fixed -> multithreading TODO
@@ -53,24 +64,50 @@ public class Controller {
         game.addPlayer(newPlayer);
     }
 
-    public void chooseProtocol(){ //maybe change the String into an int or char
-        int chosenProtocol = UI.webProtocol();
-        switch(chosenProtocol){
-            case 1 -> System.out.println("You have chosen the Socket protocol!");
-            case 2 -> System.out.println("You have chosen the JavaRMI protocol!");
-            default -> {System.out.println("Sorry, try again...");
-                        chosenProtocol = UI.webProtocol();}
+    public void chooseProtocol(){
+        ArrayList<Integer> chosenProtocol = new ArrayList<>(); //I have to use this array because in Java you cannot store the value of an input and use it to do some controls
+        chosenProtocol.add(UI.webProtocol());
+        boolean flag = false;
+        while (!flag) {
+            switch (chosenProtocol.get(0)) {
+                case 1 -> {
+                    flag = true;
+                    System.out.println("You have chosen the Socket protocol!");
+                }
+                case 2 -> {
+                    flag = true;
+                    System.out.println("You have chosen the JavaRMI protocol!");
+                }
+                default -> {
+                    System.out.println("Sorry, try again...");
+                    chosenProtocol.remove(0);
+                    chosenProtocol.add(UI.webProtocol());
+                }
+            }
         }
     }//IDK how we will use this, but in this way we know witch one in between the two protocols is chosen by the player
     //TODO the cases are useful, we need to implement the choice
 
-    public void chooseUserInterface(){//maybe change the String into an int or char
-        int chosenInterface = UI.userInterface();
-        switch (chosenInterface){
-            case 1 -> System.out.println("You have chosen the TUI!");
-            case 2 -> System.out.println("You have chosen the GUI!");
-            default -> {System.out.println("Sorry, try again...");
-                        chosenInterface = UI.userInterface();}
+    public void chooseUserInterface(){
+        ArrayList<Integer> chosenInterface = new ArrayList<>();
+        chosenInterface.add(UI.userInterface());
+        boolean flag = false;
+        while(!flag) {
+            switch (chosenInterface.get(0)) {
+                case 1 -> {
+                    flag = true;
+                    System.out.println("You have chosen the TUI!");
+                }
+                case 2 -> {
+                    flag = true;
+                    System.out.println("You have chosen the GUI!");
+                }
+                default -> {
+                    System.out.println("Sorry, try again...");
+                    chosenInterface.remove(0);
+                    chosenInterface.add(UI.userInterface());
+                }
+            }
         }
         //We will find a way to use this one
     }//TODO the cases are useful, we need to implement the choice
@@ -100,7 +137,7 @@ public class Controller {
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
 
-    }//TODO We consider the first player in the ArrayList as the first player
+    }//TODO We consider the first player in the ArrayList as the first player -> implementation with server
 
     //button START GAME somewhere
 
@@ -141,11 +178,23 @@ public class Controller {
     }//TODO control and optimize this function
 
 
-
-
+    private int numOfChosenTiles(){
+        ArrayList<Integer> nOfTiles = new ArrayList<>();
+        nOfTiles.add(UI.askNumberOfChosenTiles());
+        while(nOfTiles.get(0)<2 || nOfTiles.get(0)>4){
+            System.out.println("This number is wrong, retry!");
+            nOfTiles.remove(0);
+            nOfTiles.add(UI.askNumOfPlayers());
+        }
+        return nOfTiles.get(0);
+    }
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
     public void chooseTiles(){
+        int[][] firstTileCoordinates = UI.askFirstTilePosition(); //coordinates of the first chosen tile TODO check if this tile is available
+        int numberOfChosenTiles = numOfChosenTiles();//I save the number of chosen tiles, TODO check if this number is correct with the bookshelf
+
+
         //4.	Il playerInTurn pesca le sue tiles (da 1 a 3)
         //a.	Controllo che prenda un numero corretto di tiles
         //i.	Se prende un numero corretto di tiles -> vai avanti
@@ -227,7 +276,7 @@ public class Controller {
     public void playAgain(){
         int startAgain = UI.askPlayAgain();
         switch(startAgain){
-            case 1 -> System.out.println("Ok, stating a new game...");
+            case 1 -> System.out.println("Ok, starting a new game...");
             case 0 -> System.out.println("Ok, bye bye!");
             default -> {System.out.println("Sorry, try again...");
                         startAgain = UI.userInterface();}
@@ -240,6 +289,4 @@ public class Controller {
         //2.	Viene terminata la partita e compare un tasto PlayAgain che ci riporta al punto di partenza.
         playAgain();
     }//TODO implement this method -> ask how to choose the winner if two players have the same score
-
-
 }
