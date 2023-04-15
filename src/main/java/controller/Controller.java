@@ -3,13 +3,7 @@ package controller;
 import jdk.jshell.spi.ExecutionControl;
 import model.*;
 import view.UserInterface;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.function.BiConsumer;
-
-import static java.lang.Integer.valueOf;
+import java.io.IOException;
 
 public class Controller {
     //private UserInterface UI;
@@ -17,33 +11,28 @@ public class Controller {
     private Bag bag;
     private Board board;
     //Before the game actually starts
-    public void createGame(){
+    public void createGame() throws IOException {
          this.game = new Game(); /**I create the Game object */
          chooseNumOfPlayer();
          this.bag = new Bag();
          this.board = new Board(game.getNumOfPlayers());
-         //this.UI = new view.UserInterface();
     }
 
     UserInterface UI = new view.UserInterface();
     //this method needs to be error checked
-    public void chooseNumOfPlayer(){
-        ArrayList<Integer> numberOfPlayers = new ArrayList<>(); //I have to use this array because in Java you cannot store the value of an input and use it to do some controls
-        numberOfPlayers.add(UI.askNumOfPlayers());
-
-        while(numberOfPlayers.get(0)<2 || numberOfPlayers.get(0)>4){
+    public void chooseNumOfPlayer() throws IOException {
+        int numberOfPlayers = UI.askNumOfPlayers();
+        while(numberOfPlayers<2 || numberOfPlayers>4){
             System.out.println("This number is wrong, retry!");
-            numberOfPlayers.remove(0);
-            numberOfPlayers.add(UI.askNumOfPlayers());
+            numberOfPlayers = UI.askNumOfPlayers();
         }
-        game.setNumOfPlayers(numberOfPlayers.get(0));
-    }//TODO: HUGE PROBLEM IN INVOCATION OF THESE METHODS THAT TAKE IN AN INTEGER -> Everytime I call the method from the view I call the input
-     // FIXED
+        game.setNumOfPlayers(numberOfPlayers);
+    }//TODO: make this more clear with some better text formatting
 
 
 
     //this method needs to be fixed -> multithreading TODO
-    public void chooseNickname(){
+    public void chooseNickname() throws IOException {
         String nickname = UI.askPlayerNickname();
         //control for the first player
         while(nickname.isEmpty())
@@ -64,12 +53,11 @@ public class Controller {
         game.addPlayer(newPlayer);
     }
 
-    public void chooseProtocol(){
-        ArrayList<Integer> chosenProtocol = new ArrayList<>(); //I have to use this array because in Java you cannot store the value of an input and use it to do some controls
-        chosenProtocol.add(UI.webProtocol());
+    public void chooseProtocol() throws IOException {
+        int chosenProtocol = UI.webProtocol();
         boolean flag = false;
         while (!flag) {
-            switch (chosenProtocol.get(0)) {
+            switch (chosenProtocol) {
                 case 1 -> {
                     flag = true;
                     System.out.println("You have chosen the Socket protocol!");
@@ -80,20 +68,18 @@ public class Controller {
                 }
                 default -> {
                     System.out.println("Sorry, try again...");
-                    chosenProtocol.remove(0);
-                    chosenProtocol.add(UI.webProtocol());
+                    chosenProtocol = UI.webProtocol();
                 }
             }
         }
     }//IDK how we will use this, but in this way we know witch one in between the two protocols is chosen by the player
     //TODO the cases are useful, we need to implement the choice
 
-    public void chooseUserInterface(){
-        ArrayList<Integer> chosenInterface = new ArrayList<>();
-        chosenInterface.add(UI.userInterface());
+    public void chooseUserInterface() throws IOException {
+        int chosenInterface= UI.userInterface();
         boolean flag = false;
         while(!flag) {
-            switch (chosenInterface.get(0)) {
+            switch (chosenInterface) {
                 case 1 -> {
                     flag = true;
                     System.out.println("You have chosen the TUI!");
@@ -104,15 +90,14 @@ public class Controller {
                 }
                 default -> {
                     System.out.println("Sorry, try again...");
-                    chosenInterface.remove(0);
-                    chosenInterface.add(UI.userInterface());
+                    chosenInterface= UI.userInterface();
                 }
             }
         }
         //We will find a way to use this one
     }//TODO the cases are useful, we need to implement the choice
 
-    public void userChoices(){
+    public void userChoices() throws IOException {
         chooseNickname();
         chooseProtocol();
         chooseUserInterface();
@@ -142,7 +127,7 @@ public class Controller {
     //button START GAME somewhere
 
     //TODO create the GameFlow
-    public void gameFlow(){
+    public void gameFlow() throws IOException {
         checkBoardToBeFilled();
         chooseTiles();
         chooseColumn();
@@ -178,19 +163,17 @@ public class Controller {
     }//TODO control and optimize this function
 
 
-    private int numOfChosenTiles(){
-        ArrayList<Integer> nOfTiles = new ArrayList<>();
-        nOfTiles.add(UI.askNumberOfChosenTiles());
-        while(nOfTiles.get(0)<2 || nOfTiles.get(0)>4){
+    private int numOfChosenTiles() throws IOException {
+        int numberOfChosenTiles = UI.askNumberOfChosenTiles();
+        while(numberOfChosenTiles<2 || numberOfChosenTiles>4){
             System.out.println("This number is wrong, retry!");
-            nOfTiles.remove(0);
-            nOfTiles.add(UI.askNumOfPlayers());
+            numberOfChosenTiles = UI.askNumberOfChosenTiles();
         }
-        return nOfTiles.get(0);
+        return numberOfChosenTiles;
     }
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
-    public void chooseTiles(){
+    public void chooseTiles() throws IOException {
         int[][] firstTileCoordinates = UI.askFirstTilePosition(); //coordinates of the first chosen tile TODO check if this tile is available
         int numberOfChosenTiles = numOfChosenTiles();//I save the number of chosen tiles, TODO check if this number is correct with the bookshelf
 
@@ -228,7 +211,7 @@ public class Controller {
         game.getPlayerInTurn().updateScore(cgc+pgc+adjacencies);
     }
 
-    public void checkIfGameEnd(){
+    public void checkIfGameEnd() throws IOException {
         int index=0;
         if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
             index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
@@ -273,17 +256,26 @@ public class Controller {
     }//TODO optimize this
 
     //asks the player if he wants to play another time
-    public void playAgain(){
+    public void playAgain() throws IOException {
         int startAgain = UI.askPlayAgain();
-        switch(startAgain){
-            case 1 -> System.out.println("Ok, starting a new game...");
-            case 0 -> System.out.println("Ok, bye bye!");
-            default -> {System.out.println("Sorry, try again...");
-                        startAgain = UI.userInterface();}
+        boolean flag = false;
+        while(!flag) {
+            switch (startAgain) {
+                case 1 -> {
+                    flag = true;
+                    System.out.println("Ok, starting a new game...");}
+                case 0 -> {
+                    flag = true;
+                    System.out.println("Ok, bye bye!");}
+                default -> {
+                    System.out.println("Sorry, try again...");
+                    startAgain = UI.userInterface();
+                }
+            }
         }
     }//TODO the cases are useful, we need to implement the choice
 
-    public void endOfGame(){
+    public void endOfGame() throws IOException {
         //1.	In base al punteggio dei Player viene stilata una classifica
         //a.	In caso di parità chiedere al tutor/su slack
         //2.	Viene terminata la partita e compare un tasto PlayAgain che ci riporta al punto di partenza.
