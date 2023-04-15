@@ -1,3 +1,9 @@
+/*
+THIS CLASS IS ONLY USED TO TRY AND CONTROL AN INPUT
+THIS WILL BE DELETED ONCE WE HAVE THE NETWORK
+ */
+
+
 package view;
 import controller.*;
 import model.Tile;
@@ -30,7 +36,7 @@ public class UserInterface {
                 case 1 -> {
                     flag = true;
                     System.out.println("Rules...");}
-                //Here will be invoked a magic function that will show the rules :) TODO
+                //Here will be invoked a magic function that will show the rules :)
                 case 0 -> {
                     flag = true;
                     System.out.println("\nOk, let's go!");}
@@ -71,14 +77,15 @@ public class UserInterface {
         return Integer.parseInt(reader.readLine());
     }
 
+    //We ask in which column the player wants to put the tiles
     public int askColumn() throws IOException {
         System.out.println("Choose the column, a cypher from 0 to 4:");
         return Integer.parseInt(reader.readLine());
-    }//TODO in Controller check the input
+    }
 
     //With this function I ask the player the position of the first Tile it intends to choose,
     //if it chooses only one this function returns the coordinates of that tile
-    public int[][] askFirstTilePosition() throws IOException {
+    public int[][] askTilePosition() throws IOException {
         System.out.println("Choose the column, a cypher from 0 to 8:");
         int boardColumn = Integer.parseInt(reader.readLine());
         while(boardColumn<0 || boardColumn>8) {
@@ -89,17 +96,20 @@ public class UserInterface {
             while(boardRow < 0 || boardRow > 8) {
                 boardRow = Integer.parseInt(reader.readLine());}
         return new int[][]{{boardColumn}, {boardRow}};
-    }//TODO in Controller check the input
+    }
     public int askNumberOfChosenTiles() throws IOException {
         System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");
         return Integer.parseInt(reader.readLine());
-    }//TODO in Controller check the input
+    }
 
+    /*
     public int askDirection() throws IOException {
         System.out.println("In which direction do you want to pick the tiles?\nChoose one in between Up (0), Down(1), Left(2), Right(3):");
         return Integer.parseInt(reader.readLine());
-    }//TODO in Controller check the input
+    } -> maybe useless
+    */
 
+    //method that will likely be used in the TUI, we show the player which tiles it had chosen
     public void printTilesInHand(ArrayList<Tile> tilesInHand){
         System.out.print(tilesInHand);
     }
@@ -112,7 +122,7 @@ public class UserInterface {
                 The first one on the left has an index 0, and so on...
                 Digit a number (the index of the tile you want to put into the bookshelf):""");
         return Integer.parseInt(reader.readLine());
-    }//TODO in Controller check the input
+    }
 
 
 }

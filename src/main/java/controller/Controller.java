@@ -12,7 +12,7 @@ public class Controller {
     private Board board;
     //Before the game actually starts
     public void createGame() throws IOException {
-         this.game = new Game(); /**I create the Game object */
+         this.game = new Game(); /*I create the Game object */
          chooseNumOfPlayer();
          this.bag = new Bag();
          this.board = new Board(game.getNumOfPlayers());
@@ -27,7 +27,7 @@ public class Controller {
             numberOfPlayers = UI.askNumOfPlayers();
         }
         game.setNumOfPlayers(numberOfPlayers);
-    }//TODO: make this more clear with some better text formatting
+    }
 
 
 
@@ -165,17 +165,19 @@ public class Controller {
 
     private int numOfChosenTiles() throws IOException {
         int numberOfChosenTiles = UI.askNumberOfChosenTiles();
-        while(numberOfChosenTiles<2 || numberOfChosenTiles>4){
+        while(numberOfChosenTiles<1 || numberOfChosenTiles>4){
             System.out.println("This number is wrong, retry!");
             numberOfChosenTiles = UI.askNumberOfChosenTiles();
         }
         return numberOfChosenTiles;
     }
 
+
     //this method will work together with the view, maybe showing the player which tiles can be chosen
     public void chooseTiles() throws IOException {
-        int[][] firstTileCoordinates = UI.askFirstTilePosition(); //coordinates of the first chosen tile TODO check if this tile is available
-        int numberOfChosenTiles = numOfChosenTiles();//I save the number of chosen tiles, TODO check if this number is correct with the bookshelf
+        int[][] TileCoordinates = UI.askTilePosition(); //coordinates of the first chosen tile TODO check if this tile is available
+
+        int numberOfChosenTiles = numOfChosenTiles();//I save the number of chosen tiles//TODO check if this number is correct with the bookshelf
 
 
         //4.	Il playerInTurn pesca le sue tiles (da 1 a 3)
