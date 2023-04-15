@@ -136,30 +136,23 @@ public class Controller {
         checkIfGameEnd();//this method controls if the Bookshelf is full and determines how to proceed
     }
     public void checkBoardToBeFilled(){
-        if(board.checkBoardStatus()){
+        if(board.checkBoardStatus()){ //true if board need to be filled
             for(int r=0;r<9;r++){
                 for(int c=0;c<9;c++){
-                    //I control if the board is empty
-                    if(board.getBoard()[r][c].getType()!=Type.NOTHING || board.getBoard()[r][c].getType()!=Type.BLOCKED){
-                        //I add the tiles that are on the board to the bag
-                        bag.addTile(board.removeTile(r,c));//TODO control that I don't remove NOTHING tiles
-                    }
-                        //I check if inside the bag I have enough Tiles
-                        if(bag.getTilesContained().size()>= board.getNumOfCells()){
-                            //I have enough tiles -> fill board
-                            board.setUpBoard(bag.getBagTiles(board.getNumOfCells()));
-                        } else {
-                            //I don't have enough tiles, I add to the board only the tiles I have inside the bag
-                            board.setUpBoard(bag.getBagTiles(bag.getTilesContained().size()));
-                        }
+                    if(board.getBoard()[r][c].getType()!=Type.NOTHING && board.getBoard()[r][c].getType()!=Type.BLOCKED){
+                        bag.addTile(board.removeTile(r,c)); //I add the tiles that are on the board to the bag
                     }
                 }
             }
-            //Qui implementeremo il codice per riempire la board
-            // sia che sia vuota sia che ci siano tessere sulla Board
-            //Indipentemente da fatto che siano presenti tiles sulla board
-            //devo provare a raccoglierle
-            //controllare se la bag contiene abbastanza tiles
+            //I check if inside the bag I have enough Tiles
+            if(bag.getTilesContained().size()>= board.getNumOfCells()){
+                //I have enough tiles -> fill board
+                board.setUpBoard(bag.getBagTiles(board.getNumOfCells()));
+            } else {
+                //I don't have enough tiles, I add to the board only the tiles I have inside the bag
+                board.setUpBoard(bag.getBagTiles(bag.getTilesContained().size()));
+            }
+        }
     }//TODO control and optimize this function
 
 
