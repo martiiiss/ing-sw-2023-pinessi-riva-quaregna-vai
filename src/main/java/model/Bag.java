@@ -34,7 +34,6 @@ public class Bag {
 
     public Bag(){ // the constructor creates ALL the tiles and adds them into tilesContained
         tilesContained = new ArrayList<>();
-        int e=0;
         for(int i=0; i<6; i++){ //6 type
             for(int j=0; j<MAX_TILES_ONE_TYPE; j++){ //22 tiles for one type
                 switch (i) {
@@ -45,7 +44,6 @@ public class Bag {
                     case 4 -> tilesContained.add(new Tile(Type.TROPHY, j % MAX_NUM_TYPE + 1));
                     case 5 -> tilesContained.add(new Tile(Type.PLANT, j % MAX_NUM_TYPE + 1));
                 }
-                e++;
             }
         }
     }

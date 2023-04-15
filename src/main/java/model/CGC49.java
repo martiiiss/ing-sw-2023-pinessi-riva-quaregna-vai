@@ -9,7 +9,7 @@ import static model.Type.NOTHING;
 public class CGC49 implements CGMStrategy {
     public boolean compareRule(Bookshelf bks, int id){
         Tile[][] bookshelf = bks.getBookshelf();
-        int i, j, found, maxJ, maxI, num, maxType = 3, count = 0;
+        int i, j, found, maxJ, maxI, num, count = 0;
         if(id==9) {
             maxJ = 5;
             maxI = 6;
