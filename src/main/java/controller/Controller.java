@@ -153,7 +153,7 @@ public class Controller {
                 board.setUpBoard(bag.getBagTiles(bag.getTilesContained().size()));
             }
         }
-    }//TODO control and optimize this function
+    }
 
 
     private int numOfChosenTiles() throws IOException {
