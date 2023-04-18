@@ -79,23 +79,26 @@ public class UserInterface {
 
     //We ask in which column the player wants to put the tiles
     public int askColumn() throws IOException {
-        System.out.println("Choose the column, a cypher from 0 to 4:");
+        System.out.println("Choose the column, an integer from 0 to 4:");
         return Integer.parseInt(reader.readLine());
     }
 
-    //With this function I ask the player the position of the first Tile it intends to choose,
-    //if it chooses only one this function returns the coordinates of that tile
-    public int[][] askTilePosition() throws IOException {
-        System.out.println("Choose the column, a cypher from 0 to 8:");
-        int boardColumn = Integer.parseInt(reader.readLine());
-        while(boardColumn<0 || boardColumn>8) {
-            boardColumn = Integer.parseInt(reader.readLine());
+    //This method asks the user to input the coordinates of the desired Tile
+    public int[] askTilePosition() throws IOException {
+        int[] pos = new int[2];
+        System.out.println("Choose the row, an integer from 0 to 8:");
+        pos[0] = Integer.parseInt(reader.readLine());
+        while(pos[0] < 0 || pos[0] > 8) {
+            System.err.print("Invalid value....\nChoose the row, an integer from 0 to 8:");
+            pos[0] = Integer.parseInt(reader.readLine());
         }
-            System.out.println("Choose the row, a cypher from 0 to 8:");
-            int boardRow = Integer.parseInt(reader.readLine());
-            while(boardRow < 0 || boardRow > 8) {
-                boardRow = Integer.parseInt(reader.readLine());}
-        return new int[][]{{boardColumn}, {boardRow}};
+        System.out.println("Choose the column, an integer from 0 to 8:");
+        pos[1] = Integer.parseInt(reader.readLine());
+        while(pos[1]<0 || pos[1]>8) {
+            System.err.print("Invalid value....\nChoose the column, an integer from 0 to 8:");
+            pos[1] = Integer.parseInt(reader.readLine());
+        }
+        return pos;
     }
     public int askNumberOfChosenTiles() throws IOException {
         System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");
