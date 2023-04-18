@@ -1,12 +1,16 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
+import java.util.Observer;
+import java.util.Observable;
 
-public class Game {
+public class Game{
     private Player winner;
     private int numberOfPlayers;
-    private Player playerInTurn; // we don't know if we'll have to delete this
+    private Player playerInTurn;
     private Player finisher;
     private boolean isLastTurn;
 
