@@ -7,6 +7,7 @@ THIS WILL BE DELETED ONCE WE HAVE THE NETWORK
 package view;
 import controller.*;
 import model.Tile;
+import util.Cord;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -84,21 +85,18 @@ public class UserInterface {
     }
 
     //This method asks the user to input the coordinates of the desired Tile
-    public int[] askTilePosition() throws IOException {
-        int[] pos = new int[2];
-        System.out.println("Choose the row, an integer from 0 to 8:");
-        pos[0] = Integer.parseInt(reader.readLine());
-        while(pos[0] < 0 || pos[0] > 8) {
-            System.err.print("Invalid value....\nChoose the row, an integer from 0 to 8:");
-            pos[0] = Integer.parseInt(reader.readLine());
+    //TODO: 1)Check if the tiles are all in the same row/col, Check the input of the user (It must be with the comma)
+    public ArrayList<Cord> askTilePosition(int size) throws IOException {
+        Cord cord = new Cord();
+        ArrayList<Cord> listOfCords = new ArrayList<>();
+        for(int i=0; i<size; i++) {
+            System.out.print("Input your coordinates as 2 integers separated by a comma:");
+            String in = reader.readLine();
+            String[]splittedStr = in.split(",");
+            cord.setCords(Integer.parseInt(splittedStr[0]),Integer.parseInt(splittedStr[1]));
+            listOfCords.add(cord);
         }
-        System.out.println("Choose the column, an integer from 0 to 8:");
-        pos[1] = Integer.parseInt(reader.readLine());
-        while(pos[1]<0 || pos[1]>8) {
-            System.err.print("Invalid value....\nChoose the column, an integer from 0 to 8:");
-            pos[1] = Integer.parseInt(reader.readLine());
-        }
-        return pos;
+        return listOfCords;
     }
     public int askNumberOfChosenTiles() throws IOException {
         System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");

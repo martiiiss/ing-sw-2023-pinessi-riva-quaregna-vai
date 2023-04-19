@@ -1,26 +1,11 @@
 package model;
+import util.Cord;
+
 import java.util.ArrayList;
 
 import static model.Type.NOTHING;
 
-
-    public class CGC1 implements CGMStrategy {
-            class Cord{
-                private int x;
-                private int y;
-
-                public void setCords(int x, int y) {
-                    this.x = x;
-                    this.y = y;
-                }
-
-                public int getRowCord(){
-                    return this.x;
-                }
-                public int getColCord(){
-                    return this.y;
-                }
-            }
+public class CGC1 implements CGMStrategy {
     private ArrayList<Cord> checkAdj(Tile[][] bookshelf, ArrayList<Cord> listOfCords, Cord cord){
         int i=cord.getRowCord();
         int j=cord.getColCord();

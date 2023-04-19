@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static model.Type.NOTHING;
 
@@ -19,6 +20,17 @@ public class Bookshelf {
                 bookshelf[i][j] = new Tile(NOTHING,0);
             }
         }
+    }
+
+    public int getNumOfFreeSlots() {
+        int values[] = new int[SHELF_COLUMN];
+        for (int j=0; j<SHELF_COLUMN; j++) {
+            values[j]=0;
+            for (int i = 0; i < SHELF_ROW; i++)
+                if (this.bookshelf[i][j].getType() == NOTHING)
+                    values[j]++;
+        }
+        return Arrays.stream(values).max().getAsInt();
     }
 
     public boolean getStatus() {

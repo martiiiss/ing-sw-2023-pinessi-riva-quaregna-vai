@@ -2,8 +2,10 @@ package controller;
 
 import jdk.jshell.spi.ExecutionControl;
 import model.*;
+import util.Cord;
 import view.UserInterface;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Controller {
     //private UserInterface UI;
@@ -168,9 +170,18 @@ public class Controller {
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
     public void chooseTiles() throws IOException {
-        int[][] TileCoordinates = UI.askTilePosition(); //coordinates of the first chosen tile TODO check if this tile is available
-
+        ArrayList<Tile> tiles = new ArrayList();
+        ArrayList<Cord> cords;
         int numberOfChosenTiles = numOfChosenTiles();//I save the number of chosen tiles//TODO check if this number is correct with the bookshelf
+        int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
+        if (freeSlots < numberOfChosenTiles){ /*FIXME:Throws the Exc??*/}
+        cords = UI.askTilePosition(numberOfChosenTiles);
+        for (int i=0; i<numberOfChosenTiles; i++)
+            tiles.add(board.removeTile(cords.get(i).getRowCord(),cords.get(i).getColCord()));
+        game.getPlayerInTurn().setTilesInHand(tiles);
+
+
+
 
 
         //4.	Il playerInTurn pesca le sue tiles (da 1 a 3)

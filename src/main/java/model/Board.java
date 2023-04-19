@@ -88,6 +88,10 @@ public class Board {
         return removedTile;
     }
 
+    public void userRemovesTiles(int amount, int firstRow, int firstCol) {
+
+    }
+
     public Tile[][] getBoard(){
         return this.livingRoomBoard;
     }
