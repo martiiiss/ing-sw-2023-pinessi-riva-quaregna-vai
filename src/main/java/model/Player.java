@@ -37,7 +37,6 @@ public class Player {
 
     /*Sets the player's nickname this method will be invoked by the view and will pass the arg "nickname"*/
     public void setNickname(String nickname) {
-        if (nickname.equals("")) throw new IllegalArgumentException("Ops! This isn't a valid name!"); //added a control, maybe useless
         this.nickname = nickname;
     }
     public String getNickname(){return this.nickname;}

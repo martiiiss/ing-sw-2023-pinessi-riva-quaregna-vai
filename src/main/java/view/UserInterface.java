@@ -51,38 +51,48 @@ public class UserInterface {
         }
     }
 
-    public int askNumOfPlayers() throws IOException {
-        System.out.print("How many players do you want to play with?\n Insert a number between 2 and 4:");
-        return Integer.parseInt(reader.readLine());
-    }
+    public int askNumOfPlayers() {
+        try {
+            System.out.print("How many players do you want to play with?\n Insert a number between 2 and 4:");
+            return Integer.parseInt(reader.readLine());
+        } catch (IOException e){
+            System.err.println("Invalid input!");
+        }
+        return -1;
+    }//FIXME
 
     public String askPlayerNickname() throws IOException {
+        try{
         System.out.print("\nChoose a nickname:");
-        return reader.readLine();
+            return reader.readLine();
+        } catch (IllegalArgumentException e){
+            System.err.println("Invalid input!");
+            throw new IllegalArgumentException();
+        }
     }
 
     public int webProtocol() throws IOException {
         System.out.print("\nChoose a communication protocol, \ndigit 1 for 'Socket', 2 for 'JavaRMI':");
         return Integer.parseInt(reader.readLine());
-    }
+    }//FIXME
 
     public int userInterface() throws IOException {
         System.out.print("""
                 Do you prefer a Terminal User Interface (TUI) or a Graphical User Interface (GUI)?
                 Press 1 for 'TUI', 2 for 'GUI':""");
         return Integer.parseInt(reader.readLine());
-    }
+    }//FIXME
 
     public int askPlayAgain() throws IOException {
         System.out.print("Dou you want to play again?\nPress 0 for 'No', 1 for 'Yes':");
         return Integer.parseInt(reader.readLine());
-    }
+    }//FIXME
 
     //We ask in which column the player wants to put the tiles
     public int askColumn() throws IOException {
         System.out.println("Choose the column, an integer from 0 to 4:");
         return Integer.parseInt(reader.readLine());
-    }
+    }//FIXME
 
     //This method asks the user to input the coordinates of the desired Tile
     //TODO: 1)Check if the tiles are all in the same row/col, Check the input of the user (It must be with the comma)
@@ -101,14 +111,7 @@ public class UserInterface {
     public int askNumberOfChosenTiles() throws IOException {
         System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");
         return Integer.parseInt(reader.readLine());
-    }
-
-    /*
-    public int askDirection() throws IOException {
-        System.out.println("In which direction do you want to pick the tiles?\nChoose one in between Up (0), Down(1), Left(2), Right(3):");
-        return Integer.parseInt(reader.readLine());
-    } -> maybe useless
-    */
+    }//FIXME
 
     //method that will likely be used in the TUI, we show the player which tiles it had chosen
     public void printTilesInHand(ArrayList<Tile> tilesInHand){
@@ -123,7 +126,7 @@ public class UserInterface {
                 The first one on the left has an index 0, and so on...
                 Digit a number (the index of the tile you want to put into the bookshelf):""");
         return Integer.parseInt(reader.readLine());
-    }
+    }//FIXME
 
 
 }

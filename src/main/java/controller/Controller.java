@@ -45,7 +45,6 @@ public class Controller {
         //control for the first player
         while(nickname.isEmpty())
         {
-            System.out.println("Your name is empty!");
             nickname= UI.askPlayerNickname();
         }
         //control for the others
@@ -106,9 +105,9 @@ public class Controller {
     }//TODO the cases are useful, we need to implement the choice
 
     public void userChoices() throws IOException {
-        chooseNickname();
         chooseProtocol();
         chooseUserInterface();
+        chooseNickname();
     }
 
     public boolean countPlayers(){
