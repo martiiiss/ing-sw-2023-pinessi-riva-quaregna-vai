@@ -5,8 +5,9 @@ import java.util.Arrays;
 
 import static model.Type.NOTHING;
 import model.Tile;
+import util.Observable;
 
-public class Bookshelf {
+public class Bookshelf extends Observable {
 
     private Tile[][] bookshelf;  // Bookshelf [5][6]
     private static final int SHELF_ROW = 6;

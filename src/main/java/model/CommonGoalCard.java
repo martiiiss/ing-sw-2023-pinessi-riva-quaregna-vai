@@ -1,10 +1,12 @@
 package model;
 
+import util.Observable;
+
 import java.util.Stack;
 
 
 
-public class CommonGoalCard {
+public class CommonGoalCard extends Observable {
     private Stack<ScoringToken> tokenStack;
     private int romanNumber;
     private CGMStrategy strategy; // reference to CGMStrategy

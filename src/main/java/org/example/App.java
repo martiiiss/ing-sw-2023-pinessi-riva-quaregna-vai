@@ -18,10 +18,12 @@ public class App
         //decide that what I've done is ok.
         //The next things I'll do are ONLY to see if I had a good idea
         Controller c = new Controller();
+
         c.createGame();
-        c.userChoices();
-        c.userChoices();
+        c.userChoices();//first player
+        c.userChoices();//second player
         c.initializeGame();
+        c.gameFlow();
     }
 }
 

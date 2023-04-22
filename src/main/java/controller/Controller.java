@@ -1,15 +1,15 @@
 package controller;
 
-
 import model.*;
 import util.Cord;
+import util.Observable;
+import util.Observer;
 import view.UserInterface;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Controller {
-    //private UserInterface UI;
+public class Controller implements Observer {
     private Game game;
     private Bag bag;
     private Board board;
@@ -31,7 +31,7 @@ public class Controller {
     public void chooseNumOfPlayer() throws IOException {
         int numberOfPlayers = UI.askNumOfPlayers();
         while(numberOfPlayers<2 || numberOfPlayers>4){
-            System.out.println("This number is wrong, retry!");
+            //System.out.println("This number is wrong, retry!");
             numberOfPlayers = UI.askNumOfPlayers();
         }
         game.setNumOfPlayers(numberOfPlayers);
@@ -209,10 +209,10 @@ public class Controller {
 
     //after chooseColumn has been invoked
     public void chooseTilesDisposition() throws IOException {
-        int index = UI.askTileToInsert();
-        while(index <0 || index >= this.numberOfChosenTiles){
+        int index = UI.askTileToInsert(game.getPlayerInTurn().getTilesInHand());
+        while(index <0 || index >= game.getPlayerInTurn().getTilesInHand().size()){
             System.err.println("That index doesn't exist! Try again:");
-            index = UI.askTileToInsert();
+            index = UI.askTileToInsert(game.getPlayerInTurn().getTilesInHand());
         }
         game.getPlayerInTurn().getMyBookshelf().placeTile(this.chosenColumn,game.getPlayerInTurn().getTilesInHand().get(index));
         game.getPlayerInTurn().getTilesInHand().remove(index);
@@ -310,4 +310,8 @@ public class Controller {
         }
         playAgain();
     }//TODO implement this method -> ask how to choose the winner if two players have the same score
+
+    @Override
+    public void update(Observable o,Object obj) {
+    }
 }

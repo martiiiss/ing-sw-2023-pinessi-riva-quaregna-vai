@@ -1,23 +1,18 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Random;
-import java.util.Observer;
-import java.util.Observable;
 
-public class Game{
+import java.util.ArrayList;
+import util.Observable;
+import java.util.Random;
+
+
+
+public class Game extends Observable {
     private Player winner;
     private int numberOfPlayers;
     private Player playerInTurn;
     private Player finisher;
     private boolean isLastTurn;
-
-    private int numOfPlayers;
-
-    private PersonalGoalCard personalGoalCard;
-
     private ArrayList<Player> players;
 
     private ArrayList<CommonGoalCard> commonGoalCards;
@@ -35,7 +30,6 @@ public class Game{
     public void setCommonGoalCards(){ //choose 2 commonGoalCard
         int n1 = (new Random()).nextInt(12)+1; //random number (1-12)
         int n2 = (new Random()).nextInt(12)+1;
-        System.out.println(n1+" "+n2);
         while(n1==n2){
             n2 = (new Random()).nextInt(12)+1;
         }
@@ -92,10 +86,7 @@ public class Game{
                 players.get(0).setPersonalGoalCard(pgc1);
                 pgc2 = new PersonalGoalCard(id2);
                 players.get(1).setPersonalGoalCard(pgc2);
-                /**The text three lines are used in tests*/
-                System.out.println("first two chosen id:");
-                System.out.println(id1);
-                System.out.println(id2);
+                break;
             }
 
             case 3: {
@@ -114,11 +105,7 @@ public class Game{
                 players.get(1).setPersonalGoalCard(pgc2);
                 pgc3 = new PersonalGoalCard(id3);
                 players.get(2).setPersonalGoalCard(pgc3);
-                /**The text four lines are used in tests*/
-                System.out.println("Three chosen id:");
-                System.out.println(id1);
-                System.out.println(id2);
-                System.out.println(id3);
+                break;
             }
             case 4: {
                  id1 = (new Random()).nextInt(12) +1;
@@ -142,12 +129,7 @@ public class Game{
                 players.get(2).setPersonalGoalCard(pgc3);
                 pgc4 = new PersonalGoalCard(id4);
                 players.get(3).setPersonalGoalCard(pgc4);
-                /**The text five lines are used in tests*/
-                System.out.println("four chosen id:");
-                System.out.println(id1);
-                System.out.println(id2);
-                System.out.println(id3);
-                System.out.println(id4);
+                break;
             }
         }
     }

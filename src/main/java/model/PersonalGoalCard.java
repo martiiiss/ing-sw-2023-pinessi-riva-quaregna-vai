@@ -8,7 +8,6 @@ import java.io.IOException;
 
 
 public class PersonalGoalCard {
-    private boolean isCompleted;
     private Tile[][] seedOfCard;
 
     //numOfPGC is the "name of the card that has to be generated" this number is extracted in game by Rand(). It has to be
@@ -35,12 +34,10 @@ public class PersonalGoalCard {
                     String row = reader.nextName();
                     if (row.equals("x")) {
                         i = reader.nextInt();
-                        System.out.print(i+" ");
                     }
                     String col = reader.nextName();
                     if (col.equals("y")) {
                         j = reader.nextInt();
-                        System.out.print(j+" ");
                     }
                     String type = reader.nextName();
                     if (type.equals("type")) {
@@ -54,7 +51,6 @@ public class PersonalGoalCard {
                             default -> throw new IllegalStateException("Unexpected value:" + reader.nextString());
                         }
                         seedOfCard[i][j]=readTile;
-                        System.out.println(seedOfCard[i][j].getType());
                     } else {
                         reader.skipValue();
                     }
@@ -65,11 +61,6 @@ public class PersonalGoalCard {
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        for(i=0;i<6;i++) {
-            System.out.println();
-            for(j=0;j<5;j++)
-                System.out.print(this.seedOfCard[i][j].getType()+" ");
         }
     }
 

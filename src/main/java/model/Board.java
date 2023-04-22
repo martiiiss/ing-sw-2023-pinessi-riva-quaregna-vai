@@ -1,8 +1,11 @@
 package model;
 
+import util.Observable;
+import util.Observer;
+
 import java.util.ArrayList;
 
-public class Board {
+public class Board extends Observable {
     private int numOfCells;
     public final int  BOARD_ROW = 9;
     public final int  BOARD_COLUMN = 9;
@@ -13,6 +16,7 @@ public class Board {
         setNumOfCells(numOfPlayers);
         initializeBoard(numOfPlayers);
     }
+
 
 
     public void setUpBoard(ArrayList<Tile> tilesToPutOnBoard) { //add tiles to the board.
@@ -88,10 +92,6 @@ public class Board {
         return removedTile;
     }
 
-    public void userRemovesTiles(int amount, int firstRow, int firstCol) {
-
-    }
-
     public Tile[][] getBoard(){
         return this.livingRoomBoard;
     }
@@ -110,5 +110,5 @@ public class Board {
             }
         }
        return true;
-    }//TODO implement this function
+    }
 }

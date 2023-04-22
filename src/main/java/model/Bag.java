@@ -1,11 +1,12 @@
 package model;
 
+import util.Observable;
+
 import java.util.ArrayList;
 import java.util.Random;
 
 
-public class Bag {
-    private boolean isBagEmpty;
+public class Bag extends Observable {
     private static final int MAX_TILES_ONE_TYPE = 22;
     private static final int MAX_NUM_TYPE = 3;
     private ArrayList<Tile> tilesContained;

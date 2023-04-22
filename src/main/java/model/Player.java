@@ -2,6 +2,7 @@ package model;
 
 import jdk.jshell.spi.ExecutionControl;
 import util.Cord;
+import util.Observable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +10,7 @@ import static model.Type.NOTHING;
 
 
 
-public class Player {
+public class Player extends Observable {
     private String nickname;
     private PersonalGoalCard myGoalCard;
     private boolean isFirstPlayer;
