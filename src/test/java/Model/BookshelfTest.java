@@ -27,22 +27,14 @@ public class BookshelfTest {
         int columns, i, j;
         j = 0;
         Tile cat = new Tile(Type.CAT, 1);
-        for (i = 0; i < 3; i++) {
-            tiles.add(i, cat);
-        }
         columns = (int) (Math.random() * 5);
         while (bks.getBookshelf()[j + 1][columns].getType() == Type.NOTHING) {
             j++;
             if (j == 5)
                 break;
         }
-        /*bks.placeTile(columns, tiles);
-        for (i = 0; i < 3; i++) {
-            assertEquals(tiles.get(i).getType(), bks.getBookshelf()[j][columns].getType());
-            j--;
-        }
-
-         */
-    }//TODO fix this
+        bks.placeTile(columns, cat);
+        assertEquals(cat.getType(), bks.getBookshelf()[j][columns].getType());
+    }
 
 }
