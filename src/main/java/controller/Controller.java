@@ -6,12 +6,15 @@ import util.Cord;
 import view.UserInterface;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Controller {
     //private UserInterface UI;
     private Game game;
     private Bag bag;
     private Board board;
+
+    private ArrayList<Player> finalRank;
     //Before the game actually starts
     public void createGame() throws IOException {
          this.game = new Game(); /*I create the Game object */
@@ -282,8 +285,24 @@ public class Controller {
     }//TODO the cases are useful, we need to implement the choice
 
     public void endOfGame() throws IOException {
-        //1.	In base al punteggio dei Player viene stilata una classifica
-        //a.	In caso di parità chiedere al tutor/su slack
+        ArrayList<Integer> rankNumber = new ArrayList<>();
+        for(int i=0; i<game.getPlayers().size(); i++){
+            rankNumber.add(game.getPlayers().get(i).getScore());
+        }
+        Collections.sort(rankNumber);
+
+        this.finalRank = new ArrayList<>(game.getPlayers());
+
+        for(int i=game.getPlayers().size()-1; i>=0; i--) {
+            for(int j=0; j<game.getPlayers().size(); j++){
+                if(rankNumber.get(j)!=-1 && game.getPlayers().get(i).getScore() == rankNumber.get(j)){
+                    this.finalRank.set(j, game.getPlayers().get(i));
+                    rankNumber.set(j, -1);
+                    j=5;
+                }
+            }
+        }
+
         //2.	Viene terminata la partita e compare un tasto PlayAgain che ci riporta al punto di partenza.
         playAgain();
     }//TODO implement this method -> ask how to choose the winner if two players have the same score
