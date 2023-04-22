@@ -1,28 +1,14 @@
 package model;
 
+import util.Cord;
+
 import java.util.ArrayList;
 import static model.Type.NOTHING;
 
 
 
 public class CGC5 implements CGMStrategy {
-    class Cord {
-        private int x;
-        private int y;
 
-        public void setCords(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getRowCord() {
-            return this.x;
-        }
-
-        public int getColCord() {
-            return this.y;
-        }
-    }
 
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
