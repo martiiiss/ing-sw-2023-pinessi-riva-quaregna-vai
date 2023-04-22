@@ -143,7 +143,10 @@ public class UserInterface extends Observable implements Observer {
     //I insert one tile
     public int askTileToInsert(ArrayList<Tile> tilesInHand) throws IOException {
         try {
-            System.out.println("These are the tiles you picked: "+tilesInHand);//
+            for(int i = 0; i< tilesInHand.size();i++){
+                System.out.println("These are the tiles you picked: "+tilesInHand.get(i).getType());
+            }
+            //
             System.out.println("""
                     Now you have to choose the disposition of the chosen tiles.
                     The first one on the left has an index 0, and so on...

@@ -135,14 +135,15 @@ public class Controller implements Observer {
 
     //TODO create the GameFlow
     public void gameFlow() throws IOException {
-        checkBoardToBeFilled();
-        chooseTiles();
-        chooseColumn();
-        for(int i=0;i<numberOfChosenTiles;i++){
-            chooseTilesDisposition();
-        }
-        calculateScore();//I calculate the score every time a Player puts some tiles into its Bookshelf
-        checkIfGameEnd();//this method controls if the Bookshelf is full and determines how to proceed
+        do {
+            checkBoardToBeFilled();
+            chooseTiles();
+            chooseColumn();
+            for (int i = 0; i < numberOfChosenTiles; i++) {
+                chooseTilesDisposition();
+            }
+            calculateScore();//I calculate the score every time a Player puts some tiles into its Bookshelf
+        } while (!checkIfGameEnd());//this method controls if the Bookshelf is full and determines how to proceed
     }
     public void checkBoardToBeFilled(){
         if(board.checkBoardStatus()){ //true if board need to be filled
@@ -183,7 +184,7 @@ public class Controller implements Observer {
         numOfChosenTiles();//I save the number of chosen tiles
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
         if (freeSlots < this.numberOfChosenTiles){ /*FIXME:Throws the Exc??*/}
-        cords = UI.askTilePosition(this.numberOfChosenTiles);
+        cords = UI.askTilePosition(this.numberOfChosenTiles);//TODO controllare che non vengano pescate tiles non valide
         for (int i=0; i<this.numberOfChosenTiles; i++)
             tiles.add(board.removeTile(cords.get(i).getRowCord(),cords.get(i).getColCord()));
         game.getPlayerInTurn().setTilesInHand(tiles);
@@ -226,7 +227,7 @@ public class Controller implements Observer {
         game.getPlayerInTurn().updateScore(cgc+pgc+adjacencies);
     }
 
-    public void checkIfGameEnd() throws IOException {
+    public boolean checkIfGameEnd() throws IOException {
         int index=0;
         if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
             index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
@@ -235,28 +236,35 @@ public class Controller implements Observer {
         if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
             if(game.getIsLastTurn()) {//is last turn
                 if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame();/*CALL THE END OF GAME*/
+                   endOfGame(); /*CALL THE END OF GAME*/
+                   return true;
                 } else {
                     goToNext(); //set next Player in turn
+                    return false;
                 }
             } else{
                 game.setFinisher(game.getPlayerInTurn());//I set the player that finished first and set isLastTurn -> I use a method from method.Game
                 game.getPlayerInTurn().updateScore(1);//I add an extra point to the first player to finish
                 if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
                     endOfGame();/*CALL THE END OF GAME*/
+                    return true;
                 } else {
                     goToNext(); //set next Player in turn
+                    return false;
                 }
             }
         } else {//Bookshelf NOT full
             if(game.getIsLastTurn()){
                 if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
                     endOfGame();/*CALL END OF GAME*/
+                    return true;
                 } else{
                     goToNext(); //set next Player in turn
+                    return false;
                 }
             } else{ //not last turn
                 goToNext();
+                return false;
             }
         }
     }//TODO optimize this method
