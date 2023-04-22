@@ -1,6 +1,7 @@
 package model;
 
 import jdk.jshell.spi.ExecutionControl;
+import util.Cord;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,21 +127,7 @@ public class Player {
         return deltaScore;
     }
 
-     class Cord{
-        private int x;
-        private int y;
 
-        public void setCords(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-        public int getRowCord(){
-            return this.x;
-        }
-        public int getColCord(){
-            return this.y;
-        }
-    }
     public int checkAdjacentBookshelf(){
         Tile[][] bookshelf = this.myBookshelf.getBookshelf();
         boolean newCord;
