@@ -302,7 +302,7 @@ public class Controller {
                 }
             }
         }
-
+        
         //2.	Viene terminata la partita e compare un tasto PlayAgain che ci riporta al punto di partenza.
         playAgain();
     }//TODO implement this method -> ask how to choose the winner if two players have the same score
