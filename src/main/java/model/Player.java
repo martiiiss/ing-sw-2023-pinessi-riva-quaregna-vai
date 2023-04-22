@@ -8,6 +8,7 @@ import java.util.HashMap;
 import static model.Type.NOTHING;
 
 
+
 public class Player {
     private String nickname;
     private PersonalGoalCard myGoalCard;
