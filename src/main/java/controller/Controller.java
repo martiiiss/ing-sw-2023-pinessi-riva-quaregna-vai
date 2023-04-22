@@ -13,6 +13,9 @@ public class Controller {
     private Game game;
     private Bag bag;
     private Board board;
+    private int chosenColumn;
+    private int numberOfChosenTiles;
+
 
     private ArrayList<Player> finalRank;
     //Before the game actually starts
@@ -136,7 +139,9 @@ public class Controller {
         checkBoardToBeFilled();
         chooseTiles();
         chooseColumn();
-        chooseTilesDisposition();
+        for(int i=0;i<numberOfChosenTiles;i++){
+            chooseTilesDisposition();
+        }
         calculateScore();//I calculate the score every time a Player puts some tiles into its Bookshelf
         checkIfGameEnd();//this method controls if the Bookshelf is full and determines how to proceed
     }
@@ -161,57 +166,59 @@ public class Controller {
     }
 
 
-    private int numOfChosenTiles() throws IOException {
-        int numberOfChosenTiles = UI.askNumberOfChosenTiles();
-        while(numberOfChosenTiles<1 || numberOfChosenTiles>4){
+    private void numOfChosenTiles() throws IOException {
+        this.numberOfChosenTiles = UI.askNumberOfChosenTiles();
+        while(this.numberOfChosenTiles<1 || this.numberOfChosenTiles>4){
             System.out.println("This number is wrong, retry!");
-            numberOfChosenTiles = UI.askNumberOfChosenTiles();
+            this.numberOfChosenTiles = UI.askNumberOfChosenTiles();
         }
-        return numberOfChosenTiles;
     }
+
 
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
     public void chooseTiles() throws IOException {
+
         ArrayList<Tile> tiles = new ArrayList();
         ArrayList<Cord> cords;
-        int numberOfChosenTiles = numOfChosenTiles();//I save the number of chosen tiles//TODO check if this number is correct with the bookshelf
+        numOfChosenTiles();//I save the number of chosen tiles
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
-        if (freeSlots < numberOfChosenTiles){ /*FIXME:Throws the Exc??*/}
-        cords = UI.askTilePosition(numberOfChosenTiles);
-        for (int i=0; i<numberOfChosenTiles; i++)
+        if (freeSlots < this.numberOfChosenTiles){ /*FIXME:Throws the Exc??*/}
+        cords = UI.askTilePosition(this.numberOfChosenTiles);
+        for (int i=0; i<this.numberOfChosenTiles; i++)
             tiles.add(board.removeTile(cords.get(i).getRowCord(),cords.get(i).getColCord()));
         game.getPlayerInTurn().setTilesInHand(tiles);
+    }
 
-
-
-
-
-        //4.	Il playerInTurn pesca le sue tiles (da 1 a 3)
-        //a.	Controllo che prenda un numero corretto di tiles
-        //i.	Se prende un numero corretto di tiles -> vai avanti
-        //ii.	Se prova a prendere un numero =0 oppure >3 tiles -> lancio un errore e vai all'inizio del metodo
-        //b.	Controllo che prenda delle tiles disponibili
-        //i.	Se prende delle tiles corrette -> vai avanti
-        //ii.	Se prova a prendere tiles non disponibili -> lancio un errore e vai all'inizio del metodo
-        //c.	Controllo che le tiles che ha preso ci stiano nella bookshelf
-        //i.	Se ci stanno -> vai avanti
-        //ii.	Se non dovessero starci -> lancio un errore e vai all'inizio del metodo
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-    }//TODO implement this method
-
-    public void chooseColumn(){
-        //5.	Il playerInTurn sceglie la colonna in cui inserire le tiles
-        //a.	Se ci stanno vai avanti
-        //b.	Se non ci stanno in quella colonna -> lancio un errore e vai a inizio metodo
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-    }//TODO implement this method
+    public void chooseColumn() throws IOException {
+        Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
+        this.chosenColumn = UI.askColumn();
+        boolean flag = false;
+        while(!flag){
+            if(this.chosenColumn<0 || this.chosenColumn >4) {
+                System.err.println("That column doesn't exist! Try again:");
+            }else if(playerBookshelf[this.numberOfChosenTiles-1][this.chosenColumn].getType() != Type.NOTHING){
+                System.err.println("That column hasn't enough space! Try again:");
+            }else{
+                flag = true; //The number is correct -> I don't ask again the player
+            }
+            if(!flag){
+                this.chosenColumn = UI.askColumn();
+            }
+        }
+    }
 
     //after chooseColumn has been invoked
-    public void chooseTilesDisposition(){
-        //	Il playerInTurn sceglie la disposizione delle tile
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-    }//TODO implement this method
+    public void chooseTilesDisposition() throws IOException {
+        int index = UI.askTileToInsert();
+        while(index <0 || index >= this.numberOfChosenTiles){
+            System.err.println("That index doesn't exist! Try again:");
+            index = UI.askTileToInsert();
+        }
+        game.getPlayerInTurn().getMyBookshelf().placeTile(this.chosenColumn,game.getPlayerInTurn().getTilesInHand().get(index));
+        game.getPlayerInTurn().getTilesInHand().remove(index);
+    }
+
 
     public void calculateScore(){
         int cgc = game.checkCommonGoalCard();
@@ -302,8 +309,6 @@ public class Controller {
                 }
             }
         }
-        
-        //2.	Viene terminata la partita e compare un tasto PlayAgain che ci riporta al punto di partenza.
         playAgain();
     }//TODO implement this method -> ask how to choose the winner if two players have the same score
 }

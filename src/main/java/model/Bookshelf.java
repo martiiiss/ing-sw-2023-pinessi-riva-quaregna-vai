@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static model.Type.NOTHING;
+import model.Tile;
 
 public class Bookshelf {
 
@@ -44,19 +45,14 @@ public class Bookshelf {
     /*The method gets invoked by player during their turn, tilesInHand is the list of tiles that the player wishes to
     * add to the columnToBeFilled. The method will throw an exception if the column is already full or if there isn't enough
     * space in the column */
-    public void placeTile (int columnToBeFilled, ArrayList<Tile> tilesInHand) {
-       int j = 0;
-        try{
-            for(int i=SHELF_ROW-1; i>-1; i--){
-                if(tilesInHand.size()==j)
-                    break;
-                if(bookshelf[i][columnToBeFilled].getType()==NOTHING)
-                    bookshelf[i][columnToBeFilled]=tilesInHand.get(j);
-                j++;
+    public void placeTile (int columnToBeFilled, Tile tile) {
+        for(int i=SHELF_ROW-1;i>=0; i--){
+            if(bookshelf[i][columnToBeFilled].getType() == NOTHING){
+                bookshelf[i][columnToBeFilled] = tile;
+
+                i = -1;
             }
-            throw new NotEnoughSlotsAvailableException("Not enough slots available!");
-        } catch (NotEnoughSlotsAvailableException ex) {
-        }//Exception already checked
+        }
     }
     public Tile[][] getBookshelf(){
         return this.bookshelf;
