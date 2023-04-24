@@ -117,11 +117,54 @@ public class UserInterface extends Observable implements Observer {
         Cord cord = new Cord();
         ArrayList<Cord> listOfCords = new ArrayList<>();
         for(int i=0; i<size; i++) {
-            System.out.print("Input your coordinates as 2 integers separated by a comma:");
+            System.out.print("Input your coordinates as 2 integers separated by a comma (tiles must be adjacent):");
             String in = reader.readLine();
-            String[]splittedStr = in.split(",");
+            while(in.isEmpty()){
+                System.err.println("Empty, try again");
+                in = reader.readLine();
+            }
+            String[] splittedStr = in.split(",");
             cord.setCords(Integer.parseInt(splittedStr[0]),Integer.parseInt(splittedStr[1]));
             listOfCords.add(cord);
+        }
+        switch(listOfCords.size()){
+            case 1 -> {}
+            case 2 -> {
+                while (listOfCords.get(0).getRowCord() != listOfCords.get(1).getRowCord() ||
+                        listOfCords.get(0).getColCord() != listOfCords.get(1).getColCord()) {
+                    System.out.println("These two tiles are not adjacent, chose a correct one");
+                    listOfCords.remove(1);
+
+                    String in = reader.readLine();
+                    String[] splittedStr = in.split(",");
+                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
+                    listOfCords.add(cord);
+                }
+                //return listOfCords;
+            }
+            case 3 -> {
+                while (listOfCords.get(0).getRowCord() != listOfCords.get(1).getRowCord() ||
+                        listOfCords.get(0).getColCord() != listOfCords.get(1).getColCord()){
+                    System.out.println("These two tiles are not adjacent, chose a correct one");
+                    listOfCords.remove(1);
+
+                    String in = reader.readLine();
+                    String[] splittedStr = in.split(",");
+                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
+                    listOfCords.add(cord);
+                }
+                while (listOfCords.get(1).getRowCord() != listOfCords.get(2).getRowCord() ||
+                        listOfCords.get(1).getColCord() != listOfCords.get(2).getColCord()){
+                    System.out.println("These two tiles are not adjacent, chose a correct one");
+                    listOfCords.remove(2);
+
+                    String in = reader.readLine();
+                    String[] splittedStr = in.split(",");
+                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
+                    listOfCords.add(cord);
+                }
+                //return listOfCords;
+                }
         }
         return listOfCords;
     }

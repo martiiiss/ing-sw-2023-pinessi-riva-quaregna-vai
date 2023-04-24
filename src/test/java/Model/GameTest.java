@@ -130,7 +130,7 @@ public class GameTest {
 
     @Test
     void addPlayer() {
-    }//TODO do this test -> I cannot test this
+    }
 
 
     @Test

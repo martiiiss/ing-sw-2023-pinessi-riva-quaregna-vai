@@ -166,28 +166,34 @@ public class Controller implements Observer {
     }
 
 
+    //Cosa succede se il giocatore prova a prendere 3 tiles quando sulla plancia l'unico
+    //gruppo disponibile è di dimensione 2?
     private void numOfChosenTiles() throws IOException {
+        int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
         this.numberOfChosenTiles = UI.askNumberOfChosenTiles();
-        while(this.numberOfChosenTiles<1 || this.numberOfChosenTiles>4){
+        while(this.numberOfChosenTiles<1 || this.numberOfChosenTiles>4 || freeSlots < this.numberOfChosenTiles ){
             System.out.println("This number is wrong, retry!");
             this.numberOfChosenTiles = UI.askNumberOfChosenTiles();
         }
+
     }
 
-
-
     //this method will work together with the view, maybe showing the player which tiles can be chosen
+    //first number chosen is the column, the second is the row
     public void chooseTiles() throws IOException {
-
         ArrayList<Tile> tiles = new ArrayList();
         ArrayList<Cord> cords;
         numOfChosenTiles();//I save the number of chosen tiles
-        int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
-        if (freeSlots < this.numberOfChosenTiles){ /*FIXME:Throws the Exc??*/}
-        cords = UI.askTilePosition(this.numberOfChosenTiles);//TODO controllare che non vengano pescate tiles non valide
-        for (int i=0; i<this.numberOfChosenTiles; i++)
-            tiles.add(board.removeTile(cords.get(i).getRowCord(),cords.get(i).getColCord()));
-        game.getPlayerInTurn().setTilesInHand(tiles);
+        for (int i = 0; i < this.numberOfChosenTiles; i++) {
+            cords = UI.askTilePosition(this.numberOfChosenTiles);
+            while (board.getSelectedType(cords.get(i).getRowCord(), cords.get(i).getColCord()) == Type.NOTHING ||
+                    board.getSelectedType(cords.get(i).getRowCord(), cords.get(i).getColCord()) == Type.BLOCKED) {
+                System.err.println("This isn't an available tile!");
+                cords = UI.askTilePosition(this.numberOfChosenTiles);//if the player tries to get wrong tiles I remain blocked here
+            }//
+            tiles.add(board.removeTile(cords.get(i).getRowCord(), cords.get(i).getColCord()));
+            game.getPlayerInTurn().setTilesInHand(tiles);
+        }
     }
 
     public void chooseColumn() throws IOException {
@@ -317,7 +323,7 @@ public class Controller implements Observer {
             }
         }
         playAgain();
-    }//TODO implement this method -> ask how to choose the winner if two players have the same score
+    }//TODO ask how to choose the winner if two players have the same score
 
     @Override
     public void update(Observable o,Object obj) {

@@ -116,4 +116,8 @@ public class Board extends Observable {
         }
        return true;
     }
+
+    public Type getSelectedType(int row, int column){
+        return (livingRoomBoard[row][column]).getType();
+    }
 }

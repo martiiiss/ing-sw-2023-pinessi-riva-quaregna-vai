@@ -17,7 +17,7 @@ public class PlayerTest {
     Player p = new Player();
     @Test
     void setAsFirstPlayer() {
-    }//TODO do this test -> there isn't a get method to return the boolean, this method cannot be tested
+    }
 
     //The next two methods are tested in the same way
     @Test
