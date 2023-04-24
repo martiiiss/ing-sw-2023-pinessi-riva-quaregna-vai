@@ -47,32 +47,37 @@ public class Board extends Observable {
         }
 
         if(nOfPlayers<=3){ //block cell 4
-            for(int i=0; i<=1; i++){
-                for(int j=4; j<=5; j++){
+            int i=0, j=4;
+            while(i<=1 && j<=5){
                     livingRoomBoard[i][j]=blocked;
                     livingRoomBoard[BOARD_ROW-1-j][i]=blocked;
                     livingRoomBoard[j][BOARD_COLUMN-1-i]=blocked;
                     livingRoomBoard[BOARD_ROW-1-i][BOARD_COLUMN-1-j]=blocked;
+                    i++;
+                    j++;
                 }
-            }
         }
 
         if(nOfPlayers==2) { //block cell 3
-            for (int i = 0; i <= 2; i+=2) {
-                for (int j = 3; j >=2; j--) {
-                    livingRoomBoard[i][j]=blocked;
-                    livingRoomBoard[BOARD_ROW-1-j][i]=blocked;
-                    livingRoomBoard[j][BOARD_COLUMN-1-i]=blocked;
-                    livingRoomBoard[BOARD_ROW-1-i][BOARD_COLUMN-1-j]=blocked;
+            int i=0, j= 3;
+            while(i<=2 && j>=2){
+                livingRoomBoard[i][j]=blocked;
+                livingRoomBoard[BOARD_ROW-1-j][i]=blocked;
+                livingRoomBoard[j][BOARD_COLUMN-1-i]=blocked;
+                livingRoomBoard[BOARD_ROW-1-i][BOARD_COLUMN-1-j]=blocked;
+                i+=2;
+                j--;
+            }
+        }
 
+        Tile nothing = new Tile(Type.NOTHING,0);
+        for (int i=0; i<BOARD_ROW; i++) {
+            for (int j = 0; j < BOARD_COLUMN; j++) {
+                if (livingRoomBoard[i][j] == null) {
+                    livingRoomBoard[i][j] = nothing;
                 }
             }
         }
-        Tile nothing = new Tile(Type.NOTHING,0);
-        for (int i=0; i<BOARD_ROW; i++)
-            for (int j=0; j<BOARD_COLUMN; j++)
-                if(livingRoomBoard[i][j]==null)
-                    livingRoomBoard[i][j]=nothing;
     }
 
     public void setNumOfCells(int nOfPlayers) { //at the beginning
