@@ -12,7 +12,6 @@ import java.io.IOException;
 public class App
 {
     public static void main( String[] args ) throws IOException {
-        System.out.println( "Hello World!" );
         UserInterface UI = new UserInterface();
         //Here I will put the main functions that wil get called if we
         //decide that what I've done is ok.

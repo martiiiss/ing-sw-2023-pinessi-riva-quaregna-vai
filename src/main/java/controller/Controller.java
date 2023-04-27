@@ -136,6 +136,8 @@ public class Controller implements Observer {
     //TODO create the GameFlow
     public void gameFlow() throws IOException {
         do {
+            UI.showTUIBoard(board);
+            UI.showTUIBookshelf(game.getPlayerInTurn().getMyBookshelf());
             checkBoardToBeFilled();
             chooseTiles();
             chooseColumn();
@@ -180,20 +182,23 @@ public class Controller implements Observer {
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
     //first number chosen is the column, the second is the row
+    //FIXME: Si possono pescare tiles dappertutto, non viene controllato se è disponibile
+    //FIXME: Va avanti all'infinito se la scelta è diversa da 1
     public void chooseTiles() throws IOException {
         ArrayList<Tile> tiles = new ArrayList();
+        Cord cord ;
         ArrayList<Cord> cords;
         numOfChosenTiles();//I save the number of chosen tiles
         for (int i = 0; i < this.numberOfChosenTiles; i++) {
-            cords = UI.askTilePosition(this.numberOfChosenTiles);
-            while (board.getSelectedType(cords.get(i).getRowCord(), cords.get(i).getColCord()) == Type.NOTHING ||
-                    board.getSelectedType(cords.get(i).getRowCord(), cords.get(i).getColCord()) == Type.BLOCKED) {
+            cord = UI.askTilePosition();
+            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING ||
+                    board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
                 System.err.println("This isn't an available tile!");
-                cords = UI.askTilePosition(this.numberOfChosenTiles);//if the player tries to get wrong tiles I remain blocked here
-            }//
-            tiles.add(board.removeTile(cords.get(i).getRowCord(), cords.get(i).getColCord()));
-            game.getPlayerInTurn().setTilesInHand(tiles);
+                cord = UI.askTilePosition();//if the player tries to get wrong tiles I remain blocked here
+            }
+            tiles.add(board.removeTile(cord.getRowCord(), cord.getColCord()));
         }
+        game.getPlayerInTurn().setTilesInHand(tiles);
     }
 
     public void chooseColumn() throws IOException {

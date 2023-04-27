@@ -1,11 +1,15 @@
 package view;
 
 import controller.*;
+import model.Board;
+import model.Bookshelf;
 import model.Tile;
+import model.Type;
 import util.Cord;
 import util.Observable;
 import util.Observer;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -113,10 +117,8 @@ public class UserInterface extends Observable implements Observer {
 
     //This method asks the user to input the coordinates of the desired Tile
     //TODO: 1)Check if the tiles are all in the same row/col, Check the input of the user (It must be with the comma)
-    public ArrayList<Cord> askTilePosition(int size) throws IOException {
+    public Cord askTilePosition() throws IOException {
         Cord cord = new Cord();
-        ArrayList<Cord> listOfCords = new ArrayList<>();
-        for(int i=0; i<size; i++) {
             System.out.print("Input your coordinates as 2 integers separated by a comma (tiles must be adjacent):");
             String in = reader.readLine();
             while(in.isEmpty()){
@@ -125,9 +127,10 @@ public class UserInterface extends Observable implements Observer {
             }
             String[] splittedStr = in.split(",");
             cord.setCords(Integer.parseInt(splittedStr[0]),Integer.parseInt(splittedStr[1]));
-            listOfCords.add(cord);
+            System.out.println("\u001B[90m"+cord.getRowCord()+","+cord.getColCord()+"\u001B[0m");
+            return cord;
         }
-        switch(listOfCords.size()){
+        /*switch(listOfCords.size()){
             case 1 -> {}
             case 2 -> {
                 while (listOfCords.get(0).getRowCord() != listOfCords.get(1).getRowCord() ||
@@ -165,9 +168,8 @@ public class UserInterface extends Observable implements Observer {
                 }
                 //return listOfCords;
                 }
-        }
-        return listOfCords;
-    }
+        }*/
+
     public int askNumberOfChosenTiles() throws IOException {
         try {
             System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");
@@ -201,6 +203,44 @@ public class UserInterface extends Observable implements Observer {
         return -1;
     }
 
+    public void showTUIBoard (Board board) {
+        Tile[][] tilesOnBoard = board.getBoard();
+        for (int i=0; i< board.BOARD_ROW; i++) {
+            System.out.println();
+            for(int j=0; j< board.BOARD_COLUMN;j++)
+                switch (tilesOnBoard[i][j].getType()) {
+                    case NOTHING, BLOCKED -> System.out.print("\u001B[90m □ \u001B[0m");
+                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
+                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
+                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
+                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
+                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
+                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+                }
+        }
+        System.out.println();
+    }
+
+    public void showTUIBookshelf(Bookshelf bookshelf) {
+        System.out.println("Here's the player in turn's bookshelf:");
+        Tile[][] tilesInBookshelf = bookshelf.getBookshelf();
+        for (int i = 0; i < 6; i++) {
+            System.out.println("+---------------+");
+            for (int j = 0; j < 5; j++) {
+                if (j == 0) System.out.print("|");
+                switch (tilesInBookshelf[i][j].getType()) {
+                    case NOTHING -> System.out.print("\u001B[90m □ \u001B[0m");
+                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
+                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
+                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
+                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
+                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
+                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+                }
+                if(j==4) System.out.println("|");
+            }
+        }
+    }
 
     @Override
     public void update(Observable o,Object obj) {
