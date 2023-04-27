@@ -10,8 +10,8 @@ import util.Observable;
 public class Bookshelf extends Observable {
 
     private Tile[][] bookshelf;  // Bookshelf [5][6]
-    private static final int SHELF_ROW = 6;
-    private static final int SHELF_COLUMN = 5;
+    public static final int SHELF_ROW = 6;
+    public static final int SHELF_COLUMN = 5;
     private boolean isFull = false;
 
     //constructor -> it initializes the bookshelf at NOTHING tiles, without this I cannot test the Player class

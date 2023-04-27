@@ -4,7 +4,7 @@ import static model.Type.BLOCKED;
 import static model.Type.NOTHING;
 
 /* x pattern, same type */
-public class CGC10 implements CGMStrategy {
+public class CGC10 implements CGCStrategy {
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
         int i, j;

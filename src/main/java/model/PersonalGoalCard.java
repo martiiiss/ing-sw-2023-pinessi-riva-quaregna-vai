@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 
-
 public class PersonalGoalCard {
     private Tile[][] seedOfCard;
 

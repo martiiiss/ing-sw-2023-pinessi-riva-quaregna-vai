@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import static model.Type.NOTHING;
 
-public class CGC1 implements CGMStrategy {
+public class CGC1 implements CGCStrategy {
     private ArrayList<Cord> checkAdj(Tile[][] bookshelf, ArrayList<Cord> listOfCords, Cord cord){
         int i=cord.getRowCord();
         int j=cord.getColCord();

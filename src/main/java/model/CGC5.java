@@ -7,7 +7,7 @@ import static model.Type.NOTHING;
 
 
 
-public class CGC5 implements CGMStrategy {
+public class CGC5 implements CGCStrategy {
 
 
     public boolean compareRule(Bookshelf bks, int id) {

@@ -3,7 +3,7 @@ package model;
 import static model.Type.NOTHING;
 
 // The diagonal, both sides
-public class CGC12 implements CGMStrategy {
+public class CGC12 implements CGCStrategy {
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
         boolean flag = false;

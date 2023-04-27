@@ -4,12 +4,10 @@ import util.Observable;
 
 import java.util.Stack;
 
-
-
 public class CommonGoalCard extends Observable {
     private Stack<ScoringToken> tokenStack;
     private int romanNumber;
-    private CGMStrategy strategy; // reference to CGMStrategy
+    private CGCStrategy strategy; // reference to CGMStrategy
     private int idCGC;
 
     public CommonGoalCard(int id, int numPlayers, int romanNumber){
@@ -73,7 +71,7 @@ public class CommonGoalCard extends Observable {
         //set strategy --> the commonGoalCard choice
     }
 
-    public CGMStrategy getStrategy(){ return this.strategy; }
+    public CGCStrategy getStrategy(){ return this.strategy; }
 
     // compare bookshelf and commonGoalCard
     public boolean compare(Bookshelf bookshelf)  {

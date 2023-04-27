@@ -17,8 +17,6 @@ public class Board extends Observable {
         initializeBoard(numOfPlayers);
     }
 
-
-
     public void setUpBoard(ArrayList<Tile> tilesToPutOnBoard) { //add tiles to the board.
         int iTiles=0;
         for(int i=0; i<BOARD_ROW; i++){
@@ -29,6 +27,8 @@ public class Board extends Observable {
                 }
             }
         }
+        //BOARD IS CHANGED
+        notifyObservers("board set up");
     }
     /** fixed creating a variable Tile blocked which I insert every time that that cell has to be blocked*/
 
