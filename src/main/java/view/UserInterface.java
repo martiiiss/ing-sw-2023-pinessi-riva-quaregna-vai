@@ -4,12 +4,10 @@ import controller.*;
 import model.Board;
 import model.Bookshelf;
 import model.Tile;
-import model.Type;
 import util.Cord;
 import util.Observable;
 import util.Observer;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -72,7 +70,7 @@ public class UserInterface extends Observable implements Observer {
         }
     }
 
-    public int webProtocol() throws IOException {
+    public int webProtocol() {
         try{
         System.out.print("\nChoose a communication protocol, \ndigit 1 for 'Socket', 2 for 'JavaRMI':");
         return Integer.parseInt(reader.readLine());
@@ -82,7 +80,7 @@ public class UserInterface extends Observable implements Observer {
         return -1;
     }
 
-    public int userInterface() throws IOException {
+    public int userInterface() {
         try {
             System.out.print("""
                     Do you prefer a Terminal User Interface (TUI) or a Graphical User Interface (GUI)?
@@ -94,7 +92,7 @@ public class UserInterface extends Observable implements Observer {
         return -1;
     }
 
-    public int askPlayAgain() throws IOException {
+    public int askPlayAgain() {
         try {
             System.out.print("Dou you want to play again?\nPress 0 for 'No', 1 for 'Yes':");
             return Integer.parseInt(reader.readLine());
@@ -105,7 +103,7 @@ public class UserInterface extends Observable implements Observer {
     }
 
     //We ask in which column the player wants to put the tiles
-    public int askColumn() throws IOException {
+    public int askColumn() {
         try {
             System.out.println("Choose the column, an integer from 0 to 4:");
             return Integer.parseInt(reader.readLine());
@@ -130,47 +128,8 @@ public class UserInterface extends Observable implements Observer {
             System.out.println("\u001B[90m"+cord.getRowCord()+","+cord.getColCord()+"\u001B[0m");
             return cord;
         }
-        /*switch(listOfCords.size()){
-            case 1 -> {}
-            case 2 -> {
-                while (listOfCords.get(0).getRowCord() != listOfCords.get(1).getRowCord() ||
-                        listOfCords.get(0).getColCord() != listOfCords.get(1).getColCord()) {
-                    System.out.println("These two tiles are not adjacent, chose a correct one");
-                    listOfCords.remove(1);
 
-                    String in = reader.readLine();
-                    String[] splittedStr = in.split(",");
-                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
-                    listOfCords.add(cord);
-                }
-                //return listOfCords;
-            }
-            case 3 -> {
-                while (listOfCords.get(0).getRowCord() != listOfCords.get(1).getRowCord() ||
-                        listOfCords.get(0).getColCord() != listOfCords.get(1).getColCord()){
-                    System.out.println("These two tiles are not adjacent, chose a correct one");
-                    listOfCords.remove(1);
-
-                    String in = reader.readLine();
-                    String[] splittedStr = in.split(",");
-                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
-                    listOfCords.add(cord);
-                }
-                while (listOfCords.get(1).getRowCord() != listOfCords.get(2).getRowCord() ||
-                        listOfCords.get(1).getColCord() != listOfCords.get(2).getColCord()){
-                    System.out.println("These two tiles are not adjacent, chose a correct one");
-                    listOfCords.remove(2);
-
-                    String in = reader.readLine();
-                    String[] splittedStr = in.split(",");
-                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
-                    listOfCords.add(cord);
-                }
-                //return listOfCords;
-                }
-        }*/
-
-    public int askNumberOfChosenTiles() throws IOException {
+    public int askNumberOfChosenTiles() {
         try {
             System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");
             return Integer.parseInt(reader.readLine());
@@ -186,10 +145,10 @@ public class UserInterface extends Observable implements Observer {
 
     //This method asks the index of the tile to insert -> print the tiles in hand every time the player puts the tile into the bookshelf
     //I insert one tile
-    public int askTileToInsert(ArrayList<Tile> tilesInHand) throws IOException {
+    public int askTileToInsert(ArrayList<Tile> tilesInHand) {
         try {
-            for(int i = 0; i< tilesInHand.size();i++){
-                System.out.println("These are the tiles you picked: "+tilesInHand.get(i).getType());
+            for (Tile tile : tilesInHand) {
+                System.out.println("These are the tiles you picked: " + tile.getType());
             }
             //
             System.out.println("""
@@ -207,7 +166,7 @@ public class UserInterface extends Observable implements Observer {
         Tile[][] tilesOnBoard = board.getBoard();
         for (int i=0; i< board.BOARD_ROW; i++) {
             System.out.println();
-            for(int j=0; j< board.BOARD_COLUMN;j++)
+            for(int j=0; j< board.BOARD_COLUMN;j++){
                 switch (tilesOnBoard[i][j].getType()) {
                     case NOTHING, BLOCKED -> System.out.print("\u001B[90m □ \u001B[0m");
                     case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
@@ -217,6 +176,8 @@ public class UserInterface extends Observable implements Observer {
                     case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
                     case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
                 }
+            }
+
         }
         System.out.println();
     }

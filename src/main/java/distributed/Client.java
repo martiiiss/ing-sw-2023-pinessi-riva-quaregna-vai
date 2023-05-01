@@ -2,6 +2,6 @@ package distributed;
 
 import java.rmi.Remote;
 
-public interface Client  extends Remote {
+public abstract class Client implements Remote {
 
 }

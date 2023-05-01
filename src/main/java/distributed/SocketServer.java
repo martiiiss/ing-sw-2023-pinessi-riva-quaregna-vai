@@ -1,7 +1,6 @@
 package distributed;
 
-public class Server implements Runnable {
-
+public class SocketServer implements Runnable{
     /**
      *
      */

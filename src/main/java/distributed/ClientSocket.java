@@ -1,10 +1,6 @@
 package distributed;
 
-public class Server implements Runnable {
-
-    /**
-     *
-     */
+public class ClientSocket extends Client implements Runnable{
     @Override
     public void run() {
 

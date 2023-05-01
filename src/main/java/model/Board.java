@@ -23,12 +23,15 @@ public class Board extends Observable {
             for(int j=0; j<BOARD_COLUMN; j++){
                 if(this.livingRoomBoard[i][j].getType()==Type.NOTHING){
                     this.livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
+                    //After I put a tile on the board I notify the observers, stating that livingRoomBoard has been modified
+                    setChanged();
+                    notifyObservers();
                     iTiles++;
                 }
             }
         }
         //BOARD IS CHANGED
-        notifyObservers("board set up");
+        //notifyObservers("board set up");
     }
     /** fixed creating a variable Tile blocked which I insert every time that that cell has to be blocked*/
 
@@ -94,6 +97,9 @@ public class Board extends Observable {
     public Tile removeTile(int row, int column) { //remove the tile in (row, column) --> NOTHING
         Tile removedTile = livingRoomBoard[row][column];
         livingRoomBoard[row][column] = new Tile(Type.NOTHING, 0);
+        //After a tile is picked up I change that tile, I have to notify the observers that something has changed
+        setChanged();
+        notifyObservers();
         return removedTile;
     }
 
