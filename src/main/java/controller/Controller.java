@@ -26,6 +26,18 @@ public class Controller implements Observer {
          this.board = new Board(game.getNumOfPlayers());
     }
 
+    public Game getInstanceOfGame(){
+        return this.game;
+    }
+
+    public Bag getInstanceOfBag(){
+        return this.bag;
+    }
+
+    public Board getInstanceOfBoard(){
+        return this.board;
+    }
+
     UserInterface UI = new view.UserInterface();
     //this method needs to be error checked
     public void chooseNumOfPlayer() throws IOException {
