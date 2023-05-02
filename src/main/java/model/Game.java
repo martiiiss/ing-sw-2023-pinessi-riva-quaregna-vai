@@ -1,13 +1,15 @@
 package model;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import util.Observable;
 import java.util.Random;
 
 
 
-public class Game extends Observable {
+public class Game extends Observable implements Serializable {
+    private static final long serialVersionUID = -5788544275616187567L; //random number
     private Player winner;
     private int numberOfPlayers;
     private Player playerInTurn;
@@ -16,6 +18,9 @@ public class Game extends Observable {
     private ArrayList<Player> players;
 
     private ArrayList<CommonGoalCard> commonGoalCards;
+    private boolean gameStarted;
+
+
 
 
     public Game() { // added the constructor
@@ -23,7 +28,13 @@ public class Game extends Observable {
         players = new ArrayList<>();
         numberOfPlayers = 0;
         isLastTurn = false;
+        gameStarted = false;
     }
+
+    public boolean getGameStarted(){return this.gameStarted;}
+    public void setGameStarted(){this.gameStarted=true;}
+
+
 
     public ArrayList<Player> getPlayers(){return this.players;}
 

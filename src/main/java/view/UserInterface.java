@@ -1,9 +1,7 @@
 package view;
 
 import controller.*;
-import model.Board;
-import model.Bookshelf;
-import model.Tile;
+import model.*;
 import util.Cord;
 import util.Observable;
 import util.Observer;
@@ -16,6 +14,10 @@ import java.util.ArrayList;
 
 public class UserInterface extends Observable implements Observer {
     Controller cont;
+    Game game = cont.getInstanceOfGame();
+    Bag bag = cont.getInstanceOfBag();
+    Board board = cont.getInstanceOfBoard();
+
 
     public void run() throws IOException {
         cont = new Controller();
