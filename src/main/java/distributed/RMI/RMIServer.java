@@ -3,6 +3,8 @@ package distributed.RMI;
 import distributed.Server;
 
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public class RMIServer extends Server implements ServerRMIInterface {
     private final Server server;
@@ -15,8 +17,14 @@ public class RMIServer extends Server implements ServerRMIInterface {
         this.port = port;
     }
 
-    public void startServer(){
+    public void startServer(RMIServer rmiServer){
         //TODO
+        try{
+            Registry registry = LocateRegistry.createRegistry(this.port);
+            registry.rebind("server", rmiServer);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void login(String username, ClientConnectionRMI clientConnection) throws RemoteException{

@@ -14,7 +14,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private Object clientsLock;
 
     public Server(int port) throws RemoteException {
-        super();
+        super(port);
         //TODO
     }
     private void startServers() throws RemoteException{

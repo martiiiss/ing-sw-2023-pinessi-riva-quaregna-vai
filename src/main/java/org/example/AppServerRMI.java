@@ -3,17 +3,18 @@ package org.example;
 import distributed.RMI.RMIServer;
 import distributed.Server;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class AppServerRMI {
-    public static void main(String[] args){
-        try{
-            Registry registry = LocateRegistry.createRegistry(43800);
-            registry.rebind("server", new RMIServer(new Server(43800), 43800));
-
-        } catch(Exception e){
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws RemoteException {
+        int port = 43801;
+        Server server = new Server(port);
+        RMIServer serverRmi = new RMIServer(server, port);
+        serverRmi.startServer(serverRmi);
+        System.out.println("ciao");
     }
+
+
 }
