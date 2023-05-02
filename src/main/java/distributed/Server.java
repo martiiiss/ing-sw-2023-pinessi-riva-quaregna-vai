@@ -1,9 +1,10 @@
 package distributed;
 
+import distributed.Socket.Connection;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Collections;
 import java.util.Map;
 
 public class Server extends UnicastRemoteObject implements Runnable, Remote {
@@ -14,8 +15,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public Server(int port) throws RemoteException {
         super();
-
-
         //TODO
     }
     private void startServers() throws RemoteException{

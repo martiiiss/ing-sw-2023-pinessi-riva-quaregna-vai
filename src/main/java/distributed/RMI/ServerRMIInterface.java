@@ -1,4 +1,6 @@
-package distributed;
+package distributed.RMI;
+import distributed.RMI.ClientConnectionRMI;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 

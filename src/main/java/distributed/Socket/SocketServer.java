@@ -1,4 +1,6 @@
-package distributed;
+package distributed.Socket;
+
+import distributed.Server;
 
 import java.net.ServerSocket;
 

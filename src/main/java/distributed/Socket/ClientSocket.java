@@ -1,4 +1,6 @@
-package distributed;
+package distributed.Socket;
+
+import distributed.Client;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

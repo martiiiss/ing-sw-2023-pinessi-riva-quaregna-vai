@@ -1,4 +1,4 @@
-package distributed;
+package distributed.RMI;
 
 public interface ClientConnectionRMI {
     void messageReceived();

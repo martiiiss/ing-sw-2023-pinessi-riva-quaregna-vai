@@ -1,8 +1,7 @@
 package org.example;
 
-import distributed.RMIServer;
+import distributed.RMI.RMIServer;
 import distributed.Server;
-import distributed.ServerRMIInterface;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

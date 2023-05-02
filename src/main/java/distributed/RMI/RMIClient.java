@@ -1,7 +1,8 @@
-package distributed;
+package distributed.RMI;
+
+import distributed.Client;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 public class RMIClient extends Client implements ClientConnectionRMI {
 

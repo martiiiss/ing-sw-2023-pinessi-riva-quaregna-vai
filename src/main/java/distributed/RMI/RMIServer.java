@@ -1,8 +1,8 @@
-package distributed;
+package distributed.RMI;
 
-import java.rmi.Remote;
+import distributed.Server;
+
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 public class RMIServer extends Server implements ServerRMIInterface {
     private final Server server;
