@@ -18,13 +18,12 @@ public class ClientSocket extends Client implements Runnable{
       //TODO implement this
     }
 
-    /**
-     * @param message
-     */
+    /*
+
     @Override
     public void sendMessage(Message message) {
         //TODO implement this
-    };
+    };*/
 
     public void closeConnection(){
         //TODO implement this

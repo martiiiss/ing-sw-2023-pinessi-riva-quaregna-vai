@@ -36,7 +36,7 @@ public void setToken(){this.token = token;}
 
 public String getToken(){return token;}
 
-public abstract void sendMessage(Message message); //TODO manca la classe Message, va creata
+//public abstract void sendMessage(Message message); //TODO manca la classe Message, va creata
 
 public abstract void closeConnection();
 

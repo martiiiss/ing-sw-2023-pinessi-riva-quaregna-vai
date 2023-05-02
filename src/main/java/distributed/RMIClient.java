@@ -23,13 +23,10 @@ public class RMIClient extends Client implements ClientConnectionRMI {
         //TODO implement this
     }
 
-    /**
-     * @param message
-     */
-    @Override
-    public void sendMessage(Message message) {
+ //   @Override
+  //  public void sendMessage(Message message) {
         //TODO implement this
-    }
+   // }
 
     public void getMessage(){
         //TODO implement this
