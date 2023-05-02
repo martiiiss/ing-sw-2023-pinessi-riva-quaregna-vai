@@ -13,6 +13,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private Map<String, Connection> clients; //username - connection
     private Object clientsLock;
 
+
     public Server(int port) throws RemoteException {
         super(port);
         //TODO
