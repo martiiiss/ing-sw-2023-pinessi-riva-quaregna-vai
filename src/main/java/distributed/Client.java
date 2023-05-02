@@ -17,27 +17,27 @@ public abstract class Client implements Remote {
         this.address = address;
         this.port = port;
     }
-public String getAddress(){
+    public String getAddress(){
 
-    //TODO implement this
+        //TODO implement this
 
-    return null;
-}
+        return null;
+    }
 
-public int getPort(){
-    //TODO implement this
+    public int getPort(){
+        //TODO implement this
 
-    return 0;
-}
+        return 0;
+    }
 
-public abstract void startConnection();
+    public abstract void startConnection();
 
-public void setToken(){this.token = token;}
+    public void setToken(){this.token = token;}
 
-public String getToken(){return token;}
+    public String getToken(){return token;}
 
-//public abstract void sendMessage(Message message); //TODO manca la classe Message, va creata
+    //public abstract void sendMessage(Message message); //TODO manca la classe Message, va creata
 
-public abstract void closeConnection();
+    public abstract void closeConnection();
 
-}
+    }

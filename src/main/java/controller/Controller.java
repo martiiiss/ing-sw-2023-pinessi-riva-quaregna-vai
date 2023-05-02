@@ -25,6 +25,7 @@ public class Controller implements Observer {
          chooseNumOfPlayer();
          this.bag = new Bag();
          this.board = new Board(game.getNumOfPlayers());
+         game.setGameStarted();
     }
 
     public Game getInstanceOfGame(){

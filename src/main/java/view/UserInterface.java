@@ -1,6 +1,7 @@
 package view;
 
 import controller.*;
+import distributed.Server;
 import model.*;
 import util.Cord;
 import util.Observable;
@@ -18,7 +19,6 @@ public class UserInterface extends Observable implements Observer {
     Bag bag;
     Board board ;
 
-
     public void run() throws IOException {
         cont = new Controller();
         cont.createGame();
@@ -27,6 +27,9 @@ public class UserInterface extends Observable implements Observer {
         board = cont.getInstanceOfBoard();
     } //this is probably wrong
 
+    public Controller getInstanceOfController(){
+        return cont;
+    }
     BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
 
     //Boh, added this one just because

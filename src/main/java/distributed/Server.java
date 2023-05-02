@@ -1,7 +1,12 @@
 package distributed;
 
+import controller.Controller;
+import distributed.RMI.RMIServer;
 import distributed.Socket.Connection;
+import distributed.Socket.SocketServer;
+import model.Game;
 
+import javax.sound.midi.SysexMessage;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -12,17 +17,40 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private int RMIPort;
     private Map<String, Connection> clients; //username - connection
     private Object clientsLock;
-
-
-    public Server(int port) throws RemoteException {
+    private Controller controller = new Controller();
+    private Game game = controller.getInstanceOfGame();
+    public Server(int port, int protocol) throws RemoteException {
         super(port);
-        //TODO
+        if(protocol == 1){
+            this.socketPort = port;
+        } else if(protocol == 2){
+            this.RMIPort = port;
+        }
     }
+
+    public Controller getInstanceOfController(){
+        return controller;
+    }
+
+    public Server getInstanceOfServer(){
+        return this;
+    }
+
     private void startServers() throws RemoteException{
+        SocketServer serverSocket = new SocketServer();
+        serverSocket.startServer();
+
+        RMIServer rmiServer = new RMIServer(this, RMIPort);
+        rmiServer.startServer();
         //TODO fa partire server socket e rmi
     }
 
     public void login(String username, Connection connection) throws RemoteException{
+        if(clients.containsKey(username)){
+            reconnectionOfPlayer(username, connection);
+        } else{
+            firstConnection(username, connection);
+        }
         //TODO registra un client (utente) in partita
     }
 
@@ -31,6 +59,13 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
 
     private void firstConnection (String username, Connection connection) throws RemoteException{
+        if(clients.size() < game.getNumOfPlayers()){
+            clients.put(username, connection);
+            System.out.println("connection ok!");
+        } else{
+            System.out.println("Game is full, sorry! ");
+        }
+
         //TODO
     }
 

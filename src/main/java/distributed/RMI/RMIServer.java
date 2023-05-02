@@ -13,22 +13,22 @@ public class RMIServer extends Server implements ServerRMIInterface {
 
 
     public RMIServer(Server server, int port) throws RemoteException {
-        super(port);
+        super(port, 2);
         this.server = server;
         this.port = port;
     }
 
-    public void startServer(RMIServer rmiServer){
-        //TODO
+    public void startServer(){
         try{
             Registry registry = LocateRegistry.createRegistry(this.port);
-            registry.rebind("server", rmiServer);
+            registry.rebind("server", this);
         } catch(Exception e){
             e.printStackTrace();
         }
     }
 
     public void login(String username, ClientConnectionRMI clientConnection) throws RemoteException{
+
         //TODO
     }
 
