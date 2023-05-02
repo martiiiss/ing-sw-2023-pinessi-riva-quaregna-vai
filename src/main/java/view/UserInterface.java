@@ -14,14 +14,17 @@ import java.util.ArrayList;
 
 public class UserInterface extends Observable implements Observer {
     Controller cont;
-    Game game = cont.getInstanceOfGame();
-    Bag bag = cont.getInstanceOfBag();
-    Board board = cont.getInstanceOfBoard();
+    Game game ;
+    Bag bag;
+    Board board ;
 
 
     public void run() throws IOException {
         cont = new Controller();
         cont.createGame();
+        game = cont.getInstanceOfGame();
+        bag =  cont.getInstanceOfBag();
+        board = cont.getInstanceOfBoard();
     } //this is probably wrong
 
     BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
