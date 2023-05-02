@@ -16,7 +16,7 @@ public class Controller implements Observer {
     private int chosenColumn;
     private int numberOfChosenTiles;
     private int protocol = 0;
-
+    UserInterface UI = new view.UserInterface();
 
     private ArrayList<Player> finalRank;
     //Before the game actually starts
@@ -38,8 +38,6 @@ public class Controller implements Observer {
     public Board getInstanceOfBoard(){
         return this.board;
     }
-
-    UserInterface UI = new view.UserInterface();
     //this method needs to be error checked
     public void chooseNumOfPlayer() throws IOException {
         int numberOfPlayers = UI.askNumOfPlayers();
@@ -154,9 +152,10 @@ public class Controller implements Observer {
     //TODO create the GameFlow
     public void gameFlow() throws IOException {
         do {
-            UI.showTUIBoard(board);
             UI.showTUIBookshelf(game.getPlayerInTurn().getMyBookshelf());
+            UI.showTUIBoard(board);
             checkBoardToBeFilled();
+            numOfChosenTiles();
             chooseTiles();
             chooseColumn();
             for (int i = 0; i < numberOfChosenTiles; i++) {
@@ -204,19 +203,45 @@ public class Controller implements Observer {
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
     public void chooseTiles() throws IOException {
         ArrayList<Tile> tiles = new ArrayList();
-        Cord cord ;
-        ArrayList<Cord> cords;
-        numOfChosenTiles();//I save the number of chosen tiles
-        for (int i = 0; i < this.numberOfChosenTiles; i++) {
+        Cord cord = new Cord();
+        ArrayList<Cord> cords = new ArrayList<>();
+        boolean accepted = true;
+        int i = 0;
+        while(i<this.numberOfChosenTiles){
+            accepted=true;
             cord = UI.askTilePosition();
-            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING ||
-                    board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
-                System.err.println("This isn't an available tile!");
-                cord = UI.askTilePosition();//if the player tries to get wrong tiles I remain blocked here
+            if(board.getSelectedType(cord.getRowCord(),cord.getColCord())==Type.NOTHING || board.getSelectedType(cord.getRowCord(),cord.getColCord())==Type.BLOCKED) {
+                System.err.println("Invalid tile....");
+                accepted = false;}
+            if( accepted && !isTileFreeTile(cord)){
+                System.err.println("This tile is blocked...");
+                accepted=false;}
+            if(!cords.isEmpty())
+                for (Cord value : cords)
+                    if (value.getRowCord() != cord.getRowCord() && value.getColCord() != cord.getColCord()) {
+                        accepted = false;
+                        System.err.println("This tile is not adjacent to the previous...");
+                        break;
+                    }
+            if(accepted) {
+                i++;
+                cords.add(cord);
             }
-            tiles.add(board.removeTile(cord.getRowCord(), cord.getColCord()));
         }
+        for (i=0; i<cords.size();i++)
+            tiles.add(board.removeTile(cords.get(i).getRowCord(), cords.get(i).getColCord()));
         game.getPlayerInTurn().setTilesInHand(tiles);
+    }
+
+    private boolean isTileFreeTile(Cord cord) {
+        int x = cord.getRowCord();
+        int y = cord.getColCord();
+        boolean valid = false;
+        if(board.getSelectedType(x + 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING)
+            valid=true;
+        if(board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)
+            valid=true;
+        return valid;
     }
 
     public void chooseColumn() throws IOException {
