@@ -15,6 +15,7 @@ public class Controller implements Observer {
     private Board board;
     private int chosenColumn;
     private int numberOfChosenTiles;
+    private int protocol = 0;
 
 
     private ArrayList<Player> finalRank;
@@ -80,10 +81,12 @@ public class Controller implements Observer {
                 case 1 -> {
                     flag = true;
                     System.out.println("You have chosen the Socket protocol!");
+                    protocol = chosenProtocol;
                 }
                 case 2 -> {
                     flag = true;
                     System.out.println("You have chosen the JavaRMI protocol!");
+                    protocol = chosenProtocol;
                 }
                 default -> {
                     System.out.println("Sorry, try again...");
@@ -93,6 +96,9 @@ public class Controller implements Observer {
         }
     }//IDK how we will use this, but in this way we know witch one in between the two protocols is chosen by the player
     //TODO the cases are useful, we need to implement the choice
+
+
+    public int getProtocol(){return this.protocol;}
 
     public void chooseUserInterface() throws IOException {
         int chosenInterface= UI.userInterface();
