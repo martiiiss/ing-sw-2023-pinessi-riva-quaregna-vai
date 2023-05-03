@@ -2,11 +2,10 @@ package distributed;
 
 import controller.Controller;
 import distributed.RMI.RMIServer;
-import distributed.Socket.Connection;
+import distributed.RMI.ServerRMIInterface;
 import distributed.Socket.SocketServer;
 import model.Game;
 
-import javax.sound.midi.SysexMessage;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -40,8 +39,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         SocketServer serverSocket = new SocketServer();
         serverSocket.startServer();
 
-        RMIServer rmiServer = new RMIServer(this, RMIPort);
-        rmiServer.startServer();
+        ServerRMIInterface rmiServer = new RMIServer(this, RMIPort);
+        rmiServer.startServer(rmiServer);
         //TODO fa partire server socket e rmi
     }
 
@@ -68,6 +67,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
         //TODO
     }
+
+
 
     private void readyToStart() throws RemoteException{
         //TODO: raggiunto il numero di giocatori necessario la partita può iniziare

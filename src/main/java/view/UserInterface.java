@@ -14,22 +14,27 @@ import java.util.ArrayList;
 
 
 public class UserInterface extends Observable implements Observer {
-    Controller cont;
-    Game game ;
-    Bag bag;
-    Board board ;
 
-    public void run() throws IOException {
-        cont = new Controller();
-        cont.createGame();
-        game = cont.getInstanceOfGame();
-        bag =  cont.getInstanceOfBag();
-        board = cont.getInstanceOfBoard();
-    } //this is probably wrong
+    /*
+   Controller cont;
+   Game game ;
+   Bag bag;
+   Board board ;
 
-    public Controller getInstanceOfController(){
-        return cont;
-    }
+
+   public void run() throws IOException {
+       cont = new Controller();
+       cont.createGame();
+       game = cont.getInstanceOfGame();
+       bag =  cont.getInstanceOfBag();
+       board = cont.getInstanceOfBoard();
+   } //this is probably wrong
+
+   public Controller getInstanceOfController(){
+       return cont;
+   }
+
+    */
     BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
 
     //Boh, added this one just because
