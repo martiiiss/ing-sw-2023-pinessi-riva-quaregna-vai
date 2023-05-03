@@ -4,6 +4,7 @@ import distributed.Client;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -18,10 +19,10 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     private String username;
     private int port;
 
-    public RMIClient(String username, String address, int port) throws RemoteException {
-        super(username, address, port);
+    public RMIClient(String username, int port) throws RemoteException {
+        super(username, port);
         this.username = username; //server
-        this.address = address;
+      //  this.address = address;
         this.port = port;
     }
 
@@ -31,10 +32,9 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     @Override
     public void startConnection() throws RemoteException, NotBoundException {
         try {
-            Registry registry = LocateRegistry.getRegistry(getUsername(), getPort()); //server e porta
-            server = (ServerRMIInterface) registry.lookup(getUsername());
+            server = (ServerRMIInterface) Naming.lookup(getUsername());
             server.stampa();
-//            server.login(getUsername(), this);
+         //   server.login(getUsername(), this);
         }catch (Exception e){
             e.printStackTrace();
         }

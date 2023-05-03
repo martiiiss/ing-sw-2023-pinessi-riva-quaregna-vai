@@ -12,8 +12,8 @@ public abstract class ClientSocket extends Client implements Runnable{
     private transient ObjectInputStream inputStream;
     private transient ObjectOutputStream outputStream;
 
-    public ClientSocket(String username, String address, int port /*DisconnectionListener disconnectionListener*/){
-        super(username,address,port);
+    public ClientSocket(String username, int port /*DisconnectionListener disconnectionListener*/){
+        super(username,port);
     }
 
     public void startConnection(){

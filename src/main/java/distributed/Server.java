@@ -31,17 +31,13 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         return controller;
     }
 
-    public Server getInstanceOfServer(){
-        return this;
-    }
 
-    private void startServers() throws RemoteException{
+    private void startServers() throws RemoteException{ // fa partire server socket e rmi
         SocketServer serverSocket = new SocketServer();
         serverSocket.startServer();
 
         ServerRMIInterface rmiServer = new RMIServer(this, RMIPort);
         rmiServer.startServer(rmiServer);
-        //TODO fa partire server socket e rmi
     }
 
     public void login(String username, Connection connection) throws RemoteException{

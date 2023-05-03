@@ -14,9 +14,9 @@ public abstract class Client implements Remote {
     private int port;
     private String token;
 
-    protected Client(String username, String address, int port) {
+    protected Client(String username, int port) {
         this.username = username;
-        this.address = address;
+     //   this.address = address;
         this.port = port;
     }
     public String getAddress(){
