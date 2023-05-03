@@ -3,9 +3,11 @@ package model;
 import util.Observable;
 import util.Observer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Board extends Observable {
+public class Board extends Observable implements Serializable {
+    private static final long serialVersionUID = 4758892564965792652L;
     private int numOfCells;
     public final int  BOARD_ROW = 9;
     public final int  BOARD_COLUMN = 9;

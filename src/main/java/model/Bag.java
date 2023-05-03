@@ -2,11 +2,13 @@ package model;
 
 import util.Observable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
 
-public class Bag extends Observable {
+public class Bag extends Observable implements Serializable {
+    private static final long serialVersionUID = -7897863812725192313L;
     private static final int MAX_TILES_ONE_TYPE = 22;
     private static final int MAX_NUM_TYPE = 3;
     private ArrayList<Tile> tilesContained;

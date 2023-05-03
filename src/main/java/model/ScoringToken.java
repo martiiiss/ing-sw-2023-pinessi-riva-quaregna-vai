@@ -1,6 +1,9 @@
 package model;
 
-public class ScoringToken {
+import java.io.Serializable;
+
+public class ScoringToken implements Serializable {
+    private static final long serialVersionUID = 4785265365456310765L;
     private final int romanNumber;
     private final int value;
 
