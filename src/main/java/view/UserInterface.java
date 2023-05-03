@@ -132,7 +132,7 @@ public class UserInterface extends Observable implements Observer {
 
     //This method asks the user to input the coordinates of the desired Tile
     //TODO: 1)Check if the tiles are all in the same row/col, Check the input of the user (It must be with the comma)
-    public Cord askTilePosition() throws IOException {
+    public String askTilePosition() throws IOException {
         Cord cord = new Cord();
         System.out.print("Input your coordinates as 2 integers separated by a comma (tiles must be adjacent):");
         String in = reader.readLine();
@@ -140,16 +140,24 @@ public class UserInterface extends Observable implements Observer {
             System.err.println("Empty, try again");
             in = reader.readLine();
         }
+        /*
         try {
             String[] splittedStr = in.split(",");
             cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
         } catch (NumberFormatException formatException) {
-            System.err.println("Invalid format...");
+            if(in.equals("undo")) {
+                cont.clearChoice();
+                System.out.println("Restoring the board...");
+            }
+            else
+                System.err.println("Invalid format...");
         } catch (ArrayIndexOutOfBoundsException boundsException) {
             System.err.println("Invalid format or non existent coordinate...");
         }
         //showSelectedTiles(cord);
-        return cord;
+
+         */
+        return in;
     }
 
     public int askNumberOfChosenTiles() {

@@ -209,35 +209,45 @@ public class Controller implements Observer {
     //first number chosen is the column, the second is the row
     //FIXME: Si possono pescare tiles dappertutto, non viene controllato se è disponibile
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
+    private ArrayList<Cord> cords = new ArrayList<>();
     public void chooseTiles() throws IOException {
         ArrayList<Tile> tiles = new ArrayList();
-        Cord cord = new Cord();
-        ArrayList<Cord> cords = new ArrayList<>();
         boolean accepted = true;
         int i = 0;
-        while(i<this.numberOfChosenTiles){
-            accepted=true;
-            cord = UI.askTilePosition();
-            if(board.getSelectedType(cord.getRowCord(),cord.getColCord())==Type.NOTHING || board.getSelectedType(cord.getRowCord(),cord.getColCord())==Type.BLOCKED) {
+        while (cords.size()<this.numberOfChosenTiles) {
+            Cord cord = new Cord();
+            do {
+                String in = UI.askTilePosition();
+                try {
+                    String[] splittedStr = in.split(",");
+                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
+                } catch (NumberFormatException formatException) {
+                        System.err.println("Invalid format...");
+                } catch (ArrayIndexOutOfBoundsException boundsException) {
+                    System.err.println("Invalid format or non existent coordinate...");
+                }
+            } while (cord.getRowCord() == 0 && cord.getColCord() == 0);
+            accepted = true;
+            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
                 System.err.println("Invalid tile....");
-                accepted = false;}
-            if( accepted && !isTileFreeTile(cord)){
+                accepted = false;
+            }
+            if (accepted && !isTileFreeTile(cord)) {
                 System.err.println("This tile is blocked...");
-                accepted=false;}
-            if(!cords.isEmpty())
-                for (Cord value : cords)
+                accepted = false;
+            }
+            if (!this.cords.isEmpty())
+                for (Cord value : this.cords)
                     if (value.getRowCord() != cord.getRowCord() && value.getColCord() != cord.getColCord()) {
                         accepted = false;
                         System.err.println("This tile is not adjacent to the previous...");
                         break;
                     }
-            if(accepted) {
-                i++;
+            if(accepted)
                 cords.add(cord);
-            }
         }
-        for (i=0; i<cords.size();i++)
-            tiles.add(board.removeTile(cords.get(i).getRowCord(), cords.get(i).getColCord()));
+        for (i=0; i<this.cords.size();i++)
+            tiles.add(board.removeTile(this.cords.get(i).getRowCord(), this.cords.get(i).getColCord()));
         game.getPlayerInTurn().setTilesInHand(tiles);
     }
 
@@ -383,5 +393,10 @@ public class Controller implements Observer {
 
     @Override
     public void update(Observable o,Object obj) {
+    }
+
+    public void clearChoice() throws IOException {
+        this.cords.clear();
+        chooseTiles();
     }
 }
