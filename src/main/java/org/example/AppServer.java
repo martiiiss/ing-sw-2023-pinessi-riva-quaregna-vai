@@ -6,13 +6,9 @@ import distributed.RMI.ServerRMIInterface;
 import distributed.Server;
 
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
-public class AppServerRMI {
+public class AppServer {
     public static void main(String[] args) throws RemoteException {
         int port = 43801;
         Server server = new Server(port, 2); // 2 = RMI
