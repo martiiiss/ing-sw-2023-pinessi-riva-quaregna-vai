@@ -1,6 +1,9 @@
 package model;
 
-public class Tile {
+import java.io.Serializable;
+
+public class Tile implements Serializable {
+    private static final long serialVersionUID = 8393623658151365163L;
     private Type type;
     private int numType;
 

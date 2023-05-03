@@ -2,9 +2,11 @@ package model;
 
 import util.Observable;
 
+import java.io.Serializable;
 import java.util.Stack;
 
-public class CommonGoalCard extends Observable {
+public class CommonGoalCard extends Observable implements Serializable {
+    private static final long serialVersionUID = 6808176289351890649L;
     private Stack<ScoringToken> tokenStack;
     private int romanNumber;
     private CGCStrategy strategy; // reference to CGMStrategy

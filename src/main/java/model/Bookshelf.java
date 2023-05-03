@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -7,7 +8,8 @@ import static model.Type.NOTHING;
 import model.Tile;
 import util.Observable;
 
-public class Bookshelf extends Observable {
+public class Bookshelf extends Observable implements Serializable {
+    private static final long serialVersionUID = 4784659265294763952L;
 
     private Tile[][] bookshelf;  // Bookshelf [5][6]
     public static final int SHELF_ROW = 6;

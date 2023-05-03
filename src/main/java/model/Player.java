@@ -4,13 +4,15 @@ import jdk.jshell.spi.ExecutionControl;
 import util.Cord;
 import util.Observable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import static model.Type.NOTHING;
 
 
 
-public class Player extends Observable {
+public class Player extends Observable implements Serializable {
+    private static final long serialVersionUID = 627657924675627426L;
     private String nickname;
     private PersonalGoalCard myGoalCard;
     private boolean isFirstPlayer;
