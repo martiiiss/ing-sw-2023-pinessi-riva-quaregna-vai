@@ -1,6 +1,7 @@
 package distributed.RMI;
 
 import distributed.Server;
+import distributed.Connection;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -12,24 +13,29 @@ public class RMIServer extends Server implements ServerRMIInterface {
     private long serialVersionUID = -8672468904670634209L;
 
 
+    public void stampa() throws RemoteException{
+        System.out.println("ciaoo!");
+    }
     public RMIServer(Server server, int port) throws RemoteException {
         super(port, 2);
         this.server = server;
         this.port = port;
     }
 
-    public void startServer(){
+    public void startServer(ServerRMIInterface stub) throws RemoteException{
         try{
             Registry registry = LocateRegistry.createRegistry(this.port);
-            registry.rebind("server", this);
+            registry.rebind("server", stub); //this è l'oggetto remoto
         } catch(Exception e){
             e.printStackTrace();
+            System.err.println("Failed to bind to RMI registry");
         }
     }
 
-    public void login(String username, ClientConnectionRMI clientConnection) throws RemoteException{
-
-        //TODO
+    @Override
+    public void login(String username, ClientConnectionRMI clientConnection) throws RemoteException {
+        RMIConnection rmiConnection = new RMIConnection(server, clientConnection);
+        server.login(username, (Connection) clientConnection);
     }
 
     public void disconnect(){

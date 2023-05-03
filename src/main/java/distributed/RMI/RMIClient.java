@@ -2,10 +2,16 @@ package distributed.RMI;
 
 import distributed.Client;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-public class RMIClient extends Client implements ClientConnectionRMI {
+public class RMIClient extends Client implements ClientConnectionRMI, Serializable {
 
+    @Serial
     private static final long serialVersionUID = -3489512533622391685L; //random number
     private transient ServerRMIInterface server;
     private String address;
@@ -14,28 +20,40 @@ public class RMIClient extends Client implements ClientConnectionRMI {
 
     public RMIClient(String username, String address, int port) throws RemoteException {
         super(username, address, port);
+        this.username = username; //server
+        this.address = address;
+        this.port = port;
     }
 
     /**
      *
      */
     @Override
-    public void startConnection() {
-        //TODO implement this
-    }
+    public void startConnection() throws RemoteException, NotBoundException {
+        try {
+            Registry registry = LocateRegistry.getRegistry(getUsername(), getPort()); //server e porta
+            server = (ServerRMIInterface) registry.lookup(getUsername());
+            server.stampa();
+//            server.login(getUsername(), this);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }  //TODO implement this
 
- //   @Override
+
+    //   @Override
   //  public void sendMessage(Message message) {
         //TODO implement this
    // }
+
+    public String getUsername(){ return this.username; }
+
+    public int getPort(){ return this.port; }
 
     public void getMessage(){
         //TODO implement this
     }
 
-    /**
-     *
-     */
     @Override
     public void closeConnection() {
         //TODO implement this
@@ -47,6 +65,11 @@ public class RMIClient extends Client implements ClientConnectionRMI {
     @Override
     public void messageReceived() {
         //TODO implement this
+    }
+
+    @Override
+    public void disconnected() {
+
     }
 
     public void ping(){

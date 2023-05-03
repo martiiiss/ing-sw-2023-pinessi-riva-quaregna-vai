@@ -1,6 +1,8 @@
 package distributed;
 
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.Timer;
 
 public abstract class Client implements Remote {
@@ -18,26 +20,27 @@ public abstract class Client implements Remote {
         this.port = port;
     }
     public String getAddress(){
-
-        //TODO implement this
-
-        return null;
+        return this.address;
     }
 
     public int getPort(){
-        //TODO implement this
-
-        return 0;
+        return this.port;
     }
 
-    public abstract void startConnection();
+    public abstract void startConnection() throws RemoteException, NotBoundException;
 
     public void setToken(){this.token = token;}
 
-    public String getToken(){return token;}
+    public String getToken(){return this.token;}
+
+    public String getUsername(){
+        return this.username;
+    }
+    public void setUsername(String username){ this.username = username; }
 
     //public abstract void sendMessage(Message message); //TODO manca la classe Message, va creata
 
     public abstract void closeConnection();
 
-    }
+    public abstract void disconnected();
+}

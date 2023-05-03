@@ -1,6 +1,7 @@
 package controller;
 
 import model.*;
+import org.example.App;
 import util.Cord;
 import util.Observable;
 import util.Observer;
@@ -16,7 +17,7 @@ public class Controller implements Observer {
     private int chosenColumn;
     private int numberOfChosenTiles;
     private int protocol = 0;
-    UserInterface UI = new view.UserInterface();
+    UserInterface UI = new UserInterface();
 
     private ArrayList<Player> finalRank;
     //Before the game actually starts
@@ -39,6 +40,12 @@ public class Controller implements Observer {
     public Board getInstanceOfBoard(){
         return this.board;
     }
+
+    public UserInterface getInstanceOfUI(){
+        return this.UI;
+    }
+
+
     //this method needs to be error checked
     public void chooseNumOfPlayer() throws IOException {
         int numberOfPlayers = UI.askNumOfPlayers();

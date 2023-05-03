@@ -1,4 +1,4 @@
-package distributed.Socket;
+package distributed;
 
 public abstract class Connection {
     private boolean connected;
