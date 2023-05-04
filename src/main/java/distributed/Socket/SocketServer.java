@@ -25,8 +25,7 @@ public class SocketServer extends Server implements Runnable{
 
     public void startServer(Server server) throws IOException {
         serverSocket = new ServerSocket(port);
-        Socket socket = serverSocket.accept();
-        System.out.println("ciao");
+       // Socket socket = serverSocket.accept();
         //TODO
     }
     @Override

@@ -3,6 +3,7 @@ package distributed.RMI;
 import distributed.Client;
 import distributed.Server;
 
+import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.Naming;
@@ -64,8 +65,9 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
      *
      */
     @Override
-    public void messageReceived() throws RemoteException {
+    public void messageReceived() throws IOException {
         System.out.println("Number of connections: "+server.getNumberOfConnections());
+        //server.askNumOfPlayers();
     }
 
     @Override

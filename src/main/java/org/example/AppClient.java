@@ -20,12 +20,15 @@ public class AppClient {
         System.out.println("1 for RMI 2 for socket:");
         int choice = Integer.parseInt(reader.readLine());
         if(choice==1) {
-            System.out.println("You chose RMI");
-            String name = "rmi://localhost:43801/server";
-            RMIClient client = new RMIClient(name, 43801);
+            String name = "rmi://localhost:45398/server";
+            RMIClient client = new RMIClient(name, 45398);
             client.startConnection();
-            System.out.println("connessione ok");
+            System.out.println("You chose RMI!");
+
             client.messageReceived();
+        } else if(choice == 2){
+            //clientSocket
+            System.out.println("You chose Socket!");
         }
     }
 }

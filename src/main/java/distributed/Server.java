@@ -45,7 +45,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     public void startServers(int protocol) throws IOException { // fa partire server socket e rmi
         if(protocol ==1){
             serverSocket = new SocketServer(this, socketPort);
-            System.out.println(socketPort);
             serverSocket.startServer(serverSocket);
         } else if (protocol == 2){
             rmiServer = new RMIServer(this, RMIPort);
@@ -68,12 +67,9 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public void connection (Client client) throws RemoteException{
         clientsConnected.add(client);
-        System.out.println("Successfully added"+clientsConnected.get(0).getUsername());
-        System.out.println(clientsConnected.size());
-        }
-
-        //TODO
-
+       // System.out.println("Successfully added "+clientsConnected.get(0).getUsername());
+       // System.out.println("size: " + clientsConnected.size());
+    }//TODO
 
 
     private void readyToStart() throws RemoteException{

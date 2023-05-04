@@ -1,5 +1,6 @@
 package distributed.RMI;
 
+import controller.Controller;
 import distributed.Client;
 import distributed.Server;
 
@@ -52,7 +53,12 @@ public class RMIServer extends Server implements ServerRMIInterface {
     }
 
     public int getNumberOfConnections() {
-        System.out.println(super.getClientsConnected());
-    return Integer.parseInt(super.getClientsConnected());
+        return Integer.parseInt(server.getClientsConnected());
+    }
+
+    public void askNumOfPlayers() throws IOException {
+        if(Integer.parseInt(server.getClientsConnected())==1){
+            server.getInstanceOfController().chooseNumOfPlayer();
+        }
     }
 }

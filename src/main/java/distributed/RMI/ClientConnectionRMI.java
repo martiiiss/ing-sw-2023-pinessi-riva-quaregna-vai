@@ -1,10 +1,11 @@
 package distributed.RMI;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface ClientConnectionRMI extends Remote {
-    void messageReceived() throws RemoteException;
+    void messageReceived() throws IOException;
 
     void disconnected();
 

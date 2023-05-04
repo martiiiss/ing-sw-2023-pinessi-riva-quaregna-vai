@@ -11,16 +11,20 @@ import java.io.IOException;
 
 public class AppServer {
     public static void main(String[] args) throws IOException {
-        int port = 43801;
+        int portSocket = 43801;
+        int portRMI = 45398;
+        Server server = new Server(portSocket, portRMI);
 
-        Server server = new Server(port, port+1); // 2 = RMI
         Controller controller = server.getInstanceOfController();
 
-        server.startServers(1);
+        server.startServers(1); //start socket
         SocketServer serverSocket = server.getInstanceOfSocketServer();
+
+        server.startServers(2); // start RMI
         ServerRMIInterface serverRmi = server.getInstanceOfRMIServer();
 
         System.out.println("Server ready");
+
     }
 
 }
