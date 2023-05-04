@@ -48,7 +48,7 @@ public class RMIServer extends Server implements ServerRMIInterface {
     }
 
     @Override
-    public void initClient(Client rmiClient) throws RemoteException {
+    public void initClient(Client rmiClient) throws IOException {
         server.connection(rmiClient);
     }
 

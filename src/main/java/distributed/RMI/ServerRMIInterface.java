@@ -15,7 +15,7 @@ public interface ServerRMIInterface extends Remote{
    // void login(String username, ClientConnectionRMI clientConnection) throws RemoteException;
     void disconnect() throws RemoteException;
 
-    void initClient(Client rmiClient) throws RemoteException;
+    void initClient(Client rmiClient) throws IOException;
 
     int getNumberOfConnections() throws RemoteException;
 

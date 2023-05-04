@@ -65,12 +65,19 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         //TODO riconnette un giocatore (funzionalià aggiuntive)
     }
 
-    public void connection (Client client) throws RemoteException{
+    public void connection (Client client) throws IOException {
+        int numberOfPlayers;
         clientsConnected.add(client);
+        if(clientsConnected.size()==1)
+            askClientNumber(clientsConnected.get(0));
+
        // System.out.println("Successfully added "+clientsConnected.get(0).getUsername());
        // System.out.println("size: " + clientsConnected.size());
     }//TODO
 
+    private void askClientNumber(Client firstClient) {
+
+    }
 
     private void readyToStart() throws RemoteException{
         //TODO: raggiunto il numero di giocatori necessario la partita può iniziare

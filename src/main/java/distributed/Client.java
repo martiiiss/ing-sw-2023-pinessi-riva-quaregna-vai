@@ -1,11 +1,19 @@
 package distributed;
 
+import controller.Controller;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.nio.Buffer;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Timer;
+class ClientView {
 
+}
 public abstract class Client implements Remote, Serializable {
     private static final long serialVersionUID = -8499166750855847908L; //random number
     //transient DisconnectionListener disconnectionListener
@@ -47,5 +55,10 @@ public abstract class Client implements Remote, Serializable {
 
     public Client getSuper() {
         return this;
+    }
+
+    public int askNumberOfPlayers() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        return Integer.parseInt(reader.readLine());
     }
 }
