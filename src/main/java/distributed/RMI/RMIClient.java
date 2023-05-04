@@ -68,10 +68,11 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     @Override
     public void messageReceived() throws IOException, RemoteException {
         System.out.println("Number of connections: "+server.getNumberOfConnections());
-        //System.out.println("Insert num of player: ");
-//        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-  //      int numOfPlayer = Integer.parseInt(reader.readLine());
-        server.getNumberOfPlayer(uView.askNumOfPlayer());
+        boolean flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
+        while(!flag){
+            System.err.println("Retry: ");
+            flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
+        }
     }
 
     @Override

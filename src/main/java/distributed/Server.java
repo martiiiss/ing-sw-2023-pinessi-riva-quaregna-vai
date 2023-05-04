@@ -80,8 +80,11 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     }
 
-    public void setClientNumber(int num) throws IOException {
-        controller.chooseNumOfPlayer(num);
+    public boolean setClientNumber(int num) throws IOException {
+        if(controller.chooseNumOfPlayer(num)){
+            return true;
+        } else
+            return false;
     }
 
     private void readyToStart() throws RemoteException{

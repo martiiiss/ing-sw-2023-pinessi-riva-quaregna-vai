@@ -17,7 +17,7 @@ public interface ServerRMIInterface extends Remote{
 
     void initClient(Client rmiClient) throws IOException;
 
-    void getNumberOfPlayer(int num) throws IOException;
+    boolean getNumberOfPlayer(int num) throws IOException;
     int getNumberOfConnections() throws RemoteException;
 
 

@@ -47,13 +47,12 @@ public class Controller implements Observer {
 
 
     //this method needs to be error checked
-    public void chooseNumOfPlayer(int num) throws IOException {
-        while(num<2 || num>4){
-            //num = UI.askNumOfPlayers();
-            //chiama client
-
+    public boolean chooseNumOfPlayer(int num) throws IOException {
+        if(num<2 || num>4){
+            return false;
         }
         game.setNumOfPlayers(num);
+        return true;
     }
 
     //this method needs to be fixed -> multithreading TODO
