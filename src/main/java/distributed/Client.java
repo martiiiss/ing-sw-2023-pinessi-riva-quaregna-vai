@@ -11,9 +11,6 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Timer;
-class ClientView {
-
-}
 public abstract class Client implements Remote, Serializable {
     private static final long serialVersionUID = -8499166750855847908L; //random number
     //transient DisconnectionListener disconnectionListener
@@ -25,7 +22,7 @@ public abstract class Client implements Remote, Serializable {
 
     protected Client(String username, int port) {
         this.username = username;
-     //   this.address = address;
+        //   this.address = address;
         this.port = port;
     }
     public String getAddress(){
