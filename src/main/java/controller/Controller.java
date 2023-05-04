@@ -214,6 +214,7 @@ public class Controller implements Observer {
         ArrayList<Tile> tiles = new ArrayList();
         boolean accepted = true;
         int i = 0;
+        cords.removeAll(cords);
         while (cords.size()<this.numberOfChosenTiles) {
             Cord cord = new Cord();
             do {
