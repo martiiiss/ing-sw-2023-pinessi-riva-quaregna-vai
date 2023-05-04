@@ -68,9 +68,10 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     public void connection (Client client) throws IOException {
         int numberOfPlayers;
         clientsConnected.add(client);
-        if(clientsConnected.size()==1)
+        if(clientsConnected.size()==1) {
             askClientNumber(clientsConnected.get(0));
-
+            controller.createGame();
+        }
        // System.out.println("Successfully added "+clientsConnected.get(0).getUsername());
        // System.out.println("size: " + clientsConnected.size());
     }//TODO
@@ -79,8 +80,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     }
 
-    public void setClientNumber(int num){
-        controller.getInstanceOfGame().setNumOfPlayers(num);
+    public void setClientNumber(int num) throws IOException {
+        controller.chooseNumOfPlayer(num);
     }
 
     private void readyToStart() throws RemoteException{

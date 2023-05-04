@@ -52,9 +52,9 @@ public class RMIServer extends Server implements ServerRMIInterface {
         server.connection(rmiClient);
     }
 
-    public void getNumberOfPlayer(int num) throws RemoteException{
+    public void getNumberOfPlayer(int num) throws IOException {
         System.out.println("Number of player expected is: " + num);
-        //server.setClientNumber(num);
+        server.setClientNumber(num);
     }
 
     public int getNumberOfConnections() {

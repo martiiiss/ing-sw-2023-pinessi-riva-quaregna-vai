@@ -3,6 +3,7 @@ package distributed.RMI;
 import distributed.Client;
 import distributed.Server;
 import view.UserInterface;
+import view.UserView;
 
 import java.io.*;
 import java.rmi.Naming;
@@ -63,15 +64,14 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     /**
      *
      */
-
+    UserView uView = new UserView();
     @Override
     public void messageReceived() throws IOException, RemoteException {
         System.out.println("Number of connections: "+server.getNumberOfConnections());
-        System.out.println("Insert num of player: ");
-        //UI.askNumOfPlayers();
-        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        int numOfPlayer = Integer.parseInt(reader.readLine());
-        server.getNumberOfPlayer(numOfPlayer);
+        //System.out.println("Insert num of player: ");
+//        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+  //      int numOfPlayer = Integer.parseInt(reader.readLine());
+        server.getNumberOfPlayer(uView.askNumOfPlayer());
     }
 
     @Override

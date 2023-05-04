@@ -23,7 +23,7 @@ public class Controller implements Observer {
     //Before the game actually starts
     public void createGame() throws IOException {
          this.game = new Game(); /*I create the Game object */
-         chooseNumOfPlayer();
+//         chooseNumOfPlayer();
          this.bag = new Bag();
          this.board = new Board(game.getNumOfPlayers());
          game.setGameStarted();
@@ -47,16 +47,14 @@ public class Controller implements Observer {
 
 
     //this method needs to be error checked
-    public void chooseNumOfPlayer() throws IOException {
-        int numberOfPlayers = UI.askNumOfPlayers();
-        while(numberOfPlayers<2 || numberOfPlayers>4){
-            //System.out.println("This number is wrong, retry!");
-            numberOfPlayers = UI.askNumOfPlayers();
+    public void chooseNumOfPlayer(int num) throws IOException {
+        while(num<2 || num>4){
+            //num = UI.askNumOfPlayers();
+            //chiama client
+
         }
-        game.setNumOfPlayers(numberOfPlayers);
+        game.setNumOfPlayers(num);
     }
-
-
 
     //this method needs to be fixed -> multithreading TODO
     public void chooseNickname() throws IOException {
