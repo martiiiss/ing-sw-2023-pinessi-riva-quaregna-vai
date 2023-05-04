@@ -28,9 +28,9 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         this.port = port;
     }
 
-    /**
-     *
-     */
+    public void canClientConnect(){
+
+    }
     @Override
     public void startConnection() throws RemoteException, NotBoundException {
         try {
@@ -68,11 +68,14 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     @Override
     public void messageReceived() throws IOException, RemoteException {
         System.out.println("Number of connections: "+server.getNumberOfConnections());
-        boolean flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
-        while(!flag){
-            System.err.println("Retry: ");
-            flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
+        if(server.getNumberOfConnections() == 1) {
+            boolean flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
+            while (!flag) {
+                System.err.println("Retry: ");
+                flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
+            }
         }
+    //        if(server.readyToStart()){}
     }
 
     @Override

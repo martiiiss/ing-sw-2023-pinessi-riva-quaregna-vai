@@ -23,7 +23,6 @@ public class Controller implements Observer {
     //Before the game actually starts
     public void createGame() throws IOException {
          this.game = new Game(); /*I create the Game object */
-//         chooseNumOfPlayer();
          this.bag = new Bag();
          this.board = new Board(game.getNumOfPlayers());
          game.setGameStarted();
