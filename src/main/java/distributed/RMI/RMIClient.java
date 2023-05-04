@@ -1,6 +1,7 @@
 package distributed.RMI;
 
 import distributed.Client;
+import distributed.Server;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -33,7 +34,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public void startConnection() throws RemoteException, NotBoundException {
         try {
             server = (ServerRMIInterface) Naming.lookup(getUsername());
-            server.stampa();
+            server.initClient(this);
          //   server.login(getUsername(), this);
         }catch (Exception e){
             e.printStackTrace();
@@ -63,8 +64,8 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
      *
      */
     @Override
-    public void messageReceived() {
-        //TODO implement this
+    public void messageReceived() throws RemoteException {
+        System.out.println("Number of connections: "+server.getNumberOfConnections());
     }
 
     @Override

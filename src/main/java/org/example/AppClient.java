@@ -25,6 +25,7 @@ public class AppClient {
             RMIClient client = new RMIClient(name, 43801);
             client.startConnection();
             System.out.println("connessione ok");
+            client.messageReceived();
         }
     }
 }

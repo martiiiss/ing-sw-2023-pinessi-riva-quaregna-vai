@@ -1,11 +1,12 @@
 package distributed;
 
+import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Timer;
 
-public abstract class Client implements Remote {
+public abstract class Client implements Remote, Serializable {
     private static final long serialVersionUID = -8499166750855847908L; //random number
     //transient DisconnectionListener disconnectionListener
     private transient Timer pingTimer;
@@ -43,4 +44,8 @@ public abstract class Client implements Remote {
     public abstract void closeConnection();
 
     public abstract void disconnected();
+
+    public Client getSuper() {
+        return this;
+    }
 }

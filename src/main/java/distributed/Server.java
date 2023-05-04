@@ -9,12 +9,14 @@ import model.Game;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private int socketPort;
     private int RMIPort;
-    private Map<String, Connection> clients; //username - connection
+    private ArrayList<Client> clientsConnected = new ArrayList<>(); //username - connection
     private Object clientsLock;
     private Controller controller = new Controller();
     private Game game = controller.getInstanceOfGame();
@@ -40,29 +42,26 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         rmiServer.startServer(rmiServer);
     }
 
-    public void login(String username, Connection connection) throws RemoteException{
+    /*public void login(String username, Connection connection) throws RemoteException{
         if(clients.containsKey(username)){
             reconnectionOfPlayer(username, connection);
         } else{
             firstConnection(username, connection);
         }
         //TODO registra un client (utente) in partita
-    }
+    }*/
 
     private void reconnectionOfPlayer(String username, Connection connection) throws RemoteException{
         //TODO riconnette un giocatore (funzionalià aggiuntive)
     }
 
-    private void firstConnection (String username, Connection connection) throws RemoteException{
-        if(clients.size() < game.getNumOfPlayers()){
-            clients.put(username, connection);
-            System.out.println("connection ok!");
-        } else{
-            System.out.println("Game is full, sorry! ");
+    public void connection (Client client) throws RemoteException{
+        clientsConnected.add(client);
+        System.out.println("Successfully added"+clientsConnected.get(0).getUsername());
+        System.out.println(clientsConnected.size());
         }
 
         //TODO
-    }
 
 
 
@@ -79,5 +78,9 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     @Override
     public void run() { //throws InterruptedException {
         //TODO
+    }
+
+    public String getClientsConnected() {
+        return String.valueOf(clientsConnected.size());
     }
 }
