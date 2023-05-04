@@ -21,6 +21,8 @@ public class App {
         c = new Controller();
         UI = c.getInstanceOfUI();
 
+
+
         c.createGame();
         c.userChoices();//first player
         c.userChoices();//second player

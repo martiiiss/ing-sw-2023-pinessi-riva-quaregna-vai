@@ -6,6 +6,7 @@ import distributed.RMI.ServerRMIInterface;
 import distributed.Socket.SocketServer;
 import model.Game;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -20,26 +21,36 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private Object clientsLock;
     private Controller controller = new Controller();
     private Game game = controller.getInstanceOfGame();
-    public Server(int port, int protocol) throws RemoteException {
-        super(port);
-        if(protocol == 1){
-            this.socketPort = port;
-        } else if(protocol == 2){
-            this.RMIPort = port;
-        }
+    private SocketServer serverSocket;
+    private ServerRMIInterface rmiServer;
+    public Server(int portSocket, int portRMI) throws RemoteException {
+        super();
+        this.socketPort = portSocket;
+        this.RMIPort = portRMI;
     }
 
     public Controller getInstanceOfController(){
         return controller;
     }
 
+    public SocketServer getInstanceOfSocketServer(){
+        return serverSocket;
+    }
 
-    private void startServers() throws RemoteException{ // fa partire server socket e rmi
-        SocketServer serverSocket = new SocketServer();
-        serverSocket.startServer();
+    public ServerRMIInterface getInstanceOfRMIServer(){
+        return rmiServer;
+    }
 
-        ServerRMIInterface rmiServer = new RMIServer(this, RMIPort);
-        rmiServer.startServer(rmiServer);
+
+    public void startServers(int protocol) throws IOException { // fa partire server socket e rmi
+        if(protocol ==1){
+            serverSocket = new SocketServer(this, socketPort);
+            System.out.println(socketPort);
+            serverSocket.startServer(serverSocket);
+        } else if (protocol == 2){
+            rmiServer = new RMIServer(this, RMIPort);
+            rmiServer.startServer(rmiServer);
+        }
     }
 
     /*public void login(String username, Connection connection) throws RemoteException{
