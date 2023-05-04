@@ -7,14 +7,13 @@ import util.Cord;
 import util.Observable;
 import util.Observer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 
 
-public class UserInterface extends Observable implements Observer {
-
+public class UserInterface extends Observable implements Observer, Serializable {
+    @Serial
+    private static final long serialVersionUID = -38738202973L;
     /*
    Controller cont;
    Game game ;

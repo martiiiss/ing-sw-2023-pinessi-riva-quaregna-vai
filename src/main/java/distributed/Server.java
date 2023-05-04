@@ -79,6 +79,10 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     }
 
+    public void setClientNumber(int num){
+        controller.getInstanceOfGame().setNumOfPlayers(num);
+    }
+
     private void readyToStart() throws RemoteException{
         //TODO: raggiunto il numero di giocatori necessario la partita può iniziare
     }

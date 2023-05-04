@@ -17,16 +17,16 @@ public class AppClient {
         //Controller controller = app.getInstanceOfController();  //ogni client ha un suo controller
 
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        System.out.println("1 for RMI 2 for socket:");
+        System.out.println("1 for socket, 2 for RMI :");
         int choice = Integer.parseInt(reader.readLine());
-        if(choice==1) {
+        if(choice==2) {
             String name = "rmi://localhost:45398/server";
             RMIClient client = new RMIClient(name, 45398);
             client.startConnection();
             System.out.println("You chose RMI!");
 
             client.messageReceived();
-        } else if(choice == 2){
+        } else if(choice == 1){
             //clientSocket
             System.out.println("You chose Socket!");
         }

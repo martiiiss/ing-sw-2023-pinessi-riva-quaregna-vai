@@ -2,18 +2,17 @@ package distributed.RMI;
 
 import distributed.Client;
 import distributed.Server;
+import view.UserInterface;
 
-import java.io.IOException;
-import java.io.Serial;
-import java.io.Serializable;
+import java.io.*;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class RMIClient extends Client implements ClientConnectionRMI, Serializable {
-
     @Serial
     private static final long serialVersionUID = -3489512533622391685L; //random number
     private transient ServerRMIInterface server;
@@ -64,10 +63,15 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     /**
      *
      */
+
     @Override
-    public void messageReceived() throws IOException {
+    public void messageReceived() throws IOException, RemoteException {
         System.out.println("Number of connections: "+server.getNumberOfConnections());
-        //server.askNumOfPlayers();
+        System.out.println("Insert num of player: ");
+        //UI.askNumOfPlayers();
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        int numOfPlayer = Integer.parseInt(reader.readLine());
+        server.getNumberOfPlayer(numOfPlayer);
     }
 
     @Override
