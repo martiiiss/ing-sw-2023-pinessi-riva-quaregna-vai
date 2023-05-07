@@ -16,5 +16,6 @@ public class UserView implements Serializable {
              numOfPlayer =  Integer.parseInt(reader.readLine());
         }catch (NumberFormatException exception) { System.err.println("Invalid format...");}
         return numOfPlayer;
+
     }
 }

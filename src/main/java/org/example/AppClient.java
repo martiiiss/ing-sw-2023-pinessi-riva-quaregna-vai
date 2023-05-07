@@ -25,7 +25,7 @@ public class AppClient {
             client.startConnection();
             System.out.println("You chose RMI!");
 
-            client.messageReceived();
+            client.firstClientMessages();
         } else if(choice == 1){
             //clientSocket
             System.out.println("You chose Socket!");

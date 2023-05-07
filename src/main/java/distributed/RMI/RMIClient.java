@@ -66,12 +66,14 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
      */
     UserView uView = new UserView();
     @Override
-    public void messageReceived() throws IOException, RemoteException {
+    public void firstClientMessages() throws IOException, RemoteException {
         System.out.println("Number of connections: "+server.getNumberOfConnections());
-        boolean flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
-        while(!flag){
-            System.err.println("Retry: ");
-            flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
+        if(server.getNumberOfConnections() == 1) {
+            boolean flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
+            while (!flag) {
+                System.err.println("Retry: ");
+                flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
+            }
         }
     }
 
@@ -79,7 +81,6 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public void disconnected() {
 
     }
-
     public void ping(){
         //TODO implement this
     }

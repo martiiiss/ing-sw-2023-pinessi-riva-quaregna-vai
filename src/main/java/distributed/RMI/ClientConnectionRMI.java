@@ -5,7 +5,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface ClientConnectionRMI extends Remote {
-    void messageReceived() throws IOException;
+    void firstClientMessages() throws IOException;
 
     void disconnected();
 
