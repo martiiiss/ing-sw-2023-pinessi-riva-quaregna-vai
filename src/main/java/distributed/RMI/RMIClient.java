@@ -2,6 +2,7 @@ package distributed.RMI;
 
 import distributed.Client;
 import distributed.Server;
+import util.Event;
 import view.UserInterface;
 import view.UserView;
 
@@ -75,6 +76,9 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                 flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
             }
         }
+    }
+    public void getClientSettings(String nickname, int userInterface) throws IOException {
+        server.sendUpdate(this,nickname, Event.SET_NICKNAME);
     }
 
     @Override

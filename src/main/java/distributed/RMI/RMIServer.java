@@ -2,6 +2,7 @@ package distributed.RMI;
 
 import distributed.Client;
 import distributed.Server;
+import util.Event;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -18,7 +19,7 @@ public class RMIServer extends Server implements ServerRMIInterface {
     public void initPlayer() throws IOException {
         System.out.println("sono in Server");
 
-        server.getInstanceOfController().chooseNickname();
+        server.getInstanceOfController().chooseNickname(this);
     }
     public RMIServer(Server server, int port) throws RemoteException {
         super(port, 2);
@@ -60,8 +61,12 @@ public class RMIServer extends Server implements ServerRMIInterface {
             return false;
         }
     }
-
     public int getNumberOfConnections() {
         return Integer.parseInt(server.getClientsConnected());
+    }
+
+    public void sendUpdate(Client client, Object o , Event event) throws IOException {
+        System.out.println("Nickname is "+o.toString());
+        server.update(client,o,event);
     }
 }

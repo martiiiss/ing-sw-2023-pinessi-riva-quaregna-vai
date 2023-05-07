@@ -1,6 +1,8 @@
 package distributed;
 
 import controller.Controller;
+import util.Event;
+import view.UserView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,6 +21,7 @@ public abstract class Client implements Remote, Serializable {
     private String username;
     private int port;
     private String token;
+    private UserView userView = new UserView();
 
     protected Client(String username, int port) {
         this.username = username;
@@ -65,5 +68,16 @@ public abstract class Client implements Remote, Serializable {
     public int askNumberOfPlayers() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         return Integer.parseInt(reader.readLine());
+    }
+    public UserView getInstanceOfView() {
+        return this.userView;
+    }
+    public Object request(Event event) throws IOException {
+        String name;
+        switch (event) {
+            case SET_NICKNAME -> {name = userView.askPlayerNickname();
+                return name;}
+        }
+        return null;
     }
 }

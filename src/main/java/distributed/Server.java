@@ -5,6 +5,8 @@ import distributed.RMI.RMIServer;
 import distributed.RMI.ServerRMIInterface;
 import distributed.Socket.SocketServer;
 import model.Game;
+import model.Player;
+import util.Event;
 
 import java.io.IOException;
 import java.rmi.Remote;
@@ -52,6 +54,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         }
     }
 
+
+
     /*public void login(String username, Connection connection) throws RemoteException{
         if(clients.containsKey(username)){
             reconnectionOfPlayer(username, connection);
@@ -72,9 +76,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
             askClientNumber(clientsConnected.get(0));
             controller.createGame();
         }
-        // System.out.println("Successfully added "+clientsConnected.get(0).getUsername());
-        // System.out.println("size: " + clientsConnected.size());
-    }//TODO
+        controller.chooseNickname(this);
+    }
 
     private void askClientNumber(Client firstClient) {
 
@@ -104,5 +107,15 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public String getClientsConnected() {
         return String.valueOf(clientsConnected.size());
+    }
+
+    public void update(Client client, Object o, Event event) throws IOException {
+        controller.update(client,o,event);
+    }
+    Server server = this;
+    public Server getInstanceOfServer() {return server;}
+
+    public Object request(Event event) throws IOException {
+        return clientsConnected.get(clientsConnected.size()-1).request(event);
     }
 }

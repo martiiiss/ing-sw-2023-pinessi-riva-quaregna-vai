@@ -1,14 +1,20 @@
 package controller;
 
+import distributed.Client;
+import distributed.Server;
 import model.*;
 import org.example.App;
 import util.Cord;
+import util.Event;
 import util.Observable;
 import util.Observer;
 import view.UserInterface;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import static util.Event.*;
 
 public class Controller implements Observer {
     private Game game;
@@ -17,9 +23,14 @@ public class Controller implements Observer {
     private int chosenColumn;
     private int numberOfChosenTiles;
     private int protocol = 0;
-    UserInterface UI = new UserInterface();
+    private UserInterface UI = new UserInterface();
+    private Server server;
 
     private ArrayList<Player> finalRank;
+
+    public Controller() throws RemoteException {
+    }
+
     //Before the game actually starts
     public void createGame() throws IOException {
         this.game = new Game(); /*I create the Game object */
@@ -28,6 +39,7 @@ public class Controller implements Observer {
         this.board = new Board(game.getNumOfPlayers());
         game.setGameStarted();
     }
+
 
     public Game getInstanceOfGame(){
         return this.game;
@@ -56,8 +68,8 @@ public class Controller implements Observer {
     }
 
     //this method needs to be fixed -> multithreading TODO
-    public void chooseNickname() throws IOException {
-        String nickname = UI.askPlayerNickname();
+    public void chooseNickname(Server myserver) throws IOException {
+        /*String nickname = UI.askPlayerNickname();
         //control for the first player
         while(nickname.isEmpty())
         {
@@ -74,7 +86,11 @@ public class Controller implements Observer {
         Player newPlayer = new Player();
         newPlayer.setNickname(nickname);
         game.addPlayer(newPlayer);
+        */
+         String nickname = myserver.getInstanceOfServer().
+                 request(SET_NICKNAME).toString();
     }
+
 
     public void chooseProtocol() throws IOException {
         int chosenProtocol = UI.webProtocol();
@@ -126,9 +142,9 @@ public class Controller implements Observer {
     }//TODO the cases are useful, we need to implement the choice
 
     public void userChoices() throws IOException {
-        chooseProtocol();
-        chooseUserInterface();
-        chooseNickname();
+       // chooseProtocol();
+       // chooseUserInterface();
+        //chooseNickname();
     }
 
     public boolean countPlayers(){
@@ -397,4 +413,8 @@ public class Controller implements Observer {
         this.cords.clear();
         chooseTiles();
     }
-}
+
+    public void update(Client client, Object o, Event event) throws IOException {
+        }
+    }
+
