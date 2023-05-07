@@ -72,8 +72,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
             askClientNumber(clientsConnected.get(0));
             controller.createGame();
         }
-       // System.out.println("Successfully added "+clientsConnected.get(0).getUsername());
-       // System.out.println("size: " + clientsConnected.size());
+        // System.out.println("Successfully added "+clientsConnected.get(0).getUsername());
+        // System.out.println("size: " + clientsConnected.size());
     }//TODO
 
     private void askClientNumber(Client firstClient) {

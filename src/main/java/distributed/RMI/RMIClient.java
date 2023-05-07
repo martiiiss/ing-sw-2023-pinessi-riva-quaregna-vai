@@ -24,7 +24,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public RMIClient(String username, int port) throws RemoteException {
         super(username, port);
         this.username = username; //server
-      //  this.address = address;
+        //  this.address = address;
         this.port = port;
     }
 
@@ -36,7 +36,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         try {
             server = (ServerRMIInterface) Naming.lookup(getUsername());
             server.initClient(this);
-         //   server.login(getUsername(), this);
+            //   server.login(getUsername(), this);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -44,9 +44,9 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
 
 
     //   @Override
-  //  public void sendMessage(Message message) {
-        //TODO implement this
-   // }
+    //  public void sendMessage(Message message) {
+    //TODO implement this
+    // }
 
     public String getUsername(){ return this.username; }
 

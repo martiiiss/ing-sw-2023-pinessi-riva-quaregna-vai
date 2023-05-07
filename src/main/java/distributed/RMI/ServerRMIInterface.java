@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public interface ServerRMIInterface extends Remote{
 
     void startServer(ServerRMIInterface serverRmi) throws RemoteException;
-   // void login(String username, ClientConnectionRMI clientConnection) throws RemoteException;
+    // void login(String username, ClientConnectionRMI clientConnection) throws RemoteException;
     void disconnect() throws RemoteException;
 
     void initClient(Client rmiClient) throws IOException;

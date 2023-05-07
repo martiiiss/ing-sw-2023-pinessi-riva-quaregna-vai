@@ -22,11 +22,11 @@ public class Controller implements Observer {
     private ArrayList<Player> finalRank;
     //Before the game actually starts
     public void createGame() throws IOException {
-         this.game = new Game(); /*I create the Game object */
+        this.game = new Game(); /*I create the Game object */
 //         chooseNumOfPlayer();
-         this.bag = new Bag();
-         this.board = new Board(game.getNumOfPlayers());
-         game.setGameStarted();
+        this.bag = new Bag();
+        this.board = new Board(game.getNumOfPlayers());
+        game.setGameStarted();
     }
 
     public Game getInstanceOfGame(){
@@ -220,7 +220,7 @@ public class Controller implements Observer {
                     String[] splittedStr = in.split(",");
                     cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
                 } catch (NumberFormatException formatException) {
-                        System.err.println("Invalid format...");
+                    System.err.println("Invalid format...");
                 } catch (ArrayIndexOutOfBoundsException boundsException) {
                     System.err.println("Invalid format or non existent coordinate...");
                 }
@@ -306,8 +306,8 @@ public class Controller implements Observer {
         if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
             if(game.getIsLastTurn()) {//is last turn
                 if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                   endOfGame(); /*CALL THE END OF GAME*/
-                   return true;
+                    endOfGame(); /*CALL THE END OF GAME*/
+                    return true;
                 } else {
                     goToNext(); //set next Player in turn
                     return false;
@@ -339,7 +339,7 @@ public class Controller implements Observer {
         }
     }//TODO optimize this method
 
-     public void goToNext(){ //set player in turn
+    public void goToNext(){ //set player in turn
         int i = game.getPlayers().indexOf(game.getPlayerInTurn())+1;
         if(i<game.getNumOfPlayers()){
             game.setPlayerInTurn(game.getPlayers().get(i));

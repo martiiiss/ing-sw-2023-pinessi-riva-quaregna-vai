@@ -13,7 +13,7 @@ public class UserView implements Serializable {
         System.out.println("Insert num of player: ");
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-             numOfPlayer =  Integer.parseInt(reader.readLine());
+            numOfPlayer =  Integer.parseInt(reader.readLine());
         }catch (NumberFormatException exception) { System.err.println("Invalid format...");}
         return numOfPlayer;
 
