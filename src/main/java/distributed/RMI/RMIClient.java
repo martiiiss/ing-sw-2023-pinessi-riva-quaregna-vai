@@ -24,19 +24,19 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public RMIClient(String username, int port) throws RemoteException {
         super(username, port);
         this.username = username; //server
-      //  this.address = address;
+        //  this.address = address;
         this.port = port;
     }
 
-    public void canClientConnect(){
-
-    }
+    /**
+     *
+     */
     @Override
     public void startConnection() throws RemoteException, NotBoundException {
         try {
             server = (ServerRMIInterface) Naming.lookup(getUsername());
             server.initClient(this);
-         //   server.login(getUsername(), this);
+            //   server.login(getUsername(), this);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -44,9 +44,9 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
 
 
     //   @Override
-  //  public void sendMessage(Message message) {
-        //TODO implement this
-   // }
+    //  public void sendMessage(Message message) {
+    //TODO implement this
+    // }
 
     public String getUsername(){ return this.username; }
 
@@ -66,7 +66,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
      */
     UserView uView = new UserView();
     @Override
-    public void messageReceived() throws IOException, RemoteException {
+    public void firstClientMessages() throws IOException, RemoteException {
         System.out.println("Number of connections: "+server.getNumberOfConnections());
         if(server.getNumberOfConnections() == 1) {
             boolean flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
@@ -75,14 +75,12 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                 flag = server.getNumberOfPlayer(uView.askNumOfPlayer());
             }
         }
-    //        if(server.readyToStart()){}
     }
 
     @Override
     public void disconnected() {
 
     }
-
     public void ping(){
         //TODO implement this
     }

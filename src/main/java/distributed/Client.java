@@ -25,24 +25,32 @@ public abstract class Client implements Remote, Serializable {
         //   this.address = address;
         this.port = port;
     }
-    public String getAddress(){
+
+    public String getAddress() {
         return this.address;
     }
 
-    public int getPort(){
+    public int getPort() {
         return this.port;
     }
 
     public abstract void startConnection() throws RemoteException, NotBoundException;
 
-    public void setToken(){this.token = token;}
+    public void setToken() {
+        this.token = token;
+    }
 
-    public String getToken(){return this.token;}
+    public String getToken() {
+        return this.token;
+    }
 
-    public String getUsername(){
+    public String getUsername() {
         return this.username;
     }
-    public void setUsername(String username){ this.username = username; }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     //public abstract void sendMessage(Message message); //TODO manca la classe Message, va creata
 

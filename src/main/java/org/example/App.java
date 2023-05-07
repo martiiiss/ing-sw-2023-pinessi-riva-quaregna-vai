@@ -19,7 +19,7 @@ public class App {
         //decide that what I've done is ok.
         //The next things I'll do are ONLY to see if I had a good idea
         c = new Controller();
-        UI = c.getInstanceOfUI();
+        //UI = c.getInstanceOfUI();
 
 
 

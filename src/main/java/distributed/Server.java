@@ -72,8 +72,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
             askClientNumber(clientsConnected.get(0));
             controller.createGame();
         }
-       // System.out.println("Successfully added "+clientsConnected.get(0).getUsername());
-       // System.out.println("size: " + clientsConnected.size());
+        // System.out.println("Successfully added "+clientsConnected.get(0).getUsername());
+        // System.out.println("size: " + clientsConnected.size());
     }//TODO
 
     private void askClientNumber(Client firstClient) {
@@ -87,10 +87,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
             return false;
     }
 
-    public void readyToStart() throws RemoteException{
-        while(clientsConnected.size() == game.getNumOfPlayers()){
-            controller.initializeGame();
-        }
+    private void readyToStart() throws RemoteException{
         //TODO: raggiunto il numero di giocatori necessario la partita può iniziare
     }
 

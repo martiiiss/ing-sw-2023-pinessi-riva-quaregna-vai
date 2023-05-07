@@ -6,8 +6,6 @@ import util.Cord;
 import util.Observable;
 import util.Observer;
 import view.UserInterface;
-import view.UserView;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,15 +18,15 @@ public class Controller implements Observer {
     private int numberOfChosenTiles;
     private int protocol = 0;
     UserInterface UI = new UserInterface();
-    UserView UW = new UserView();
 
     private ArrayList<Player> finalRank;
     //Before the game actually starts
     public void createGame() throws IOException {
-         this.game = new Game(); /*I create the Game object */
-         this.bag = new Bag();
-         this.board = new Board(game.getNumOfPlayers());
-         game.setGameStarted();
+        this.game = new Game(); /*I create the Game object */
+//         chooseNumOfPlayer();
+        this.bag = new Bag();
+        this.board = new Board(game.getNumOfPlayers());
+        game.setGameStarted();
     }
 
     public Game getInstanceOfGame(){
@@ -46,9 +44,9 @@ public class Controller implements Observer {
     public UserInterface getInstanceOfUI(){
         return this.UI;
     }
-    //public UserView getInstanceOfUW(){return this.UW;}
 
 
+    //this method needs to be error checked
     public boolean chooseNumOfPlayer(int num) throws IOException {
         if(num<2 || num>4){
             return false;
@@ -59,17 +57,17 @@ public class Controller implements Observer {
 
     //this method needs to be fixed -> multithreading TODO
     public void chooseNickname() throws IOException {
-        String nickname = UW.askPlayerNickname();
+        String nickname = UI.askPlayerNickname();
         //control for the first player
         while(nickname.isEmpty())
         {
-            nickname= UW.askPlayerNickname();
+            nickname= UI.askPlayerNickname();
         }
         //control for the others
         for(int i = 0; i<game.getPlayers().size();i++) {
             while(game.getPlayers().get(i).getNickname().equals(nickname) || nickname.isEmpty()){
                 System.out.println("Invalid nickname! Same as another user or empty.");
-                nickname = UW.askPlayerNickname();
+                nickname = UI.askPlayerNickname();
                 i=0;
             }
         }
@@ -79,7 +77,7 @@ public class Controller implements Observer {
     }
 
     public void chooseProtocol() throws IOException {
-        int chosenProtocol = UW.communicationProtocol();
+        int chosenProtocol = UI.webProtocol();
         boolean flag = false;
         while (!flag) {
             switch (chosenProtocol) {
@@ -95,7 +93,7 @@ public class Controller implements Observer {
                 }
                 default -> {
                     System.out.println("Sorry, try again...");
-                    chosenProtocol = UW.communicationProtocol();
+                    chosenProtocol = UI.webProtocol();
                 }
             }
         }
@@ -106,7 +104,7 @@ public class Controller implements Observer {
     public int getProtocol(){return this.protocol;}
 
     public void chooseUserInterface() throws IOException {
-        int chosenInterface= UW.userInterface();
+        int chosenInterface= UI.userInterface();
         boolean flag = false;
         while(!flag) {
             switch (chosenInterface) {
@@ -120,7 +118,7 @@ public class Controller implements Observer {
                 }
                 default -> {
                     System.out.println("Sorry, try again...");
-                    chosenInterface= UW.userInterface();
+                    chosenInterface= UI.userInterface();
                 }
             }
         }
@@ -196,10 +194,10 @@ public class Controller implements Observer {
     //gruppo disponibile è di dimensione 2?
     private void numOfChosenTiles() throws IOException {
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
-        this.numberOfChosenTiles = UW.askNumberOfChosenTiles();
+        this.numberOfChosenTiles = UI.askNumberOfChosenTiles();
         while(this.numberOfChosenTiles<1 || this.numberOfChosenTiles>4 || freeSlots < this.numberOfChosenTiles ){
             System.out.println("This number is wrong, retry!");
-            this.numberOfChosenTiles = UW.askNumberOfChosenTiles();
+            this.numberOfChosenTiles = UI.askNumberOfChosenTiles();
         }
 
     }
@@ -217,12 +215,12 @@ public class Controller implements Observer {
         while (cords.size()<this.numberOfChosenTiles) {
             Cord cord = new Cord();
             do {
-                String in = UW.askTilePosition();
+                String in = UI.askTilePosition();
                 try {
                     String[] splittedStr = in.split(",");
                     cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
                 } catch (NumberFormatException formatException) {
-                        System.err.println("Invalid format...");
+                    System.err.println("Invalid format...");
                 } catch (ArrayIndexOutOfBoundsException boundsException) {
                     System.err.println("Invalid format or non existent coordinate...");
                 }
@@ -264,7 +262,7 @@ public class Controller implements Observer {
 
     public void chooseColumn() throws IOException {
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
-        this.chosenColumn = UW.askColumn();
+        this.chosenColumn = UI.askColumn();
         boolean flag = false;
         while(!flag){
             if(this.chosenColumn<0 || this.chosenColumn >4) {
@@ -275,17 +273,17 @@ public class Controller implements Observer {
                 flag = true; //The number is correct -> I don't ask again the player
             }
             if(!flag){
-                this.chosenColumn = UW.askColumn();
+                this.chosenColumn = UI.askColumn();
             }
         }
     }
 
     //after chooseColumn has been invoked
     public void chooseTilesDisposition() throws IOException {
-        int index = UW.askTileToInsert(game.getPlayerInTurn().getTilesInHand());
+        int index = UI.askTileToInsert(game.getPlayerInTurn().getTilesInHand());
         while(index <0 || index >= game.getPlayerInTurn().getTilesInHand().size()){
             System.err.println("That index doesn't exist! Try again:");
-            index = UW.askTileToInsert(game.getPlayerInTurn().getTilesInHand());
+            index = UI.askTileToInsert(game.getPlayerInTurn().getTilesInHand());
         }
         game.getPlayerInTurn().getMyBookshelf().placeTile(this.chosenColumn,game.getPlayerInTurn().getTilesInHand().get(index));
         game.getPlayerInTurn().getTilesInHand().remove(index);
@@ -308,8 +306,8 @@ public class Controller implements Observer {
         if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
             if(game.getIsLastTurn()) {//is last turn
                 if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                   endOfGame(); /*CALL THE END OF GAME*/
-                   return true;
+                    endOfGame(); /*CALL THE END OF GAME*/
+                    return true;
                 } else {
                     goToNext(); //set next Player in turn
                     return false;
@@ -341,7 +339,7 @@ public class Controller implements Observer {
         }
     }//TODO optimize this method
 
-     public void goToNext(){ //set player in turn
+    public void goToNext(){ //set player in turn
         int i = game.getPlayers().indexOf(game.getPlayerInTurn())+1;
         if(i<game.getNumOfPlayers()){
             game.setPlayerInTurn(game.getPlayers().get(i));
@@ -364,7 +362,7 @@ public class Controller implements Observer {
                     System.out.println("Ok, bye bye!");}
                 default -> {
                     System.out.println("Sorry, try again...");
-                    startAgain = UW.userInterface();
+                    startAgain = UI.userInterface();
                 }
             }
         }
