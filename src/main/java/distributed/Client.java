@@ -1,6 +1,7 @@
 package distributed;
 
-import controller.Controller;
+import distributed.RMI.RMIClient;
+import util.Callback;
 import util.Event;
 import view.UserView;
 
@@ -8,12 +9,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.nio.Buffer;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Timer;
-public abstract class Client implements Remote, Serializable {
+public abstract class Client implements Remote, Serializable, Callback {
     private static final long serialVersionUID = -8499166750855847908L; //random number
     //transient DisconnectionListener disconnectionListener
     private transient Timer pingTimer;
@@ -24,6 +24,7 @@ public abstract class Client implements Remote, Serializable {
     private UserView userView = new UserView();
 
     protected Client(String username, int port) {
+        System.out.println("Client creato");
         this.username = username;
         //   this.address = address;
         this.port = port;
@@ -69,15 +70,12 @@ public abstract class Client implements Remote, Serializable {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         return Integer.parseInt(reader.readLine());
     }
+
     public UserView getInstanceOfView() {
         return this.userView;
     }
-    public Object request(Event event) throws IOException {
-        String name;
-        switch (event) {
-            case SET_NICKNAME -> {name = userView.askPlayerNickname();
-                return name;}
-        }
-        return null;
+
+    public void request(Event event) throws IOException {
+        String nickname = userView.askPlayerNickname();
     }
 }

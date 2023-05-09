@@ -1,6 +1,7 @@
 package distributed;
 
 import controller.Controller;
+import distributed.RMI.RMIClient;
 import distributed.RMI.RMIServer;
 import distributed.RMI.ServerRMIInterface;
 import distributed.Socket.SocketServer;
@@ -13,8 +14,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+
+import util.Callback;
 
 public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private int socketPort;
@@ -25,10 +27,11 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private Game game = controller.getInstanceOfGame();
     private SocketServer serverSocket;
     private ServerRMIInterface rmiServer;
-    public Server(int portSocket, int portRMI) throws RemoteException {
+    public Server(int portSocket, int portRMI) throws IOException {
         super();
         this.socketPort = portSocket;
         this.RMIPort = portRMI;
+        controller.createGame();
     }
 
     public Controller getInstanceOfController(){
@@ -74,9 +77,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         clientsConnected.add(client);
         if(clientsConnected.size()==1) {
             askClientNumber(clientsConnected.get(0));
-            controller.createGame();
         }
-        controller.chooseNickname(this);
     }
 
     private void askClientNumber(Client firstClient) {
@@ -109,13 +110,9 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         return String.valueOf(clientsConnected.size());
     }
 
-    public void update(Client client, Object o, Event event) throws IOException {
-        controller.update(client,o,event);
+    public void getUpdates(Object obj) throws IOException {
+        controller.update(obj);
     }
     Server server = this;
     public Server getInstanceOfServer() {return server;}
-
-    public Object request(Event event) throws IOException {
-        return clientsConnected.get(clientsConnected.size()-1).request(event);
-    }
 }

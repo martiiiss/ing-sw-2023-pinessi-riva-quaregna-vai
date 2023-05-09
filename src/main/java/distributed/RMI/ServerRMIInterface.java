@@ -3,6 +3,7 @@ package distributed.RMI;
 import controller.Controller;
 import distributed.Client;
 import distributed.Server;
+import util.Callback;
 import util.Event;
 
 import java.io.IOException;
@@ -20,7 +21,8 @@ public interface ServerRMIInterface extends Remote{
 
     boolean getNumberOfPlayer(int num) throws IOException;
     int getNumberOfConnections() throws RemoteException;
-    void sendUpdate(Client client, Object o , Event event) throws IOException;
+    void registerClient(Callback rmiClient) throws RemoteException;
+    void onEventInserted(Object obj) throws IOException;
 
     //richiama i metodi del Controller (per il flusso della partita)x\
 }

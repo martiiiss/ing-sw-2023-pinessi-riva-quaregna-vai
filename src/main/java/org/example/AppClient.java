@@ -26,9 +26,7 @@ public class AppClient {
             System.out.println("You chose RMI!");
 
             client.firstClientMessages();
-            String nickname = "Pippo";
-            int userInterface = 1;
-            client.getClientSettings(nickname,userInterface);
+            client.requestClient();
         } else if(choice == 1){
             //clientSocket
             System.out.println("You chose Socket!");

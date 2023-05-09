@@ -2,15 +2,19 @@ package distributed.RMI;
 
 import distributed.Client;
 import distributed.Server;
+import util.Callback;
 import util.Event;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RMIServer extends Server implements ServerRMIInterface {
     private final Server server;
+    private ArrayList<Callback> clients;
     private final int port;
     private RMIClient ConnectedClient;
     private long serialVersionUID = -8672468904670634209L;
@@ -21,10 +25,11 @@ public class RMIServer extends Server implements ServerRMIInterface {
 
         server.getInstanceOfController().chooseNickname(this);
     }
-    public RMIServer(Server server, int port) throws RemoteException {
+    public RMIServer(Server server, int port) throws IOException {
         super(port, 2);
         this.server = server;
         this.port = port;
+        clients = new ArrayList<>();
     }
 
     public void startServer(ServerRMIInterface stub) throws RemoteException{
@@ -64,9 +69,13 @@ public class RMIServer extends Server implements ServerRMIInterface {
     public int getNumberOfConnections() {
         return Integer.parseInt(server.getClientsConnected());
     }
-
-    public void sendUpdate(Client client, Object o , Event event) throws IOException {
-        System.out.println("Nickname is "+o.toString());
-        server.update(client,o,event);
+    public void registerClient(Callback client) throws RemoteException {
+        clients.add(client);
+        System.out.println("Client added successfully with callback...");
     }
+    public void onEventInserted(Object obj) throws IOException {
+        //System.out.println("Nickname passato "+obj.toString());
+        super.getUpdates(obj);
+    }
+
 }

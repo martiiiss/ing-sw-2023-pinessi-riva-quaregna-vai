@@ -2,6 +2,7 @@ package distributed.RMI;
 
 import distributed.Client;
 import distributed.Server;
+import util.Callback;
 import util.Event;
 import view.UserInterface;
 import view.UserView;
@@ -14,7 +15,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class RMIClient extends Client implements ClientConnectionRMI, Serializable {
+public class RMIClient extends Client implements ClientConnectionRMI, Serializable, Callback {
     @Serial
     private static final long serialVersionUID = -3489512533622391685L; //random number
     private transient ServerRMIInterface server;
@@ -37,6 +38,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         try {
             server = (ServerRMIInterface) Naming.lookup(getUsername());
             server.initClient(this);
+            server.registerClient(this);
             //   server.login(getUsername(), this);
         }catch (Exception e){
             e.printStackTrace();
@@ -77,8 +79,11 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             }
         }
     }
-    public void getClientSettings(String nickname, int userInterface) throws IOException {
-        server.sendUpdate(this,nickname, Event.SET_NICKNAME);
+    public void requestClient() throws IOException {
+        String nickname = "";
+        nickname = uView.askPlayerNickname();
+        server.onEventInserted(nickname);
+        //server.sendUpdate(this,nickname,Event.SET_NICKNAME);
     }
 
     @Override
@@ -92,6 +97,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public void disconnect(){
         //TODO implement this
     }
-
-
+    public void onEventInserted(Object eventObj) throws RemoteException{
+        System.out.println("Event completed successfully!");
+    }
 }

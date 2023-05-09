@@ -87,8 +87,8 @@ public class Controller implements Observer {
         newPlayer.setNickname(nickname);
         game.addPlayer(newPlayer);
         */
-         String nickname = myserver.getInstanceOfServer().
-                 request(SET_NICKNAME).toString();
+         String nickname = myserver.getInstanceOfServer().toString();
+
     }
 
 
@@ -414,7 +414,14 @@ public class Controller implements Observer {
         chooseTiles();
     }
 
-    public void update(Client client, Object o, Event event) throws IOException {
+    public void update(Object obj) throws IOException {
+            Player player = new Player();
+            player.setNickname(obj.toString());
+            game.addPlayer(player);
+            ArrayList<Player> listTest = new ArrayList<>();
+            for (int i=0; i<listTest.size();i++) {
+                System.out.println("Nomi dei player attualmente connessi: "+listTest.get(i));
+            }
         }
     }
 

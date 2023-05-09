@@ -16,7 +16,7 @@ public class SocketServer extends Server implements Runnable{
 
 
 
-    public SocketServer(Server server, int port) throws RemoteException {
+    public SocketServer(Server server, int port) throws IOException {
         super(port, 1);
         this.server = server;
         this.port = port;
