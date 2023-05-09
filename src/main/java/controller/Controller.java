@@ -24,9 +24,11 @@ public class Controller implements Observer {
     private int numberOfChosenTiles;
     private int protocol = 0;
     private UserInterface UI = new UserInterface();
-    private Server server;
-
     private ArrayList<Player> finalRank;
+    private Event nextEvent = ASK_NUM_PLAYERS;
+    private ArrayList<Event> nextEventPlayer;
+
+
 
     public Controller() throws RemoteException {
     }
@@ -63,6 +65,10 @@ public class Controller implements Observer {
         if(num<2 || num>4){
             return false;
         }
+        nextEventPlayer= new ArrayList();
+        for(int i=0; i<num; i++){
+            nextEventPlayer.add(ASK_NUM_PLAYERS);
+        }
         game.setNumOfPlayers(num);
         return true;
     }
@@ -92,26 +98,14 @@ public class Controller implements Observer {
     }
 
 
-    public void chooseProtocol() throws IOException {
-        int chosenProtocol = UI.webProtocol();
-        boolean flag = false;
-        while (!flag) {
-            switch (chosenProtocol) {
-                case 1 -> {
-                    flag = true;
-                    System.out.println("You have chosen the Socket protocol!");
-                    protocol = chosenProtocol;
-                }
-                case 2 -> {
-                    flag = true;
-                    System.out.println("You have chosen the JavaRMI protocol!");
-                    protocol = chosenProtocol;
-                }
-                default -> {
-                    System.out.println("Sorry, try again...");
-                    chosenProtocol = UI.webProtocol();
-                }
-            }
+    public boolean chooseProtocol(int chosenProtocol) throws IOException {
+        if(chosenProtocol == 1 || chosenProtocol == 2) {
+            System.out.println("protocollo ok");
+            protocol = chosenProtocol;
+            return true;
+        }else {
+            //errpre e rilettura
+            return false;
         }
     }//IDK how we will use this, but in this way we know witch one in between the two protocols is chosen by the player
     //TODO the cases are useful, we need to implement the choice
@@ -407,6 +401,7 @@ public class Controller implements Observer {
 
     @Override
     public void update(Observable o,Object obj) {
+
     }
 
     public void clearChoice() throws IOException {
@@ -414,14 +409,62 @@ public class Controller implements Observer {
         chooseTiles();
     }
 
-    public void update(Object obj) throws IOException {
-            Player player = new Player();
-            player.setNickname(obj.toString());
-            game.addPlayer(player);
-            ArrayList<Player> listTest = new ArrayList<>();
-            for (int i=0; i<listTest.size();i++) {
-                System.out.println("Nomi dei player attualmente connessi: "+listTest.get(i));
-            }
+
+
+
+    public Event getNextEvent(int num) {
+        if (nextEventPlayer == null) {
+            return ASK_NUM_PLAYERS;
+        }
+        if (game.getPlayers().size() != game.getNumOfPlayers()){
+            System.out.println("scelgo "+ nextEventPlayer.get(num)+ " num p conn " + num);
+            return nextEventPlayer.get(num);
+        } else {
+            return nextEventPlayer.get(game.getPlayers().indexOf(game.getPlayerInTurn()));
         }
     }
+
+    int numofClientsConnected;
+
+    public boolean update(Object obj, Event event, int numOfClientsConnected) throws IOException {
+        this.numofClientsConnected = numOfClientsConnected;
+        System.out.println("num of clients connected: " + numOfClientsConnected);
+        switch (event) {
+            case ASK_NUM_PLAYERS -> {
+                if(game.getNumOfPlayers()==0) {
+                    if (chooseNumOfPlayer((int) obj)) {
+                        nextEventPlayer.set(numOfClientsConnected, SET_NICKNAME);
+                    } else {
+                        return false;  //messaggio di errore sul client
+                    }
+                }
+            }
+            case SET_NICKNAME -> {
+                System.out.println("set nickname..");
+                Player player = new Player();
+                player.setNickname(obj.toString());
+                game.addPlayer(player);
+                ArrayList<Player> listTest = new ArrayList<>();
+                for (int i=0; i<listTest.size();i++) {
+                    System.out.println("Nomi dei player attualmente connessi: "+listTest.get(i));
+                }
+                nextEventPlayer.set(numOfClientsConnected, WAIT); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
+                //passare al prossimo evento
+            }
+
+            /*
+            case CHOOSE_NETWORK_PROTOCOL -> {
+                //controlli
+                if(chooseProtocol((int) obj)){
+                    nextEvent = WAIT;
+                } else {
+                    return false;
+                }
+            }*/
+
+        }
+        return true;
+    }
+
+}
 

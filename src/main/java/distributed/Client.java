@@ -78,4 +78,7 @@ public abstract class Client implements Remote, Serializable, Callback {
     public void request(Event event) throws IOException {
         String nickname = userView.askPlayerNickname();
     }
+
+    public void showMessage(String message) {
+    }
 }

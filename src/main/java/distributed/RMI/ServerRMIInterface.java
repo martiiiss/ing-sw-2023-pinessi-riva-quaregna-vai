@@ -22,7 +22,8 @@ public interface ServerRMIInterface extends Remote{
     boolean getNumberOfPlayer(int num) throws IOException;
     int getNumberOfConnections() throws RemoteException;
     void registerClient(Callback rmiClient) throws RemoteException;
-    void onEventInserted(Object obj) throws IOException;
+    boolean onEventInserted(Object obj, Event event) throws IOException;
 
+    Event sendMessage() throws RemoteException;
     //richiama i metodi del Controller (per il flusso della partita)x\
 }

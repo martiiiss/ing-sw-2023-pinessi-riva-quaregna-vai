@@ -71,11 +71,22 @@ public class RMIServer extends Server implements ServerRMIInterface {
     }
     public void registerClient(Callback client) throws RemoteException {
         clients.add(client);
+
         System.out.println("Client added successfully with callback...");
     }
-    public void onEventInserted(Object obj) throws IOException {
+
+
+
+    public boolean onEventInserted(Object obj, Event event) throws IOException {
         //System.out.println("Nickname passato "+obj.toString());
-        super.getUpdates(obj);
+        return super.getUpdates(obj, event);
     }
+
+
+
+    public Event sendMessage() throws RemoteException{
+        return getInstanceOfController().getNextEvent(getNumberOfClientsConnected());
+    }
+
 
 }

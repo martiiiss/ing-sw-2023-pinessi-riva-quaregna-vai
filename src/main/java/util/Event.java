@@ -2,5 +2,10 @@ package util;
 
 public enum Event {
     SET_NICKNAME,
-    ASK_NUM,
+    ASK_NUM_PLAYERS,
+    CHOOSE_NETWORK_PROTOCOL,
+
+
+
+    WAIT,
 }

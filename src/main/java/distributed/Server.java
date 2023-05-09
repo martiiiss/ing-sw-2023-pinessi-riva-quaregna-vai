@@ -27,6 +27,10 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private Game game = controller.getInstanceOfGame();
     private SocketServer serverSocket;
     private ServerRMIInterface rmiServer;
+
+    private int numOfClientsConnected=0;
+
+
     public Server(int portSocket, int portRMI) throws IOException {
         super();
         this.socketPort = portSocket;
@@ -73,11 +77,14 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
 
     public void connection (Client client) throws IOException {
-        int numberOfPlayers;
-        clientsConnected.add(client);
-        if(clientsConnected.size()==1) {
-            askClientNumber(clientsConnected.get(0));
-        }
+        this.clientsConnected.add(client);
+        this.numOfClientsConnected++;
+        System.out.println("size "+ this.clientsConnected.size());
+    }
+
+    public int getNumberOfClientsConnected() {
+        System.out.println("non stampa lo stesso numero " + this.numOfClientsConnected);
+        return this.numOfClientsConnected;
     }
 
     private void askClientNumber(Client firstClient) {
@@ -110,8 +117,10 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         return String.valueOf(clientsConnected.size());
     }
 
-    public void getUpdates(Object obj) throws IOException {
-        controller.update(obj);
+
+
+    public boolean getUpdates(Object obj, Event event) throws IOException {
+        return controller.update(obj, event, clientsConnected.size()); //passa oggetto restituito da view e evento attuale al controller
     }
     Server server = this;
     public Server getInstanceOfServer() {return server;}
