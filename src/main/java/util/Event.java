@@ -9,5 +9,5 @@ public enum Event {
 
 
 
-    WAIT,
+    WAIT, ASK_INTERFACE,
 }

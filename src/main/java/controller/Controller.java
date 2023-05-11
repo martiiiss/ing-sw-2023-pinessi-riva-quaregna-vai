@@ -438,8 +438,9 @@ public class Controller implements Observer {
                 player.setNickname(obj.toString());
                 game.addPlayer(player);
                 ArrayList<Player> listTest = new ArrayList<>();
+                listTest = game.getPlayers();
                 for (int i=0; i<listTest.size();i++) {
-                    System.out.println("Nomi dei player attualmente connessi: "+listTest.get(i));
+                    System.out.println("Nomi dei player attualmente connessi: "+listTest.get(i).getNickname());
                 }
                 this.game.setNextEventPlayer(CHOOSE_VIEW, numofClientsConnected-1); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
                 //passare al prossimo evento
@@ -455,6 +456,8 @@ public class Controller implements Observer {
         }
         return true;
     }
+
+
 
 }
 

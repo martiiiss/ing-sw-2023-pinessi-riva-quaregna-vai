@@ -43,12 +43,12 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
             this.RMIPort = portRMI;
         }
 
-            System.out.println("entrambi");
-            //this.socketPort = portSocket;
-            //this.RMIPort = RMIPort;
-            this.controller= new Controller();
-            this.game = controller.getInstanceOfGame();
-            this.clientsConnected=new ArrayList<>();
+        System.out.println("entrambi");
+        //this.socketPort = portSocket;
+        //this.RMIPort = RMIPort;
+        this.controller= new Controller();
+        this.game = controller.getInstanceOfGame();
+        this.clientsConnected=new ArrayList<>();
 
     }
 
@@ -98,6 +98,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         for(Client c: clientsConnected){
             System.out.println("TESTING "+c.getUsername());
         }
+        if(clientsConnected.size()>1 && isEveryoneConnected())
+            System.err.println("Lancia GAMEFLOW E INIZIA LA PARTITA"); //FIXME:In realtà il gioco deve iniziare solo dopo che il client ha inserito tutti i suoi dati
     }
 
     public int getNumberOfClientsConnected() {
@@ -154,5 +156,18 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     public Event getEvent(){
         System.out.println("num client cli" + clientsConnected.size());
         return controller.getNextEvent(clientsConnected.size()-1);
+    }
+    public boolean isEveryoneConnected() {
+        if(clientsConnected.size()==controller.getInstanceOfGame().getNumOfPlayers()) {
+            System.err.println("Everyone is now connected!");
+            return true;
+        }
+        else if(clientsConnected.size()<controller.getInstanceOfGame().getNumOfPlayers()) {
+            System.err.println("Number of players not yet reached");
+            return false;
+        }
+        System.err.println("DI AL CLIENT CHE CI SONO GIA' TUTTI I PLAYERS CONNESSI...");
+        clientsConnected.remove(clientsConnected.get(clientsConnected.size()-1));
+        return false;
     }
 }

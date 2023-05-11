@@ -32,7 +32,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         try {
             server = (ServerRMIInterface) Naming.lookup(getUsername());
             server.initClient(this);
-           // server.registerClient(this);
+            // server.registerClient(this);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -105,7 +105,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             case ASK_NUM_PLAYERS -> {
                 System.out.println("in actionToDO "+ server.getNumberOfConnections());
                 flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS, server.getNumberOfConnections());
-               // while(!flag){
+                // while(!flag){
                 if (!flag) {
                     System.err.println("Retry, num of player: " + flag);
                 } //   flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), receivedMessage(), server.getNumberOfConnections());
