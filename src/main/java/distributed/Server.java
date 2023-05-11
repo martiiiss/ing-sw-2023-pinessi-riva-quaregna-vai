@@ -7,6 +7,7 @@ import distributed.RMI.ServerRMIInterface;
 import distributed.Socket.SocketServer;
 import model.Game;
 import model.Player;
+import util.Error;
 import util.Event;
 
 import java.io.IOException;
@@ -145,7 +146,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
 
 
-    public boolean getUpdates(Object obj, Event event, int numOfPlayerConnected) throws IOException {
+    public Error getUpdates(Object obj, Event event, int numOfPlayerConnected) throws IOException {
         System.out.println("in getUpdates " + numOfPlayerConnected);
         return controller.update(obj, event, numOfPlayerConnected); //passa oggetto restituito da view e evento attuale al controller
     }

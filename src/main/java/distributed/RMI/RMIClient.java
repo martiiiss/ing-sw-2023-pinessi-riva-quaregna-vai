@@ -2,6 +2,7 @@ package distributed.RMI;
 
 import distributed.Client;
 import util.Callback;
+import util.Error;
 import util.Event;
 import view.UserView;
 
@@ -98,21 +99,24 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public Event getEventClient(){
         return eventClient;
     }
-    boolean flag = true;
+    Error flag;
     int i;
     public void actionToDo() throws IOException {
         switch (eventClient){
             case ASK_NUM_PLAYERS -> {
                 System.out.println("in actionToDO "+ server.getNumberOfConnections());
                 flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS, server.getNumberOfConnections());
-                // while(!flag){
-                if (!flag) {
+                if (flag == Error.NOT_AVAILABLE) {
                     System.err.println("Retry, num of player: " + flag);
-                } //   flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), receivedMessage(), server.getNumberOfConnections());
-                //}
+                }
             }
             case SET_NICKNAME -> {
-                server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME, server.getNumberOfConnections());
+                flag = server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME, server.getNumberOfConnections());
+                if(flag == Error.NOT_AVAILABLE){
+                    System.err.println("This nickname is already taken, retry:");
+                } else if(flag == Error.EMPTY_NICKNAME){
+                    System.err.println("Nickname is empty");
+                }
             }
       /*      case CHOOSE_NETWORK_PROTOCOL -> {
                 flag = server.onEventInserted(uView.webProtocol(), CHOOSE_NETWORK_PROTOCOL);
@@ -123,8 +127,8 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             } */
             case CHOOSE_VIEW -> {
                 flag = server.onEventInserted(uView.userInterface(), CHOOSE_VIEW, server.getNumberOfConnections());
-                if (!flag) {
-                    System.err.println("Retry, num of player: " + flag);
+                if (flag == Error.NOT_AVAILABLE) {
+                    System.err.println("Retry: " + flag);
                 }
             }
         }

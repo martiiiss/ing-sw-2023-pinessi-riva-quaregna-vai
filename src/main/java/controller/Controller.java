@@ -5,6 +5,7 @@ import distributed.Server;
 import model.*;
 import org.example.App;
 import util.Cord;
+import util.Error;
 import util.Event;
 import util.Observable;
 import util.Observer;
@@ -62,40 +63,34 @@ public class Controller implements Observer {
 
 
     //this method needs to be error checked
-    public boolean chooseNumOfPlayer(int num) throws IOException {
+    public Error chooseNumOfPlayer(int num) throws IOException {
         if(num<2 || num>4){
-            return false;
+            return Error.NOT_AVAILABLE;
         }
         for(int i=0; i<num; i++){
             this.game.getNextEventPlayer().add(ASK_NUM_PLAYERS);
             System.out.println(" in chooseNumOfPlayer " + this.game.getNextEventPlayer().get(i));
         }
         game.setNumOfPlayers(num);
-        return true;
+        return Error.OK;
     }
 
     //this method needs to be fixed -> multithreading TODO
-   /* public void chooseNickname(Server myserver) throws IOException {
-        String nickname = UI.askPlayerNickname();
-        //control for the first player
-        while(nickname.isEmpty())
-        {
-            nickname= UI.askPlayerNickname();
+    public Error chooseNickname(String nickname) throws IOException {
+        if(nickname.isEmpty()) { //control for the first player
+            return Error.EMPTY_NICKNAME;
         }
         //control for the others
         for(int i = 0; i<game.getPlayers().size();i++) {
-            while(game.getPlayers().get(i).getNickname().equals(nickname) || nickname.isEmpty()){
-                System.out.println("Invalid nickname! Same as another user or empty.");
-                nickname = UI.askPlayerNickname();
-                i=0;
+            if(game.getPlayers().get(i).getNickname().equals(nickname)){
+                return Error.NOT_AVAILABLE;
             }
         }
         Player newPlayer = new Player();
         newPlayer.setNickname(nickname);
         game.addPlayer(newPlayer);
-
-         String nickname = myserver.getInstanceOfServer().toString();
-    } */
+        return Error.OK;
+    }
 
 
     public boolean chooseProtocol(int chosenProtocol) throws IOException {
@@ -113,13 +108,13 @@ public class Controller implements Observer {
 
     public int getProtocol(){return this.protocol;}
 
-    public boolean chooseUserInterface(int chosenInterface) throws IOException {
+    public Error chooseUserInterface(int chosenInterface) throws IOException {
         switch (chosenInterface) {
             case 1, 2 -> {
-                return true;
+                return Error.OK;
             }
             default -> {
-                return false;
+                return Error.NOT_AVAILABLE;
             }
         }
         //We will find a way to use this one
@@ -416,45 +411,40 @@ public class Controller implements Observer {
     }
 
 
-    public boolean update(Object obj, Event event, int numofClientsConnected) throws IOException {
+    public Error update(Object obj, Event event, int numofClientsConnected) throws IOException {
         System.out.println("num of clients connected: " + numofClientsConnected);
         switch (event) {
             case ASK_NUM_PLAYERS -> {
                 if(game.getNumOfPlayers()==0) {
-                    if (chooseNumOfPlayer((int) obj)) {
+                    if (chooseNumOfPlayer((int) obj)==Error.OK) {
                         System.out.println("update: " + (numofClientsConnected-1) + " " + this.game.getNextEventPlayer().get(numofClientsConnected-1));
                         this.game.setNextEventPlayer(SET_NICKNAME, numofClientsConnected-1);
                         System.out.println("update2: " + (numofClientsConnected-1) + " " + this.game.getNextEventPlayer().get(numofClientsConnected-1));
                     } else {
-                        return false;  //messaggio di errore sul client
+                        return Error.NOT_AVAILABLE;  //messaggio di errore sul client
                     }
                 } else {
                     this.game.getNextEventPlayer().set(numofClientsConnected-1, SET_NICKNAME);
                 }
             }
             case SET_NICKNAME -> { //TODO
-                System.out.println("set nickname..");
-                Player player = new Player();
-                player.setNickname(obj.toString());
-                game.addPlayer(player);
-                ArrayList<Player> listTest = new ArrayList<>();
-                listTest = game.getPlayers();
-                for (int i=0; i<listTest.size();i++) {
-                    System.out.println("Nomi dei player attualmente connessi: "+listTest.get(i).getNickname());
+                Error error = chooseNickname((String) obj);
+                if(error==Error.OK){
+                    this.game.setNextEventPlayer(CHOOSE_VIEW, numofClientsConnected-1); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
                 }
-                this.game.setNextEventPlayer(CHOOSE_VIEW, numofClientsConnected-1); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
-                //passare al prossimo evento
+                return error;
+
             }
             case CHOOSE_VIEW -> {
-                if (chooseUserInterface((int) obj)) {  //ha inserito un numero corretto
+                if (chooseUserInterface((int) obj)==Error.OK) {  //ha inserito un numero corretto
                         this.game.setNextEventPlayer(WAIT, numofClientsConnected-1);
                 } else {
-                    return false;  //messaggio di errore sul client
+                    return Error.NOT_AVAILABLE;  //messaggio di errore sul client
                 }
             }
 
         }
-        return true;
+        return Error.OK;
     }
 
 

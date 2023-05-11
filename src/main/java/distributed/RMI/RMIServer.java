@@ -3,6 +3,7 @@ package distributed.RMI;
 import distributed.Client;
 import distributed.Server;
 import util.Callback;
+import util.Error;
 import util.Event;
 
 import java.io.IOException;
@@ -10,7 +11,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.List;
 
 public class RMIServer extends Server implements ServerRMIInterface {
     private final Server server;
@@ -83,7 +83,7 @@ public class RMIServer extends Server implements ServerRMIInterface {
 
 
 
-    public boolean onEventInserted(Object obj, Event event, int numOfPlayerConnected) throws IOException {
+    public Error onEventInserted(Object obj, Event event, int numOfPlayerConnected) throws IOException {
         //System.out.println("Nickname passato "+obj.toString());
         return super.getUpdates(obj, event, numOfPlayerConnected);
     }
