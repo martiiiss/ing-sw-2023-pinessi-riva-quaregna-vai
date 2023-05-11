@@ -44,4 +44,19 @@ public class UserView implements Serializable {
         }
         return -1;
     }
+
+
+    public int userInterface() {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        try {
+            System.out.print("""
+                    Do you prefer a Terminal User Interface (TUI) or a Graphical User Interface (GUI)?
+                    Press 1 for 'TUI', 2 for 'GUI':""");
+            return Integer.parseInt(reader.readLine());
+        } catch (IllegalArgumentException | IOException e) {
+            System.err.println("Invalid input!");
+        }
+        return -1;
+    }
+
 }

@@ -20,16 +20,19 @@ public class RMIServer extends Server implements ServerRMIInterface {
     private long serialVersionUID = -8672468904670634209L;
 
 
+    /*
     public void initPlayer() throws IOException {
         System.out.println("sono in Server");
 
         server.getInstanceOfController().chooseNickname(this);
     }
-    public RMIServer(Server server, int port) throws IOException {
-        super(port, 2);
-        this.server = server;
+    */
+
+    public RMIServer(int port) throws IOException {
+        super(-1, port);
+        this.server = super.getIstanceOfServer();
         this.port = port;
-        clients = new ArrayList<>();
+        this.clients = new ArrayList<>();
     }
 
     public void startServer(ServerRMIInterface stub) throws RemoteException{
@@ -42,8 +45,8 @@ public class RMIServer extends Server implements ServerRMIInterface {
         }
     }
 
-    @Override
-   /* public void login(String username, ClientConnectionRMI clientConnection) throws RemoteException {
+  /*  @Override
+    public void login(String username, ClientConnectionRMI clientConnection) throws RemoteException {
         RMIConnection rmiConnection = new RMIConnection(server, clientConnection);
         server.login(username, (Connection) clientConnection);
     }*/
@@ -55,8 +58,10 @@ public class RMIServer extends Server implements ServerRMIInterface {
     @Override
     public void initClient(Client rmiClient) throws IOException {
         server.connection(rmiClient);
+        System.out.println("CIAO user "+server.getClientsConnectedList().size());
     }
 
+    /*
     public boolean getNumberOfPlayer(int num) throws IOException {
         if(server.setClientNumber(num)){
             System.out.println("Number of player expected is: " + num);
@@ -66,8 +71,9 @@ public class RMIServer extends Server implements ServerRMIInterface {
             return false;
         }
     }
+     */
     public int getNumberOfConnections() {
-        return Integer.parseInt(server.getClientsConnected());
+        return server.getClientsConnected();
     }
     public void registerClient(Callback client) throws RemoteException {
         clients.add(client);
@@ -77,16 +83,15 @@ public class RMIServer extends Server implements ServerRMIInterface {
 
 
 
-    public boolean onEventInserted(Object obj, Event event) throws IOException {
+    public boolean onEventInserted(Object obj, Event event, int numOfPlayerConnected) throws IOException {
         //System.out.println("Nickname passato "+obj.toString());
-        return super.getUpdates(obj, event);
+        return super.getUpdates(obj, event, numOfPlayerConnected);
     }
 
 
 
     public Event sendMessage() throws RemoteException{
-        return getInstanceOfController().getNextEvent(getNumberOfClientsConnected());
+        return server.getEvent();
+        //return getInstanceOfController().getNextEvent(super.getNumberOfClientsConnected());
     }
-
-
 }

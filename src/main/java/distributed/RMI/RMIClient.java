@@ -52,6 +52,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
      *
      */
     UserView uView = new UserView();
+    /*
     @Override
     public void firstClientMessages() throws IOException, RemoteException {
         System.out.println("Number of connections: "+server.getNumberOfConnections());
@@ -62,7 +63,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                 flag = server.getNumberOfPlayer(uView.askNumOfPlayer(server.getNumberOfConnections()));
             }
         }
-    }
+    }*/
 
     /*2public void requestClient() throws IOException {
         String nickname = "";
@@ -88,23 +89,30 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
 
 
 
-
-    public Event receivedMessage() throws IOException{
-        return server.sendMessage();
+    Event eventClient;
+    public void receivedMessage() throws IOException{
+        this.eventClient =  server.sendMessage();
+        System.out.println(" evento settato: " + this.eventClient);
     }
 
+    public Event getEventClient(){
+        return eventClient;
+    }
     boolean flag = true;
+    int i;
     public void actionToDo() throws IOException {
-        switch (receivedMessage()){
+        switch (eventClient){
             case ASK_NUM_PLAYERS -> {
-                flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS);
-                while(!flag){
+                System.out.println("in actionToDO "+ server.getNumberOfConnections());
+                flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS, server.getNumberOfConnections());
+               // while(!flag){
+                if (!flag) {
                     System.err.println("Retry, num of player: " + flag);
-                    flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), receivedMessage());
-                }
+                } //   flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), receivedMessage(), server.getNumberOfConnections());
+                //}
             }
             case SET_NICKNAME -> {
-                server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME);
+                server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME, server.getNumberOfConnections());
             }
       /*      case CHOOSE_NETWORK_PROTOCOL -> {
                 flag = server.onEventInserted(uView.webProtocol(), CHOOSE_NETWORK_PROTOCOL);
@@ -113,6 +121,12 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                     flag = server.onEventInserted(uView.webProtocol(), receivedMessage());
                 }
             } */
+            case CHOOSE_VIEW -> {
+                flag = server.onEventInserted(uView.userInterface(), CHOOSE_VIEW, server.getNumberOfConnections());
+                if (!flag) {
+                    System.err.println("Retry, num of player: " + flag);
+                }
+            }
         }
     }
 }

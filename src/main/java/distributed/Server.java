@@ -21,23 +21,38 @@ import util.Callback;
 public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private int socketPort;
     private int RMIPort;
-    private ArrayList<Client> clientsConnected = new ArrayList<>(); //username - connection
+    private List<Client> clientsConnected; //username - connection
     private Object clientsLock;
-    private Controller controller = new Controller();
-    private Game game = controller.getInstanceOfGame();
+    private Controller controller ;
+    private Game game ;
     private SocketServer serverSocket;
     private ServerRMIInterface rmiServer;
 
-    private int numOfClientsConnected=0;
+   // private int numOfClientsConnected=0;
 
-
-    public Server(int portSocket, int portRMI) throws IOException {
-        super();
-        this.socketPort = portSocket;
-        this.RMIPort = portRMI;
-        controller.createGame();
+    public List<Client> getClientsConnectedList(){
+        return this.clientsConnected;
     }
 
+    public Server(int portSocket, int portRMI) throws IOException {
+        if(portRMI==-1) { //Socket
+            System.out.println("socket");
+            this.socketPort = portSocket;
+        } else if(portSocket == -1){
+            System.out.println("rmi");
+            this.RMIPort = portRMI;
+        }
+
+            System.out.println("entrambi");
+            //this.socketPort = portSocket;
+            //this.RMIPort = RMIPort;
+            this.controller= new Controller();
+            this.game = controller.getInstanceOfGame();
+            this.clientsConnected=new ArrayList<>();
+
+    }
+
+    public Server getIstanceOfServer(){ return this; }
     public Controller getInstanceOfController(){
         return controller;
     }
@@ -51,15 +66,15 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
 
 
-    public void startServers(int protocol) throws IOException { // fa partire server socket e rmi
+    /*public void startServers(int protocol) throws IOException { // fa partire server socket e rmi
         if(protocol ==1){
             serverSocket = new SocketServer(this, socketPort);
             serverSocket.startServer(serverSocket);
         } else if (protocol == 2){
-            rmiServer = new RMIServer(this, RMIPort);
+         //   rmiServer = new RMIServer(this, RMIPort);
             rmiServer.startServer(rmiServer);
         }
-    }
+    }*/
 
 
 
@@ -78,25 +93,34 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public void connection (Client client) throws IOException {
         this.clientsConnected.add(client);
-        this.numOfClientsConnected++;
+      //  this.numOfClientsConnected++;
         System.out.println("size "+ this.clientsConnected.size());
+        for(Client c: clientsConnected){
+            System.out.println("TESTING "+c.getUsername());
+        }
     }
 
     public int getNumberOfClientsConnected() {
-        System.out.println("non stampa lo stesso numero " + this.numOfClientsConnected);
-        return this.numOfClientsConnected;
+        for(Client c: clientsConnected){
+            System.out.println("TESTING "+c.getUsername());
+        }
+        System.out.println("non stampa lo stesso numero " + this.clientsConnected.size());
+     //   return this.numOfClientsConnected;
+        return this.clientsConnected.size();
     }
 
     private void askClientNumber(Client firstClient) {
 
     }
 
+    /*
     public boolean setClientNumber(int num) throws IOException {
         if(controller.chooseNumOfPlayer(num)){
             return true;
         } else
             return false;
     }
+     */
 
     private void readyToStart() throws RemoteException{
         //TODO: raggiunto il numero di giocatori necessario la partita può iniziare
@@ -113,15 +137,22 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         //TODO
     }
 
-    public String getClientsConnected() {
-        return String.valueOf(clientsConnected.size());
+    public int getClientsConnected() {
+        return this.clientsConnected.size();
     }
 
 
 
-    public boolean getUpdates(Object obj, Event event) throws IOException {
-        return controller.update(obj, event, clientsConnected.size()); //passa oggetto restituito da view e evento attuale al controller
+    public boolean getUpdates(Object obj, Event event, int numOfPlayerConnected) throws IOException {
+        System.out.println("in getUpdates " + numOfPlayerConnected);
+        return controller.update(obj, event, numOfPlayerConnected); //passa oggetto restituito da view e evento attuale al controller
     }
-    Server server = this;
-    public Server getInstanceOfServer() {return server;}
+   // Server server = this;
+//    public Server getInstanceOfServer() {return server;}
+
+
+    public Event getEvent(){
+        System.out.println("num client cli" + clientsConnected.size());
+        return controller.getNextEvent(clientsConnected.size()-1);
+    }
 }

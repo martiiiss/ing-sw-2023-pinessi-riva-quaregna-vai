@@ -25,16 +25,17 @@ public class Controller implements Observer {
     private int protocol = 0;
     private UserInterface UI = new UserInterface();
     private ArrayList<Player> finalRank;
-    private Event nextEvent = ASK_NUM_PLAYERS;
-    private ArrayList<Event> nextEventPlayer;
+    //private Event nextEvent;
 
 
 
-    public Controller() throws RemoteException {
+    public Controller() throws IOException {
+        createGame();
     }
 
     //Before the game actually starts
     public void createGame() throws IOException {
+        //this.nextEventPlayer = new ArrayList();
         this.game = new Game(); /*I create the Game object */
 //         chooseNumOfPlayer();
         this.bag = new Bag();
@@ -65,17 +66,17 @@ public class Controller implements Observer {
         if(num<2 || num>4){
             return false;
         }
-        nextEventPlayer= new ArrayList();
         for(int i=0; i<num; i++){
-            nextEventPlayer.add(ASK_NUM_PLAYERS);
+            this.game.getNextEventPlayer().add(ASK_NUM_PLAYERS);
+            System.out.println(" in chooseNumOfPlayer " + this.game.getNextEventPlayer().get(i));
         }
         game.setNumOfPlayers(num);
         return true;
     }
 
     //this method needs to be fixed -> multithreading TODO
-    public void chooseNickname(Server myserver) throws IOException {
-        /*String nickname = UI.askPlayerNickname();
+   /* public void chooseNickname(Server myserver) throws IOException {
+        String nickname = UI.askPlayerNickname();
         //control for the first player
         while(nickname.isEmpty())
         {
@@ -92,10 +93,9 @@ public class Controller implements Observer {
         Player newPlayer = new Player();
         newPlayer.setNickname(nickname);
         game.addPlayer(newPlayer);
-        */
-         String nickname = myserver.getInstanceOfServer().toString();
 
-    }
+         String nickname = myserver.getInstanceOfServer().toString();
+    } */
 
 
     public boolean chooseProtocol(int chosenProtocol) throws IOException {
@@ -113,23 +113,13 @@ public class Controller implements Observer {
 
     public int getProtocol(){return this.protocol;}
 
-    public void chooseUserInterface() throws IOException {
-        int chosenInterface= UI.userInterface();
-        boolean flag = false;
-        while(!flag) {
-            switch (chosenInterface) {
-                case 1 -> {
-                    flag = true;
-                    System.out.println("You have chosen the TUI!");
-                }
-                case 2 -> {
-                    flag = true;
-                    System.out.println("You have chosen the GUI!");
-                }
-                default -> {
-                    System.out.println("Sorry, try again...");
-                    chosenInterface= UI.userInterface();
-                }
+    public boolean chooseUserInterface(int chosenInterface) throws IOException {
+        switch (chosenInterface) {
+            case 1, 2 -> {
+                return true;
+            }
+            default -> {
+                return false;
             }
         }
         //We will find a way to use this one
@@ -410,36 +400,39 @@ public class Controller implements Observer {
     }
 
 
-
-
     public Event getNextEvent(int num) {
-        if (nextEventPlayer == null) {
+        System.out.println(" get next event "+ num + " nextEVENTPLAYER ");
+        if (this.game.getNextEventPlayer().size() == 0) {
+            System.out.println("getNextEvent: size: " + this.game.getNextEventPlayer().size());
             return ASK_NUM_PLAYERS;
         }
-        if (game.getPlayers().size() != game.getNumOfPlayers()){
-            System.out.println("scelgo "+ nextEventPlayer.get(num)+ " num p conn " + num);
-            return nextEventPlayer.get(num);
+        if (num != this.game.getNumOfPlayers()){
+            System.out.println("scelgo "+ this.game.getNextEventPlayer().get(num)+ " num p conn " + num);
+            return this.game.getNextEventPlayer().get(num);
         } else {
-            return nextEventPlayer.get(game.getPlayers().indexOf(game.getPlayerInTurn()));
+            System.out.println("Prova");
+            return this.game.getNextEventPlayer().get(game.getPlayers().indexOf(game.getPlayerInTurn()));
         }
     }
 
-    int numofClientsConnected;
 
-    public boolean update(Object obj, Event event, int numOfClientsConnected) throws IOException {
-        this.numofClientsConnected = numOfClientsConnected;
-        System.out.println("num of clients connected: " + numOfClientsConnected);
+    public boolean update(Object obj, Event event, int numofClientsConnected) throws IOException {
+        System.out.println("num of clients connected: " + numofClientsConnected);
         switch (event) {
             case ASK_NUM_PLAYERS -> {
                 if(game.getNumOfPlayers()==0) {
                     if (chooseNumOfPlayer((int) obj)) {
-                        nextEventPlayer.set(numOfClientsConnected, SET_NICKNAME);
+                        System.out.println("update: " + (numofClientsConnected-1) + " " + this.game.getNextEventPlayer().get(numofClientsConnected-1));
+                        this.game.setNextEventPlayer(SET_NICKNAME, numofClientsConnected-1);
+                        System.out.println("update2: " + (numofClientsConnected-1) + " " + this.game.getNextEventPlayer().get(numofClientsConnected-1));
                     } else {
                         return false;  //messaggio di errore sul client
                     }
+                } else {
+                    this.game.getNextEventPlayer().set(numofClientsConnected-1, SET_NICKNAME);
                 }
             }
-            case SET_NICKNAME -> {
+            case SET_NICKNAME -> { //TODO
                 System.out.println("set nickname..");
                 Player player = new Player();
                 player.setNickname(obj.toString());
@@ -448,19 +441,16 @@ public class Controller implements Observer {
                 for (int i=0; i<listTest.size();i++) {
                     System.out.println("Nomi dei player attualmente connessi: "+listTest.get(i));
                 }
-                nextEventPlayer.set(numOfClientsConnected, WAIT); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
+                this.game.setNextEventPlayer(CHOOSE_VIEW, numofClientsConnected-1); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
                 //passare al prossimo evento
             }
-
-            /*
-            case CHOOSE_NETWORK_PROTOCOL -> {
-                //controlli
-                if(chooseProtocol((int) obj)){
-                    nextEvent = WAIT;
+            case CHOOSE_VIEW -> {
+                if (chooseUserInterface((int) obj)) {  //ha inserito un numero corretto
+                        this.game.setNextEventPlayer(WAIT, numofClientsConnected-1);
                 } else {
-                    return false;
+                    return false;  //messaggio di errore sul client
                 }
-            }*/
+            }
 
         }
         return true;

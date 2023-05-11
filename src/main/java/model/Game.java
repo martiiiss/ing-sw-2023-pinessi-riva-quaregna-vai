@@ -3,6 +3,8 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import util.Event;
 import util.Observable;
 import java.util.Random;
 
@@ -20,15 +22,18 @@ public class Game extends Observable implements Serializable {
     private ArrayList<CommonGoalCard> commonGoalCards;
     private boolean gameStarted;
 
+    private ArrayList<Event> nextEventPlayer;
+
 
 
 
     public Game() { // added the constructor
-        commonGoalCards = new ArrayList<>();
-        players = new ArrayList<>();
-        numberOfPlayers = 0;
-        isLastTurn = false;
-        gameStarted = false;
+        this.commonGoalCards = new ArrayList<>();
+        this.players = new ArrayList<>();
+        this.numberOfPlayers = 0;
+        this.isLastTurn = false;
+        this.gameStarted = false;
+        this.nextEventPlayer = new ArrayList<>();
     }
 
     public boolean getGameStarted(){return this.gameStarted;}
@@ -172,6 +177,16 @@ public class Game extends Observable implements Serializable {
         }
         return scoreST;
 
+    }
+
+
+
+    public ArrayList<Event> getNextEventPlayer(){
+        return this.nextEventPlayer;
+    }
+
+    public void setNextEventPlayer(Event event, int n){
+        this.nextEventPlayer.set(n, event);
     }
 }
 
