@@ -1,7 +1,6 @@
 package distributed.RMI;
 
 import distributed.Client;
-import util.Callback;
 import util.Error;
 import util.Event;
 import view.UserView;
@@ -13,13 +12,15 @@ import java.rmi.RemoteException;
 
 import static util.Event.*;
 
-public class RMIClient extends Client implements ClientConnectionRMI, Serializable, Callback {
+public class RMIClient extends Client implements ClientConnectionRMI, Serializable {
     @Serial
     private static final long serialVersionUID = -3489512533622391685L; //random number
     private transient ServerRMIInterface server;
     private String address;
     private String username;
     private int port;
+    private UserView uView = new UserView();
+
 
     public RMIClient(String username, int port) throws RemoteException {
         super(username, port);
@@ -49,30 +50,6 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         //TODO implement this
     }
 
-    /**
-     *
-     */
-    UserView uView = new UserView();
-    /*
-    @Override
-    public void firstClientMessages() throws IOException, RemoteException {
-        System.out.println("Number of connections: "+server.getNumberOfConnections());
-        if(server.getNumberOfConnections() == 1) {
-            boolean flag = server.getNumberOfPlayer(uView.askNumOfPlayer(server.getNumberOfConnections()));
-            while (!flag) {
-                System.err.println("Retry: ");
-                flag = server.getNumberOfPlayer(uView.askNumOfPlayer(server.getNumberOfConnections()));
-            }
-        }
-    }*/
-
-    /*2public void requestClient() throws IOException {
-        String nickname = "";
-        nickname = uView.askPlayerNickname();
-        server.onEventInserted(nickname);
-        //server.sendUpdate(this,nickname,Event.SET_NICKNAME);
-    }*/
-
     @Override
     public void disconnected() {
 
@@ -84,51 +61,44 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public void disconnect(){
         //TODO implement this
     }
-    public void onEventInserted(Object eventObj) throws RemoteException{
-        System.out.println("Event completed successfully!");
-    }
 
-
-
-    Event eventClient;
+    private Event eventClient;
     public void receivedMessage() throws IOException{
         this.eventClient =  server.sendMessage();
-        System.out.println(" evento settato: " + this.eventClient);
+        System.err.println(this.eventClient);
     }
 
     public Event getEventClient(){
         return eventClient;
     }
-    Error flag;
-    int i;
+    private Error errorReceived;
     public void actionToDo() throws IOException {
         switch (eventClient){
             case ASK_NUM_PLAYERS -> {
-                System.out.println("in actionToDO "+ server.getNumberOfConnections());
-                flag = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS, server.getNumberOfConnections());
-                if (flag == Error.NOT_AVAILABLE) {
-                    System.err.println("Retry, num of player: " + flag);
+                errorReceived = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS, server.getNumberOfConnections());
+                if (errorReceived == Error.NOT_AVAILABLE) {
+                    System.err.println("Retry, num of player: " + errorReceived);
                 }
             }
             case SET_NICKNAME -> {
-                flag = server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME, server.getNumberOfConnections());
-                if(flag == Error.NOT_AVAILABLE){
+                errorReceived = server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME, server.getNumberOfConnections());
+                if(errorReceived == Error.NOT_AVAILABLE){
                     System.err.println("This nickname is already taken, retry:");
-                } else if(flag == Error.EMPTY_NICKNAME){
+                } else if(errorReceived == Error.EMPTY_NICKNAME){
                     System.err.println("Nickname is empty");
                 }
             }
       /*      case CHOOSE_NETWORK_PROTOCOL -> {
-                flag = server.onEventInserted(uView.webProtocol(), CHOOSE_NETWORK_PROTOCOL);
-                while(!flag){
+                errorReceived = server.onEventInserted(uView.webProtocol(), CHOOSE_NETWORK_PROTOCOL);
+                while(!errorReceived){
                     System.err.println("Retry: ");
-                    flag = server.onEventInserted(uView.webProtocol(), receivedMessage());
+                    errorReceived = server.onEventInserted(uView.webProtocol(), receivedMessage());
                 }
             } */
             case CHOOSE_VIEW -> {
-                flag = server.onEventInserted(uView.userInterface(), CHOOSE_VIEW, server.getNumberOfConnections());
-                if (flag == Error.NOT_AVAILABLE) {
-                    System.err.println("Retry: " + flag);
+                errorReceived = server.onEventInserted(uView.userInterface(), CHOOSE_VIEW, server.getNumberOfConnections());
+                if (errorReceived == Error.NOT_AVAILABLE) {
+                    System.err.println("Retry: " + errorReceived);
                 }
             }
         }

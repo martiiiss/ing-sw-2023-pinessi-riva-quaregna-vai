@@ -1,7 +1,6 @@
 package distributed.RMI;
 
 import distributed.Client;
-import util.Callback;
 import util.Error;
 import util.Event;
 
@@ -13,13 +12,11 @@ public interface ServerRMIInterface extends Remote{
 
     void startServer(ServerRMIInterface serverRmi) throws RemoteException;
     // void login(String username, ClientConnectionRMI clientConnection) throws RemoteException;
-    void disconnect() throws RemoteException;
 
     void initClient(Client rmiClient) throws IOException;
 
     //boolean getNumberOfPlayer(int num) throws IOException;
     int getNumberOfConnections() throws RemoteException;
-    void registerClient(Callback rmiClient) throws RemoteException;
     Error onEventInserted(Object obj, Event event, int numOfClientConnected) throws IOException;
 
     Event sendMessage() throws RemoteException;

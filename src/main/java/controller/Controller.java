@@ -68,9 +68,7 @@ public class Controller implements Observer {
             return Error.NOT_AVAILABLE;
         }
         for(int i=0; i<num; i++){
-            this.game.getNextEventPlayer().add(ASK_NUM_PLAYERS);
-            System.out.println(" in chooseNumOfPlayer " + this.game.getNextEventPlayer().get(i));
-        }
+            this.game.getNextEventPlayer().add(ASK_NUM_PLAYERS);}
         game.setNumOfPlayers(num);
         return Error.OK;
     }
@@ -396,30 +394,23 @@ public class Controller implements Observer {
 
 
     public Event getNextEvent(int num) {
-        System.out.println(" get next event "+ num + " nextEVENTPLAYER ");
         if (this.game.getNextEventPlayer().size() == 0) {
-            System.out.println("getNextEvent: size: " + this.game.getNextEventPlayer().size());
             return ASK_NUM_PLAYERS;
         }
         if (num != this.game.getNumOfPlayers()){
-            System.out.println("scelgo "+ this.game.getNextEventPlayer().get(num)+ " num p conn " + num);
             return this.game.getNextEventPlayer().get(num);
         } else {
-            System.out.println("Prova");
             return this.game.getNextEventPlayer().get(game.getPlayers().indexOf(game.getPlayerInTurn()));
         }
     }
 
 
     public Error update(Object obj, Event event, int numofClientsConnected) throws IOException {
-        System.out.println("num of clients connected: " + numofClientsConnected);
         switch (event) {
             case ASK_NUM_PLAYERS -> {
                 if(game.getNumOfPlayers()==0) {
                     if (chooseNumOfPlayer((int) obj)==Error.OK) {
-                        System.out.println("update: " + (numofClientsConnected-1) + " " + this.game.getNextEventPlayer().get(numofClientsConnected-1));
                         this.game.setNextEventPlayer(SET_NICKNAME, numofClientsConnected-1);
-                        System.out.println("update2: " + (numofClientsConnected-1) + " " + this.game.getNextEventPlayer().get(numofClientsConnected-1));
                     } else {
                         return Error.NOT_AVAILABLE;  //messaggio di errore sul client
                     }
@@ -427,7 +418,7 @@ public class Controller implements Observer {
                     this.game.getNextEventPlayer().set(numofClientsConnected-1, SET_NICKNAME);
                 }
             }
-            case SET_NICKNAME -> { //TODO
+            case SET_NICKNAME -> {
                 Error error = chooseNickname((String) obj);
                 if(error==Error.OK){
                     this.game.setNextEventPlayer(CHOOSE_VIEW, numofClientsConnected-1); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA

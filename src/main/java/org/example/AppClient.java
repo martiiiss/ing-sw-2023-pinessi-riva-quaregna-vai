@@ -35,11 +35,9 @@ public class AppClient {
           //  client.requestClient();
             //while (client.receivedMessage()!=WAIT){
             while(client.getEventClient()!=WAIT){
-                System.out.println("CHIAMATA RECEIVED MESSAGE: ");
+                System.err.print("CHIAMATA RECEIVED MESSAGE: ");
                 client.receivedMessage();
-                System.out.println("CHIAMATA A ACTION TO DO: ");
                 client.actionToDo();
-                System.out.println("NEXT");
             }
 
         } else if(choice == 1){

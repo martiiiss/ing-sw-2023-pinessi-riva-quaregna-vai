@@ -6,7 +6,6 @@ import distributed.RMI.RMIServer;
 import distributed.RMI.ServerRMIInterface;
 import distributed.Server;
 import distributed.Socket.SocketServer;
-import util.Callback;
 import util.Event;
 
 

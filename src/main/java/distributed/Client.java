@@ -1,7 +1,6 @@
 package distributed;
 
 import distributed.RMI.RMIClient;
-import util.Callback;
 import util.Event;
 import view.UserView;
 
@@ -13,7 +12,7 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Timer;
-public abstract class Client implements Remote, Serializable, Callback {
+public abstract class Client implements Remote, Serializable {
     private static final long serialVersionUID = -8499166750855847908L; //random number
     //transient DisconnectionListener disconnectionListener
     private transient Timer pingTimer;
