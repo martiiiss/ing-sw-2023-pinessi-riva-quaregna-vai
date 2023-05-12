@@ -27,7 +27,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private SocketServer serverSocket;
     private ServerRMIInterface rmiServer;
 
-   // private int numOfClientsConnected=0;
+    // private int numOfClientsConnected=0;
 
     public List<Client> getClientsConnectedList(){
         return this.clientsConnected;
@@ -35,10 +35,10 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public Server(int portSocket, int portRMI) throws IOException {
         if(portRMI==-1) { //Socket
-        //    System.out.println("socket");
+            //    System.out.println("socket");
             this.socketPort = portSocket;
         } else if(portSocket == -1){
-       //     System.out.println("rmi");
+            //     System.out.println("rmi");
             this.RMIPort = portRMI;
         }
 
@@ -75,8 +75,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         for(Client c: clientsConnected){
             System.out.println("TESTING "+c.getUsername());
         }*/
-        if(clientsConnected.size()>1 && isEveryoneConnected())
-            System.err.println("Lancia GAMEFLOW E INIZIA LA PARTITA"); //FIXME:In realtà il gioco deve iniziare solo dopo che il client ha inserito tutti i suoi dati
     }
 
     public int getNumberOfClientsConnected() {
@@ -84,7 +82,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
             System.out.println("TESTING "+c.getUsername());
         }
         System.out.println("non stampa lo stesso numero " + this.clientsConnected.size());*/
-     //   return this.numOfClientsConnected;
+        //   return this.numOfClientsConnected;
         return this.clientsConnected.size();
     }
 
@@ -107,6 +105,11 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public Error getUpdates(Object obj, Event event, int numOfPlayerConnected) throws IOException {
         //System.out.println("in getUpdates " + numOfPlayerConnected);
+        if(clientsConnected.size()>1 && isEveryoneConnected() && event==Event.CHOOSE_VIEW) {
+            System.err.println("Lancia GAMEFLOW E INIZIA LA PARTITA");
+            controller.initializeGame();
+            controller.gameFlow();
+        }
         return controller.update(obj, event, numOfPlayerConnected); //passa oggetto restituito da view e evento attuale al controller
     }
 

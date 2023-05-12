@@ -65,7 +65,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     private Event eventClient;
     public void receivedMessage() throws IOException{
         this.eventClient =  server.sendMessage();
-        System.err.println(this.eventClient);
+        System.err.println("Event sent to Server"+this.eventClient);
     }
 
     public Event getEventClient(){

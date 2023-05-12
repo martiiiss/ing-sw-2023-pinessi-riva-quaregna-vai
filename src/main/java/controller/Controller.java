@@ -39,9 +39,6 @@ public class Controller implements Observer {
         //this.nextEventPlayer = new ArrayList();
         this.game = new Game(); /*I create the Game object */
 //         chooseNumOfPlayer();
-        this.bag = new Bag();
-        this.board = new Board(game.getNumOfPlayers());
-        game.setGameStarted();
     }
 
 
@@ -133,16 +130,20 @@ public class Controller implements Observer {
 
     /**this method initializes the Game after all the players are connected*/
     public void initializeGame(){
+        this.bag = new Bag();
+        this.board = new Board(game.getNumOfPlayers());
         while(!countPlayers()){/*we make the server wait*/}
         for(int i=0;i<game.getNumOfPlayers();i++){
             game.getPlayers().get(i).setMyBookshelf();//the method of player creates a new Bookshelf
         }
         game.assignPersonalGoalCard(game.getNumOfPlayers());
         game.setCommonGoalCards();
-        board.setUpBoard(bag.getBagTiles(board.getNumOfCells()));//filled the board
+        board.setNumOfCells(game.getNumOfPlayers());
+        ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
+        board.setUpBoard(tiles);//filled the board
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
-
+        game.setGameStarted();
     }//TODO We consider the first player in the ArrayList as the first player -> implementation with server
 
     //button START GAME somewhere
@@ -405,30 +406,30 @@ public class Controller implements Observer {
     }
 
 
-    public Error update(Object obj, Event event, int numofClientsConnected) throws IOException {
+    public Error update(Object obj, Event event, int numOfClientsConnected) throws IOException {
         switch (event) {
             case ASK_NUM_PLAYERS -> {
                 if(game.getNumOfPlayers()==0) {
                     if (chooseNumOfPlayer((int) obj)==Error.OK) {
-                        this.game.setNextEventPlayer(SET_NICKNAME, numofClientsConnected-1);
+                        this.game.setNextEventPlayer(SET_NICKNAME, numOfClientsConnected-1);
                     } else {
                         return Error.NOT_AVAILABLE;  //messaggio di errore sul client
                     }
                 } else {
-                    this.game.getNextEventPlayer().set(numofClientsConnected-1, SET_NICKNAME);
+                    this.game.getNextEventPlayer().set(numOfClientsConnected-1, SET_NICKNAME);
                 }
             }
             case SET_NICKNAME -> {
                 Error error = chooseNickname((String) obj);
                 if(error==Error.OK){
-                    this.game.setNextEventPlayer(CHOOSE_VIEW, numofClientsConnected-1); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
+                    this.game.setNextEventPlayer(CHOOSE_VIEW, numOfClientsConnected-1); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
                 }
                 return error;
 
             }
             case CHOOSE_VIEW -> {
                 if (chooseUserInterface((int) obj)==Error.OK) {  //ha inserito un numero corretto
-                        this.game.setNextEventPlayer(WAIT, numofClientsConnected-1);
+                        this.game.setNextEventPlayer(WAIT, numOfClientsConnected-1);
                 } else {
                     return Error.NOT_AVAILABLE;  //messaggio di errore sul client
                 }
@@ -441,4 +442,10 @@ public class Controller implements Observer {
 
 
 }
+/*
+Come mi aspettavo adesso qualsiasi chiamata a UI viene fatta ad AppServer.
+Per come abbiamo gestito il controller noi però sappiamo a quale client corrisponde player in turn
+Pensavo quindi di aggiungere una HashMap che associa ad ogni Player l'istanza di client che gli corrisponde. In questo modo
+DOVREBBE essere possibile mandare gli eventi al Player
+ */
 
