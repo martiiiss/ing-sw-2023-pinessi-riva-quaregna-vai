@@ -128,4 +128,6 @@ public class Board extends Observable implements Serializable {
     public Type getSelectedType(int row, int column){
         return (livingRoomBoard[row][column]).getType();
     }
+
+    public int getSelectedNumType(int row, int column) {return (livingRoomBoard[row][column]).getNumType();}
 }
