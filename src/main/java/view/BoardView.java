@@ -15,8 +15,8 @@ public class BoardView extends JInternalFrame{
     private JInternalFrame boardDisplayed;
     public BoardView (Board board) throws IOException {
         Image img, scaledImg;
-        JInternalFrame jInternalFrame = new JInternalFrame("Board");
-        jInternalFrame.setLayout(new GridLayout(9,9));
+        boardDisplayed = new JInternalFrame("Board");
+        boardDisplayed.setLayout(new GridLayout(9,9));
         JButton button;
         InputStream is;
         for(int row=0; row<9; row++)
@@ -30,13 +30,12 @@ public class BoardView extends JInternalFrame{
                     ImageIcon im = new ImageIcon(scaledImg);
                     button = new JButton();
                     button.setPreferredSize(new Dimension(50,50));
-                    jInternalFrame.add(button);
+                    boardDisplayed.add(button);
                     button.setIcon(im);
 
             }
-        jInternalFrame.setVisible(true);
-        jInternalFrame.setMinimumSize(new Dimension(450,450));
-        setBoardDisplayed(jInternalFrame);
+        boardDisplayed.setVisible(true);
+        boardDisplayed.setMinimumSize(new Dimension(450,450));
     }
 
     public JInternalFrame getBoardDisplayed() {

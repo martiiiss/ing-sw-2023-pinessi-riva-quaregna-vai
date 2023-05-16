@@ -23,13 +23,15 @@ public class GUIView {
         for(int i=0; i<2; i++) {
             is = this.getClass().getClassLoader().getResourceAsStream("resources/CommonGoalCardImages/" + game.getCommonGoalCard().get(i).getIdCGC() + ".jpg");
             img = ImageIO.read(is);
-            scaledImg = img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            scaledImg = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             jLabel = new JLabel(new ImageIcon(scaledImg));
             GUI.add(jLabel);
             ScoringTokenView scv = new ScoringTokenView(game.getCommonGoalCard().get(i).getTokenStack().get(game.getNumOfPlayers()-1).getValue(), i);
             scv.setDisplayedImage();
             GUI.add(scv.getDisplayedImage());
         }
+        BookshelfView bookshelfView = new BookshelfView();
+        GUI.add(bookshelfView.getBookshelfDisplayed());
         GUI.pack();
         GUI.setVisible(true);
 

@@ -34,7 +34,7 @@ public class ScoringTokenView extends JPanel {
     public void setDisplayedImage() throws IOException {
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("resources/ScoringTokenImages/" + this.valueDisplayed + ".jpg");
         Image img = ImageIO.read(is);
-        Image scaledImg = img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        Image scaledImg = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         this.displayedImage = new JLabel(new ImageIcon(scaledImg));
     }
 
