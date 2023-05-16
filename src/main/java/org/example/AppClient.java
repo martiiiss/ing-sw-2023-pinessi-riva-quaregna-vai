@@ -31,12 +31,7 @@ public class AppClient {
             RMIClient client = new RMIClient(name, 45398);
             client.startConnection();
             System.out.println("You chose RMI!");
-
-            while(client.getEventClient()!=END){
-               // System.err.print("CHIAMATA RECEIVED MESSAGE: ");
-                client.receivedMessage();
-               // client.actionToDo();
-            }
+            client.lobby();
 
         } else if(choice == 1){
             //clientSocket

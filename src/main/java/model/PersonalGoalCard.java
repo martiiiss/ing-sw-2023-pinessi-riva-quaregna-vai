@@ -4,9 +4,12 @@ import com.google.gson.stream.JsonReader;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 
 
-public class PersonalGoalCard {
+public class PersonalGoalCard implements Serializable {
+    private static final long serialVersionUID = -5786944275606187567L; //random number
+
     private Tile[][] seedOfCard;
 
     //numOfPGC is the "name of the card that has to be generated" this number is extracted in game by Rand(). It has to be

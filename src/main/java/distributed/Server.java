@@ -69,13 +69,9 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private void reconnectionOfPlayer(String username, Connection connection) throws RemoteException{ //FIXME non può richiedere come parametro il nickname dato che viene richiesto solo dopo che si è connesso        //TODO
     }
 
-    public void connection (Client client) throws IOException {
+    public int connection (Client client) throws IOException {
         this.clientsConnected.add(client);
-      /*  this.numOfClientsConnected++;
-        System.out.println("size "+ this.clientsConnected.size());
-        for(Client c: clientsConnected){
-            System.out.println("TESTING "+c.getUsername());
-        }*/
+        return clientsConnected.size()-1;
     }
 
     public int getNumberOfClientsConnected() {
@@ -104,23 +100,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         return this.clientsConnected.size();
     }
 
-    public Error getUpdates(Object obj, Event event, int numOfPlayerConnected, int numOfPlayer) throws IOException {
-        //System.out.println("in getUpdates " + numOfPlayerConnected);
-       /* if(clientsConnected.size()>1 && isEveryoneConnected() && event==Event.CHOOSE_VIEW) {
-            System.err.println("Lancia GAMEFLOW E INIZIA LA PARTITA");
-            controller.initializeGame();
-            controller.gameFlow();
-        }*/
-        return controller.update(obj, event, numOfPlayerConnected, numOfPlayer); //passa oggetto restituito da view e evento attuale al controller
-    }
-
-    public Event getEvent(int num){
-        //System.out.println("num client cli" + clientsConnected.size());
-        if(num == -1){
-            num = clientsConnected.size()-1;
-        }
-        return controller.getNextEvent(num, this.clientsConnected.size());
-    }
     public boolean isEveryoneConnected() {
         if(clientsConnected.size()==controller.getInstanceOfGame().getNumOfPlayers()) {
             System.err.println("Everyone is now connected!");
@@ -137,4 +116,12 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
 
     public Board getServerBoard(){ return this.controller.getBoard();}
+
+    public Error sendServerMessage(Object obj, Event event) throws IOException {
+        return controller.updateController(obj,event);
+    }
+
+    public Object getServerModel(Event event) {
+        return controller.getControllerModel(event);
+    }
 }

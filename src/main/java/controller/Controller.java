@@ -10,6 +10,8 @@ import util.Event;
 import util.Observable;
 import util.Observer;
 import view.UserInterface;
+import view.UserView;
+
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -28,8 +30,6 @@ public class Controller implements Observer {
     private ArrayList<Player> finalRank;
     //private Event nextEvent;
 
-
-
     public Controller() throws IOException {
         createGame();
     }
@@ -44,30 +44,6 @@ public class Controller implements Observer {
 
     public Game getInstanceOfGame(){
         return this.game;
-    }
-
-    public Bag getInstanceOfBag(){
-        return this.bag;
-    }
-
-    public Board getInstanceOfBoard(){
-        return this.board;
-    }
-
-    public UserInterface getInstanceOfUI(){
-        return this.UI;
-    }
-
-
-    //this method needs to be error checked
-    public Error chooseNumOfPlayer(int num) throws IOException {
-        if(num<2 || num>4){
-            return Error.NOT_AVAILABLE;
-        }
-        for(int i=0; i<num; i++){
-            this.game.getNextEventPlayer().add(SET_NICKNAME);}
-        game.setNumOfPlayers(num);
-        return Error.OK;
     }
 
     //this method needs to be fixed -> multithreading TODO
@@ -87,19 +63,6 @@ public class Controller implements Observer {
         return Error.OK;
     }
 
-    /*
-    public boolean chooseProtocol(int chosenProtocol) throws IOException {
-        if(chosenProtocol == 1 || chosenProtocol == 2) {
-            System.out.println("protocollo ok");
-            protocol = chosenProtocol;
-            return true;
-        }else {
-            //errpre e rilettura
-            return false;
-        }
-    }//IDK how we will use this, but in this way we know witch one in between the two protocols is chosen by the player
-    public int getProtocol(){return this.protocol;}
-    */
     public Error chooseUserInterface(int chosenInterface) throws IOException {
         switch (chosenInterface) {
             case 1, 2 -> {
@@ -110,20 +73,6 @@ public class Controller implements Observer {
                 return Error.NOT_AVAILABLE;
             }
         }
-        //We will find a way to use this one
-    }//TODO the cases are useful, we need to implement the choice
-/*
-    public void userChoices() throws IOException {
-       // chooseProtocol();
-       // chooseUserInterface();
-        //chooseNickname();
-    }
-*/
-    public boolean countPlayers(){
-        if(game.getPlayers().size() == game.getNumOfPlayers()){
-            System.out.println("Number of players reached!");
-            return true;
-        } else {return false;}
     }
 
     /**this method initializes the Game after all the players are connected*/
@@ -425,101 +374,50 @@ public class Controller implements Observer {
                 }
             }
         }
-
         return this.game.getNextEventPlayer().get(num);
-        //} else {
-          //  return this.game.getNextEventPlayer().get(game.getPlayers().indexOf(game.getPlayerInTurn()));
-        //}
     }
 
 
-    public Error update(Object obj, Event event, int numOfClientsConnected, int numOfPlayer) throws IOException {
+    public Error updateController(Object obj, Event event) throws IOException {
+        Error error = Error.OK;
         switch (event) {
             case ASK_NUM_PLAYERS -> {
-                if(game.getNumOfPlayers()==0 && numOfPlayer==0) {
-                    this.game.setNextEventPlayer(ASK_NUM_PLAYERS, numOfPlayer, numOfClientsConnected);
-                    if (chooseNumOfPlayer((int) obj)==Error.OK) {
-                        this.game.setNextEventPlayer(SET_NICKNAME, numOfPlayer, numOfClientsConnected);
-                    } else {
-                        return Error.NOT_AVAILABLE;  //messaggio di errore sul client
-                    }
-                } else {
-                    this.game.setNextEventPlayer(SET_NICKNAME, numOfPlayer, numOfClientsConnected);
-                }
+                game.setNumOfPlayers((int)obj);
             }
             case SET_NICKNAME -> {
-                Error error = chooseNickname((String) obj);
-                if(error==Error.OK){
-                    this.game.setNextEventPlayer(CHOOSE_VIEW, numOfPlayer, numOfClientsConnected); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
-                }
-                return error;
-
+                 error = chooseNickname((String) obj);
             }
             case CHOOSE_VIEW -> {
-                if (chooseUserInterface((int) obj)==Error.OK) {  //ha inserito un numero corretto
-                    this.game.setNextEventPlayer(WAIT, numOfPlayer, numOfClientsConnected);
-                    System.out.println("Choose " + numOfPlayer);
-                } else {
-                    return Error.NOT_AVAILABLE;  //messaggio di errore sul client
-                }
+                error = chooseUserInterface((int) obj);
             }
-            case WAIT -> {
-                if(numOfClientsConnected < game.getNumOfPlayers()){
-                  //  System.out.println(" num of clients connected: "+ numOfClientsConnected + " num players "+ game.getNumOfPlayers());
-                    return Error.WAIT;
+            case ALL_CONNECTED -> {
+                if((int) obj == game.getPlayers().size()) {
+                    System.out.println("The game is starting");
+                    initializeGame();
+                    error = Error.OK;
                 }
-                if(numOfClientsConnected == game.getNumOfPlayers() && game.getPlayerInTurn().equals(game.getPlayers().get(numOfPlayer))){
-                    //ho raggiunto il numero di giocatori e sono il giocatore in turno
-                    System.out.println("qui");
-
-                    while(numOfPlayer==0 && !this.game.getGameStarted()) {
-                        if (this.game.getNumOfPlayers() == this.game.getPlayers().size()) { //primo giocatore
-                            System.out.println("inizia");
-                            initializeGame();
-                        }
-                        System.out.println("loop");
-                    }
-                    System.out.println("fine");
-                    if(!someoneIsPlay()) {
-                        System.out.println("nessuno sta giocando");
-                        this.game.setNextEventPlayer(START, numOfPlayer, numOfClientsConnected);
-                    }
-                    System.out.println("ok");
-                    return Error.OK;
-                }
-                System.out.println("ok");
-                return Error.OK;
+                else
+                    error = Error.WAIT;
             }
-            case START -> {
-                return Error.OK;
+            case GAME_STARTED -> {
+                if(game.getGameStarted())
+                    error = Error.OK;
+                else
+                    error = Error.WAIT;
             }
-
-
             case END -> {
-
-            }
-
-        }
-        return Error.OK;
-    }
-
-
-    public boolean someoneIsPlay(){
-        for(int i=0; i<game.getNextEventPlayer().size(); i++){
-            if(game.getNextEventPlayer().get(i)==START){
-                return true;
             }
         }
-        return false;
+        return error;
     }
 
-
-
+    public Object getControllerModel(Event event) {
+        Object obj = null;
+        switch (event) {
+            case GAME_BOARD -> obj = this.board;
+            case GAME_PLAYERS -> obj = game.getPlayers();
+        }
+        return obj;
+    }
 }
-/*
-Come mi aspettavo adesso qualsiasi chiamata a UI viene fatta ad AppServer.
-Per come abbiamo gestito il controller noi però sappiamo a quale client corrisponde player in turn
-Pensavo quindi di aggiungere una HashMap che associa ad ogni Player l'istanza di client che gli corrisponde. In questo modo
-DOVREBBE essere possibile mandare gli eventi al Player
- */
 

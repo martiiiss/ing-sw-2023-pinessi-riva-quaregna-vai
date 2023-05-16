@@ -5,12 +5,13 @@ public enum Event {
     ASK_NUM_PLAYERS,
     CHOOSE_NETWORK_PROTOCOL,
     CHOOSE_VIEW,
-
-
     START,
-
     START_YOUR_TURN,
-
     WAIT,
+    ALL_CONNECTED,
     END,
+    GAME_BOARD,
+    GAME_BOOKSHELF,
+    GAME_PLAYERS,
+    GAME_STARTED;
 }

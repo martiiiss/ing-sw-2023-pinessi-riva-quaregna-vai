@@ -1,6 +1,7 @@
 package view;
 
 import model.Board;
+import model.Bookshelf;
 import model.Tile;
 
 import java.io.BufferedReader;
@@ -11,20 +12,18 @@ import java.io.Serializable;
 public class UserView implements Serializable {
     private static final long serialVersionUID = -23874204704L;
 
-    public int askNumOfPlayer(int numOfConnections) throws IOException {
-        if(numOfConnections == 1) {
-            int numOfPlayer = 0;
-            System.out.println("Insert num of player: ");
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-                numOfPlayer = Integer.parseInt(reader.readLine());
-            } catch (NumberFormatException exception) {
-                System.err.println("Invalid format...");
-            }
-            return numOfPlayer;
+    public int askNumOfPlayer() throws IOException {
+        int numOfPlayer = 0;
+        System.out.println("Insert num of player: ");
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+            numOfPlayer = Integer.parseInt(reader.readLine());
+        } catch (NumberFormatException exception) {
+            System.err.println("Invalid format...");
         }
-        return -1;
+        return numOfPlayer;
     }
+
     public String askPlayerNickname() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
@@ -83,4 +82,25 @@ public class UserView implements Serializable {
         }
         System.out.println();
     }
+    public void showTUIBookshelf(Bookshelf bookshelf) {
+        System.out.println("Here's the player in turn's bookshelf:");
+        Tile[][] tilesInBookshelf = bookshelf.getBookshelf();
+        for (int i = 0; i < 6; i++) {
+            System.out.println("+---------------+");
+            for (int j = 0; j < 5; j++) {
+                if (j == 0) System.out.print("|");
+                switch (tilesInBookshelf[i][j].getType()) {
+                    case NOTHING -> System.out.print("\u001B[90m □ \u001B[0m");
+                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
+                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
+                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
+                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
+                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
+                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+                }
+                if (j == 4) System.out.println("|");
+            }
+        }
+    }
+
 }

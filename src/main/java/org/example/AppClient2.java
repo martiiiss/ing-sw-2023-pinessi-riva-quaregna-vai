@@ -1,13 +1,19 @@
 package org.example;
 
+import controller.Controller;
+import distributed.Client;
 import distributed.RMI.RMIClient;
+import model.Game;
+import view.UserInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.rmi.NotBoundException;
 
 import static util.Event.END;
+import static util.Event.WAIT;
 
 public class AppClient2 {
     public static void main(String[] args) throws IOException, NotBoundException {
@@ -25,12 +31,7 @@ public class AppClient2 {
             RMIClient client = new RMIClient(name, 45398);
             client.startConnection();
             System.out.println("You chose RMI!");
-
-            while(client.getEventClient()!=END){
-               // System.err.print("CHIAMATA RECEIVED MESSAGE: ");
-                client.receivedMessage();
-               // client.actionToDo();
-            }
+            client.lobby();
 
         } else if(choice == 1){
             //clientSocket

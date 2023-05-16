@@ -39,25 +39,19 @@ public class RMIServer extends Server implements ServerRMIInterface {
     }
 
     @Override
-    public void initClient(Client rmiClient) throws IOException {
-        server.connection(rmiClient);
-        //System.out.println("CIAO user "+server.getClientsConnectedList().size());
+    public int initClient(Client rmiClient) throws IOException {
+        return server.connection(rmiClient);
     }
 
     public int getNumberOfConnections() {
         return server.getClientsConnected();
     }
 
-    public Error onEventInserted(Object obj, Event event, int numOfPlayer) throws IOException {
-        //System.out.println("Nickname passato "+obj.toString());
-        return super.getUpdates(obj, event, getNumberOfConnections(), numOfPlayer);
-    }
-
-
-    public Event sendMessage(int num) throws RemoteException{
-        return server.getEvent(num);
+    public Error sendMessage(Object obj, Event event) throws IOException {
+        return server.sendServerMessage(obj,event);
         //return getInstanceOfController().getNextEvent(super.getNumberOfClientsConnected());
     }
-
-    public Board getBoard() throws RemoteException { return server.getServerBoard();}
+    public Object getModel(Event event) throws RemoteException{
+        return server.getServerModel(event);
+    }
 }

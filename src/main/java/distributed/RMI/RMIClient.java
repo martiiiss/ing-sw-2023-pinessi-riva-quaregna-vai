@@ -1,14 +1,14 @@
 package distributed.RMI;
 
 import distributed.Client;
+import model.*;
 import util.Error;
-import util.Event;
 import view.UserView;
-
 import java.io.*;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 import static util.Event.*;
 
@@ -17,15 +17,15 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     private static final long serialVersionUID = -3489512533622391685L; //random number
     private transient ServerRMIInterface server;
     private String address;
-    private String username;
     private int port;
     private UserView uView = new UserView();
+    private Error errorReceived;
+    private int myIndex;
 
 
-    public RMIClient(String username, int port) throws RemoteException {
-        super(username, port);
-        this.username = username; //server
-        //  this.address = address;
+    public RMIClient(String address, int port) throws RemoteException {
+        super(address, port);
+        this.address = address; //server
         this.port = port;
     }
 
@@ -33,15 +33,14 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public void startConnection() throws RemoteException, NotBoundException {
         try {
             server = (ServerRMIInterface) Naming.lookup(getUsername());
-            server.initClient(this);
-            // server.registerClient(this);
+            this.myIndex = server.initClient(this);
         }catch (Exception e){
             e.printStackTrace();
         }
     }  //TODO implement this
 
 
-    public String getUsername(){ return this.username; }
+    public String getUsername(){ return this.address; }
 
     public int getPort(){ return this.port; }
 
@@ -61,77 +60,58 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     public void disconnect(){
         //TODO implement this
     }
+    int numOfPlayers = 0;
 
-    private Event eventClient;
-    int cont=0;
-    public void receivedMessage() throws IOException{
-        this.eventClient =  server.sendMessage(myNumOfPlayer);
-        while(this.eventClient!=END){
-            if(this.eventClient==WAIT && cont==0){
-                cont=1;
-                actionToDo();
-            }else if (this.eventClient!=WAIT){
-                cont=0;
-                actionToDo();
+    public void lobby() throws IOException { //TODO Metti il sincro per la stampa brutta
+        Error errorReceived;
+        if(myIndex==0) {//Vuol dire che sono il primo client connesso
+            numOfPlayers = uView.askNumOfPlayer();
+            while (numOfPlayers<2 || numOfPlayers>4) {
+                System.err.println("Retry...");
+                numOfPlayers = uView.askNumOfPlayer();
             }
-            this.eventClient = server.sendMessage(this.myNumOfPlayer);
+            errorReceived = server.sendMessage(numOfPlayers, ASK_NUM_PLAYERS); //invia al server il numero di giocatori
+            System.out.println("Server sent this error: "+errorReceived);
         }
-    }
-
-    public Event getEventClient(){
-        return eventClient;
-    }
-    private Error errorReceived;
-    int myNumOfPlayer=-1;
-
-
-
-    public void actionToDo() throws IOException {
-        switch (eventClient){
-            case ASK_NUM_PLAYERS -> {
-                this.myNumOfPlayer = server.getNumberOfConnections()-1;
-                //System.out.println("my numOfPlayer" + this.myNumOfPlayer);
-                errorReceived = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS, this.myNumOfPlayer);
-                if (errorReceived == Error.NOT_AVAILABLE) {
-                    System.err.println("Retry, num of player: " + errorReceived);
-                }
+        errorReceived = server.sendMessage(uView.userInterface(),CHOOSE_VIEW); //invia al server la View desiderata
+        while (errorReceived!=Error.OK) {
+            System.err.println("Invalid value");
+            errorReceived = server.sendMessage(uView.userInterface(),CHOOSE_VIEW);
+        }
+        errorReceived =server.sendMessage(uView.askPlayerNickname(),SET_NICKNAME); //invia al server il nickname
+        while (errorReceived!=Error.OK) {
+            System.out.println("Server sent this error: " + errorReceived);
+            switch (errorReceived) {
+                case EMPTY_NICKNAME -> System.err.println("Nickname is empty...");
+                case NOT_AVAILABLE -> System.err.println("Nickname already taken...");
             }
-            case SET_NICKNAME -> {
-                this.myNumOfPlayer = server.getNumberOfConnections()-1;
-                errorReceived = server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME, this.myNumOfPlayer);
-                if(errorReceived == Error.NOT_AVAILABLE){
-                    System.err.println("This nickname is already taken, retry:");
-                } else if(errorReceived == Error.EMPTY_NICKNAME){
-                    System.err.println("Nickname is empty");
-                }
-            }
-            case CHOOSE_VIEW -> {
-                errorReceived = server.onEventInserted(uView.userInterface(), CHOOSE_VIEW, this.myNumOfPlayer);
-                if (errorReceived == Error.NOT_AVAILABLE) {
-                    System.err.println("Retry: " + errorReceived);
-                }
-                System.out.println("CHOOSE VIEW");
-
-            }
-            case WAIT -> {
-                System.out.println("WAIT!!");
-
-                errorReceived = server.onEventInserted( null, WAIT, this.myNumOfPlayer);
-                while(errorReceived == Error.WAIT){
-                    errorReceived = server.onEventInserted(null, WAIT, this.myNumOfPlayer);
-                 //   System.out.println("error:" + errorReceived);
-                }
-
-                System.out.println("Errore: " + errorReceived);
-
-            }
-            case START -> {
-                uView.showTUIBoard(server.getBoard());
-
-                System.out.println("START");
-
-
+            System.out.print("");
+            errorReceived = server.sendMessage(uView.askPlayerNickname(), SET_NICKNAME);
+        }
+        if(myIndex==0){
+            errorReceived = server.sendMessage(numOfPlayers,ALL_CONNECTED);
+            System.out.println("Server sent this error: " + errorReceived);
+            while (errorReceived != Error.OK) {
+                errorReceived = server.sendMessage(numOfPlayers, ALL_CONNECTED);
             }
         }
+        getModel();
+    }
+
+    private Board board;
+    private Bookshelf bookshelf;
+    private CommonGoalCard commonGoalCard;
+    private PersonalGoalCard personalGoalCard;
+    private ArrayList<Player> listOfPlayers;
+    public void getModel() throws IOException {
+        Error errorReceived = server.sendMessage(null,GAME_STARTED);
+        while (errorReceived != Error.OK)
+             errorReceived = server.sendMessage(null,GAME_STARTED);
+        this.board=(Board) server.getModel(GAME_BOARD);
+        this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS);
+
+        uView.showTUIBoard(this.board);
+        uView.showTUIBookshelf(listOfPlayers.get(0).getMyBookshelf());
+
     }
 }
