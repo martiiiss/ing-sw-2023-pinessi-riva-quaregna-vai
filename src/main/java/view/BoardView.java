@@ -1,6 +1,8 @@
 package view;
 
 import model.Board;
+import model.CommonGoalCard;
+import model.Game;
 import model.Type;
 
 import javax.imageio.ImageIO;
@@ -15,34 +17,56 @@ import java.util.Objects;
 
 
 
-public class BoardView extends JFrame {
-    private Board board;
+public class BoardView extends JSplitPane{
 
     private final JLabel tilePickedLabel = new JLabel("Tile picked!");
-    public BoardView (Board board) throws IOException {
-        JFrame frame = new JFrame("Board");
-        frame.setLayout(new GridLayout(9,9));
-        this.board = board;
+    public BoardView (Board board, Game game) throws IOException {
+        Image img, scaledImg;
+        JLabel jLabel;
+        JFrame frame = new JFrame();
+        JInternalFrame jInternalFrame = new JInternalFrame("Board");
+        jInternalFrame.setLayout(new GridLayout(9,9));
+        frame.setLayout(new FlowLayout());
         JButton button;
+        InputStream is;
+        /*is = this.getClass().getClassLoader().getResourceAsStream("resources/livingroom.png");
+        img = ImageIO.read(is);
+        scaledImg = img.getScaledInstance(450,450, Image.SCALE_SMOOTH);
+        jLabel = new JLabel(new ImageIcon(scaledImg));
+        jInternalFrame.setContentPane(jLabel);*/
         for(int row=0; row<9; row++)
             for(int column=0; column<9; column++) {
-                InputStream is;
                 if(board.getSelectedType(row, column)!= model.Type.BLOCKED)
                     is = this.getClass().getClassLoader().getResourceAsStream("resources/TileImages/"+ board.getSelectedType(row, column) +"/"+ board.getSelectedNumType(row, column) +".png");
                 else
                     is = this.getClass().getClassLoader().getResourceAsStream("resources/TileImages/"+ board.getSelectedType(row, column) +".png");
-                Image img = ImageIO.read(is);
-                    Image scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                img = ImageIO.read(is);
+                    scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
                     ImageIcon im = new ImageIcon(scaledImg);
                     button = new JButton();
                     button.setPreferredSize(new Dimension(50,50));
-                    frame.add(button);
+                    jInternalFrame.add(button);
                     button.setIcon(im);
+
             }
+        jInternalFrame.setVisible(true);
+        jInternalFrame.setMinimumSize(new Dimension(450,450));
+        frame.add(jInternalFrame);
+        for(int i=0; i<2; i++) {
+            is = this.getClass().getClassLoader().getResourceAsStream("resources/CommonGoalCardImages/" + game.getCommonGoalCard().get(i).getIdCGC() + ".jpg");
+            img = ImageIO.read(is);
+            scaledImg = img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            jLabel = new JLabel(new ImageIcon(scaledImg));
+            frame.add(jLabel);
+            is = this.getClass().getClassLoader().getResourceAsStream("resources/ScoringTokenImages/" + game.getCommonGoalCard().get(i).getTokenStack().get(game.getNumOfPlayers()-1).getValue() + ".jpg");
+            img = ImageIO.read(is);
+            scaledImg = img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+            jLabel = new JLabel(new ImageIcon(scaledImg));
+            frame.add(jLabel);
+        }
         frame.pack();
         frame.setVisible(true);
 
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
     }
 

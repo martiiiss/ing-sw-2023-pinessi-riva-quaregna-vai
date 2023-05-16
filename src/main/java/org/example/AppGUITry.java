@@ -2,6 +2,7 @@ package org.example;
 
 import model.Bag;
 import model.Board;
+import model.Game;
 import model.Tile;
 import view.BoardView;
 
@@ -14,11 +15,14 @@ public class AppGUITry {
 
     public static void main(String[] args) throws IOException {
         Bag bag = new Bag();
-        board = new Board(2);
-        board.setNumOfCells(2);
+        board = new Board(4);
+        Game game = new Game();
+        game.setNumOfPlayers(4);
+        board.setNumOfCells(4);
+        game.setCommonGoalCards();
         ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
         board.setUpBoard(tiles);//filled the board
-        view = new BoardView(board);
+        view = new BoardView(board, game);
 
     }
 }

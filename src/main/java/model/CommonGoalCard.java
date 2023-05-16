@@ -90,4 +90,8 @@ public class CommonGoalCard extends Observable implements Serializable {
         mock.setBookshelf(copy);
         return this.strategy.compareRule(mock, idCGC);
     }
+
+    public int getIdCGC() {
+        return idCGC;
+    }
 }
