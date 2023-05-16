@@ -24,8 +24,8 @@ public class App {
 
 
         c.createGame();
-        c.userChoices();//first player
-        c.userChoices();//second player
+     //   c.userChoices();//first player
+     //   c.userChoices();//second player
         c.initializeGame();
         c.gameFlow();
     }

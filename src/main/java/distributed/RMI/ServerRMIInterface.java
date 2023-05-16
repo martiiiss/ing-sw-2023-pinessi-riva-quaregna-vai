@@ -1,6 +1,7 @@
 package distributed.RMI;
 
 import distributed.Client;
+import model.Board;
 import util.Error;
 import util.Event;
 
@@ -17,8 +18,10 @@ public interface ServerRMIInterface extends Remote{
 
     //boolean getNumberOfPlayer(int num) throws IOException;
     int getNumberOfConnections() throws RemoteException;
-    Error onEventInserted(Object obj, Event event, int numOfClientConnected) throws IOException;
+    Error onEventInserted(Object obj, Event event, int numPlayer) throws IOException;
 
-    Event sendMessage() throws RemoteException;
+    Event sendMessage(int num) throws RemoteException;
     //richiama i metodi del Controller (per il flusso della partita)x\
+
+    Board getBoard() throws RemoteException;
 }

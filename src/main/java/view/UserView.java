@@ -1,5 +1,8 @@
 package view;
 
+import model.Board;
+import model.Tile;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,7 +33,7 @@ public class UserView implements Serializable {
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid input!");
             throw new IllegalArgumentException();
-        }
+        } //TODO devo gestire l'eccezione che lancia!!! perchè deve poter richiedere !
     }
 
 
@@ -59,4 +62,25 @@ public class UserView implements Serializable {
         return -1;
     }
 
+    public void showTUIBoard(Board board) {
+        Tile[][] tilesOnBoard = board.getBoard();
+        System.out.print("   0  1  2  3  4  5  6  7  8");
+        for (int i = 0; i < board.BOARD_ROW; i++) {
+            System.out.println();
+            System.out.print(+i+" ");
+            for (int j = 0; j < board.BOARD_COLUMN; j++) {
+                switch (tilesOnBoard[i][j].getType()) {
+                    case BLOCKED -> System.out.print("\033[31;47;1m   \u001B[0m");
+                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
+                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
+                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
+                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
+                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
+                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+                    case NOTHING -> System.out.print("\033[31;40;0m   \u001B[0m");
+                }
+            }
+        }
+        System.out.println();
+    }
 }

@@ -5,6 +5,7 @@ import distributed.RMI.RMIClient;
 import distributed.RMI.RMIServer;
 import distributed.RMI.ServerRMIInterface;
 import distributed.Socket.SocketServer;
+import model.Board;
 import model.Game;
 import util.Error;
 import util.Event;
@@ -103,19 +104,22 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         return this.clientsConnected.size();
     }
 
-    public Error getUpdates(Object obj, Event event, int numOfPlayerConnected) throws IOException {
+    public Error getUpdates(Object obj, Event event, int numOfPlayerConnected, int numOfPlayer) throws IOException {
         //System.out.println("in getUpdates " + numOfPlayerConnected);
-        if(clientsConnected.size()>1 && isEveryoneConnected() && event==Event.CHOOSE_VIEW) {
+       /* if(clientsConnected.size()>1 && isEveryoneConnected() && event==Event.CHOOSE_VIEW) {
             System.err.println("Lancia GAMEFLOW E INIZIA LA PARTITA");
             controller.initializeGame();
             controller.gameFlow();
-        }
-        return controller.update(obj, event, numOfPlayerConnected); //passa oggetto restituito da view e evento attuale al controller
+        }*/
+        return controller.update(obj, event, numOfPlayerConnected, numOfPlayer); //passa oggetto restituito da view e evento attuale al controller
     }
 
-    public Event getEvent(){
+    public Event getEvent(int num){
         //System.out.println("num client cli" + clientsConnected.size());
-        return controller.getNextEvent(clientsConnected.size()-1);
+        if(num == -1){
+            num = clientsConnected.size()-1;
+        }
+        return controller.getNextEvent(num, this.clientsConnected.size());
     }
     public boolean isEveryoneConnected() {
         if(clientsConnected.size()==controller.getInstanceOfGame().getNumOfPlayers()) {
@@ -130,4 +134,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         clientsConnected.remove(clientsConnected.get(clientsConnected.size()-1));
         return false;
     }
+
+
+    public Board getServerBoard(){ return this.controller.getBoard();}
 }

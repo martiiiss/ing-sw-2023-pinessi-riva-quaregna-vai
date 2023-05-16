@@ -8,6 +8,7 @@ import util.Event;
 import util.Observable;
 import java.util.Random;
 
+import static util.Event.ASK_NUM_PLAYERS;
 
 
 public class Game extends Observable implements Serializable {
@@ -185,8 +186,25 @@ public class Game extends Observable implements Serializable {
         return this.nextEventPlayer;
     }
 
-    public void setNextEventPlayer(Event event, int n){
-        this.nextEventPlayer.set(n, event);
+    public void setNextEventPlayer(Event event, int n, int numOfClientConnected){
+        if(this.nextEventPlayer.size()>n) {
+            this.nextEventPlayer.set(n, event);
+        } else{
+            if(this.nextEventPlayer==null || this.nextEventPlayer.size()!=numOfClientConnected){
+                for(int i=0; i<numOfClientConnected-this.nextEventPlayer.size(); i++ ){
+                    if(this.nextEventPlayer!=null && this.nextEventPlayer.size()>1){
+                        this.nextEventPlayer.add(this.nextEventPlayer.size()-1+i, ASK_NUM_PLAYERS);
+                    }
+                    if(nextEventPlayer==null){
+                        this.nextEventPlayer=new ArrayList<>();
+                        this.nextEventPlayer.add(0, ASK_NUM_PLAYERS);
+                    }
+                }
+            }
+            else {
+                this.nextEventPlayer.add(n, event);
+            }
+        }
     }
 }
 

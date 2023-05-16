@@ -65,7 +65,7 @@ public class Controller implements Observer {
             return Error.NOT_AVAILABLE;
         }
         for(int i=0; i<num; i++){
-            this.game.getNextEventPlayer().add(ASK_NUM_PLAYERS);}
+            this.game.getNextEventPlayer().add(SET_NICKNAME);}
         game.setNumOfPlayers(num);
         return Error.OK;
     }
@@ -87,7 +87,7 @@ public class Controller implements Observer {
         return Error.OK;
     }
 
-
+    /*
     public boolean chooseProtocol(int chosenProtocol) throws IOException {
         if(chosenProtocol == 1 || chosenProtocol == 2) {
             System.out.println("protocollo ok");
@@ -98,14 +98,12 @@ public class Controller implements Observer {
             return false;
         }
     }//IDK how we will use this, but in this way we know witch one in between the two protocols is chosen by the player
-    //TODO the cases are useful, we need to implement the choice
-
-
     public int getProtocol(){return this.protocol;}
-
+    */
     public Error chooseUserInterface(int chosenInterface) throws IOException {
         switch (chosenInterface) {
             case 1, 2 -> {
+                System.out.println("user interface scelta");
                 return Error.OK;
             }
             default -> {
@@ -114,13 +112,13 @@ public class Controller implements Observer {
         }
         //We will find a way to use this one
     }//TODO the cases are useful, we need to implement the choice
-
+/*
     public void userChoices() throws IOException {
        // chooseProtocol();
        // chooseUserInterface();
         //chooseNickname();
     }
-
+*/
     public boolean countPlayers(){
         if(game.getPlayers().size() == game.getNumOfPlayers()){
             System.out.println("Number of players reached!");
@@ -132,7 +130,7 @@ public class Controller implements Observer {
     public void initializeGame(){
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
-        while(!countPlayers()){/*we make the server wait*/}
+       // while(!countPlayers()){/*we make the server wait*/}
         for(int i=0;i<game.getNumOfPlayers();i++){
             game.getPlayers().get(i).setMyBookshelf();//the method of player creates a new Bookshelf
         }
@@ -383,6 +381,9 @@ public class Controller implements Observer {
         playAgain();
     }//TODO ask how to choose the winner if two players have the same score
 
+
+    public Board getBoard(){ return this.board;}
+
     @Override
     public void update(Observable o,Object obj) {
 
@@ -394,49 +395,122 @@ public class Controller implements Observer {
     }
 
 
-    public Event getNextEvent(int num) {
+    public Event getNextEvent(int num, int numOfClientConnected) {
         if (this.game.getNextEventPlayer().size() == 0) {
             return ASK_NUM_PLAYERS;
         }
-        if (num != this.game.getNumOfPlayers()){
-            return this.game.getNextEventPlayer().get(num);
-        } else {
-            return this.game.getNextEventPlayer().get(game.getPlayers().indexOf(game.getPlayerInTurn()));
+        if(this.game.getPlayerInTurn()==null && this.game.getPlayers().size()!=0){
+            this.game.setPlayerInTurn(this.game.getPlayers().get(0));
         }
+
+        if(this.game.getNextEventPlayer()==null || this.game.getNextEventPlayer().size()!=numOfClientConnected){
+            for(int i=0; i<numOfClientConnected-this.game.getNextEventPlayer().size(); i++ ){
+                this.game.getNextEventPlayer().add(this.game.getNextEventPlayer().size()-1+i, ASK_NUM_PLAYERS);
+            }
+        }
+        if(this.game.getNextEventPlayer().size()>num && this.game.getPlayers().size()>num) {
+            if (this.game.getNextEventPlayer().get(num) == WAIT && this.game.getPlayers().get(num).equals(this.game.getPlayerInTurn()) && this.game.getPlayers().size() == this.game.getNumOfPlayers()) {
+                System.out.println("num è in WAIT: " + num);
+
+                if (num == this.game.getNumOfPlayers() - 1) { //sono l'ultimo giocatore
+                    this.game.setPlayerInTurn(this.game.getPlayers().get(0));
+                    this.game.setNextEventPlayer(START, 0, numOfClientConnected); //il primo giocatore inizia il gioco
+                    System.out.println("parte primo player");
+                    initializeGame();
+
+                } else if (num < this.game.getNumOfPlayers() - 1) {
+                    this.game.setPlayerInTurn(this.game.getPlayers().get(num + 1));
+                    System.out.println("parte" + (num + 1) + " player");
+                    this.game.setNextEventPlayer(START, num + 1, numOfClientConnected);
+                }
+            }
+        }
+
+        return this.game.getNextEventPlayer().get(num);
+        //} else {
+          //  return this.game.getNextEventPlayer().get(game.getPlayers().indexOf(game.getPlayerInTurn()));
+        //}
     }
 
 
-    public Error update(Object obj, Event event, int numOfClientsConnected) throws IOException {
+    public Error update(Object obj, Event event, int numOfClientsConnected, int numOfPlayer) throws IOException {
         switch (event) {
             case ASK_NUM_PLAYERS -> {
-                if(game.getNumOfPlayers()==0) {
+                if(game.getNumOfPlayers()==0 && numOfPlayer==0) {
+                    this.game.setNextEventPlayer(ASK_NUM_PLAYERS, numOfPlayer, numOfClientsConnected);
                     if (chooseNumOfPlayer((int) obj)==Error.OK) {
-                        this.game.setNextEventPlayer(SET_NICKNAME, numOfClientsConnected-1);
+                        this.game.setNextEventPlayer(SET_NICKNAME, numOfPlayer, numOfClientsConnected);
                     } else {
                         return Error.NOT_AVAILABLE;  //messaggio di errore sul client
                     }
                 } else {
-                    this.game.getNextEventPlayer().set(numOfClientsConnected-1, SET_NICKNAME);
+                    this.game.setNextEventPlayer(SET_NICKNAME, numOfPlayer, numOfClientsConnected);
                 }
             }
             case SET_NICKNAME -> {
                 Error error = chooseNickname((String) obj);
                 if(error==Error.OK){
-                    this.game.setNextEventPlayer(CHOOSE_VIEW, numOfClientsConnected-1); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
+                    this.game.setNextEventPlayer(CHOOSE_VIEW, numOfPlayer, numOfClientsConnected); //NB SERVE SOLO PER TERMINARE IL PROCESSO ORA
                 }
                 return error;
 
             }
             case CHOOSE_VIEW -> {
                 if (chooseUserInterface((int) obj)==Error.OK) {  //ha inserito un numero corretto
-                        this.game.setNextEventPlayer(WAIT, numOfClientsConnected-1);
+                    this.game.setNextEventPlayer(WAIT, numOfPlayer, numOfClientsConnected);
+                    System.out.println("Choose " + numOfPlayer);
                 } else {
                     return Error.NOT_AVAILABLE;  //messaggio di errore sul client
                 }
             }
+            case WAIT -> {
+                if(numOfClientsConnected < game.getNumOfPlayers()){
+                  //  System.out.println(" num of clients connected: "+ numOfClientsConnected + " num players "+ game.getNumOfPlayers());
+                    return Error.WAIT;
+                }
+                if(numOfClientsConnected == game.getNumOfPlayers() && game.getPlayerInTurn().equals(game.getPlayers().get(numOfPlayer))){
+                    //ho raggiunto il numero di giocatori e sono il giocatore in turno
+                    System.out.println("qui");
+
+                    while(numOfPlayer==0 && !this.game.getGameStarted()) {
+                        if (this.game.getNumOfPlayers() == this.game.getPlayers().size()) { //primo giocatore
+                            System.out.println("inizia");
+                            initializeGame();
+                        }
+                        System.out.println("loop");
+                    }
+                    System.out.println("fine");
+                    if(!someoneIsPlay()) {
+                        System.out.println("nessuno sta giocando");
+                        this.game.setNextEventPlayer(START, numOfPlayer, numOfClientsConnected);
+                    }
+                    System.out.println("ok");
+                    return Error.OK;
+                }
+                System.out.println("ok");
+                return Error.OK;
+            }
+            case START -> {
+                return Error.OK;
+            }
+
+
+            case END -> {
+
+            }
 
         }
         return Error.OK;
+    }
+
+
+    public boolean someoneIsPlay(){
+        for(int i=0; i<game.getNextEventPlayer().size(); i++){
+            if(game.getNextEventPlayer().get(i)==START){
+                return true;
+            }
+        }
+        return false;
     }
 
 
