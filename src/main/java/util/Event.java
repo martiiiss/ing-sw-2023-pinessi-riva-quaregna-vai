@@ -7,7 +7,10 @@ public enum Event {
     CHOOSE_VIEW,
 
 
+    START,
 
+    START_YOUR_TURN,
 
-    WAIT, ASK_INTERFACE,
+    WAIT,
+    END,
 }

@@ -2,6 +2,7 @@ package distributed.RMI;
 
 import distributed.Client;
 import distributed.Server;
+import model.Board;
 import util.Error;
 import util.Event;
 
@@ -47,15 +48,16 @@ public class RMIServer extends Server implements ServerRMIInterface {
         return server.getClientsConnected();
     }
 
-    public Error onEventInserted(Object obj, Event event, int numOfPlayerConnected) throws IOException {
+    public Error onEventInserted(Object obj, Event event, int numOfPlayer) throws IOException {
         //System.out.println("Nickname passato "+obj.toString());
-        return super.getUpdates(obj, event, numOfPlayerConnected);
+        return super.getUpdates(obj, event, getNumberOfConnections(), numOfPlayer);
     }
 
 
-
-    public Event sendMessage() throws RemoteException{
-        return server.getEvent();
+    public Event sendMessage(int num) throws RemoteException{
+        return server.getEvent(num);
         //return getInstanceOfController().getNextEvent(super.getNumberOfClientsConnected());
     }
+
+    public Board getBoard() throws RemoteException { return server.getServerBoard();}
 }

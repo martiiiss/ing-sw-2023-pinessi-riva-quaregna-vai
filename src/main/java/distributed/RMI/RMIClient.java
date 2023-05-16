@@ -63,43 +63,74 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     }
 
     private Event eventClient;
+    int cont=0;
     public void receivedMessage() throws IOException{
-        this.eventClient =  server.sendMessage();
-        System.err.println("Event sent to Server"+this.eventClient);
+        this.eventClient =  server.sendMessage(myNumOfPlayer);
+        while(this.eventClient!=END){
+            if(this.eventClient==WAIT && cont==0){
+                cont=1;
+                actionToDo();
+            }else if (this.eventClient!=WAIT){
+                cont=0;
+                actionToDo();
+            }
+            this.eventClient = server.sendMessage(this.myNumOfPlayer);
+        }
     }
 
     public Event getEventClient(){
         return eventClient;
     }
     private Error errorReceived;
+    int myNumOfPlayer=-1;
+
+
+
     public void actionToDo() throws IOException {
         switch (eventClient){
             case ASK_NUM_PLAYERS -> {
-                errorReceived = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS, server.getNumberOfConnections());
+                this.myNumOfPlayer = server.getNumberOfConnections()-1;
+                //System.out.println("my numOfPlayer" + this.myNumOfPlayer);
+                errorReceived = server.onEventInserted(uView.askNumOfPlayer(server.getNumberOfConnections()), ASK_NUM_PLAYERS, this.myNumOfPlayer);
                 if (errorReceived == Error.NOT_AVAILABLE) {
                     System.err.println("Retry, num of player: " + errorReceived);
                 }
             }
             case SET_NICKNAME -> {
-                errorReceived = server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME, server.getNumberOfConnections());
+                this.myNumOfPlayer = server.getNumberOfConnections()-1;
+                errorReceived = server.onEventInserted(uView.askPlayerNickname(), SET_NICKNAME, this.myNumOfPlayer);
                 if(errorReceived == Error.NOT_AVAILABLE){
                     System.err.println("This nickname is already taken, retry:");
                 } else if(errorReceived == Error.EMPTY_NICKNAME){
                     System.err.println("Nickname is empty");
                 }
             }
-      /*      case CHOOSE_NETWORK_PROTOCOL -> {
-                errorReceived = server.onEventInserted(uView.webProtocol(), CHOOSE_NETWORK_PROTOCOL);
-                while(!errorReceived){
-                    System.err.println("Retry: ");
-                    errorReceived = server.onEventInserted(uView.webProtocol(), receivedMessage());
-                }
-            } */
             case CHOOSE_VIEW -> {
-                errorReceived = server.onEventInserted(uView.userInterface(), CHOOSE_VIEW, server.getNumberOfConnections());
+                errorReceived = server.onEventInserted(uView.userInterface(), CHOOSE_VIEW, this.myNumOfPlayer);
                 if (errorReceived == Error.NOT_AVAILABLE) {
                     System.err.println("Retry: " + errorReceived);
                 }
+                System.out.println("CHOOSE VIEW");
+
+            }
+            case WAIT -> {
+                System.out.println("WAIT!!");
+
+                errorReceived = server.onEventInserted( null, WAIT, this.myNumOfPlayer);
+                while(errorReceived == Error.WAIT){
+                    errorReceived = server.onEventInserted(null, WAIT, this.myNumOfPlayer);
+                 //   System.out.println("error:" + errorReceived);
+                }
+
+                System.out.println("Errore: " + errorReceived);
+
+            }
+            case START -> {
+                uView.showTUIBoard(server.getBoard());
+
+                System.out.println("START");
+
+
             }
         }
     }
