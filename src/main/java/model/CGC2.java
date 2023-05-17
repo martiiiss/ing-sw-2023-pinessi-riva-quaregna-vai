@@ -1,10 +1,13 @@
 package model;
 
 
+import java.io.Serializable;
+
 import static model.Bookshelf.SHELF_ROW;
 import static model.Bookshelf.SHELF_COLUMN;
 
-public class CGC2 implements CGCStrategy {
+public class CGC2 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 6808176289351890600L;
     /*DIAGONAL: 5 tiles of the same type*/
     public boolean compareRule(Bookshelf bks, int id){
         Tile[][] bookshelf = bks.getBookshelf();

@@ -1,9 +1,12 @@
 package model;
 
+import java.io.Serializable;
+
 import static model.Type.NOTHING;
 
 /*two full columns equal with id 6, full row equal with id 8*/
-public class CGC68 implements CGCStrategy {
+public class CGC68 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 6828176289351890009L;
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
         int i1, i2, j, count, found, maxJ, maxI;

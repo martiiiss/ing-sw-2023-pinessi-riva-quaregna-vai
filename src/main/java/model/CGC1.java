@@ -1,11 +1,13 @@
 package model;
 import util.Cord;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static model.Type.NOTHING;
 
-public class CGC1 implements CGCStrategy {
+public class CGC1 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 6808176289351920649L;
     private ArrayList<Cord> checkAdj(Tile[][] bookshelf, ArrayList<Cord> listOfCords, Cord cord){
         int i=cord.getRowCord();
         int j=cord.getColCord();

@@ -2,13 +2,14 @@ package model;
 
 import util.Cord;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import static model.Type.NOTHING;
 
 
 
-public class CGC5 implements CGCStrategy {
-
+public class CGC5 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 2808176289351890649L;
 
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();

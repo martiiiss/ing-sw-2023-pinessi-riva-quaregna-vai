@@ -1,7 +1,10 @@
 package model;
 
 
-public class CGC7 implements CGCStrategy {
+import java.io.Serializable;
+
+public class CGC7 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 998176289351890649L;
     public boolean compareRule(Bookshelf bks, int id){
         int counter = 0;
         int numOfBlocks = 0;

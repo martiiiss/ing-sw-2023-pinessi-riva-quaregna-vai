@@ -1,13 +1,14 @@
 package view;
 
-import model.Board;
-import model.Bookshelf;
-import model.Tile;
+import model.*;
+import util.Cord;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Spliterator;
 
 public class UserView implements Serializable {
     private static final long serialVersionUID = -23874204704L;
@@ -102,5 +103,80 @@ public class UserView implements Serializable {
             }
         }
     }
+    public int askColumn() {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        try {
+            System.out.println("Choose the column, an integer from 0 to 4:");
+            return Integer.parseInt(reader.readLine());
+        } catch (IllegalArgumentException | IOException e) {
+            System.err.println("Invalid input!");
+        }
+        return -1;
+    }
 
+    public String askTilePosition() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        Cord cord = new Cord();
+        System.out.print("Input your coordinates as 2 integers separated by a comma (tiles must be adjacent):");
+        String in = reader.readLine();
+        while (in.isEmpty()) {
+            System.err.println("Empty, try again");
+            in = reader.readLine();
+        }
+        return in;
+    }
+
+    public int askNumberOfChosenTiles() {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        try {
+            System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");
+            return Integer.parseInt(reader.readLine());
+        } catch (IllegalArgumentException | IOException e) {
+            System.err.println("Invalid input!");
+        }
+        return -1;
+    }
+    public void printTilesInHand(ArrayList<Tile> tilesInHand) {
+        System.out.print(tilesInHand);
+    }
+
+    //This method asks the index of the tile to insert -> print the tiles in hand every time the player puts the tile into the bookshelf
+    //I insert one tile
+    public int askTileToInsert(ArrayList<Tile> tilesInHand) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        try {
+            for (Tile tile : tilesInHand) {
+                System.out.println("These are the tiles you picked: " + tile.getType());
+            }
+            System.out.println("""
+                    Now you have to choose the disposition of the chosen tiles.
+                    The first one on the left has an index 0, and so on...
+                    Digit a number (the index of the tile you want to put into the bookshelf):""");
+            return Integer.parseInt(reader.readLine());
+        } catch (IllegalArgumentException | IOException e) {
+            System.err.println("Invalid input!");
+        }
+        return -1;
+    }
+    public int askAction() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        System.out.println("1) Look at the Board");
+        System.out.println("2) Check the CommonGoalCards");
+        System.out.println("3) Check your PersonalGoalCard");
+        System.out.println("4) Look at other player's Bookshelves");
+        System.out.println("5) Open the chat");
+        System.out.println("6) Continue with my turn");
+        return Integer.parseInt(reader.readLine());
+    }
+    public void showCGC(ArrayList<CommonGoalCard> commonGoalCards) {
+        System.err.println("NON ANCORA IMPLEMENTATO :P");
+    }
+
+    public void showPGC(Player player) {
+        System.err.println("NON ANCORA IMPLEMENTATO :P");
+    }
+
+    public void chatOptions(Player player) {
+        System.err.println("NON ANCORA IMPLEMENTATO :P");
+    }
 }

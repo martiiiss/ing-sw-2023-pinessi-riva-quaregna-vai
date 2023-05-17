@@ -411,11 +411,14 @@ public class Controller implements Observer {
         return error;
     }
 
-    public Object getControllerModel(Event event) {
+    public Object getControllerModel(Event event, int playerIndex) {
         Object obj = null;
         switch (event) {
             case GAME_BOARD -> obj = this.board;
             case GAME_PLAYERS -> obj = game.getPlayers();
+            case GAME_CGC -> obj = game.getCommonGoalCard();
+            case GAME_PGC -> obj = game.getPlayers().get(playerIndex).getPersonalGoalCard();
+            case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
         }
         return obj;
     }

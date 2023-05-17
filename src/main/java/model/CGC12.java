@@ -1,9 +1,12 @@
 package model;
 
+import java.io.Serializable;
+
 import static model.Type.NOTHING;
 
 // The diagonal, both sides
-public class CGC12 implements CGCStrategy {
+public class CGC12 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 6002176189551890649L;
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
         boolean flag = false;

@@ -9,6 +9,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Stack;
 
 import static util.Event.*;
 
@@ -99,19 +100,105 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     }
 
     private Board board;
-    private Bookshelf bookshelf;
-    private CommonGoalCard commonGoalCard;
-    private PersonalGoalCard personalGoalCard;
+    private ArrayList<CommonGoalCard> commonGoalCard;
+    private PersonalGoalCard myPersonalGoalCard;
     private ArrayList<Player> listOfPlayers;
+    private Stack<ScoringToken> tokenStack;
+    private Player playerInTurn;
+    private int indexOfPIT;
     public void getModel() throws IOException {
         Error errorReceived = server.sendMessage(null,GAME_STARTED);
         while (errorReceived != Error.OK)
              errorReceived = server.sendMessage(null,GAME_STARTED);
-        this.board=(Board) server.getModel(GAME_BOARD);
-        this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS);
-
+        this.board =(Board) server.getModel(GAME_BOARD,myIndex);
+        this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex);
+        this.commonGoalCard = (ArrayList<CommonGoalCard>) server.getModel(GAME_CGC,myIndex);
+        this.myPersonalGoalCard = (PersonalGoalCard) server.getModel(GAME_PGC, myIndex);
+        this.indexOfPIT = (int) server.getModel(GAME_PIT,myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
+        this.playerInTurn = listOfPlayers.get(indexOfPIT);
+        System.out.println("It's "+playerInTurn.getNickname()+"'s turn!");
+        if(myIndex==indexOfPIT) {
+            activePlay();
+        }
+        else passivePlay();
+    }
+    private void activePlay() throws IOException {
+        int choice = 0;
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        System.out.println("IT'S YOUR TURN :D");
+        System.out.println("Would you like to do any of these actions before making your move?");
+        do {
+            choice = uView.askAction();
+            switch (choice) {
+                case 1 -> {
+                    System.out.println("Here's the game board...");
+                    uView.showTUIBoard(board);
+                }
+                case 2 -> {
+                    System.out.println("Here are the CommonGoalCards...");
+                    uView.showCGC(commonGoalCard);
+                }
+                case 3 -> {
+                    System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
+                    uView.showPGC(listOfPlayers.get(myIndex));
+                }
+                case 4 -> {
+                    System.out.println("Here's everyone's Bookshelf");
+                    for (Player player : listOfPlayers) {
+                        if (listOfPlayers.indexOf(player) == myIndex)
+                            System.out.println("This is yours....");
+                        uView.showTUIBookshelf(player.getMyBookshelf());
+                    }
+                }
+                case 5 -> {
+                    uView.chatOptions(listOfPlayers.get(myIndex));
+                }
+                default -> System.err.println("Invalid value...");
+            }
+            if(choice!=6)
+                System.out.println("What else would you like to do?");
+        }while (choice!=6);
+        System.out.println("Here's your Bookshelf:");
+        uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
         uView.showTUIBoard(this.board);
-        uView.showTUIBookshelf(listOfPlayers.get(0).getMyBookshelf());
+        //FIXME: Qui ci sarà come il metodo del singleplayer che faceva fare la mossa....
+    }
+    private void passivePlay() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        int choice = 0;
+        System.out.println("It's not your turn now :(\nHowever you can still do all of these actions...");
+        do {
+            choice = uView.askAction();
+            switch (choice) {
+                case 1 -> {
+                    System.out.println("Here's the game board...");
+                    uView.showTUIBoard(board);
+                }
+                case 2 -> {
+                    System.out.println("Here are the CommonGoalCards...");
+                    uView.showCGC(commonGoalCard);
+                }
+                case 3 -> {
+                    System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
+                    uView.showPGC(listOfPlayers.get(myIndex));
+                }
+                case 4 -> {
+                    System.out.println("Here's everyone's Bookshelf");
+                    for (Player player : listOfPlayers) {
+                        if (listOfPlayers.indexOf(player) == myIndex)
+                            System.out.println("This is yours....");
+                        uView.showTUIBookshelf(player.getMyBookshelf());
+                    }
+                }
+                case 5 -> {
+                    uView.chatOptions(listOfPlayers.get(myIndex));
+                }
+                case 6 -> {break;}
+                default -> System.err.println("Invalid value...");
+            }
+            if(choice!=6)
+                System.out.println("What else would you like to do?");
+        }while (choice!=6);
 
     }
 }

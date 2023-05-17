@@ -1,9 +1,11 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /*same type 8 tiles*/
-public class CGC11 implements CGCStrategy {
+public class CGC11 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 3332176289351890649L;
     public boolean compareRule(Bookshelf bks, int id){
         Tile[][] bookshelf = bks.getBookshelf();
         int i, j;

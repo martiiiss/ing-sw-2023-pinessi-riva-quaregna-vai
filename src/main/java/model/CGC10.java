@@ -1,10 +1,13 @@
 package model;
 
+import java.io.Serializable;
+
 import static model.Type.BLOCKED;
 import static model.Type.NOTHING;
 
 /* x pattern, same type */
-public class CGC10 implements CGCStrategy {
+public class CGC10 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 2228176289351890649L;
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
         int i, j;

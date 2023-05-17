@@ -13,5 +13,9 @@ public enum Event {
     GAME_BOARD,
     GAME_BOOKSHELF,
     GAME_PLAYERS,
+    GAME_CGC,
+    GAME_PGC,
+    GAME_SCORINGSTACK,
+    GAME_PIT,
     GAME_STARTED;
 }

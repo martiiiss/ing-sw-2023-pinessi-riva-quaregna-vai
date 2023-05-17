@@ -1,12 +1,14 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static model.Type.BLOCKED;
 import static model.Type.NOTHING;
 
 /*with 4, 4 complete rows of 1,2 or 3 different types, with 9, 3 complete columns of 1,2 or 3 different types*/
-public class CGC49 implements CGCStrategy {
+public class CGC49 implements CGCStrategy, Serializable {
+    private static final long serialVersionUID = 680817628938230649L;
     public boolean compareRule(Bookshelf bks, int id){
         Tile[][] bookshelf = bks.getBookshelf();
         int i, j, found, maxJ, maxI, num, count = 0;
