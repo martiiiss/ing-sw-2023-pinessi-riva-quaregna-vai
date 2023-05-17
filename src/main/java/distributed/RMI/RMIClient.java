@@ -2,6 +2,7 @@ package distributed.RMI;
 
 import distributed.Client;
 import model.*;
+import util.Cord;
 import util.Error;
 import view.UserView;
 import java.io.*;
@@ -161,6 +162,10 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         System.out.println("Here's your Bookshelf:");
         uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
         uView.showTUIBoard(this.board);
+        numOfChosenTiles();
+        chooseTiles();
+        uView.printTilesInHand(listOfPlayers.get(myIndex).getTilesInHand());
+
         //FIXME: Qui ci sarà come il metodo del singleplayer che faceva fare la mossa....
     }
     private void passivePlay() throws IOException {
@@ -201,4 +206,70 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         }while (choice!=6);
 
     }
+
+    private ArrayList<Cord> cords = new ArrayList<>();
+    private int numberOfChosenTiles;
+    public void chooseTiles() throws IOException {
+        ArrayList<Tile> tiles = new ArrayList();
+        boolean accepted = true;
+        int i = 0;
+        cords.removeAll(cords);
+        while (cords.size()<this.numberOfChosenTiles) {
+            Cord cord = new Cord();
+            do {
+                String in = uView.askTilePosition();
+                try {
+                    String[] splittedStr = in.split(",");
+                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
+                } catch (NumberFormatException formatException) {
+                    System.err.println("Invalid format...");
+                } catch (ArrayIndexOutOfBoundsException boundsException) {
+                    System.err.println("Invalid format or non existent coordinate...");
+                }
+            } while (cord.getRowCord() == 0 && cord.getColCord() == 0);
+            accepted = true;
+            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
+                System.err.println("Invalid tile....");
+                accepted = false;
+            }
+            if (accepted && !isTileFreeTile(cord)) {
+                System.err.println("This tile is blocked...");
+                accepted = false;
+            }
+            if (!this.cords.isEmpty())
+                for (Cord value : this.cords)
+                    if (value.getRowCord() != cord.getRowCord() && value.getColCord() != cord.getColCord()) {
+                        accepted = false;
+                        System.err.println("This tile is not adjacent to the previous...");
+                        break;
+                    }
+            if(accepted)
+                cords.add(cord);
+        }
+        for (i=0; i<this.cords.size();i++)
+            tiles.add(board.removeTile(this.cords.get(i).getRowCord(), this.cords.get(i).getColCord()));
+        listOfPlayers.get(myIndex).setTilesInHand(tiles);
+    }
+
+    private boolean isTileFreeTile(Cord cord) {
+        int x = cord.getRowCord();
+        int y = cord.getColCord();
+        boolean valid = false;
+        if(board.getSelectedType(x + 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING)
+            valid=true;
+        if(board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)
+            valid=true;
+        return valid;
+    }
+
+    private void numOfChosenTiles() throws IOException {
+        int freeSlots = listOfPlayers.get(myIndex).getMyBookshelf().getNumOfFreeSlots();
+        this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
+        while(this.numberOfChosenTiles<1 || this.numberOfChosenTiles>4 || freeSlots < this.numberOfChosenTiles ){
+            System.out.println("This number is wrong, retry!");
+            this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
+        }
+
+    }
+
 }
