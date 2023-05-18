@@ -218,6 +218,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             uView.printTilesInHand(tilesInHand);
             uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
         }
+        errorReceived = server.sendMessage(playerInTurn.getMyBookshelf(),UPDATE_BOOKSHELF);
         System.out.println("Would you like to do anything else before completing your turn?\n1)Yes\n2)No");
         choice = Integer.parseInt(reader.readLine());
         if(choice==1)

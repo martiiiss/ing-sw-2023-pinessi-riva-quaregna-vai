@@ -46,8 +46,8 @@ public class Player extends Observable implements Serializable {
     public String getNickname(){return this.nickname;}
 
     /*Assign to each player their bookshelf*/
-    public void setMyBookshelf() {
-        this.myBookshelf = new Bookshelf();
+    public void setMyBookshelf(Bookshelf bookshelf) {
+        this.myBookshelf = bookshelf;
     }
 
     /*Returns the player's bookshelf*/

@@ -80,9 +80,10 @@ public class Controller implements Observer {
     public void initializeGame(){
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
+        Bookshelf emptyBookshelf = new Bookshelf();
        // while(!countPlayers()){/*we make the server wait*/}
         for(int i=0;i<game.getNumOfPlayers();i++){
-            game.getPlayers().get(i).setMyBookshelf();//the method of player creates a new Bookshelf
+            game.getPlayers().get(i).setMyBookshelf(emptyBookshelf);//the method of player creates a new Bookshelf
         }
         game.assignPersonalGoalCard(game.getNumOfPlayers());
         game.setCommonGoalCards();
@@ -132,7 +133,7 @@ public class Controller implements Observer {
     //gruppo disponibile è di dimensione 2?
     private Error numOfChosenTiles(int numberOfChosenTiles) throws IOException {
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
-        if (numberOfChosenTiles<1 || numberOfChosenTiles>=3)
+        if (numberOfChosenTiles<1 || numberOfChosenTiles>3)
             return Error.OUT_OF_BOUNDS;
         if(freeSlots < numberOfChosenTiles )
             return Error.INVALID_VALUE;
@@ -399,6 +400,10 @@ public class Controller implements Observer {
                 else
                     return Error.NOT_YOUR_TURN;
             }
+            case UPDATE_BOOKSHELF -> {
+                game.getPlayerInTurn().setMyBookshelf((Bookshelf) obj);
+                return Error.OK;
+            }
         }
         return error;
     }
@@ -413,7 +418,7 @@ public class Controller implements Observer {
             case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
             case TURN_POSITION -> obj = this.playerHand;
-            case TURN_BOOKSHELF -> obj = this.game.getPlayers().get(playerIndex);
+            //case TURN_BOOKSHELF -> obj = this.game.getPlayers().get(playerIndex);
 
         }
         return obj;

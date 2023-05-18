@@ -24,5 +24,6 @@ public enum Event {
     TURN_BOOKSHELF,
     END_OF_TURN,
     CHECK_MY_TURN,
-    TURN_PICKED_TILES;
+    TURN_PICKED_TILES,
+    UPDATE_BOOKSHELF;
 }
