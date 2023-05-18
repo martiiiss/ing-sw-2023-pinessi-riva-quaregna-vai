@@ -27,7 +27,6 @@ public class App {
      //   c.userChoices();//first player
      //   c.userChoices();//second player
         c.initializeGame();
-        c.gameFlow();
     }
 
     public UserInterface getInstanceOfUserInterface(){

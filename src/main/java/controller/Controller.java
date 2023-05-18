@@ -28,6 +28,7 @@ public class Controller implements Observer {
     private int protocol = 0;
     private UserInterface UI = new UserInterface();
     private ArrayList<Player> finalRank;
+    private ArrayList<Tile> playerHand;
     //private Event nextEvent;
 
     public Controller() throws IOException {
@@ -96,20 +97,16 @@ public class Controller implements Observer {
     //button START GAME somewhere
 
     //TODO create the GameFlow
-    public void gameFlow() throws IOException {
+   /* public void gameFlow() throws IOException {
         do {
             UI.showTUIBookshelf(game.getPlayerInTurn().getMyBookshelf());
             UI.showTUIBoard(board);
             checkBoardToBeFilled();
-            numOfChosenTiles();
-            chooseTiles();
-            chooseColumn();
             for (int i = 0; i < numberOfChosenTiles; i++) {
-                chooseTilesDisposition();
             }
             calculateScore();//I calculate the score every time a Player puts some tiles into its Bookshelf
         } while (!checkIfGameEnd());//this method controls if the Bookshelf is full and determines how to proceed
-    }
+    }*/
     public void checkBoardToBeFilled(){
         if(board.checkBoardStatus()){ //true if board need to be filled
             for(int r=0;r<9;r++){
@@ -133,61 +130,35 @@ public class Controller implements Observer {
 
     //Cosa succede se il giocatore prova a prendere 3 tiles quando sulla plancia l'unico
     //gruppo disponibile è di dimensione 2?
-    private void numOfChosenTiles() throws IOException {
+    private Error numOfChosenTiles(int numberOfChosenTiles) throws IOException {
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
-        this.numberOfChosenTiles = UI.askNumberOfChosenTiles();
-        while(this.numberOfChosenTiles<1 || this.numberOfChosenTiles>4 || freeSlots < this.numberOfChosenTiles ){
-            System.out.println("This number is wrong, retry!");
-            this.numberOfChosenTiles = UI.askNumberOfChosenTiles();
-        }
-
+        if (numberOfChosenTiles<1 || numberOfChosenTiles>=3)
+            return Error.OUT_OF_BOUNDS;
+        if(freeSlots < numberOfChosenTiles )
+            return Error.INVALID_VALUE;
+        this.numberOfChosenTiles = numberOfChosenTiles;
+        return Error.OK;
     }
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
     //first number chosen is the column, the second is the row
     //FIXME: Si possono pescare tiles dappertutto, non viene controllato se è disponibile
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
-    private ArrayList<Cord> cords = new ArrayList<>();
-    public void chooseTiles() throws IOException {
-        ArrayList<Tile> tiles = new ArrayList();
-        boolean accepted = true;
-        int i = 0;
-        cords.removeAll(cords);
-        while (cords.size()<this.numberOfChosenTiles) {
-            Cord cord = new Cord();
-            do {
-                String in = UI.askTilePosition();
-                try {
-                    String[] splittedStr = in.split(",");
-                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
-                } catch (NumberFormatException formatException) {
-                    System.err.println("Invalid format...");
-                } catch (ArrayIndexOutOfBoundsException boundsException) {
-                    System.err.println("Invalid format or non existent coordinate...");
+    private ArrayList<Cord> playerCords = new ArrayList<>();
+    public Error chooseTiles(ArrayList<Cord> cords) throws IOException {
+        for (Cord cord : cords){
+            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED)
+                return Error.BLOCKED_NOTHING;
+            if (!isTileFreeTile(cord))
+                return Error.NOT_ON_BORDER;
+            for (Cord value : cords)
+                if (value.getRowCord() != cord.getRowCord() && value.getColCord() != cord.getColCord()) {
+                    System.err.println("This tile is not adjacent to the previous...");
+                    return Error.NOT_ADJACENT;
                 }
-            } while (cord.getRowCord() == 0 && cord.getColCord() == 0);
-            accepted = true;
-            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
-                System.err.println("Invalid tile....");
-                accepted = false;
-            }
-            if (accepted && !isTileFreeTile(cord)) {
-                System.err.println("This tile is blocked...");
-                accepted = false;
-            }
-            if (!this.cords.isEmpty())
-                for (Cord value : this.cords)
-                    if (value.getRowCord() != cord.getRowCord() && value.getColCord() != cord.getColCord()) {
-                        accepted = false;
-                        System.err.println("This tile is not adjacent to the previous...");
-                        break;
-                    }
-            if(accepted)
-                cords.add(cord);
         }
-        for (i=0; i<this.cords.size();i++)
-            tiles.add(board.removeTile(this.cords.get(i).getRowCord(), this.cords.get(i).getColCord()));
-        game.getPlayerInTurn().setTilesInHand(tiles);
+        playerCords = cords;
+        return Error.OK;
     }
 
     private boolean isTileFreeTile(Cord cord) {
@@ -201,33 +172,23 @@ public class Controller implements Observer {
         return valid;
     }
 
-    public void chooseColumn() throws IOException {
+    public Error chooseColumn(int chosenColumn) throws IOException {
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
-        this.chosenColumn = UI.askColumn();
-        boolean flag = false;
-        while(!flag){
-            if(this.chosenColumn<0 || this.chosenColumn >4) {
-                System.err.println("That column doesn't exist! Try again:");
-            }else if(playerBookshelf[this.numberOfChosenTiles-1][this.chosenColumn].getType() != Type.NOTHING){
-                System.err.println("That column hasn't enough space! Try again:");
-            }else{
-                flag = true; //The number is correct -> I don't ask again the player
-            }
-            if(!flag){
-                this.chosenColumn = UI.askColumn();
-            }
-        }
+        if(chosenColumn<0 || chosenColumn >4)
+            return Error.INVALID_VALUE;
+        if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING)
+            return Error.OUT_OF_BOUNDS;
+        this.chosenColumn = chosenColumn;
+        return Error.OK;
     }
 
     //after chooseColumn has been invoked
-    public void chooseTilesDisposition() throws IOException {
-        int index = UI.askTileToInsert(game.getPlayerInTurn().getTilesInHand());
-        while(index <0 || index >= game.getPlayerInTurn().getTilesInHand().size()){
-            System.err.println("That index doesn't exist! Try again:");
-            index = UI.askTileToInsert(game.getPlayerInTurn().getTilesInHand());
-        }
-        game.getPlayerInTurn().getMyBookshelf().placeTile(this.chosenColumn,game.getPlayerInTurn().getTilesInHand().get(index));
-        game.getPlayerInTurn().getTilesInHand().remove(index);
+    public Error chooseTilesDisposition(int index) throws IOException {
+        if(index <0 || index >= playerHand.size())
+            return Error.INVALID_VALUE;
+        game.getPlayerInTurn().getMyBookshelf().placeTile(this.chosenColumn,playerHand.get(index));
+        playerHand.get(index).setType(Type.NOTHING);
+        return Error.OK;
     }
 
 
@@ -238,7 +199,7 @@ public class Controller implements Observer {
         game.getPlayerInTurn().updateScore(cgc+pgc+adjacencies);
     }
 
-    public boolean checkIfGameEnd() throws IOException {
+   /* public boolean checkIfGameEnd() throws IOException {
         int index=0;
         if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
             index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
@@ -247,7 +208,7 @@ public class Controller implements Observer {
         if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
             if(game.getIsLastTurn()) {//is last turn
                 if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame(); /*CALL THE END OF GAME*/
+                    endOfGame(); CALL THE END OF GAME
                     return true;
                 } else {
                     goToNext(); //set next Player in turn
@@ -257,7 +218,7 @@ public class Controller implements Observer {
                 game.setFinisher(game.getPlayerInTurn());//I set the player that finished first and set isLastTurn -> I use a method from method.Game
                 game.getPlayerInTurn().updateScore(1);//I add an extra point to the first player to finish
                 if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame();/*CALL THE END OF GAME*/
+                    endOfGame();
                     return true;
                 } else {
                     goToNext(); //set next Player in turn
@@ -267,7 +228,7 @@ public class Controller implements Observer {
         } else {//Bookshelf NOT full
             if(game.getIsLastTurn()){
                 if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame();/*CALL END OF GAME*/
+                    endOfGame();CALL END OF GAME
                     return true;
                 } else{
                     goToNext(); //set next Player in turn
@@ -279,9 +240,10 @@ public class Controller implements Observer {
             }
         }
     }//TODO optimize this method
+*/
 
-    public void goToNext(){ //set player in turn
-        int i = game.getPlayers().indexOf(game.getPlayerInTurn())+1;
+    public void goToNext(Player playerInTurn){ //set player in turn
+        int i = game.getPlayers().indexOf(playerInTurn)+1;
         if(i<game.getNumOfPlayers()){
             game.setPlayerInTurn(game.getPlayers().get(i));
         } else {
@@ -339,8 +301,17 @@ public class Controller implements Observer {
     }
 
     public void clearChoice() throws IOException {
-        this.cords.clear();
-        chooseTiles();
+    }
+
+    public ArrayList<Tile> getTilesFromBoard() {
+        ArrayList<Tile> removedTiles = new ArrayList<>();
+        for(Cord cord : playerCords) {
+            removedTiles.add(board.removeTile(cord.getRowCord(),cord.getColCord()));
+        }
+        System.out.println("TEST DELLE TILES NELL HAND: "+game.getPlayerInTurn().getTilesInHand());
+        this.playerHand = removedTiles;
+        return removedTiles;
+        //TODO: UPDATE OBSERVERS!
     }
 
 
@@ -405,7 +376,28 @@ public class Controller implements Observer {
                 else
                     error = Error.WAIT;
             }
-            case END -> {
+            case TURN_AMOUNT -> {
+                error = numOfChosenTiles((int) obj);
+            }
+            case TURN_PICKED_TILES -> {
+               error = chooseTiles((ArrayList<Cord>) obj);
+            }
+            case TURN_COLUMN -> {
+                error = chooseColumn((int) obj);
+            }
+            case TURN_POSITION -> {
+                error = chooseTilesDisposition((int) obj);
+            }
+            case END_OF_TURN -> {
+                goToNext(game.getPlayers().get((int)obj));
+                System.out.println("PIT index"+game.getPlayers().indexOf(game.getPlayerInTurn()));
+                return Error.OK;
+            }
+            case CHECK_MY_TURN -> {
+                if((int) obj == game.getPlayers().indexOf(game.getPlayerInTurn()))
+                    return Error.OK;
+                else
+                    return Error.NOT_YOUR_TURN;
             }
         }
         return error;
@@ -419,6 +411,10 @@ public class Controller implements Observer {
             case GAME_CGC -> obj = game.getCommonGoalCard();
             case GAME_PGC -> obj = game.getPlayers().get(playerIndex).getPersonalGoalCard();
             case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
+            case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
+            case TURN_POSITION -> obj = this.playerHand;
+            case TURN_BOOKSHELF -> obj = this.game.getPlayers().get(playerIndex);
+
         }
         return obj;
     }

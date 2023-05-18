@@ -1,6 +1,8 @@
 package util;
 
-public class Cord {
+import java.io.Serializable;
+
+public class Cord implements Serializable {
     private int x;
     private int y;
 

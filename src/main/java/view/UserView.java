@@ -117,7 +117,7 @@ public class UserView implements Serializable {
     public String askTilePosition() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         Cord cord = new Cord();
-        System.out.print("Input your coordinates as 2 integers separated by a comma (tiles must be adjacent):");
+        System.out.print("Input your coordinates as 2 integers separated by a comma\n(tiles must be adjacent):");
         String in = reader.readLine();
         while (in.isEmpty()) {
             System.err.println("Empty, try again");
@@ -137,28 +137,52 @@ public class UserView implements Serializable {
         return -1;
     }
     public void printTilesInHand(ArrayList<Tile> tilesInHand) {
-        System.out.print(tilesInHand);
+        System.out.println("These are the tiles you picked:");
+        switch (tilesInHand.size()) {
+            case 1: {
+                System.out.println("[ 1 ]");
+                break;
+            }
+            case 2: {
+                System.out.println("[ 1  2 ]");
+                break;
+            }
+            case 3: {
+                System.out.println("[ 1  2  3 ]");
+                break;
+            }
+        }
+        System.out.print("[");
+        for (Tile tile : tilesInHand) {
+            switch (tile.getType()) {
+                case NOTHING -> System.out.print("\u001B[90m □ \u001B[0m");
+                case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
+                case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
+                case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
+                case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
+                case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
+                case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+            }
+        }
+        System.out.println("]");
     }
 
     //This method asks the index of the tile to insert -> print the tiles in hand every time the player puts the tile into the bookshelf
     //I insert one tile
-    public int askTileToInsert(ArrayList<Tile> tilesInHand) {
+    public int askTileToInsert(ArrayList<Tile> tilesInHand) throws IOException {
+        int index = -1;
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        try {
-            for (Tile tile : tilesInHand) {
-                System.out.println("These are the tiles you picked: " + tile.getType());
-            }
-            System.out.println("""
-                    Now you have to choose the disposition of the chosen tiles.
-                    The first one on the left has an index 0, and so on...
-                    Digit a number (the index of the tile you want to put into the bookshelf):""");
-            return Integer.parseInt(reader.readLine());
-        } catch (IllegalArgumentException | IOException e) {
-            System.err.println("Invalid input!");
-        }
-        return -1;
+        do {
+            System.out.println("You have to choose the disposition of the chosen tiles...");
+            printTilesInHand(tilesInHand);
+            System.out.print("Type the index of the one you wish to insert first:");
+            index = Integer.parseInt(reader.readLine());
+            index--;
+        }while (tilesInHand.get(index).getType()==Type.NOTHING);
+        return index;
     }
     public int askAction() throws IOException {
+
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1) Look at the Board");
         System.out.println("2) Check the CommonGoalCards");
