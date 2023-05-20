@@ -182,7 +182,6 @@ public class UserView implements Serializable {
         return index;
     }
     public int askAction() throws IOException {
-
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1) Look at the Board");
         System.out.println("2) Check the CommonGoalCards");
@@ -190,7 +189,11 @@ public class UserView implements Serializable {
         System.out.println("4) Look at other player's Bookshelves");
         System.out.println("5) Open the chat");
         System.out.println("6) Continue with my turn");
-        return Integer.parseInt(reader.readLine());
+        try {
+            return Integer.parseInt(reader.readLine());
+        }catch (NumberFormatException exception) {
+            exception.printStackTrace();}
+        return -1;
     }
     public void showCGC(ArrayList<CommonGoalCard> commonGoalCards) {
         System.err.println("NON ANCORA IMPLEMENTATO :P");

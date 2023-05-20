@@ -1,6 +1,7 @@
 package util;
 
 public enum Event {
+    SET_INDEX,
     SET_NICKNAME,
     ASK_NUM_PLAYERS,
     CHOOSE_NETWORK_PROTOCOL,
@@ -24,6 +25,7 @@ public enum Event {
     TURN_BOOKSHELF,
     END_OF_TURN,
     CHECK_MY_TURN,
+    CHECK_REFILL,
     TURN_PICKED_TILES,
     UPDATE_BOOKSHELF;
 }

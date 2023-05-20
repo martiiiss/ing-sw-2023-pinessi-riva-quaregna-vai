@@ -121,7 +121,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         return controller.updateController(obj,event);
     }
 
-    public Object getServerModel(Event event, int clientIndex) {
+    public Object getServerModel(Event event, Object clientIndex) {
         return controller.getControllerModel(event, clientIndex);
     }
 }

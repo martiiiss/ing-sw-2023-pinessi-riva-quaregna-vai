@@ -157,11 +157,12 @@ public class Controller implements Observer {
                     System.err.println("This tile is not adjacent to the previous...");
                     return Error.NOT_ADJACENT;
                 }
+            playerCords.add(cord);
         }
-        playerCords = cords;
         return Error.OK;
     }
 
+    //FIXME: Potrebbe rompersi tutto con 4 giocatori dato che potrebbe finire OutOfBounds
     private boolean isTileFreeTile(Cord cord) {
         int x = cord.getRowCord();
         int y = cord.getColCord();
@@ -180,6 +181,7 @@ public class Controller implements Observer {
         if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING)
             return Error.OUT_OF_BOUNDS;
         this.chosenColumn = chosenColumn;
+        UI.showTUIBoard(board);
         return Error.OK;
     }
 
@@ -191,7 +193,6 @@ public class Controller implements Observer {
         playerHand.get(index).setType(Type.NOTHING);
         return Error.OK;
     }
-
 
     public void calculateScore(){
         int cgc = game.checkCommonGoalCard();
@@ -309,8 +310,9 @@ public class Controller implements Observer {
         for(Cord cord : playerCords) {
             removedTiles.add(board.removeTile(cord.getRowCord(),cord.getColCord()));
         }
-        System.out.println("TEST DELLE TILES NELL HAND: "+game.getPlayerInTurn().getTilesInHand());
         this.playerHand = removedTiles;
+        playerCords.clear();
+        System.out.println("TEST DELLE TILES NELL HAND: "+removedTiles);
         return removedTiles;
         //TODO: UPDATE OBSERVERS!
     }
@@ -363,7 +365,7 @@ public class Controller implements Observer {
                 error = chooseUserInterface((int) obj);
             }
             case ALL_CONNECTED -> {
-                if((int) obj == game.getPlayers().size()) {
+                if(game.getNumOfPlayers() == game.getPlayers().size()) {
                     System.out.println("The game is starting");
                     initializeGame();
                     error = Error.OK;
@@ -400,6 +402,14 @@ public class Controller implements Observer {
                 else
                     return Error.NOT_YOUR_TURN;
             }
+            case CHECK_REFILL -> {
+                if(board.checkBoardStatus()) {
+                    checkBoardToBeFilled();
+                    return Error.REFILL;
+                }
+                else
+                    return Error.BOARD_NOT_EMPTY;
+            }
             case UPDATE_BOOKSHELF -> {
                 game.getPlayerInTurn().setMyBookshelf((Bookshelf) obj);
                 return Error.OK;
@@ -408,20 +418,29 @@ public class Controller implements Observer {
         return error;
     }
 
-    public Object getControllerModel(Event event, int playerIndex) {
+    public Object getControllerModel(Event event, Object playerIndex) {
         Object obj = null;
         switch (event) {
-            case GAME_BOARD -> obj = this.board;
+            case SET_INDEX -> obj = getPlayerFromNick((String) playerIndex);
+            case GAME_BOARD -> obj = getBoard();
             case GAME_PLAYERS -> obj = game.getPlayers();
             case GAME_CGC -> obj = game.getCommonGoalCard();
-            case GAME_PGC -> obj = game.getPlayers().get(playerIndex).getPersonalGoalCard();
+            case GAME_PGC -> obj = game.getPlayers().get((int)playerIndex).getPersonalGoalCard();
             case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
             case TURN_POSITION -> obj = this.playerHand;
             //case TURN_BOOKSHELF -> obj = this.game.getPlayers().get(playerIndex);
-
         }
         return obj;
+    }
+
+    private int getPlayerFromNick(String nickname) {
+        for(Player p : game.getPlayers()) {
+            if (p.getNickname().equals(nickname)) {
+                return game.getPlayers().indexOf(p);
+            }
+        }
+        return -1;
     }
 }
 

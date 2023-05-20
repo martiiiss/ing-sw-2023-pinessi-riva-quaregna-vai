@@ -80,21 +80,21 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             System.err.println("Invalid value");
             errorReceived = server.sendMessage(uView.userInterface(),CHOOSE_VIEW);
         }
-        errorReceived =server.sendMessage(uView.askPlayerNickname(),SET_NICKNAME); //invia al server il nickname
+        String nickname = uView.askPlayerNickname();
+        errorReceived =server.sendMessage(nickname,SET_NICKNAME); //invia al server il nickname
         while (errorReceived!=Error.OK) {
             System.out.println("Server sent this error: " + errorReceived);
             switch (errorReceived) {
                 case EMPTY_NICKNAME -> System.err.println("Nickname is empty...");
                 case NOT_AVAILABLE -> System.err.println("Nickname already taken...");
             }
-            System.out.print("");
             errorReceived = server.sendMessage(uView.askPlayerNickname(), SET_NICKNAME);
         }
+        myIndex = (int) server.getModel(SET_INDEX,nickname);
         if(myIndex==0){
-            errorReceived = server.sendMessage(numOfPlayers,ALL_CONNECTED);
-            System.out.println("Server sent this error: " + errorReceived);
+            errorReceived = server.sendMessage(null,ALL_CONNECTED);
             while (errorReceived != Error.OK) {
-                errorReceived = server.sendMessage(numOfPlayers, ALL_CONNECTED);
+                errorReceived = server.sendMessage(null, ALL_CONNECTED);
             }
         }
         getModel();
@@ -184,6 +184,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         //Asks the client the coordinates
         do {
             chooseTiles();
+            System.out.println(cords.get(0).getRowCord()+" "+cords.get(0).getColCord());
             errorReceived = server.sendMessage(cords, TURN_PICKED_TILES);
             System.out.println(errorReceived);
             System.out.flush();
@@ -208,17 +209,21 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             }
         }while (errorReceived!=Error.OK);
         //Asking the order of insertion
+        int pos;
         for(int i = 0; i<numberOfChosenTiles; i++) {
             do {
-                int pos = uView.askTileToInsert(tilesInHand);
+                pos = uView.askTileToInsert(tilesInHand);
                 errorReceived = server.sendMessage(pos, TURN_POSITION);
             }while (errorReceived!=Error.OK);
-            playerInTurn.getMyBookshelf().placeTile(column,tilesInHand.get(i));
+            playerInTurn.getMyBookshelf().placeTile(column,tilesInHand.get(pos));
             tilesInHand =(ArrayList<Tile>) server.getModel(TURN_POSITION,myIndex);
             uView.printTilesInHand(tilesInHand);
             uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
         }
         errorReceived = server.sendMessage(playerInTurn.getMyBookshelf(),UPDATE_BOOKSHELF);
+        errorReceived = server.sendMessage(null,CHECK_REFILL);
+        if(errorReceived==Error.REFILL)
+            System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
         System.out.println("Would you like to do anything else before completing your turn?\n1)Yes\n2)No");
         choice = Integer.parseInt(reader.readLine());
         if(choice==1)
@@ -234,6 +239,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             choice = uView.askAction();
             switch (choice) {
                 case 1 -> {
+                    this.board =(Board) server.getModel(GAME_BOARD,myIndex);
                     System.out.println("Here's the game board...");
                     uView.showTUIBoard(board);
                 }
