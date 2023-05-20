@@ -176,13 +176,18 @@ public class Controller implements Observer {
     private ArrayList<Cord> playerCords = new ArrayList<>();
     public Error chooseTiles(ArrayList<Cord> cords) throws IOException {
         for (Cord cord : cords){
-            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED)
+            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
+                playerCords.clear();
                 return Error.BLOCKED_NOTHING;
-            if (!isTileFreeTile(cord))
+            }
+            if (!isTileFreeTile(cord)) {
+                playerCords.clear();
                 return Error.NOT_ON_BORDER;
+            }
             for (Cord value : cords)
                 if (value.getRowCord() != cord.getRowCord() && value.getColCord() != cord.getColCord()) {
                     System.err.println("This tile is not adjacent to the previous...");
+                    playerCords.clear();
                     return Error.NOT_ADJACENT;
                 }
             playerCords.add(cord);

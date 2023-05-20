@@ -139,6 +139,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         System.out.println("IT'S YOUR TURN :D");
         System.out.println("Would you like to do any of these actions before making your move?");
         do {
+            //TODO:Sposta l'opzione "continua con il turno" ad un numero più decente di "6"
             choice = uView.askAction();
             switch (choice) {
                 case 1 -> {
@@ -164,7 +165,10 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                 case 5 -> {
                     uView.chatOptions(listOfPlayers.get(myIndex));
                 }
-                default -> System.err.println("Invalid value...");
+                case 7 -> {
+                    this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex);
+                    uView.showPlayers(listOfPlayers);
+                }
             }
             if(choice!=6)
                 System.out.println("What else would you like to do?");
@@ -186,8 +190,6 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             chooseTiles();
             System.out.println(cords.get(0).getRowCord()+" "+cords.get(0).getColCord());
             errorReceived = server.sendMessage(cords, TURN_PICKED_TILES);
-            System.out.println(errorReceived);
-            System.out.flush();
             switch (errorReceived) {
                 case BLOCKED_NOTHING -> {System.err.println("You are trying to pick up a tile that doesn't exist..."); uView.showTUIBoard(this.board);}
                 case NOT_ON_BORDER -> { System.err.println("This tile cannot be picked up right now..."); uView.showTUIBoard(this.board);}
