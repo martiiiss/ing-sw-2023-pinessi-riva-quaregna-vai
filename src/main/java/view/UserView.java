@@ -171,18 +171,20 @@ public class UserView implements Serializable {
     //I insert one tile
     public int askTileToInsert(ArrayList<Tile> tilesInHand) throws IOException {
         int index = -1;
+        boolean valid;
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         do {
-            System.out.println("You have to choose the disposition of the chosen tiles...");
-            printTilesInHand(tilesInHand);
-            System.out.print("Type the index of the one you wish to insert first:");
-            index = Integer.parseInt(reader.readLine());
+            do {
+                System.out.println("You have to choose the disposition of the chosen tiles...");
+                printTilesInHand(tilesInHand);
+                System.out.print("Type the index of the one you wish to insert first:");
+                index = Integer.parseInt(reader.readLine());
+            }while (index<1 || index>tilesInHand.size());
             index--;
         }while (tilesInHand.get(index).getType()==Type.NOTHING);
         return index;
     }
     public int askAction() throws IOException {
-
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1) Look at the Board");
         System.out.println("2) Check the CommonGoalCards");
@@ -190,7 +192,12 @@ public class UserView implements Serializable {
         System.out.println("4) Look at other player's Bookshelves");
         System.out.println("5) Open the chat");
         System.out.println("6) Continue with my turn");
-        return Integer.parseInt(reader.readLine());
+        System.out.println("7) Show the player list");
+        try {
+            return Integer.parseInt(reader.readLine());
+        }catch (NumberFormatException exception) {
+            exception.printStackTrace();}
+        return -1;
     }
     public void showCGC(ArrayList<CommonGoalCard> commonGoalCards) {
         System.err.println("NON ANCORA IMPLEMENTATO :P");
@@ -202,5 +209,12 @@ public class UserView implements Serializable {
 
     public void chatOptions(Player player) {
         System.err.println("NON ANCORA IMPLEMENTATO :P");
+    }
+    public void showPlayers(ArrayList<Player> listOfPlayers) {
+        int i = 1;
+        System.out.println("Here's the list of Players!\nEach one with their score");
+        for(Player player : listOfPlayers) {
+            System.out.println(" "+i+") \u001B[36m"+player.getNickname()+"\u001B[0m SCORE: \u001B[36m"+player.getScore()+"\u001B[0m ");
+        }
     }
 }

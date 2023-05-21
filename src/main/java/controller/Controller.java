@@ -129,15 +129,43 @@ public class Controller implements Observer {
     }
 
 
-    //Cosa succede se il giocatore prova a prendere 3 tiles quando sulla plancia l'unico
-    //gruppo disponibile è di dimensione 2?
     private Error numOfChosenTiles(int numberOfChosenTiles) throws IOException {
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
         if (numberOfChosenTiles<1 || numberOfChosenTiles>3)
             return Error.OUT_OF_BOUNDS;
         if(freeSlots < numberOfChosenTiles )
             return Error.INVALID_VALUE;
-        this.numberOfChosenTiles = numberOfChosenTiles;
+
+        int temp=0, cont=0;
+        if(numberOfChosenTiles!=1) {
+            for (int i = 0; i < board.BOARD_ROW; i++) {
+                for (int j = 0; j < board.BOARD_COLUMN; j++) {
+                    Cord cord = new Cord();
+                    cord.setCords(i, j);
+                    cont = 0;
+                    if(isTileFreeTile(cord)) {
+                        while (cont < 2 && board.getBoard()[i][j].getType() != Type.BLOCKED && board.getBoard()[i][j].getType() != Type.NOTHING) {
+                            int e;
+                            temp = 0;
+                            for (e = 1; e <= numberOfChosenTiles; e++) {
+                                cord.setCords(i - e * (cont - 1), j + e * (cont));
+                                if (board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.BLOCKED && board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.NOTHING && isTileFreeTile(cord)) {
+                                    temp = e + 1;
+                                } else {
+                                    e = numberOfChosenTiles + 1;
+                                }
+                            }
+                            if (temp == numberOfChosenTiles) {
+                                this.numberOfChosenTiles = numberOfChosenTiles;
+                                return Error.OK;
+                            }
+                            cont++;
+                        }
+                    }
+                }
+            }
+            return Error.INVALID_VALUE;
+        }
         return Error.OK;
     }
 
@@ -148,30 +176,58 @@ public class Controller implements Observer {
     private ArrayList<Cord> playerCords = new ArrayList<>();
     public Error chooseTiles(ArrayList<Cord> cords) throws IOException {
         for (Cord cord : cords){
-            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED)
+            if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
+                playerCords.clear();
                 return Error.BLOCKED_NOTHING;
-            if (!isTileFreeTile(cord))
+            }
+            if (!isTileFreeTile(cord)) {
+                playerCords.clear();
                 return Error.NOT_ON_BORDER;
+            }
             for (Cord value : cords)
                 if (value.getRowCord() != cord.getRowCord() && value.getColCord() != cord.getColCord()) {
                     System.err.println("This tile is not adjacent to the previous...");
+                    playerCords.clear();
                     return Error.NOT_ADJACENT;
                 }
+            playerCords.add(cord);
         }
-        playerCords = cords;
         return Error.OK;
     }
 
     private boolean isTileFreeTile(Cord cord) {
         int x = cord.getRowCord();
         int y = cord.getColCord();
-        boolean valid = false;
-        if(board.getSelectedType(x + 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING)
-            valid=true;
-        if(board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)
-            valid=true;
-        return valid;
+        if(x==0 || x== board.BOARD_ROW-1 || y==0 || y== board.BOARD_COLUMN-1){
+            if(x==0 && y== 0 && (board.getSelectedType(x + 1, y) == Type.NOTHING  || board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y+1)==Type.BLOCKED || board.getSelectedType(x, y+1)==Type.NOTHING)){
+                return true;
+            } else if(x==0 && y==board.BOARD_COLUMN-1 && (board.getSelectedType(x +1, y) == Type.NOTHING  || board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y-1)==Type.BLOCKED || board.getSelectedType(x, y-1)==Type.NOTHING)) {
+                return true;
+            } else if(x==board.BOARD_ROW-1 && y==0 && (board.getSelectedType(x -1, y) == Type.NOTHING  || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y+1)==Type.BLOCKED || board.getSelectedType(x, y+1)==Type.NOTHING)) {
+                return true;
+            } else if(x==board.BOARD_ROW-1 && y==board.BOARD_COLUMN-1 && (board.getSelectedType(x - 1, y) == Type.NOTHING  || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y-1)==Type.BLOCKED || board.getSelectedType(x, y-1)==Type.NOTHING)) {
+                return true;
+            } else if(x==0 && (board.getSelectedType(x + 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING
+                    || board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)){
+                return true;
+            } else if(x==board.BOARD_ROW-1 && (board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING
+                    || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)){
+                return true;
+            } else if(y==0 && (board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x+1, y) == Type.NOTHING
+                    || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x+1, y ) == Type.BLOCKED)){
+                return true;
+            }  else if(y==board.BOARD_COLUMN-1 && (board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y -1) == Type.NOTHING || board.getSelectedType(x+1, y) == Type.NOTHING
+                    || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED || board.getSelectedType(x+1, y ) == Type.BLOCKED)){
+                return true;
+            }
+        } else{
+            if(board.getSelectedType(x + 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING
+                    || board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)
+                return true;
+        }
+        return false;
     }
+
 
     public Error chooseColumn(int chosenColumn) throws IOException {
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
@@ -180,6 +236,7 @@ public class Controller implements Observer {
         if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING)
             return Error.OUT_OF_BOUNDS;
         this.chosenColumn = chosenColumn;
+        UI.showTUIBoard(board);
         return Error.OK;
     }
 
@@ -191,7 +248,6 @@ public class Controller implements Observer {
         playerHand.get(index).setType(Type.NOTHING);
         return Error.OK;
     }
-
 
     public void calculateScore(){
         int cgc = game.checkCommonGoalCard();
@@ -309,8 +365,9 @@ public class Controller implements Observer {
         for(Cord cord : playerCords) {
             removedTiles.add(board.removeTile(cord.getRowCord(),cord.getColCord()));
         }
-        System.out.println("TEST DELLE TILES NELL HAND: "+game.getPlayerInTurn().getTilesInHand());
         this.playerHand = removedTiles;
+        playerCords.clear();
+        System.out.println("TEST DELLE TILES NELL HAND: "+removedTiles);
         return removedTiles;
         //TODO: UPDATE OBSERVERS!
     }
@@ -363,7 +420,7 @@ public class Controller implements Observer {
                 error = chooseUserInterface((int) obj);
             }
             case ALL_CONNECTED -> {
-                if((int) obj == game.getPlayers().size()) {
+                if(game.getNumOfPlayers() == game.getPlayers().size()) {
                     System.out.println("The game is starting");
                     initializeGame();
                     error = Error.OK;
@@ -400,6 +457,14 @@ public class Controller implements Observer {
                 else
                     return Error.NOT_YOUR_TURN;
             }
+            case CHECK_REFILL -> {
+                if(board.checkBoardStatus()) {
+                    checkBoardToBeFilled();
+                    return Error.REFILL;
+                }
+                else
+                    return Error.BOARD_NOT_EMPTY;
+            }
             case UPDATE_BOOKSHELF -> {
                 game.getPlayerInTurn().setMyBookshelf((Bookshelf) obj);
                 return Error.OK;
@@ -408,20 +473,29 @@ public class Controller implements Observer {
         return error;
     }
 
-    public Object getControllerModel(Event event, int playerIndex) {
+    public Object getControllerModel(Event event, Object playerIndex) {
         Object obj = null;
         switch (event) {
-            case GAME_BOARD -> obj = this.board;
+            case SET_INDEX -> obj = getPlayerFromNick((String) playerIndex);
+            case GAME_BOARD -> obj = getBoard();
             case GAME_PLAYERS -> obj = game.getPlayers();
             case GAME_CGC -> obj = game.getCommonGoalCard();
-            case GAME_PGC -> obj = game.getPlayers().get(playerIndex).getPersonalGoalCard();
+            case GAME_PGC -> obj = game.getPlayers().get((int)playerIndex).getPersonalGoalCard();
             case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
             case TURN_POSITION -> obj = this.playerHand;
             //case TURN_BOOKSHELF -> obj = this.game.getPlayers().get(playerIndex);
-
         }
         return obj;
+    }
+
+    private int getPlayerFromNick(String nickname) {
+        for(Player p : game.getPlayers()) {
+            if (p.getNickname().equals(nickname)) {
+                return game.getPlayers().indexOf(p);
+            }
+        }
+        return -1;
     }
 }
 

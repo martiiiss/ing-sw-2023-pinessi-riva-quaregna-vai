@@ -10,5 +10,7 @@ public enum Error {
     NOT_ON_BORDER,
     NOT_ADJACENT,
     NOT_YOUR_TURN,
+    REFILL,
+    BOARD_NOT_EMPTY,
     WAIT;
 }

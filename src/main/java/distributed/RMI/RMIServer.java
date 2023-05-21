@@ -51,7 +51,7 @@ public class RMIServer extends Server implements ServerRMIInterface {
         return server.sendServerMessage(obj,event);
         //return getInstanceOfController().getNextEvent(super.getNumberOfClientsConnected());
     }
-    public Object getModel(Event event, int clientIndex) throws RemoteException{
+    public Object getModel(Event event, Object clientIndex) throws RemoteException{
         return server.getServerModel(event, clientIndex);
     }
 }

@@ -21,7 +21,7 @@ public interface ServerRMIInterface extends Remote {
 
     Error sendMessage(Object obj, Event event) throws IOException;
 
-    Object getModel(Event event, int clientIndex) throws RemoteException;
+    Object getModel(Event event, Object clientIndex) throws RemoteException;
 
     //richiama i metodi del Controller (per il flusso della partita)x\
 }
