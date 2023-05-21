@@ -12,12 +12,17 @@ import java.io.InputStream;
 public class GUIView {
     public GUIView (Game game, Board board) throws IOException {
         JFrame GUI = new JFrame();
+        JInternalFrame CGCArea = new JInternalFrame();
         InputStream is;
         Image img, scaledImg;
-        GUI.setLayout(new FlowLayout());
+        GUI.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx=100;
         BoardView boardView = new BoardView(board);
         GUI.add(boardView.getBoardDisplayed());
         JLabel jLabel;
+        CGCArea.setLayout(new GridLayout(2,2));
+        CGCArea.setTitle("CommonGoalCards");
 
 
         for(int i=0; i<2; i++) {
@@ -25,13 +30,19 @@ public class GUIView {
             img = ImageIO.read(is);
             scaledImg = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             jLabel = new JLabel(new ImageIcon(scaledImg));
-            GUI.add(jLabel);
+            CGCArea.add(jLabel);
             ScoringTokenView scv = new ScoringTokenView(game.getCommonGoalCard().get(i).getTokenStack().get(game.getNumOfPlayers()-1).getValue(), i);
             scv.setDisplayedImage();
-            GUI.add(scv.getDisplayedImage());
+            CGCArea.add(scv.getDisplayedImage());
         }
+        CGCArea.setVisible(true);
+        CGCArea.setMinimumSize(new Dimension(250,250));
+        GUI.add(CGCArea);
         BookshelfView bookshelfView = new BookshelfView();
-        GUI.add(bookshelfView.getBookshelfDisplayed());
+        GUI.add(bookshelfView.getBookshelfDisplayed(), constraints);
+        PGCView pgc = new PGCView(1);
+        pgc.setDisplayedImage();
+        GUI.add(pgc.getDisplayedImage());
         GUI.pack();
         GUI.setVisible(true);
 
