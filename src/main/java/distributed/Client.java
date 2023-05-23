@@ -37,7 +37,7 @@ public abstract class Client implements Remote, Serializable {
         return this.port;
     }
 
-    public abstract void startConnection() throws RemoteException, NotBoundException;
+    public abstract void startConnection() throws RemoteException, NotBoundException, IOException;
 
     public void setToken() {
         this.token = token;

@@ -17,8 +17,6 @@ import static util.Event.WAIT;
 
 public class AppClient2 {
     public static void main(String[] args) throws IOException, NotBoundException {
-        //Controller controller = app.getInstanceOfController();  //ogni client ha un suo controller
-
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1 for socket, 2 for RMI :");
         int choice = Integer.parseInt(reader.readLine());
