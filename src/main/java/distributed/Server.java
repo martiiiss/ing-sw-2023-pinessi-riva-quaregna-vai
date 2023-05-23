@@ -29,6 +29,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private ServerRMIInterface rmiServer;
 
     // private int numOfClientsConnected=0;
+    private int maxNumOfClients = 200;
 
     public List<Client> getClientsConnectedList(){
         return this.clientsConnected;
@@ -70,8 +71,12 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
 
     public int connection (Client client) throws IOException {
-        this.clientsConnected.add(client);
-        return clientsConnected.size()-1;
+        if(getNumberOfClientsConnected()<maxNumOfClients) {
+            this.clientsConnected.add(client);
+            System.out.println("Clients: " + getNumberOfClientsConnected());
+            return clientsConnected.size() - 1;
+        }
+        return -1;
     }
 
     public int getNumberOfClientsConnected() {
@@ -118,6 +123,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     public Board getServerBoard(){ return this.controller.getBoard();}
 
     public Error sendServerMessage(Object obj, Event event) throws IOException {
+        if(event==Event.ASK_NUM_PLAYERS)
+            maxNumOfClients = (int) obj;
         return controller.updateController(obj,event);
     }
 

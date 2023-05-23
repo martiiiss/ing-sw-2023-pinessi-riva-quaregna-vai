@@ -16,24 +16,26 @@ public class UserView implements Serializable {
     public int askNumOfPlayer() throws IOException {
         int numOfPlayer = 0;
         System.out.println("Insert num of player: ");
-        try {
             BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-            numOfPlayer = Integer.parseInt(reader.readLine());
-        } catch (NumberFormatException exception) {
-            System.err.println("Invalid format...");
-        }
-        return numOfPlayer;
+        try {
+            return Integer.parseInt(reader.readLine());
+        }catch(NumberFormatException e) {}
+        return -1;
     }
 
     public String askPlayerNickname() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        try {
-            System.out.print("\nChoose a nickname:");
-            return reader.readLine();
-        } catch (IllegalArgumentException e) {
-            System.err.println("Invalid input!");
-            throw new IllegalArgumentException();
-        } //TODO devo gestire l'eccezione che lancia!!! perchè deve poter richiedere !
+        String nickname;
+        do {
+            BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+            try {
+                System.out.print("\nChoose a nickname:");
+                nickname =  reader.readLine();
+            } catch (IllegalArgumentException e) {
+                System.err.println("Invalid input!");
+                throw new IllegalArgumentException();
+            }
+        }while (nickname.isEmpty());
+        return nickname;
     }
 
 
@@ -41,7 +43,9 @@ public class UserView implements Serializable {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             System.out.print("\nChoose a communication protocol, \ndigit 1 for 'Socket', 2 for 'JavaRMI':");
-            return Integer.parseInt(reader.readLine());
+            try {
+                return Integer.parseInt(reader.readLine());
+            }catch(NumberFormatException e) {}
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
         }
@@ -55,7 +59,9 @@ public class UserView implements Serializable {
             System.out.print("""
                     Do you prefer a Terminal User Interface (TUI) or a Graphical User Interface (GUI)?
                     Press 1 for 'TUI', 2 for 'GUI':""");
-            return Integer.parseInt(reader.readLine());
+            try {
+                return Integer.parseInt(reader.readLine());
+            }catch(NumberFormatException e) {}
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
         }
@@ -84,7 +90,6 @@ public class UserView implements Serializable {
         System.out.println();
     }
     public void showTUIBookshelf(Bookshelf bookshelf) {
-        System.out.println("Here's the player in turn's bookshelf:");
         Tile[][] tilesInBookshelf = bookshelf.getBookshelf();
         for (int i = 0; i < 6; i++) {
             System.out.println("+---------------+");
@@ -178,7 +183,9 @@ public class UserView implements Serializable {
                 System.out.println("You have to choose the disposition of the chosen tiles...");
                 printTilesInHand(tilesInHand);
                 System.out.print("Type the index of the one you wish to insert first:");
-                index = Integer.parseInt(reader.readLine());
+                try {
+                    index = Integer.parseInt(reader.readLine());
+                }catch (NumberFormatException ex) {}
             }while (index<1 || index>tilesInHand.size());
             index--;
         }while (tilesInHand.get(index).getType()==Type.NOTHING);
@@ -195,8 +202,7 @@ public class UserView implements Serializable {
         System.out.println("7) Show the player list");
         try {
             return Integer.parseInt(reader.readLine());
-        }catch (NumberFormatException exception) {
-            exception.printStackTrace();}
+        }catch (NumberFormatException e) {}
         return -1;
     }
     public void showCGC(ArrayList<CommonGoalCard> commonGoalCards) {
@@ -215,6 +221,21 @@ public class UserView implements Serializable {
         System.out.println("Here's the list of Players!\nEach one with their score");
         for(Player player : listOfPlayers) {
             System.out.println(" "+i+") \u001B[36m"+player.getNickname()+"\u001B[0m SCORE: \u001B[36m"+player.getScore()+"\u001B[0m ");
+            i++;
         }
     }
+    public int askPassiveAction() throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        System.out.println("1) Look at the Board");
+        System.out.println("2) Check the CommonGoalCards");
+        System.out.println("3) Check your PersonalGoalCard");
+        System.out.println("4) Look at other player's Bookshelves");
+        System.out.println("5) Open the chat");
+        System.out.println("6) Show the player list");
+        try {
+            return Integer.parseInt(reader.readLine());
+        }catch (NumberFormatException e) {}
+        return -1;
+    }
+
 }

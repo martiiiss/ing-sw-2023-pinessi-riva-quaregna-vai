@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import static util.Event.*;
 
@@ -67,11 +68,10 @@ public class Controller implements Observer {
     public Error chooseUserInterface(int chosenInterface) throws IOException {
         switch (chosenInterface) {
             case 1, 2 -> {
-                System.out.println("user interface scelta");
                 return Error.OK;
             }
             default -> {
-                return Error.NOT_AVAILABLE;
+                return Error.INVALID_VALUE;
             }
         }
     }
@@ -165,6 +165,8 @@ public class Controller implements Observer {
                 }
             }
             return Error.INVALID_VALUE;
+        } else {
+            this.numberOfChosenTiles = numberOfChosenTiles;
         }
         return Error.OK;
     }
@@ -175,6 +177,11 @@ public class Controller implements Observer {
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
     private ArrayList<Cord> playerCords = new ArrayList<>();
     public Error chooseTiles(ArrayList<Cord> cords) throws IOException {
+        for(int i=0; i<cords.size();i++)
+            for (int j=i+1; j<cords.size();j++)
+                if(cords.get(i).getRowCord() == cords.get(j).getRowCord() && cords.get(i).getColCord()==cords.get(j).getColCord())
+                    return Error.REPETITION;
+
         for (Cord cord : cords){
             if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
                 playerCords.clear();
@@ -230,6 +237,7 @@ public class Controller implements Observer {
 
 
     public Error chooseColumn(int chosenColumn) throws IOException {
+        System.out.println("NumOfChosenTiles: "+this.numberOfChosenTiles);
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
         if(chosenColumn<0 || chosenColumn >4)
             return Error.INVALID_VALUE;
@@ -435,12 +443,15 @@ public class Controller implements Observer {
                     error = Error.WAIT;
             }
             case TURN_AMOUNT -> {
+                System.out.println("Turn ammount: "+(int) obj);
                 error = numOfChosenTiles((int) obj);
             }
             case TURN_PICKED_TILES -> {
-               error = chooseTiles((ArrayList<Cord>) obj);
+                System.out.println("Size prima della richiesta "+((ArrayList<Cord>) obj).size());
+                error = chooseTiles((ArrayList<Cord>) obj);
             }
             case TURN_COLUMN -> {
+                System.out.println("Colonna: "+(int) obj);
                 error = chooseColumn((int) obj);
             }
             case TURN_POSITION -> {

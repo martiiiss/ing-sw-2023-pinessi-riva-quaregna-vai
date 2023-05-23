@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import static java.lang.System.exit;
 import static util.Event.*;
 
 public class RMIClient extends Client implements ClientConnectionRMI, Serializable {
@@ -39,7 +40,11 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         }catch (Exception e){
             e.printStackTrace();
         }
-    }  //TODO implement this
+        if(this.myIndex==-1) {
+            System.err.println("The server is full..");
+            exit(myIndex);
+        }
+    }
 
 
     public String getUsername(){ return this.address; }
@@ -73,21 +78,17 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                 numOfPlayers = uView.askNumOfPlayer();
             }
             errorReceived = server.sendMessage(numOfPlayers, ASK_NUM_PLAYERS); //invia al server il numero di giocatori
-            System.out.println("Server sent this error: "+errorReceived);
+            System.out.println(errorReceived.getMsg());
         }
         errorReceived = server.sendMessage(uView.userInterface(),CHOOSE_VIEW); //invia al server la View desiderata
         while (errorReceived!=Error.OK) {
-            System.err.println("Invalid value");
+            System.out.println(errorReceived.getMsg());
             errorReceived = server.sendMessage(uView.userInterface(),CHOOSE_VIEW);
         }
         String nickname = uView.askPlayerNickname();
         errorReceived =server.sendMessage(nickname,SET_NICKNAME); //invia al server il nickname
         while (errorReceived!=Error.OK) {
-            System.out.println("Server sent this error: " + errorReceived);
-            switch (errorReceived) {
-                case EMPTY_NICKNAME -> System.err.println("Nickname is empty...");
-                case NOT_AVAILABLE -> System.err.println("Nickname already taken...");
-            }
+            System.out.println(errorReceived.getMsg());
             errorReceived = server.sendMessage(uView.askPlayerNickname(), SET_NICKNAME);
         }
         myIndex = (int) server.getModel(SET_INDEX,nickname);
@@ -122,7 +123,6 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
         this.indexOfPIT = (int) server.getModel(GAME_PIT,myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
         System.out.println("It's "+playerInTurn.getNickname()+"'s turn!");
-        System.out.println(indexOfPIT+" "+myIndex);
         if(myIndex==indexOfPIT) {
             activePlay();
         }
@@ -134,9 +134,79 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
     private void activePlay() throws IOException {
         Error errorReceived;
         playerInTurn = listOfPlayers.get(myIndex);
+        //SHOWS THE PLAYER ALL THE ACTIONS THEY CAN DO
+        activePlayerMenu();
+        System.out.println("Here's your Bookshelf:");
+        uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
+        uView.showTUIBoard(this.board);
+        //Asking the player the amount of tiles they wish to pick and the coordinates
+        do {
+            errorReceived = activeAskNumOfTiles();
+        }while (errorReceived != Error.OK);
+        //Asks the client the coordinates
+        do {
+            errorReceived = activeAskTiles();
+        }while (errorReceived !=Error.OK);
+        ArrayList<Tile> tilesInHand = new ArrayList<>();
+        tilesInHand = (ArrayList<Tile>) server.getModel(TURN_TILE_IN_HAND,myIndex);
+        uView.printTilesInHand(tilesInHand);
+        uView.showTUIBookshelf(listOfPlayers.get(myIndex).getMyBookshelf());
+        //Asking in which column the player wishes to place the picked tiles
+        do {
+           errorReceived = activeAskColumn(tilesInHand);
+        }while (errorReceived!=Error.OK);
+        //Asking the order of insertion
+        errorReceived = server.sendMessage(playerInTurn.getMyBookshelf(),UPDATE_BOOKSHELF); //FIXME non sono sicuro che si possa fare così, credo sia il controller che deve aggiornare la bookshelf di player
+        errorReceived = server.sendMessage(null,CHECK_REFILL);
+
+        //The server checks if the board had to be refilled, the client asks the server
+        //if it has been done, if true then it receives an update of the board so that it can be printed
+        if(errorReceived==Error.REFILL)
+            System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
+        errorReceived = server.sendMessage(myIndex,END_OF_TURN);
+        getModel();
+    }
+    private void passivePlay() throws IOException {
+        System.out.println("It's not your turn, here are some actions you can do!");
+        Error status = Error.WAIT;
+        do {
+            status = server.sendMessage(myIndex,CHECK_MY_TURN);
+            if(status!=Error.OK)
+                passivePlayerMenu(status);
+        }while (status!=Error.OK);
+        getModel();
+    }
+
+    private ArrayList<Cord> cords = new ArrayList<>();
+    private int numberOfChosenTiles;
+    public void chooseTiles() throws IOException {
+        cords.removeAll(cords);
+        System.out.println("Size prima della richiesta "+cords.size());
+        while (cords.size()<this.numberOfChosenTiles) {
+            Cord cord = new Cord();
+            do {
+                String in = uView.askTilePosition();
+                try {
+                    String[] splittedStr = in.split(",");
+                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
+                } catch (NumberFormatException formatException) {
+                    System.err.println("Invalid format...");
+                } catch (ArrayIndexOutOfBoundsException boundsException) {
+                    System.err.println("Invalid format or non existent coordinate...");
+                }
+            } while (cord.getRowCord() == 0 && cord.getColCord() == 0);
+            cords.add(cord);
+        }
+        System.out.println("Size dopo della richiesta "+cords.size());
+    }
+
+    private void numOfChosenTiles() throws IOException {
+        this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
+    }
+
+    private void activePlayerMenu() throws IOException {
         int choice = 0;
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        System.out.println("IT'S YOUR TURN :D");
         System.out.println("Would you like to do any of these actions before making your move?");
         do {
             //TODO:Sposta l'opzione "continua con il turno" ad un numero più decente di "6"
@@ -156,9 +226,9 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                 }
                 case 4 -> {
                     System.out.println("Here's everyone's Bookshelf");
+                    this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex); //used to update the bookshelves
                     for (Player player : listOfPlayers) {
-                        if (listOfPlayers.indexOf(player) == myIndex)
-                            System.out.println("This is yours....");
+                        System.out.println("\u001B[36m"+player.getNickname()+"\u001B[0m's bookshelf:");
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
                 }
@@ -173,158 +243,75 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             if(choice!=6)
                 System.out.println("What else would you like to do?");
         }while (choice!=6);
-        System.out.println("Here's your Bookshelf:");
-        uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
-        uView.showTUIBoard(this.board);
-        //Asking the player the amount of tiles they wish to pick and the coordinates
-        do {
-            numOfChosenTiles();
-            errorReceived = server.sendMessage(numberOfChosenTiles, TURN_AMOUNT);
-            switch (errorReceived) {
-                case INVALID_VALUE -> { System.err.println("This number is too big!\nThere is not enough space in your board for these many tiles...."); }
-                case OUT_OF_BOUNDS -> { System.err.println("Invalid Value...");}
-            }
-        }while (errorReceived != Error.OK);
-        //Asks the client the coordinates
-        do {
-            chooseTiles();
-            System.out.println(cords.get(0).getRowCord()+" "+cords.get(0).getColCord());
-            errorReceived = server.sendMessage(cords, TURN_PICKED_TILES);
-            switch (errorReceived) {
-                case BLOCKED_NOTHING -> {System.err.println("You are trying to pick up a tile that doesn't exist..."); uView.showTUIBoard(this.board);}
-                case NOT_ON_BORDER -> { System.err.println("This tile cannot be picked up right now..."); uView.showTUIBoard(this.board);}
-                case NOT_ADJACENT -> {System.err.println("You can only pick up tiles that are adjacent one to the other..."); uView.showTUIBoard(this.board);}
-            }
-        }while (errorReceived !=Error.OK);
-        //Asking in which column the player wishes to place the picked tiles
-        ArrayList<Tile> tilesInHand = new ArrayList<>();
-        tilesInHand = (ArrayList<Tile>) server.getModel(TURN_TILE_IN_HAND,myIndex);
-        uView.printTilesInHand(tilesInHand);
-        uView.showTUIBookshelf(listOfPlayers.get(myIndex).getMyBookshelf());
-        int column;
-        do {
-            column = uView.askColumn();
-            errorReceived = server.sendMessage(column,TURN_COLUMN);
-            switch (errorReceived) {
-                case INVALID_VALUE -> System.err.println("Invalid value...");
-                case OUT_OF_BOUNDS -> System.err.println("There is not enough space to place all the tiles you picked in this column...");
-            }
-        }while (errorReceived!=Error.OK);
-        //Asking the order of insertion
+    }
+    private Error activeAskNumOfTiles() throws IOException {
+        numOfChosenTiles();
+        errorReceived = server.sendMessage(numberOfChosenTiles, TURN_AMOUNT);
+        System.out.println(errorReceived.getMsg());
+        return errorReceived;
+    }
+
+    private Error activeAskTiles() throws IOException {
+        chooseTiles();
+        errorReceived = server.sendMessage(cords, TURN_PICKED_TILES);
+        System.out.println(errorReceived.getMsg());
+        return errorReceived;
+    }
+    int column;
+    private Error activeAskColumn(ArrayList<Tile> tilesInHand) throws IOException {
+        column = uView.askColumn();
+        errorReceived = server.sendMessage(column,TURN_COLUMN);
+        System.out.println(errorReceived.getMsg());
+        if(errorReceived == Error.OK)
+            activePlaceTile(column,tilesInHand);
+        return errorReceived;
+    }
+    private void activePlaceTile(int column, ArrayList<Tile> tilesInHand) throws IOException {
         int pos;
         for(int i = 0; i<numberOfChosenTiles; i++) {
             do {
                 pos = uView.askTileToInsert(tilesInHand);
                 errorReceived = server.sendMessage(pos, TURN_POSITION);
+                System.out.println(errorReceived.getMsg());
             }while (errorReceived!=Error.OK);
             playerInTurn.getMyBookshelf().placeTile(column,tilesInHand.get(pos));
             tilesInHand =(ArrayList<Tile>) server.getModel(TURN_POSITION,myIndex);
             uView.printTilesInHand(tilesInHand);
             uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
         }
-        errorReceived = server.sendMessage(playerInTurn.getMyBookshelf(),UPDATE_BOOKSHELF);
-        errorReceived = server.sendMessage(null,CHECK_REFILL);
-        if(errorReceived==Error.REFILL)
-            System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
-        System.out.println("Would you like to do anything else before completing your turn?\n1)Yes\n2)No");
-        choice = Integer.parseInt(reader.readLine());
-        if(choice==1)
-            passivePlay(); //FIXME passivePlay looperà finchè non sarà il turno di quel client quindi chiamarlo quì non sarà possibile
-        errorReceived = server.sendMessage(myIndex,END_OF_TURN);
-        getModel();
     }
-    private void passivePlay() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        int choice = 0;
-        Error status = Error.WAIT;
-        do {
-            choice = uView.askAction();
-            switch (choice) {
-                case 1 -> {
-                    this.board =(Board) server.getModel(GAME_BOARD,myIndex);
-                    System.out.println("Here's the game board...");
-                    uView.showTUIBoard(board);
-                }
-                case 2 -> {
-                    System.out.println("Here are the CommonGoalCards...");
-                    uView.showCGC(commonGoalCard);
-                }
-                case 3 -> {
-                    System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
-                    uView.showPGC(listOfPlayers.get(myIndex));
-                }
-                case 4 -> {
-                    System.out.println("Here's everyone's Bookshelf");
-                    for (Player player : listOfPlayers) {
-                        if (listOfPlayers.indexOf(player) == myIndex)
-                            System.out.println("This is yours....");
-                        uView.showTUIBookshelf(player.getMyBookshelf());
-                    }
-                }
-                case 5 -> {
-                    uView.chatOptions(listOfPlayers.get(myIndex));
-                }
-                case 6 -> {
-                    status = server.sendMessage(myIndex,CHECK_MY_TURN);
-                }
-                default -> System.err.println("Invalid value...");
+    private void passivePlayerMenu(Error status) throws IOException {
+        int choice = uView.askPassiveAction();
+        switch (choice) {
+            case 1 -> {
+                this.board =(Board) server.getModel(GAME_BOARD,myIndex);
+                System.out.println("Here's the game board...");
+                uView.showTUIBoard(board);
             }
-            if(choice!=6)
-                System.out.println("What else would you like to do?");
-        }while (status!=Error.OK);
-    }
-
-    private ArrayList<Cord> cords = new ArrayList<>();
-    private int numberOfChosenTiles;
-    public void chooseTiles() throws IOException {
-        cords.removeAll(cords);
-        while (cords.size()<this.numberOfChosenTiles) {
-            Cord cord = new Cord();
-            do {
-                String in = uView.askTilePosition();
-                try {
-                    String[] splittedStr = in.split(",");
-                    cord.setCords(Integer.parseInt(splittedStr[0]), Integer.parseInt(splittedStr[1]));
-                } catch (NumberFormatException formatException) {
-                    System.err.println("Invalid format...");
-                } catch (ArrayIndexOutOfBoundsException boundsException) {
-                    System.err.println("Invalid format or non existent coordinate...");
+            case 2 -> {
+                System.out.println("Here are the CommonGoalCards...");
+                uView.showCGC(commonGoalCard);
+            }
+            case 3 -> {
+                System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
+                uView.showPGC(listOfPlayers.get(myIndex));
+            }
+            case 4 -> {
+                System.out.println("Here's everyone's Bookshelf");
+                this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex); //used to update the bookshelves
+                for (Player player : listOfPlayers) {
+                    System.out.println("\u001B[36m"+player.getNickname()+"\u001B[0m's bookshelf:");
+                    uView.showTUIBookshelf(player.getMyBookshelf());
                 }
-            } while (cord.getRowCord() == 0 && cord.getColCord() == 0);
-            cords.add(cord);
+            }
+            case 5 -> {
+                uView.chatOptions(listOfPlayers.get(myIndex));
+            }
+            case 6 -> {
+                this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex); //get the latest update
+                uView.showPlayers(listOfPlayers);
+            }
         }
     }
-
-    private boolean isTileFreeTile(Cord cord) {
-        int x = cord.getRowCord();
-        int y = cord.getColCord();
-        boolean valid = false;
-        if(board.getSelectedType(x + 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING)
-            valid=true;
-        if(board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)
-            valid=true;
-        return valid;
-    }
-
-    private void numOfChosenTiles() throws IOException {
-        this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
-    }
-    /*
-    TXT PER ME:
-    Il client inserisce il numero di Tiles che vuole estrarre (Lo controlla il controller del server o del client? -> dato che il Giampi aveva detto che vanno avvertiti tutti i clients (Non so come si farà))
-    per ora supponiamo che il controllo venga fatto sul client.
-    Inserisce la prima coordinata e la manda al server.
-        Il server ora controlla se questa coordinata:
-            1 Ha senso
-            2 Non è blocked/Nothing
-            3 E' Estraibile
-            4 Se non è la prima che gli viene passata controlla che sia vicino alle altre mandate in precedenza
-        Restituendo di conseguenza il corrispondente errore.
-    Una volta che il server completa questi controlli sarà lui stesso a rimuovere le Tiles dalla board
-    e una volta rimosse farà la notify a tutti i clients (incluso quello che ha fatto la mossa)
-    FIXME:Come fa così il client ad avere le TilesInHand?
-    il client quindi mostra all'utente le tilesInHand e chiede al client la posizione e l'ordine con cui le vuole iniserire nella Bookshelf
-    (Nello stesso modo di prima? Cioè che il client decide quale tile e quale colonna ed è il server a fare queste cose o è lui che lo fa e il server solo alla fine controlla che non ci sono stati problemi???)
-     */
 
 }
