@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ConnectionSocket extends Connection implements Runnable{
+
     private SocketServer socketServer;
     private Socket socket;
     private boolean connected;

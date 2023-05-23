@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public abstract class ClientSocket extends Client implements Runnable{
+
     private static final long serialVersionUID = -3886988960361654933L; //random number
     private transient Socket socket;
     private transient ObjectInputStream inputStream;

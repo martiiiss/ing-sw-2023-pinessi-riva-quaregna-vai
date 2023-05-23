@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 
 public class SocketServer extends Server implements Runnable{
+
     private final Server server;
     private final int port;
     private ServerSocket serverSocket = null;
