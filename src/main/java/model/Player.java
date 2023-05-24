@@ -245,7 +245,7 @@ public class Player extends Observable implements Serializable {
                     previousAdj.put(new ArrayList<>(),listOfCords.size());
             }
             listOfCords.clear();
-            }
+        }
         //p
         System.out.println("Final result: "+points);
         return points;
@@ -277,5 +277,4 @@ public class Player extends Observable implements Serializable {
         //TODO implement this method
     }
 }
-
 

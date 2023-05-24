@@ -262,6 +262,7 @@ public class Controller implements Observer {
         int pgc = game.getPlayerInTurn().checkCompletePGC();
         int adjacencies = game.getPlayerInTurn().checkAdjacentBookshelf();
         game.getPlayerInTurn().updateScore(cgc+pgc+adjacencies);
+        System.out.println("SCORE PIT: "+game.getPlayerInTurn().getScore());
     }
 
    /* public boolean checkIfGameEnd() throws IOException {
@@ -456,6 +457,7 @@ public class Controller implements Observer {
             }
             case TURN_POSITION -> {
                 error = chooseTilesDisposition((int) obj);
+                calculateScore();
             }
             case END_OF_TURN -> {
                 goToNext(game.getPlayers().get((int)obj));
