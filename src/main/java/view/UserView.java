@@ -206,12 +206,101 @@ public class UserView implements Serializable {
         return -1;
     }
     public void showCGC(ArrayList<CommonGoalCard> commonGoalCards) {
-        System.err.println("NON ANCORA IMPLEMENTATO :P");
+        int id;
+        for (CommonGoalCard commonGoalCard : commonGoalCards){
+            id = commonGoalCard.getIdCGC();
+            System.out.println("\u001B[35m");
+            switch (id) {
+                case 1 -> {
+                    System.out.println("Six groups each containing at least\n" +
+                            "2 tiles of the same type (not necessarily\n" +
+                            "in the depicted shape).\n" +
+                            "The tiles of one group can be different\n" +
+                            "from those of another group.");
+                }
+                case 2 -> {
+                    System.out.println("Five tiles of the same type forming a\n" +
+                            "diagonal. ");
+                }
+                case 3 -> {
+                    System.out.println("Four groups each containing at least\n" +
+                            "4 tiles of the same type (not necessarily\n" +
+                            "in the depicted shape).\n" +
+                            "The tiles of one group can be different\n" +
+                            "from those of another group.");
+                }
+                case 4 -> {
+                    System.out.println("Four lines each formed by 5 tiles of\n" +
+                            "maximum three different types. One\n" +
+                            "line can show the same or a different\n" +
+                            "combination of another line.");
+                }
+                case 5 -> {
+                    System.out.println("Four tiles of the same type in the four\n" +
+                            "corners of the bookshelf.");
+                }
+                case 6 -> {
+                    System.out.println("Two columns each formed by 6\n" +
+                            "different types of tiles.");
+                }
+                case 7 -> {
+                    System.out.println("Two groups each containing 4 tiles of\n" +
+                            "the same type in a 2x2 square. The tiles\n" +
+                            "of one square can be different from\n" +
+                            "those of the other square.");
+                }
+                case 8 -> {
+                    System.out.println("Two lines each formed by 5 different\n" +
+                            "types of tiles. One line can show the\n" +
+                            "same or a different combination of the\n" +
+                            "other line.");
+                }
+                case 9 -> {
+                    System.out.println("Three columns each formed by 6 tiles \n" +
+                            "of maximum three different types. One\n" +
+                            "column can show the same or a different\n" +
+                            "combination of another column");
+                }
+                case 10 -> {
+                    System.out.println("Five tiles of the same type forming an X.");
+                }
+                case 11 -> {
+                    System.out.println("Eight tiles of the same type. There’s no\n" +
+                            "restriction about the position of these\n" +
+                            "tiles.");
+                }
+                case 12 -> {
+                    System.out.println("Five columns of increasing or decreasing\n" +
+                            "height. Starting from the first column on\n" +
+                            "the left or on the right, each next column\n" +
+                            "must be made of exactly one more tile.\n" +
+                            "Tiles can be of any type.");
+                }
+            }
+            System.out.print("\u001B[0m");
+        }
     }
 
-    public void showPGC(Player player) {
-        System.err.println("NON ANCORA IMPLEMENTATO :P");
+    public void showPGC(PersonalGoalCard personalGoalCard) {
+        Tile[][] pgc = personalGoalCard.getPGC();
+        for (int i = 0; i < 6; i++) {
+            System.out.println("+---------------+");
+            for (int j = 0; j < 5; j++) {
+                if (j == 0) System.out.print("|");
+                switch (pgc[i][j].getType()) {
+                    case NOTHING -> System.out.print("\u001B[90m □ \u001B[0m");
+                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
+                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
+                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
+                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
+                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
+                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+                }
+                if (j == 4) System.out.println("|");
+            }
+        }
     }
+
 
     public void chatOptions(Player player) {
         System.err.println("NON ANCORA IMPLEMENTATO :P");

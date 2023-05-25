@@ -132,6 +132,7 @@ public class Player extends Observable implements Serializable {
 
 
     public int checkAdjacentBookshelf(){
+        Bookshelf newBookshelf = new Bookshelf();
         Tile[][] bookshelf = this.myBookshelf.getBookshelf();
         boolean newCord;
         Cord cord = new Cord();
@@ -241,9 +242,8 @@ public class Player extends Observable implements Serializable {
                         points += 8;
                     previousAdj.put(listOfCords,listOfCords.size());
                 }
-                else
-                    previousAdj.put(new ArrayList<>(),listOfCords.size());
             }
+            previousAdj.put(new ArrayList<>(),listOfCords.size());
             listOfCords.clear();
         }
         //p

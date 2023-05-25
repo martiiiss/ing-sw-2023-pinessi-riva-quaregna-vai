@@ -94,4 +94,5 @@ public class CommonGoalCard extends Observable implements Serializable {
     public int getIdCGC() {
         return idCGC;
     }
+
 }

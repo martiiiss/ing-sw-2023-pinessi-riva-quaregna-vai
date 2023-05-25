@@ -520,9 +520,6 @@ public class Controller implements Observer {
                 else
                     return Error.BOARD_NOT_EMPTY;
             }
-            case UPDATE_BOOKSHELF -> {
-                return Error.OK;
-            }
         }
         return error;
     }
@@ -538,7 +535,10 @@ public class Controller implements Observer {
             case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
             case TURN_POSITION -> obj = this.playerHand;
-            case UPDATE_BOOKSHELF-> obj =  game.getPlayerInTurn().getMyBookshelf();
+            case UPDATE_BOOKSHELF-> {
+                obj =  game.getPlayerInTurn().getMyBookshelf();
+                //calculateScore();
+            }
             //case TURN_BOOKSHELF -> obj = this.game.getPlayers().get(playerIndex);
         }
         return obj;

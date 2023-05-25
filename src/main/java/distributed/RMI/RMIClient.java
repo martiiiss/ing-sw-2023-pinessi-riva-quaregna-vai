@@ -224,7 +224,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                 }
                 case 3 -> {
                     System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
-                    uView.showPGC(listOfPlayers.get(myIndex));
+                    uView.showPGC(listOfPlayers.get(myIndex).getPersonalGoalCard());
                 }
                 case 4 -> {
                     System.out.println("Here's everyone's Bookshelf");
@@ -296,7 +296,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             }
             case 3 -> {
                 System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
-                uView.showPGC(listOfPlayers.get(myIndex));
+                uView.showPGC(listOfPlayers.get(myIndex).getPersonalGoalCard());
             }
             case 4 -> {
                 System.out.println("Here's everyone's Bookshelf");
