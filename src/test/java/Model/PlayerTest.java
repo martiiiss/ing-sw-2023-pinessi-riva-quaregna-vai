@@ -7,6 +7,7 @@ import model.Tile;
 import model.Player;
 
 import org.junit.jupiter.api.Test;
+import view.UserView;
 
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class PlayerTest {
 
     @Test
     void setMyBookshelf() {
-        p.setMyBookshelf();
+        p.setMyBookshelf(new Bookshelf());
         assertNotNull(p.getMyBookshelf());
     }
     @Test
@@ -242,9 +243,11 @@ public class PlayerTest {
     @Test
     void checkCompletePGC() {
         //here I test if I actually can get 12 points if the PGC is completed
-        player.setMyBookshelf();
+        player.setMyBookshelf(new Bookshelf());
         bks = player.getMyBookshelf();
         bks.setBookshelf(bookshelf1);
+        UserView u = new UserView();
+        u.showTUIBookshelf(bks);
         //6 tiles in correct position
         PersonalGoalCard pgcPlayer = new PersonalGoalCard(1);
         player.setPersonalGoalCard(pgcPlayer);
@@ -253,7 +256,7 @@ public class PlayerTest {
         //here I test the progression in points
         PersonalGoalCard pgc = new PersonalGoalCard(1);
         p2.setPersonalGoalCard(pgc);
-        p2.setMyBookshelf();
+        p2.setMyBookshelf(new Bookshelf());
         bks = p2.getMyBookshelf();
         //0 tiles in correct position
         bks.setBookshelf(bookshelfpt0);
@@ -284,7 +287,7 @@ public class PlayerTest {
             {trophy, trophy, trophy, nothing, nothing}};
     @Test
     void checkAdjacentBookshelf() {
-        player.setMyBookshelf();
+        player.setMyBookshelf(new Bookshelf());
         Bookshelf b = player.getMyBookshelf();
         b.setBookshelf(bookshelfAdj);
         assertEquals(player.checkAdjacentBookshelf(),5);
@@ -316,8 +319,8 @@ public class PlayerTest {
     void checkBookshelf() {
         Player p1 = new Player();
         Player p2 = new Player();
-        p1.setMyBookshelf();
-        p2.setMyBookshelf();
+        p1.setMyBookshelf(new Bookshelf());
+        p2.setMyBookshelf(new Bookshelf());
         p1.getMyBookshelf().setBookshelf(full);
         assertTrue(p1.checkBookshelf());
         p2.getMyBookshelf().setBookshelf(notFull);

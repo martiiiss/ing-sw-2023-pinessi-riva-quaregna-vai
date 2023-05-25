@@ -5,7 +5,7 @@ public enum Error {
     OK("\u001B[35mAccepted\u001B[0m"),
     EMPTY_NICKNAME("\u001B[35mNickname is empty...\u001B[0m"),
     INVALID_VALUE("\u001B[35mInvalid value...\u001B[0m"),
-    OUT_OF_BOUNDS("\u001B[35mThis number is too big...\u001B[0m"),
+    OUT_OF_BOUNDS("\u001B[35mThis number is either too big or negative\u001B[0m"),
     BLOCKED_NOTHING("\u001B[35mYou are trying to pick up a tile that doesn't exist...\u001B[0m"),
     NOT_ON_BORDER("\u001B[35mThis tile cannot be picked up right now...\u001B[0m"),
     NOT_ADJACENT("\u001B[35mYou can only pick up tiles that are adjacent one to the other...\u001B[0m"),

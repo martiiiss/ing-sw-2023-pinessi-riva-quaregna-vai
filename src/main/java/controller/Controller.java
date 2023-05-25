@@ -80,10 +80,9 @@ public class Controller implements Observer {
     public void initializeGame(){
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
-        Bookshelf emptyBookshelf = new Bookshelf();
        // while(!countPlayers()){/*we make the server wait*/}
         for(int i=0;i<game.getNumOfPlayers();i++){
-            game.getPlayers().get(i).setMyBookshelf(emptyBookshelf);//the method of player creates a new Bookshelf
+            game.getPlayers().get(i).setMyBookshelf(new Bookshelf());//the method of player creates a new Bookshelf
         }
         game.assignPersonalGoalCard(game.getNumOfPlayers());
         game.setCommonGoalCards();
@@ -93,7 +92,7 @@ public class Controller implements Observer {
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
         game.setGameStarted();
-    }//TODO We consider the first player in the ArrayList as the first player -> implementation with server
+    }
 
     //button START GAME somewhere
 
@@ -177,6 +176,9 @@ public class Controller implements Observer {
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
     private ArrayList<Cord> playerCords = new ArrayList<>();
     public Error chooseTiles(ArrayList<Cord> cords) throws IOException {
+        for(Cord cord : cords)
+            if(cord.getRowCord()>8 || cord.getRowCord()<0 || cord.getColCord()>8 || cord.getColCord()<0)
+                return Error.OUT_OF_BOUNDS;
         for(int i=0; i<cords.size();i++)
             for (int j=i+1; j<cords.size();j++)
                 if(cords.get(i).getRowCord() == cords.get(j).getRowCord() && cords.get(i).getColCord()==cords.get(j).getColCord())
@@ -191,15 +193,51 @@ public class Controller implements Observer {
                 playerCords.clear();
                 return Error.NOT_ON_BORDER;
             }
-            for (Cord value : cords)
-                if (value.getRowCord() != cord.getRowCord() && value.getColCord() != cord.getColCord()) {
-                    System.err.println("This tile is not adjacent to the previous...");
-                    playerCords.clear();
+            if(cords.size()!=1)
+                if(!checkAdj(cords))
                     return Error.NOT_ADJACENT;
-                }
             playerCords.add(cord);
         }
         return Error.OK;
+    }
+    //FIXME se qualcuno ha voglia si può notevolmente ottimizzare
+    private boolean checkAdj(ArrayList<Cord> cords) {
+        boolean sameRow = true;
+        boolean sameCol = true;
+        Cord currCord = cords.get(1);
+        Cord prevCord = cords.get(0);
+        if (currCord.getRowCord() != prevCord.getRowCord())
+            sameRow = false;
+        if(currCord.getColCord()!=prevCord.getColCord())
+            sameCol = false;
+        ArrayList<Integer> col = new ArrayList<>();
+        ArrayList<Integer> row = new ArrayList<>();
+        if(cords.size()==3) {
+            Cord lastCord = cords.get(2);
+            if (currCord.getRowCord() != lastCord.getRowCord() && prevCord.getRowCord() != lastCord.getRowCord())
+                sameRow = false;
+            if(currCord.getColCord() != lastCord.getColCord() && prevCord.getColCord() != lastCord.getColCord())
+                sameCol = false;
+        }
+        if(sameRow) {
+            for (Cord cord : cords)
+                col.add(cord.getColCord());
+            Collections.sort(col);
+            for(int i = 0; i<col.size()-1;i++) {
+                System.out.println(col.get(i + 1)+" "+(col.get(i)+1));
+                if (col.get(i + 1) != col.get(i) + 1)
+                    return false;
+            }
+        }
+        if(sameCol) {
+            for (Cord cord : cords)
+                row.add(cord.getRowCord());
+            Collections.sort(row);
+            for(int i = 0; i<row.size()-1;i++)
+                if(row.get(i + 1) != row.get(i) +1)
+                    return false;
+        }
+        return true;
     }
 
     private boolean isTileFreeTile(Cord cord) {
@@ -244,7 +282,6 @@ public class Controller implements Observer {
         if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING)
             return Error.OUT_OF_BOUNDS;
         this.chosenColumn = chosenColumn;
-        UI.showTUIBoard(board);
         return Error.OK;
     }
 
@@ -252,8 +289,11 @@ public class Controller implements Observer {
     public Error chooseTilesDisposition(int index) throws IOException {
         if(index <0 || index >= playerHand.size())
             return Error.INVALID_VALUE;
-        game.getPlayerInTurn().getMyBookshelf().placeTile(this.chosenColumn,playerHand.get(index));
-        playerHand.get(index).setType(Type.NOTHING);
+        Player pit = game.getPlayerInTurn();
+        System.out.println(game.getPlayerInTurn().getNickname());
+        pit.getMyBookshelf().placeTile(this.chosenColumn,playerHand.get(index));
+        playerHand.add(index+1,new Tile(Type.NOTHING,0));
+        playerHand.remove(index);
         return Error.OK;
     }
 
@@ -315,6 +355,7 @@ public class Controller implements Observer {
         } else {
             game.setPlayerInTurn(game.getPlayers().get(0));
         }
+        System.out.println("NickPIT: "+game.getPlayerInTurn().getNickname());
     }//TODO optimize this
 
     //asks the player if he wants to play another time
@@ -457,9 +498,10 @@ public class Controller implements Observer {
             }
             case TURN_POSITION -> {
                 error = chooseTilesDisposition((int) obj);
-                calculateScore();
             }
             case END_OF_TURN -> {
+                for(Player p : game.getPlayers())
+                    UI.showTUIBookshelf(p.getMyBookshelf());
                 goToNext(game.getPlayers().get((int)obj));
                 System.out.println("PIT index"+game.getPlayers().indexOf(game.getPlayerInTurn()));
                 return Error.OK;
@@ -479,7 +521,6 @@ public class Controller implements Observer {
                     return Error.BOARD_NOT_EMPTY;
             }
             case UPDATE_BOOKSHELF -> {
-                game.getPlayerInTurn().setMyBookshelf((Bookshelf) obj);
                 return Error.OK;
             }
         }
@@ -497,6 +538,7 @@ public class Controller implements Observer {
             case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
             case TURN_POSITION -> obj = this.playerHand;
+            case UPDATE_BOOKSHELF-> obj =  game.getPlayerInTurn().getMyBookshelf();
             //case TURN_BOOKSHELF -> obj = this.game.getPlayers().get(playerIndex);
         }
         return obj;

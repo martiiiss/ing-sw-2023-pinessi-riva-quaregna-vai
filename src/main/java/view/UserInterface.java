@@ -171,7 +171,8 @@ public class UserInterface extends Observable implements Observer, Serializable 
 
     //method that will likely be used in the TUI, we show the player which tiles it had chosen
     public void printTilesInHand(ArrayList<Tile> tilesInHand) {
-        System.out.print(tilesInHand);
+        for (Tile tile : tilesInHand)
+            System.out.println(tile.getType());
     }
 
     //This method asks the index of the tile to insert -> print the tiles in hand every time the player puts the tile into the bookshelf

@@ -5,6 +5,8 @@ import model.*;
 import util.Cord;
 import util.Error;
 import view.UserView;
+
+import java.awt.print.Book;
 import java.io.*;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -274,7 +276,7 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
                 errorReceived = server.sendMessage(pos, TURN_POSITION);
                 System.out.println(errorReceived.getMsg());
             }while (errorReceived!=Error.OK);
-            playerInTurn.getMyBookshelf().placeTile(column,tilesInHand.get(pos));
+            playerInTurn.setMyBookshelf((Bookshelf) server.getModel(UPDATE_BOOKSHELF,myIndex));
             tilesInHand =(ArrayList<Tile>) server.getModel(TURN_POSITION,myIndex);
             uView.printTilesInHand(tilesInHand);
             uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
@@ -313,5 +315,5 @@ public class RMIClient extends Client implements ClientConnectionRMI, Serializab
             }
         }
     }
-
+//FIXME:Al momento il metodo del calcolo punteggio è sbagliato, non tiene conto dei punteggi aggiunti in precedenza
 }

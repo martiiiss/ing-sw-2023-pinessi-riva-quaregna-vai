@@ -1,10 +1,15 @@
 package Model;
 
-import model.Type;
-import model.Tile;
-import model.Player;
-import model.CommonGoalCard;
+import model.*;
 import model.Game;
+import model.Player;
+import model.Bookshelf;
+import model.Board;
+import model.Tile;
+import model.ScoringToken;
+import model.PersonalGoalCard;
+import model.CommonGoalCard;
+import model.Type;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -147,9 +152,9 @@ public class GameTest {
         Player p2 = new Player();
         Player p3 = new Player();
         Player p4 = new Player();
-        p2.setMyBookshelf();
-        p3.setMyBookshelf();
-        p4.setMyBookshelf();
+        p2.setMyBookshelf(new Bookshelf());
+        p3.setMyBookshelf(new Bookshelf());
+        p4.setMyBookshelf(new Bookshelf());
         p2.getMyBookshelf().setBookshelf(b12);
         p3.getMyBookshelf().setBookshelf(b12);
         p4.getMyBookshelf().setBookshelf(b12);
@@ -174,7 +179,7 @@ public class GameTest {
         game.setPlayerInTurn(p1);
         game.setNumOfPlayers(4);
         game.getCommonGoalCard().clear();//this is only so that I can decide which CGC to test
-        p1.setMyBookshelf();
+        p1.setMyBookshelf(new Bookshelf());
         game.getCommonGoalCard().add(new CommonGoalCard(idCGC1,4,1));
         game.getCommonGoalCard().add(new CommonGoalCard(idCGC2,4,2));
         p1.getMyBookshelf().setBookshelf(playerBookshelf);
