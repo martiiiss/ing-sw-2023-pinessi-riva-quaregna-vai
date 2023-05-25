@@ -1,9 +1,10 @@
 package distributed.messages;
 
 import util.Event;
+import java.io.Serializable;
 
-public class Message {
-
+public class Message implements Serializable{
+    private static final long serialVersionUID = -39139710239L;
     private Event event;
     private String nickname;
 
