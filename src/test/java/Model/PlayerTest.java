@@ -291,8 +291,7 @@ public class PlayerTest {
         Bookshelf b = player.getMyBookshelf();
         b.setBookshelf(bookshelfAdj);
         assertEquals(player.checkAdjacentBookshelf(),5);
-        assertNotEquals(player.checkAdjacentBookshelf(),5);
-        assertEquals(player.checkAdjacentBookshelf(),0);
+        //assertEquals(player.checkAdjacentBookshelf(),0);
         Tile[][] bookshelfAdj = {
                 {cat, cat, frame, nothing, nothing},
                 {cat, nothing, nothing, nothing, cat},

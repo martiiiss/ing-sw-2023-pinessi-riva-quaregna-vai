@@ -7,6 +7,9 @@ import util.Observable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import static model.Type.NOTHING;
 
 
@@ -20,12 +23,11 @@ public class Player extends Observable implements Serializable {
     private Bookshelf myBookshelf;
     private ArrayList<Tile> tilesInHand; //This attribute saves the tiles selected by the player in chooseNTiles so that the bookshelf can be filled with fillBookshelf
     private int scorePGC = 0;  //progressive score of PGC
+    int scoreAdj = 0;
 
     private boolean scoringToken1;
     private boolean scoringToken2;
     // the last two attributes are used to control if the Player has already completed the CGC
-    private HashMap<ArrayList<Cord>,Integer> previousAdj = new HashMap<>(); //Used to check if after a turn the number of adjacencies has changed
-
     public Player () {
         scoringToken1 = false;
         scoringToken2 = false;
@@ -132,8 +134,18 @@ public class Player extends Observable implements Serializable {
 
 
     public int checkAdjacentBookshelf(){
-        Bookshelf newBookshelf = new Bookshelf();
-        Tile[][] bookshelf = this.myBookshelf.getBookshelf();
+        score-=scoreAdj;
+        scoreAdj=0;
+        Tile[][] originalBookshelf = this.myBookshelf.getBookshelf();
+        Tile[][] bookshelf = new Tile[6][5];
+        for (int x=0; x<6; x++) {
+            for (int y = 0; y <5; y++) {
+                Type originalType = originalBookshelf[x][y].getType();
+                Tile copiedTile = new Tile(originalType,0);
+                bookshelf[x][y] = copiedTile;
+            }
+        }
+
         boolean newCord;
         Cord cord = new Cord();
         Cord nextTo;
@@ -141,9 +153,6 @@ public class Player extends Observable implements Serializable {
         Tile nothing = new Tile(NOTHING,0);
         int i,j;
         int points=0;
-
-        if(previousAdj.isEmpty()) //initialize
-            previousAdj.put(new ArrayList<>(),0);
 
         for (int x=0; x<6; x++) {
             for (int y = 0; y <5; y++) {
@@ -169,7 +178,7 @@ public class Player extends Observable implements Serializable {
                                     newCord = false;
                                     break;
                                 }
-                            if (newCord)
+                            if (newCord && !listOfCords.contains(nextTo))
                                 listOfCords.add(nextTo);
                         }
                     newCord = true;
@@ -186,7 +195,7 @@ public class Player extends Observable implements Serializable {
                                     newCord = false;
                                     break;
                                 }
-                            if (newCord)
+                            if (newCord && !listOfCords.contains(nextTo))
                                 listOfCords.add(nextTo);
                         }
                     newCord = true;
@@ -203,7 +212,7 @@ public class Player extends Observable implements Serializable {
                                     newCord = false;
                                     break;
                                 }
-                            if (newCord)
+                            if (newCord && !listOfCords.contains(nextTo))
                                 listOfCords.add(nextTo);
                         }
                     newCord = true;
@@ -220,36 +229,31 @@ public class Player extends Observable implements Serializable {
                                     newCord = false;
                                     break;
                                 }
-                            if (newCord)
+                            if (newCord && !listOfCords.contains(nextTo))
                                 listOfCords.add(nextTo);
                         }
                     if (listOfCords.size() == 0)
                         break;
                 }
-                for (int counter = 0; counter < listOfCords.size() && !(listOfCords.isEmpty()); counter++) {
-                    int row = listOfCords.get(counter).getRowCord();
-                    int col = listOfCords.get(counter).getColCord();
-                    bookshelf[row][col] = nothing;
-                }
-                if (previousAdj.getOrDefault(listOfCords,0)<listOfCords.size()) { //if the amount of ajdacencies has increased then increase the score
-                    if (listOfCords.size() == 3)
-                        points += 2;
-                    if (listOfCords.size() == 4)
-                        points += 3;
-                    if (listOfCords.size() == 5)
-                        points += 5;
-                    if (listOfCords.size() >= 6)
-                        points += 8;
-                    previousAdj.put(listOfCords,listOfCords.size());
-                }
             }
-            previousAdj.put(new ArrayList<>(),listOfCords.size());
+            for(Cord cord1 : listOfCords) {
+                System.out.print(cord1.getRowCord() + " " + cord1.getColCord()+": ");
+                System.out.println(bookshelf[cord1.getRowCord()][cord1.getColCord()].getType());
+                bookshelf[cord1.getRowCord()][cord1.getColCord()]=nothing;
+            }
+            if (listOfCords.size() == 3)
+                scoreAdj += 2;
+            if (listOfCords.size() == 4)
+                scoreAdj += 3;
+            if (listOfCords.size() == 5)
+                scoreAdj += 5;
+            if (listOfCords.size() >= 6)
+                scoreAdj += 8;
             listOfCords.clear();
         }
-        //p
-        System.out.println("Final result: "+points);
-        return points;
+        return scoreAdj;
     }
+
 
 
     public boolean checkBookshelf(){

@@ -500,6 +500,7 @@ public class Controller implements Observer {
                 error = chooseTilesDisposition((int) obj);
             }
             case END_OF_TURN -> {
+                calculateScore();
                 for(Player p : game.getPlayers())
                     UI.showTUIBookshelf(p.getMyBookshelf());
                 goToNext(game.getPlayers().get((int)obj));
