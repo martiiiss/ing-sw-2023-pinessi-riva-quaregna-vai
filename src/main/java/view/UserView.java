@@ -208,6 +208,7 @@ public class UserView implements Serializable {
     public void showCGC(ArrayList<CommonGoalCard> commonGoalCards) {
         int id;
         for (CommonGoalCard commonGoalCard : commonGoalCards){
+            printScoringToken(commonGoalCard);
             id = commonGoalCard.getIdCGC();
             System.out.println("\u001B[35m");
             switch (id) {
@@ -279,6 +280,10 @@ public class UserView implements Serializable {
             }
             System.out.print("\u001B[0m");
         }
+    }
+    private void printScoringToken(CommonGoalCard commonGoalCard) {
+        System.out.println("Scoring Token of Common Goal Card #"+commonGoalCard.getIdCGC());
+        System.out.println(commonGoalCard.getTokenStack().get(commonGoalCard.getTokenStack().size()-1).getValue());
     }
 
     public void showPGC(PersonalGoalCard personalGoalCard) {

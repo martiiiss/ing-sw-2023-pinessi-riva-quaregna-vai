@@ -305,7 +305,7 @@ public class Controller implements Observer {
         System.out.println("SCORE PIT: "+game.getPlayerInTurn().getScore());
     }
 
-   /* public boolean checkIfGameEnd() throws IOException {
+    public boolean checkIfGameEnd() throws IOException {
         int index=0;
         if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
             index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
@@ -314,10 +314,10 @@ public class Controller implements Observer {
         if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
             if(game.getIsLastTurn()) {//is last turn
                 if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame(); CALL THE END OF GAME
+                    endOfGame(); //CALL THE END OF GAME
                     return true;
                 } else {
-                    goToNext(); //set next Player in turn
+                    goToNext(game.getPlayerInTurn()); //set next Player in turn
                     return false;
                 }
             } else{
@@ -327,26 +327,26 @@ public class Controller implements Observer {
                     endOfGame();
                     return true;
                 } else {
-                    goToNext(); //set next Player in turn
+                    goToNext(game.getPlayerInTurn()); //set next Player in turn
                     return false;
                 }
             }
         } else {//Bookshelf NOT full
             if(game.getIsLastTurn()){
                 if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame();CALL END OF GAME
+                    endOfGame();//CALL END OF GAME
                     return true;
                 } else{
-                    goToNext(); //set next Player in turn
+                    goToNext(game.getPlayerInTurn()); //set next Player in turn
                     return false;
                 }
             } else{ //not last turn
-                goToNext();
+                goToNext(game.getPlayerInTurn());
                 return false;
             }
         }
     }//TODO optimize this method
-*/
+
 
     public void goToNext(Player playerInTurn){ //set player in turn
         int i = game.getPlayers().indexOf(playerInTurn)+1;
@@ -503,7 +503,7 @@ public class Controller implements Observer {
                 calculateScore();
                 for(Player p : game.getPlayers())
                     UI.showTUIBookshelf(p.getMyBookshelf());
-                goToNext(game.getPlayers().get((int)obj));
+                checkIfGameEnd();
                 System.out.println("PIT index"+game.getPlayers().indexOf(game.getPlayerInTurn()));
                 return Error.OK;
             }
