@@ -1,5 +1,7 @@
 package model;
 
+import distributed.messages.Message;
+import util.Event;
 import util.Observable;
 import util.Observer;
 
@@ -33,7 +35,7 @@ public class Board extends Observable implements Serializable {
             }
         }
         //BOARD IS CHANGED
-        //notifyObservers("board set up");
+        notifyObservers(new Message(this, Event.SET_UP_BOARD));
     }
     /** fixed creating a variable Tile blocked which I insert every time that that cell has to be blocked*/
 

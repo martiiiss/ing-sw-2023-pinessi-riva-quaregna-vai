@@ -1,6 +1,8 @@
 package util;
 
+import distributed.messages.Message;
+
 public interface Observer {
 
-    void update(Observable o, Object obj);
+    void update(Observable observable, Message message);
 }
