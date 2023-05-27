@@ -1,13 +1,7 @@
 package org.example;
 
-import controller.Controller;
-import distributed.Client;
 import distributed.RMI.RMIServer;
 import distributed.RMI.ServerRMIInterface;
-import distributed.Server;
-import distributed.Socket.SocketServer;
-import util.Event;
-
 
 import java.io.IOException;
 import java.rmi.RemoteException;

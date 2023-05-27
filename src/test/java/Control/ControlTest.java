@@ -63,6 +63,38 @@ public class ControlTest {
         assertEquals(controller.getInstanceOfGame().getPlayerInTurn().getScore(),3);
 
         userView.showTUIBookshelf(controller.getInstanceOfGame().getPlayerInTurn().getMyBookshelf());
+    }
+    @Test
+    void gameFlow() {
+        System.out.println("╔═══════════════════╗");
+        System.out.println("║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║");
+        System.out.println("╠═══╬═══╬═══╬═══╬═══╣");
+        System.out.println("║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║");
+        System.out.println("╠═══╬═══╬═══╬═══╬═══╣");
+        System.out.println("║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║");
+        System.out.println("╠═══╬═══╬═══╬═══╬═══╣");
+        System.out.println("║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║");
+        System.out.println("╠═══╬═══╬═══╬═══╬═══╣");
+        System.out.println("║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║\033[37;46;1m   \u001B[0m║");
+        System.out.println("╠═══╩═══╩═══╩═══╩═══╣");
+        System.out.println("║ 0   1   2   3   4 ║");
+        System.out.println("╚═══════════════════╝");
+
+        System.out.print("\033[37;100;1m   \u001B[0m");
+        System.out.print("\033[37;42;1m   \u001B[0m");
+        System.out.print("\033[37;107;1m   \u001B[0m");
+        System.out.print("\033[37;44;1m   \u001B[0m");
+        System.out.print("\033[37;43;1m   \u001B[0m");
+        System.out.print("\033[37;45;1m   \u001B[0m");
+        System.out.print("\033[37;46;1m   \u001B[0m");
+        System.out.println();
+        System.out.print("\u001B[90m □ \u001B[0m");
+        System.out.print("\u001B[32m □ \u001B[0m");
+        System.out.print("\u001B[97m □ \u001B[0m");
+        System.out.print("\u001B[34m □ \u001B[0m");
+        System.out.print("\u001B[33m □ \u001B[0m");
+        System.out.print("\u001B[35m □ \u001B[0m");
+        System.out.print("\u001B[36m □ \u001B[0m");
 
     }
 }

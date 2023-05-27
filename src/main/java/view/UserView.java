@@ -91,22 +91,31 @@ public class UserView implements Serializable {
     }
     public void showTUIBookshelf(Bookshelf bookshelf) {
         Tile[][] tilesInBookshelf = bookshelf.getBookshelf();
+        System.out.println("╔═══╦═══╦═══╦═══╦═══╗");
         for (int i = 0; i < 6; i++) {
-            System.out.println("+---------------+");
+            if(i>0 && i<=5)
+                System.out.println("\n╠═══╬═══╬═══╬═══╬═══╣");
+            //if(i==5)
+               // System.out.println();
+
             for (int j = 0; j < 5; j++) {
-                if (j == 0) System.out.print("|");
+                if(j==0)
+                    System.out.print("║");
                 switch (tilesInBookshelf[i][j].getType()) {
-                    case NOTHING -> System.out.print("\u001B[90m □ \u001B[0m");
-                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
-                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
-                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
-                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
-                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
-                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+                    case NOTHING -> System.out.print("\033[37;100;1m   \u001B[0m");
+                    case CAT -> System.out.print("\033[37;42;1m   \u001B[0m");
+                    case BOOK -> System.out.print("\033[37;107;1m   \u001B[0m");
+                    case FRAME -> System.out.print("\033[37;44;1m   \u001B[0m");
+                    case GAME -> System.out.print("\033[37;43;1m   \u001B[0m");
+                    case PLANT -> System.out.print("\033[37;45;1m   \u001B[0m");
+                    case TROPHY -> System.out.print("\033[37;46;1m   \u001B[0m");
                 }
-                if (j == 4) System.out.println("|");
+                System.out.print("║");
             }
         }
+        System.out.println("\n╠═══╩═══╩═══╩═══╩═══╣");
+        System.out.println("║ 0   1   2   3   4 ║");
+        System.out.println("╚═══════════════════╝");
     }
     public int askColumn() {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
@@ -144,32 +153,48 @@ public class UserView implements Serializable {
     public void printTilesInHand(ArrayList<Tile> tilesInHand) {
         System.out.println("These are the tiles you picked:");
         switch (tilesInHand.size()) {
-            case 1: {
-                System.out.println("[ 1 ]");
+            case 1 -> {
+                System.out.println("╔═1═╗");
                 break;
             }
-            case 2: {
-                System.out.println("[ 1  2 ]");
+            case 2 -> {
+                System.out.println("╔═1═╦═2═╗");
                 break;
             }
-            case 3: {
-                System.out.println("[ 1  2  3 ]");
+            case 3 -> {
+                System.out.println("╔═1═╦═2═╦═3═╗");
                 break;
             }
         }
-        System.out.print("[");
+        System.out.print("║");
         for (Tile tile : tilesInHand) {
             switch (tile.getType()) {
-                case NOTHING -> System.out.print("\u001B[90m □ \u001B[0m");
-                case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
-                case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
-                case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
-                case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
-                case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
-                case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+                case NOTHING -> System.out.print("\033[37;100;1m   \u001B[0m");
+                case CAT -> System.out.print("\033[37;42;1m   \u001B[0m");
+                case BOOK -> System.out.print("\033[37;107;1m   \u001B[0m");
+                case FRAME -> System.out.print("\033[37;44;1m   \u001B[0m");
+                case GAME -> System.out.print("\033[37;43;1m   \u001B[0m");
+                case PLANT -> System.out.print("\033[37;45;1m   \u001B[0m");
+                case TROPHY -> System.out.print("\033[37;46;1m   \u001B[0m");
+            }
+            System.out.print("║");
+        }
+        System.out.println();
+
+        switch (tilesInHand.size()) {
+            case 1 -> {
+                System.out.println("╚═══╝");
+                break;
+            }
+            case 2 -> {
+                System.out.println("╚═══╩═══╝");
+                break;
+            }
+            case 3 -> {
+                System.out.println("╚═══╩═══╩═══╝");
+                break;
             }
         }
-        System.out.println("]");
     }
 
     //This method asks the index of the tile to insert -> print the tiles in hand every time the player puts the tile into the bookshelf
@@ -282,33 +307,44 @@ public class UserView implements Serializable {
         }
     }
     private void printScoringToken(CommonGoalCard commonGoalCard) {
-        System.out.println("Scoring Token of Common Goal Card #"+commonGoalCard.getIdCGC());
-        System.out.println(commonGoalCard.getTokenStack().get(commonGoalCard.getTokenStack().size()-1).getValue());
+        if(commonGoalCard.getTokenStack().size()==0) {
+            System.out.println("\u001B[35mThere are no more Scoring Tokens for this Common Goal Card...");
+        }
+        System.out.println("\u001B[35mScoring Token of Common Goal Card #"+commonGoalCard.getIdCGC());
+        System.out.println(commonGoalCard.getTokenStack().get(commonGoalCard.getTokenStack().size()-1).getValue()+"\u001B[0m");
     }
 
     public void showPGC(PersonalGoalCard personalGoalCard) {
         Tile[][] pgc = personalGoalCard.getPGC();
+        System.out.println("╔═══╦═══╦═══╦═══╦═══╗");
         for (int i = 0; i < 6; i++) {
-            System.out.println("+---------------+");
+            if(i>0 && i<=5)
+                System.out.println("\n╠═══╬═══╬═══╬═══╬═══╣");
+            //if(i==5)
+            // System.out.println();
+
             for (int j = 0; j < 5; j++) {
-                if (j == 0) System.out.print("|");
+                if(j==0)
+                    System.out.print("║");
                 switch (pgc[i][j].getType()) {
-                    case NOTHING -> System.out.print("\u001B[90m □ \u001B[0m");
-                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
-                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
-                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
-                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
-                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
-                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
+                    case NOTHING -> System.out.print("\033[37;100;1m   \u001B[0m");
+                    case CAT -> System.out.print("\033[37;42;1m   \u001B[0m");
+                    case BOOK -> System.out.print("\033[37;107;1m   \u001B[0m");
+                    case FRAME -> System.out.print("\033[37;44;1m   \u001B[0m");
+                    case GAME -> System.out.print("\033[37;43;1m   \u001B[0m");
+                    case PLANT -> System.out.print("\033[37;45;1m   \u001B[0m");
+                    case TROPHY -> System.out.print("\033[37;46;1m   \u001B[0m");
                 }
-                if (j == 4) System.out.println("|");
+                System.out.print("║");
             }
         }
+        System.out.println("\n╠═══╩═══╩═══╩═══╩═══╣");
+        System.out.println("║      YourPGC      ║");
+        System.out.println("╚═══════════════════╝");
     }
 
-
     public void chatOptions(Player player) {
-        System.err.println("NON ANCORA IMPLEMENTATO :P");
+        System.err.println("\uD83D\uDDEA NON ANCORA IMPLEMENTATO :P");
     }
     public void showPlayers(ArrayList<Player> listOfPlayers) {
         int i = 1;
