@@ -1,26 +1,15 @@
 package view;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
 
-public class PGCView extends JPanel {
 
-    private int PGCId;
+public class PGCView extends JPanel { //manages the PersonalGoalCard section of the GUI
+
     private JLabel displayedImage;
 
-
     public PGCView(int PGCId){
-        this.PGCId = PGCId;
-
-    }
-    public void setDisplayedImage() throws IOException {
-        InputStream is = this.getClass().getClassLoader().getResourceAsStream("resources/PersonalGoalCardImages/" + this.PGCId + ".png");
-        Image img = ImageIO.read(is);
-        Image scaledImg = img.getScaledInstance(300, 400, Image.SCALE_SMOOTH);
-        this.displayedImage = new JLabel(new ImageIcon(scaledImg));
+        ImageReader imageReader = new ImageReader();
+        this.displayedImage = new JLabel(imageReader.readIcon("resources/PersonalGoalCardImages/" + PGCId + ".png", 200, 300));
     }
     public JLabel getDisplayedImage(){
         return this.displayedImage;
