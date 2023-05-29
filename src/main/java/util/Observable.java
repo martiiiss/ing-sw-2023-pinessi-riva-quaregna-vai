@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Observable{
     private boolean changed = false;
-    private ArrayList<Observer> observers = new ArrayList<>();
+    private ArrayList<Observer> observers;
 
     public Observable() {
         observers = new ArrayList<>();
@@ -59,7 +59,6 @@ public class Observable{
      * {@code notifyObservers} methods.
      *
      * @see     #notifyObservers()
-     * @see     #notifyObservers(java.lang.Object)
      */
     protected synchronized void clearChanged() {
         changed = false;

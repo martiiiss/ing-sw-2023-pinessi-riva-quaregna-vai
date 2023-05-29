@@ -51,6 +51,8 @@ public class ClientController implements Observer {
     public void update(Observable o, Message message) {
         //switch case per gestire il flusso di gioco con chiamate a view
         switch (message.getMessageEvent()){
+            //TODO | SERVER -> CLIENT
+            // si parte dalla View (UserView) che chiede all'utente le varie cose e crea il messaggio -> ClientHandlerSocket manda il messaggio -> Client legge il messaggio -> notifyObserver() -> verrà fatto l'aggiornamento e vari
             case SET_UP_BOARD -> //show board
                     executor.execute(() -> {
                         uView.showTUIBoard((Board) message.getObj());

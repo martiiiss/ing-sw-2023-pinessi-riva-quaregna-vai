@@ -39,7 +39,7 @@ public class ClientSocket extends Client {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
                   try{
-                      sendMessageC();
+                      sendMessageC(null);//FIXME this is to implement, now sendMessageC() has Message as a parameter
                       receivedMessage();
                   } catch (IOException | ClassNotFoundException e) {
                       throw new RuntimeException(e);
@@ -51,7 +51,7 @@ public class ClientSocket extends Client {
     }
 
 
-    public void sendMessageC() throws IOException {
+    public void sendMessageC(Message mess) throws IOException {
         try{
             //view: legge da tastiera
             System.out.println("scrivi qualcosa: ");

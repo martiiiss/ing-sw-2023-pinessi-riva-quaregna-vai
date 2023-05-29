@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 
-public class UserInterface extends Observable implements Observer, Serializable {
+public class UserInterface implements Serializable {
     @Serial
     private static final long serialVersionUID = -38738202973L;
     /*
@@ -261,8 +261,5 @@ public class UserInterface extends Observable implements Observer, Serializable 
         System.out.println();
     }
 
-    @Override
-    public void update(Observable o, Object obj) {
-    }
 }
 

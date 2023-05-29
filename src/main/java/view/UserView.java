@@ -1,7 +1,10 @@
 package view;
 
+import distributed.messages.Message;
 import model.*;
 import util.Cord;
+import util.Observable;
+import util.Observer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +13,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Spliterator;
 
-public class UserView implements Serializable {
+public class UserView implements Observer, Serializable {
     private static final long serialVersionUID = -23874204704L;
 
     public int askNumOfPlayer() throws IOException {
@@ -368,4 +371,12 @@ public class UserView implements Serializable {
         return -1;
     }
 
+    /**
+     * @param observable
+     * @param message
+     */
+    @Override
+    public void update(Observable observable, Message message) {
+
+    }
 }

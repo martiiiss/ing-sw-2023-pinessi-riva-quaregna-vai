@@ -2,6 +2,7 @@ package controller;
 
 import distributed.Client;
 import distributed.Server;
+import distributed.messages.Message;
 import model.*;
 import org.example.App;
 import util.Cord;
@@ -403,7 +404,7 @@ public class Controller implements Observer {
     public Board getBoard(){ return this.board;}
 
     @Override
-    public void update(Observable o,Object obj) {
+    public void update(Observable o, Message message) {
 
     }
 

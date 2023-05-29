@@ -17,7 +17,7 @@ import java.util.Stack;
 import static java.lang.System.exit;
 import static util.Event.*;
 
-public class RMIClient extends Client implements ClientConnectionRMI, Serializable {
+public class RMIClient extends Client implements Serializable {
     @Serial
     private static final long serialVersionUID = -3489512533622391685L; //random number
     private transient ServerRMIInterface server;
