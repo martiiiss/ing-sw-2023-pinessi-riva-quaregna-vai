@@ -45,7 +45,16 @@ public enum Event {
 
 
     //per notify
-    SET_UP_BOARD("");
+    SET_UP_BOARD(""),
+    SET_TILE_BOOKSHELF(""),
+    SET_NUM_PLAYERS(""),
+    SET_PLAYER_IN_TURN(""),
+    SET_COMMONGC(""),
+    SET_PGC(""),
+    SET_WINNER(""),
+    SET_FINISHER(""),
+    REMOVE_TILE_BOARD("");
+
     private String msg;
     Event(String errMsg) {
         this.msg = errMsg;

@@ -103,7 +103,7 @@ public class Board extends Observable implements Serializable {
         livingRoomBoard[row][column] = new Tile(Type.NOTHING, 0);
         //After a tile is picked up I change that tile, I have to notify the observers that something has changed
         setChanged();
-        notifyObservers();
+        notifyObservers(new Message(this, Event.REMOVE_TILE_BOARD));
         return removedTile;
     }
 

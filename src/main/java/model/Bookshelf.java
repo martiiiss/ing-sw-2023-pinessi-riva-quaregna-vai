@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static model.Type.NOTHING;
+
+import distributed.messages.Message;
 import model.Tile;
+import util.Event;
 import util.Observable;
 
 public class Bookshelf extends Observable implements Serializable {
@@ -56,6 +59,7 @@ public class Bookshelf extends Observable implements Serializable {
                 i = -1;
             }
         }
+        notifyObservers(new Message(this, Event.SET_TILE_BOOKSHELF));
     }
     public Tile[][] getBookshelf(){
         return this.bookshelf;

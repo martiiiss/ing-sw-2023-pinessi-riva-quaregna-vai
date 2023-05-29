@@ -4,6 +4,7 @@ package model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import distributed.messages.Message;
 import util.Event;
 import util.Observable;
 import java.util.Random;
@@ -38,9 +39,10 @@ public class Game extends Observable implements Serializable {
     }
 
     public boolean getGameStarted(){return this.gameStarted;}
-    public void setGameStarted(){this.gameStarted=true;}
-
-
+    public void setGameStarted(){
+        this.gameStarted=true;
+        notifyObservers(new Message(this, Event.GAME_STARTED));
+    }
 
     public ArrayList<Player> getPlayers(){return this.players;}
 
@@ -56,6 +58,8 @@ public class Game extends Observable implements Serializable {
 
         commonGoalCards.add(c1); //add c1, c2 to arrayList
         commonGoalCards.add(c2);
+        //FIXME: notifyObserver?
+        notifyObservers(new Message(this, Event.SET_COMMONGC));
     }
 
     public ArrayList<CommonGoalCard> getCommonGoalCard(){
@@ -64,15 +68,22 @@ public class Game extends Observable implements Serializable {
 
     public void setNumOfPlayers(int nop){ //nop is chosen by the player who creates the game
         this.numberOfPlayers = nop;
+        notifyObservers(new Message(this, Event.SET_NUM_PLAYERS));
     }
 
     public int getNumOfPlayers(){return this.numberOfPlayers;}
 
-    public void setPlayerInTurn(Player pit){this.playerInTurn = pit;}
+    public void setPlayerInTurn(Player pit){
+        this.playerInTurn = pit;
+        notifyObservers(new Message(this, Event.SET_PLAYER_IN_TURN));
+    }
 
     public Player getPlayerInTurn(){return this.playerInTurn;}
 
-    public void setWinner(Player win){this.winner = win;}
+    public void setWinner(Player win){
+        this.winner = win;
+        notifyObservers(new Message(this, Event.SET_WINNER));
+    }
 
     public Player getWinner(){return this.winner;}
 
@@ -80,6 +91,7 @@ public class Game extends Observable implements Serializable {
     public void setFinisher(Player finished){
         this.finisher = finished; //set finisher
         isLastTurn = true; // it updates the value of isLastTurn to TRUE
+        notifyObservers(new Message(this, Event.SET_FINISHER));
     }
 
     public Player getFinisher(){return this.finisher;}
@@ -149,6 +161,8 @@ public class Game extends Observable implements Serializable {
                 break;
             }
         }
+
+        notifyObservers(new Message(this, Event.SET_PGC));
     }
 
     // it adds the player into the array
@@ -177,7 +191,6 @@ public class Game extends Observable implements Serializable {
             }
         }
         return scoreST;
-
     }
 
 
