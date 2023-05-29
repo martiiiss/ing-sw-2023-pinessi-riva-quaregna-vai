@@ -1,7 +1,9 @@
 package model;
 
+import distributed.messages.Message;
 import jdk.jshell.spi.ExecutionControl;
 import util.Cord;
+import util.Event;
 import util.Observable;
 
 import java.io.Serializable;
@@ -38,18 +40,23 @@ public class Player extends Observable implements Serializable {
     /*This method will be launched when the game starts once game chooses the first player. it will update isFirstPlayer*/
     public void setAsFirstPlayer() {
         this.isFirstPlayer = true;
+        notifyObservers(new Message(this, Event.SET_FIRST_PLAYER));
     }
     public boolean getIsFirstPlayer(){return isFirstPlayer;}
 
     /*Sets the player's nickname this method will be invoked by the view and will pass the arg "nickname"*/
     public void setNickname(String nickname) {
         this.nickname = nickname;
+        notifyObservers(new Message(this, Event.SET_NICKNAME));
+
     }
     public String getNickname(){return this.nickname;}
 
     /*Assign to each player their bookshelf*/
     public void setMyBookshelf(Bookshelf bookshelf) {
         this.myBookshelf = bookshelf;
+        notifyObservers(new Message(this, Event.SET_PLAYER_BOOKSHELF));
+
     }
 
     /*Returns the player's bookshelf*/
@@ -63,10 +70,16 @@ public class Player extends Observable implements Serializable {
     }
 
     /*Updates the score: add addScore*/
-    public void updateScore (int score) {this.score += score;}
+    public void updateScore (int score) {this.score += score;
+        notifyObservers(new Message(this, Event.UPDATED_SCORE));
+
+    }
 
     /*Each player gets assigned a personal goal card that they have to complete*/
-    public void setPersonalGoalCard(PersonalGoalCard pgc) {this.myGoalCard = pgc;}
+    public void setPersonalGoalCard(PersonalGoalCard pgc) {this.myGoalCard = pgc;
+        notifyObservers(new Message(this, Event.SET_PGC));
+
+    }
 
     /*Returns the player's personal goal card*/
     public PersonalGoalCard getPersonalGoalCard() {
@@ -80,12 +93,16 @@ public class Player extends Observable implements Serializable {
     /*This method updates the flag that keeps track of whether the player has already collected points from the first card or not*/
     public void setScoringToken1(){
         this.scoringToken1 = true;
+        notifyObservers(new Message(this, Event.SET_SCORING_TOKEN_1));
+
     }
 
     public boolean getScoringToken2(){ return this.scoringToken2; }
 
     public void setScoringToken2(){
         this.scoringToken2 = true;
+        notifyObservers(new Message(this, Event.SET_SCORING_TOKEN_2));
+
     }
 
     /*TilesInHand correspond to the tiles that the player wishes to add to their bookshelf*/
@@ -95,6 +112,7 @@ public class Player extends Observable implements Serializable {
 
     public void setTilesInHand(ArrayList<Tile> chosenTiles){
         this.tilesInHand = chosenTiles;
+        notifyObservers(new Message(this, Event.SET_TILES_IN_HAND));
     }
 
 

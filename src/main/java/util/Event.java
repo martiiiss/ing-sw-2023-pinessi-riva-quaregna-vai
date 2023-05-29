@@ -3,6 +3,7 @@ package util;
 public enum Event {
     SET_INDEX(""),
     SET_NICKNAME(""),
+
     ASK_NUM_PLAYERS(""),
     CHOOSE_NETWORK_PROTOCOL(""),
     CHOOSE_VIEW(""),
@@ -46,11 +47,17 @@ public enum Event {
 
     //per notify
     SET_UP_BOARD(""),
+    SET_FIRST_PLAYER(""),
+    SET_PLAYER_BOOKSHELF(""),
+    UPDATED_SCORE(""),
+    SET_PGC(""),
+    SET_SCORING_TOKEN_1(""),
+    SET_SCORING_TOKEN_2(""),
+    SET_TILES_IN_HAND(""),
     SET_TILE_BOOKSHELF(""),
     SET_NUM_PLAYERS(""),
     SET_PLAYER_IN_TURN(""),
     SET_COMMONGC(""),
-    SET_PGC(""),
     SET_WINNER(""),
     SET_FINISHER(""),
     REMOVE_TILE_BOARD("");
