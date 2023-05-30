@@ -13,8 +13,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Spliterator;
 
-public class UserView implements Observer, Serializable {
+import static util.Event.CHOOSE_NETWORK_PROTOCOL;
+import static util.Event.SET_NICKNAME;
+
+public class UserView extends Observable implements Serializable, ViewInterface {
     private static final long serialVersionUID = -23874204704L;
+
+
 
     public int askNumOfPlayer() throws IOException {
         int numOfPlayer = 0;
@@ -33,6 +38,14 @@ public class UserView implements Observer, Serializable {
             try {
                 System.out.print("\nChoose a nickname:");
                 nickname =  reader.readLine();
+                String finalNickname = nickname;
+                notifyObservers(o -> {
+                    try {
+                        o.onUpdate(new Message(finalNickname, SET_NICKNAME));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             } catch (IllegalArgumentException e) {
                 System.err.println("Invalid input!");
                 throw new IllegalArgumentException();
@@ -47,7 +60,15 @@ public class UserView implements Observer, Serializable {
         try {
             System.out.print("\nChoose a communication protocol, \ndigit 1 for 'Socket', 2 for 'JavaRMI':");
             try {
-                return Integer.parseInt(reader.readLine());
+                int webProtocol = Integer.parseInt(reader.readLine());
+                notifyObservers(o -> {
+                    try {
+                        o.onUpdate(new Message(webProtocol, CHOOSE_NETWORK_PROTOCOL));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                return webProtocol;
             }catch(NumberFormatException e) {}
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
@@ -367,16 +388,8 @@ public class UserView implements Observer, Serializable {
         System.out.println("6) Show the player list");
         try {
             return Integer.parseInt(reader.readLine());
-        }catch (NumberFormatException e) {}
+        } catch (NumberFormatException e) {
+        }
         return -1;
-    }
-
-    /**
-     * @param observable
-     * @param message
-     */
-    @Override
-    public void update(Observable observable, Message message) {
-
     }
 }

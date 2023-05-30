@@ -21,7 +21,7 @@ import java.util.HashMap;
 
 import static util.Event.*;
 
-public class Controller implements Observer {
+public class Controller  {
     private Game game;
     private Bag bag;
     private Board board;
@@ -403,10 +403,6 @@ public class Controller implements Observer {
 
     public Board getBoard(){ return this.board;}
 
-    @Override
-    public void update(Observable o, Message message) {
-
-    }
 
     public void clearChoice() throws IOException {
     }

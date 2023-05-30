@@ -39,7 +39,7 @@ public class ClientSocket extends Client {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
                   try{
-                      sendMessageC(null);//FIXME this is to implement, now sendMessageC() has Message as a parameter
+                     sendMessageC(null);//FIXME this is to implement, now sendMessageC() has Message as a parameter
                       receivedMessage();
                   } catch (IOException | ClassNotFoundException e) {
                       throw new RuntimeException(e);

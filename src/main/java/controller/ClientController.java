@@ -28,6 +28,7 @@ public class ClientController implements Observer {
 
     public void initClient(String address, int portSocket) throws IOException {
         this.clientSocket = new ClientSocket(address, portSocket);
+        this.clientSocket.addObserver(this);
         try{
             clientSocket.startConnection();
         } catch (IOException e) {
@@ -35,6 +36,13 @@ public class ClientController implements Observer {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+        executor.execute(() -> {
+            try {
+                uView.askPlayerNickname();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
     //in realtà questo metodo è update di observer e observable
     public void receivedMessage(){
@@ -59,6 +67,10 @@ public class ClientController implements Observer {
                     });
 
         }
-
     }
+    @Override
+    public void onUpdate(Message message) throws IOException {
+        clientSocket.sendMessageC(message);
+    }
+
 }
