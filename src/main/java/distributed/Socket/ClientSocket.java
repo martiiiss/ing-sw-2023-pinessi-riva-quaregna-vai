@@ -40,25 +40,28 @@ public class ClientSocket extends Client {
               while(!executorService.isShutdown()){
                   try{
                      sendMessageC(null);//FIXME this is to implement, now sendMessageC() has Message as a parameter
-                      receivedMessage();
-                  } catch (IOException | ClassNotFoundException e) {
+                     // receivedMessage();
+                  } catch (IOException e) {
                       throw new RuntimeException(e);
                   }
               }
           });
       });
-      clientThread.start();
+     // clientThread.start();
     }
 
 
     public void sendMessageC(Message mess) throws IOException {
         try{
             //view: legge da tastiera
+            /*
             System.out.println("scrivi qualcosa: ");
             BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
             Object message = reader.readLine();
+
+             */
             //invio messaggio:
-            outputStream.writeObject(message);
+            outputStream.writeObject(mess);
             outputStream.flush();
             outputStream.reset();
         }catch (IOException e){

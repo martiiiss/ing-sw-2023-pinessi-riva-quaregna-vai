@@ -11,7 +11,7 @@ public class AppClientSocket {
     public static void main(String[] args) throws IOException {
         String address = "localhost";
         int portSocket = 43808;
-        ClientSocket clientSocket = new ClientSocket(address, portSocket);
+        //ClientSocket clientSocket = new ClientSocket(address, portSocket);
 
         UserView tui = new UserView();
         ClientController clientController = new ClientController(tui);

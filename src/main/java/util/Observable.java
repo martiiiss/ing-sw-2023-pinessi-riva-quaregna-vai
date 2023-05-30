@@ -19,7 +19,6 @@ public class Observable{
             throw new NullPointerException();
         if (!observers.contains(o)) {
             observers.add(o);
-            System.out.println("Observer: "+ o);
         }
     }
 
@@ -61,7 +60,7 @@ public class Observable{
      * This method is called automatically by the
      * {@code notifyObservers} methods.
      *
-     * @see     #notifyObservers()
+    
      */
     protected synchronized void clearChanged() {
         changed = false;

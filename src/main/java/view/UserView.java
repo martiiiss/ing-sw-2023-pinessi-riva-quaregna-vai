@@ -13,8 +13,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Spliterator;
 
-import static util.Event.CHOOSE_NETWORK_PROTOCOL;
-import static util.Event.SET_NICKNAME;
+import static util.Event.*;
 
 public class UserView extends Observable implements Serializable, ViewInterface {
     private static final long serialVersionUID = -23874204704L;
@@ -25,8 +24,16 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         int numOfPlayer = 0;
         System.out.println("Insert num of player: ");
             BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        try {
-            return Integer.parseInt(reader.readLine());
+        try{
+            int numOfPlayers = Integer.parseInt(reader.readLine());
+            notifyObservers(o -> {
+                try {
+                    o.onUpdate(new Message(numOfPlayer, ASK_NUM_PLAYERS));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return numOfPlayers;
         }catch(NumberFormatException e) {}
         return -1;
     }
@@ -87,7 +94,7 @@ public class UserView extends Observable implements Serializable, ViewInterface 
                 int userInterface =  Integer.parseInt(reader.readLine());
                 notifyObservers(o -> {
                     try {
-                        o.onUpdate(new Message(userInterface, SET_NICKNAME));
+                        o.onUpdate(new Message(userInterface, CHOOSE_VIEW));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -153,7 +160,15 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             System.out.println("Choose the column, an integer from 0 to 4:");
-            return Integer.parseInt(reader.readLine());
+            int chosenColumn = Integer.parseInt(reader.readLine());
+            notifyObservers(o -> {
+                try {
+                    o.onUpdate(new Message(chosenColumn, TURN_COLUMN));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return chosenColumn;
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
         }
@@ -165,6 +180,14 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         Cord cord = new Cord();
         System.out.print("Input your coordinates as 2 integers separated by a comma\n(tiles must be adjacent):");
         String in = reader.readLine();
+        String finalIn = in;
+        notifyObservers(o -> {
+            try {
+                o.onUpdate(new Message(finalIn, TURN_POSITION));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         while (in.isEmpty()) {
             System.err.println("Empty, try again");
             in = reader.readLine();
@@ -176,7 +199,15 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");
-            return Integer.parseInt(reader.readLine());
+            int numOfChosenTiles =  Integer.parseInt(reader.readLine());
+            notifyObservers(o -> {
+                try {
+                    o.onUpdate(new Message(numOfChosenTiles, TURN_AMOUNT));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return numOfChosenTiles;
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
         }
@@ -242,6 +273,14 @@ public class UserView extends Observable implements Serializable, ViewInterface 
                 System.out.print("Type the index of the one you wish to insert first:");
                 try {
                     index = Integer.parseInt(reader.readLine());
+                    int finalIndex = index;
+                    notifyObservers(o -> {
+                        try {
+                            o.onUpdate(new Message(finalIndex, TURN_PICKED_TILES));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 }catch (NumberFormatException ex) {}
             }while (index<1 || index>tilesInHand.size());
             index--;
