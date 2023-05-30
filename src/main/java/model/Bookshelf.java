@@ -41,7 +41,14 @@ public class Bookshelf extends Observable implements Serializable {
     }
 
     public boolean getStatus() {
-        return isFull;
+        Tile[][] bookshelf = this.getBookshelf();
+        for (int i = 0; i<SHELF_ROW; i++){
+            for (int j = 0; j<SHELF_COLUMN; j++) {
+                if(bookshelf[i][j].getType()== NOTHING)
+                    return false;
+            }
+        }
+        return true;
     }
 
     public void setAsFull() {

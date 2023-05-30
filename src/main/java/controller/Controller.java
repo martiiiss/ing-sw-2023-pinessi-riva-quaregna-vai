@@ -148,11 +148,13 @@ public class Controller  {
                             int e;
                             temp = 0;
                             for (e = 1; e <= numberOfChosenTiles; e++) {
-                                cord.setCords(i - e * (cont - 1), j + e * (cont));
-                                if (board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.BLOCKED && board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.NOTHING && isTileFreeTile(cord)) {
-                                    temp = e + 1;
-                                } else {
-                                    e = numberOfChosenTiles + 1;
+                                if(i - e * (cont - 1)< board.BOARD_ROW && j + e * (cont)< board.BOARD_COLUMN) {
+                                    cord.setCords(i - e * (cont - 1), j + e * (cont));
+                                    if (board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.BLOCKED && board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.NOTHING && isTileFreeTile(cord)) {
+                                        temp = e + 1;
+                                    } else {
+                                        e = numberOfChosenTiles + 1;
+                                    }
                                 }
                             }
                             if (temp == numberOfChosenTiles) {
@@ -301,8 +303,8 @@ public class Controller  {
     public void calculateScore(){
         int cgc = game.checkCommonGoalCard();
         int pgc = game.getPlayerInTurn().checkCompletePGC();
-        int adjacencies = game.getPlayerInTurn().checkAdjacentBookshelf();
-        game.getPlayerInTurn().updateScore(cgc+pgc+adjacencies);
+        int adjacency = game.getPlayerInTurn().checkAdjacentBookshelf();
+        game.getPlayerInTurn().updateScore(cgc+pgc+adjacency);
         System.out.println("SCORE PIT: "+game.getPlayerInTurn().getScore());
     }
 
@@ -311,42 +313,44 @@ public class Controller  {
         if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
             index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
         }
-
-        if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
-            if(game.getIsLastTurn()) {//is last turn
-                if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame(); //CALL THE END OF GAME
+        if(!game.getIsLastTurn()){
+            System.out.println("Hellooo");
+            if(game.getPlayerInTurn().getMyBookshelf().getStatus()) {
+                game.getPlayerInTurn().updateScore(1);
+                System.out.println("Punteggio di quello che ha finito (PIT) incrementato: "+game.getPlayerInTurn().getScore());
+                game.setFinisher(game.getPlayerInTurn());
+                System.out.println("PIT SCORE: "+game.getPlayerInTurn().getScore());
+                if(index==0) //If the PIT is also the first one to finish the game is over instantly
+                {
+                    System.out.println("PIT ha riempito la shelf ed è quello con index 0. La partita finisce subito");
+                    //endOfGame();
                     return GAME_OVER;
-                } else {
-                    //goToNext(game.getPlayerInTurn()); //set next Player in turn
-                    return OK;
                 }
-            } else{
-                game.setFinisher(game.getPlayerInTurn());//I set the player that finished first and set isLastTurn -> I use a method from method.Game
-                game.getPlayerInTurn().updateScore(1);//I add an extra point to the first player to finish
-                if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame();
+                else {
+                    goToNext(game.getPlayerInTurn());
                     return LAST_TURN;
-                } else {
-                    //goToNext(game.getPlayerInTurn()); //set next Player in turn
-                    return OK;
                 }
             }
-        } else {//Bookshelf NOT full
-            if(game.getIsLastTurn()){
-                if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame();//CALL END OF GAME
-                    return GAME_OVER;
-                } else{
-                    goToNext(game.getPlayerInTurn()); //set next Player in turn
-                    return OK;
-                }
-            } else{ //not last turn
+            else {
+                System.out.println("PIT non ha riempito la Bookshelf");
                 goToNext(game.getPlayerInTurn());
                 return OK;
             }
         }
-    }//TODO optimize this method
+        else {
+            System.out.println("Siamo già in lastTurn");
+            if(index==0) {
+                System.out.println("Il pit è il primo, partita finisce");
+                //endOfGame();
+                return GAME_OVER;
+            }
+            else {
+                System.out.println("il PIT non è il primo quindi non termina");
+                goToNext(game.getPlayerInTurn());
+                return LAST_TURN;
+            }
+        }
+    }
 
 
     public void goToNext(Player playerInTurn){ //set player in turn
@@ -397,8 +401,9 @@ public class Controller  {
                 }
             }
         }
-        playAgain();
-    }//TODO ask how to choose the winner if two players have the same score
+        System.out.println("GAME OVER!!!!!!!!!!!");
+        System.exit(0);
+    }
 
 
     public Board getBoard(){ return this.board;}
@@ -502,7 +507,6 @@ public class Controller  {
                 for(Player p : game.getPlayers())
                     UI.showTUIBookshelf(p.getMyBookshelf());
                 error = checkIfGameEnd();
-                System.out.println("PIT index"+game.getPlayers().indexOf(game.getPlayerInTurn()));
                 return error;
             }
             case CHECK_MY_TURN -> {

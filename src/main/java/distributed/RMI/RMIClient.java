@@ -168,8 +168,11 @@ public class RMIClient extends Client implements Serializable {
         if(errorReceived==Event.REFILL)
             System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
         errorReceived = server.sendMessage(myIndex,END_OF_TURN);
-        if(errorReceived ==  LAST_TURN)
-            System.out.println("Player "+playerInTurn.getNickname()+" has filled their bookshelf!\nThis is the last turn of the game");
+        System.out.println(errorReceived.getMsg());
+        if(errorReceived == GAME_OVER) {
+            System.out.println("FANGULO STOGGIIOCOD IMMMERDA");
+            System.exit(0);
+        }
         getModel();
     }
     private void passivePlay() throws IOException {
