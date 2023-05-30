@@ -109,23 +109,26 @@ public class UserView extends Observable implements Serializable, ViewInterface 
 
     public void showTUIBoard(Board board) {
         Tile[][] tilesOnBoard = board.getBoard();
-        System.out.print("   0  1  2  3  4  5  6  7  8");
+        System.out.println("┌─0─┬─1─┬─2─┬─3─┬─4─┬─5─┬─6─┬─7─┬─8─┐");
         for (int i = 0; i < board.BOARD_ROW; i++) {
-            System.out.println();
-            System.out.print(+i+" ");
+            System.out.print(i);
             for (int j = 0; j < board.BOARD_COLUMN; j++) {
                 switch (tilesOnBoard[i][j].getType()) {
-                    case BLOCKED -> System.out.print("\033[31;47;1m   \u001B[0m");
-                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
-                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
-                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
-                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
-                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
-                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
-                    case NOTHING -> System.out.print("\033[31;40;0m   \u001B[0m");
+                    case BLOCKED -> System.out.print("\033[31;100;1m   \u001B[0m");
+                    case NOTHING -> System.out.print("\033[37;100;1m   \u001B[0m");
+                    case CAT -> System.out.print("\033[37;42;1m   \u001B[0m");
+                    case BOOK -> System.out.print("\033[37;107;1m   \u001B[0m");
+                    case FRAME -> System.out.print("\033[37;44;1m   \u001B[0m");
+                    case GAME -> System.out.print("\033[37;43;1m   \u001B[0m");
+                    case PLANT -> System.out.print("\033[37;45;1m   \u001B[0m");
+                    case TROPHY -> System.out.print("\033[37;46;1m   \u001B[0m");
                 }
+                System.out.print("│");
             }
+            if(i!= board.BOARD_ROW-1)
+                System.out.println("\n├───┼───┼───┼───┼───┼───┼───┼───┼───┤");
         }
+        System.out.println("\n└───┴───┴───┴───┴───┴───┴───┴───┴───┘");
         System.out.println();
     }
     public void showTUIBookshelf(Bookshelf bookshelf) {
