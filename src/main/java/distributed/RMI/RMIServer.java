@@ -3,7 +3,7 @@ package distributed.RMI;
 import distributed.Client;
 import distributed.Server;
 import model.Board;
-import util.Error;
+import util.Event;
 import util.Event;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class RMIServer extends Server implements ServerRMIInterface {
         return server.getClientsConnected();
     }
 
-    public Error sendMessage(Object obj, Event event) throws IOException {
+    public Event sendMessage(Object obj, Event event) throws IOException {
         return server.sendServerMessage(obj,event);
         //return getInstanceOfController().getNextEvent(super.getNumberOfClientsConnected());
     }

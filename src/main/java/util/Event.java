@@ -29,6 +29,7 @@ public enum Event {
     TURN_PICKED_TILES(""),
     UPDATE_BOOKSHELF(""),
 
+   //Errors
     NOT_AVAILABLE("\u001B[35mNickname already taken...\u001B[0m"),
     OK("\u001B[35mAccepted\u001B[0m"),
     EMPTY_NICKNAME("\u001B[35mNickname is empty...\u001B[0m"),
@@ -42,6 +43,9 @@ public enum Event {
     BOARD_NOT_EMPTY(""),
     REPETITION("\u001B[35mInvalid input, you put the same coordinate more than once\u001B[0m"),
     WAIT("\u001B[35mWaiting for all the players...\u001B[0m"),
+    GAME_OVER("\u001B[35mGame over\u001B[0m"),
+    LAST_TURN("\u001B[35mThis is the last turn!\u001B[0m"),
+
 
 
 
