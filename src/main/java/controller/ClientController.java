@@ -55,6 +55,7 @@ public class ClientController implements Observer {
         });
     }
 
+
     @Override
     public void update(Observable o, Message message) {
         //switch case per gestire il flusso di gioco con chiamate a view

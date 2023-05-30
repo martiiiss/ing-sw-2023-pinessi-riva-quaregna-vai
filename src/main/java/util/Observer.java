@@ -10,4 +10,7 @@ public interface Observer {
 
     void onUpdate(Message message) throws IOException;
 
+
+
+
 }

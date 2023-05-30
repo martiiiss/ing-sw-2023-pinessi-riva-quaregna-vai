@@ -84,7 +84,15 @@ public class UserView extends Observable implements Serializable, ViewInterface 
                     Do you prefer a Terminal User Interface (TUI) or a Graphical User Interface (GUI)?
                     Press 1 for 'TUI', 2 for 'GUI':""");
             try {
-                return Integer.parseInt(reader.readLine());
+                int userInterface =  Integer.parseInt(reader.readLine());
+                notifyObservers(o -> {
+                    try {
+                        o.onUpdate(new Message(userInterface, SET_NICKNAME));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                return userInterface;
             }catch(NumberFormatException e) {}
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");

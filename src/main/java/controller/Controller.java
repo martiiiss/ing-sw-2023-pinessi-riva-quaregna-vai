@@ -404,6 +404,7 @@ public class Controller  {
     public Board getBoard(){ return this.board;}
 
 
+
     public void clearChoice() throws IOException {
     }
 

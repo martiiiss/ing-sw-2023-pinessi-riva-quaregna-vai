@@ -28,9 +28,6 @@ public class Observable{
         observers.remove(o);
     }
 
-
-  //  public void notifyObservers() {notifyObservers(null);}
-
     public void notifyObservers(Consumer<Observer> lambda){
         for(Observer observer: observers){
             lambda.accept(observer);

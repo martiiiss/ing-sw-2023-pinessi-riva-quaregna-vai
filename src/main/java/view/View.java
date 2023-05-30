@@ -22,7 +22,8 @@ public class View implements Observer, ViewInterface {
      * @throws IOException
      */
     @Override
-    public void onUpdateNickname(Message message) throws IOException {
+    public void onUpdate(Message message) throws IOException {
 
     }
+
 }
