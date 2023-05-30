@@ -60,7 +60,7 @@ public class Observable{
      * This method is called automatically by the
      * {@code notifyObservers} methods.
      *
-    
+
      */
     protected synchronized void clearChanged() {
         changed = false;
