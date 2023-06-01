@@ -2,7 +2,7 @@ package distributed.RMI;
 
 import distributed.Client;
 import model.Board;
-import util.Error;
+import util.Event;
 import util.Event;
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ public interface ServerRMIInterface extends Remote {
     //boolean getNumberOfPlayer(int num) throws IOException;
     int getNumberOfConnections() throws RemoteException;
 
-    Error sendMessage(Object obj, Event event) throws IOException;
+    Event sendMessage(Object obj, Event event) throws IOException;
 
     Object getModel(Event event, Object clientIndex) throws RemoteException;
 

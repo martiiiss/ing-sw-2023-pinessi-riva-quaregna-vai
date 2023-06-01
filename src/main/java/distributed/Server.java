@@ -7,7 +7,7 @@ import distributed.RMI.ServerRMIInterface;
 import distributed.Socket.SocketServer;
 import model.Board;
 import model.Game;
-import util.Error;
+import util.Event;
 import util.Event;
 
 import java.io.IOException;
@@ -122,7 +122,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public Board getServerBoard(){ return this.controller.getBoard();}
 
-    public Error sendServerMessage(Object obj, Event event) throws IOException {
+    public Event sendServerMessage(Object obj, Event event) throws IOException {
         if(event==Event.ASK_NUM_PLAYERS)
             maxNumOfClients = (int) obj;
         return controller.updateController(obj,event);

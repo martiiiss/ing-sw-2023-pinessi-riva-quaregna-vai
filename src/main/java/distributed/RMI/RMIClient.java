@@ -4,6 +4,7 @@ import distributed.Client;
 import model.*;
 import util.Cord;
 import util.Error;
+import util.Event;
 import view.UserView;
 
 import java.awt.print.Book;
@@ -14,6 +15,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import static java.lang.System.err;
 import static java.lang.System.exit;
 import static util.Event.*;
 
@@ -24,7 +26,7 @@ public class RMIClient extends Client implements Serializable {
     private String address;
     private int port;
     private UserView uView = new UserView();
-    private Error errorReceived;
+    private Event errorReceived;
     private int myIndex;
 
 
@@ -72,7 +74,7 @@ public class RMIClient extends Client implements Serializable {
     int numOfPlayers = 0;
 
     public void lobby() throws IOException { //TODO Metti il sincro per la stampa brutta
-        Error errorReceived;
+        Event errorReceived;
         if(myIndex==0) {//Vuol dire che sono il primo client connesso
             numOfPlayers = uView.askNumOfPlayer();
             while (numOfPlayers<2 || numOfPlayers>4) {
@@ -83,20 +85,20 @@ public class RMIClient extends Client implements Serializable {
             System.out.println(errorReceived.getMsg());
         }
         errorReceived = server.sendMessage(uView.userInterface(),CHOOSE_VIEW); //invia al server la View desiderata
-        while (errorReceived!=Error.OK) {
+        while (errorReceived!=Event.OK) {
             System.out.println(errorReceived.getMsg());
             errorReceived = server.sendMessage(uView.userInterface(),CHOOSE_VIEW);
         }
         String nickname = uView.askPlayerNickname();
         errorReceived =server.sendMessage(nickname,SET_NICKNAME); //invia al server il nickname
-        while (errorReceived!=Error.OK) {
+        while (errorReceived!=Event.OK) {
             System.out.println(errorReceived.getMsg());
             errorReceived = server.sendMessage(uView.askPlayerNickname(), SET_NICKNAME);
         }
         myIndex = (int) server.getModel(SET_INDEX,nickname);
         if(myIndex==0){
             errorReceived = server.sendMessage(null,ALL_CONNECTED);
-            while (errorReceived != Error.OK) {
+            while (errorReceived != Event.OK) {
                 errorReceived = server.sendMessage(null, ALL_CONNECTED);
             }
         }
@@ -112,10 +114,10 @@ public class RMIClient extends Client implements Serializable {
     private int indexOfPIT;
     private boolean hasGameStarted = false;
     public void getModel() throws IOException {
-        Error errorReceived = Error.WAIT;
+        Event errorReceived = Event.WAIT;
         if(!hasGameStarted) {
             errorReceived = server.sendMessage(null, GAME_STARTED);
-            while (errorReceived != Error.OK)
+            while (errorReceived != Event.OK)
                 errorReceived = server.sendMessage(null, GAME_STARTED);
         }
         this.board =(Board) server.getModel(GAME_BOARD,myIndex);
@@ -134,7 +136,7 @@ public class RMIClient extends Client implements Serializable {
         }
     }
     private void activePlay() throws IOException {
-        Error errorReceived;
+        Event errorReceived;
         playerInTurn = listOfPlayers.get(myIndex);
         //SHOWS THE PLAYER ALL THE ACTIONS THEY CAN DO
         activePlayerMenu();
@@ -144,11 +146,11 @@ public class RMIClient extends Client implements Serializable {
         //Asking the player the amount of tiles they wish to pick and the coordinates
         do {
             errorReceived = activeAskNumOfTiles();
-        }while (errorReceived != Error.OK);
+        }while (errorReceived != Event.OK);
         //Asks the client the coordinates
         do {
             errorReceived = activeAskTiles();
-        }while (errorReceived !=Error.OK);
+        }while (errorReceived !=Event.OK);
         ArrayList<Tile> tilesInHand = new ArrayList<>();
         tilesInHand = (ArrayList<Tile>) server.getModel(TURN_TILE_IN_HAND,myIndex);
         uView.printTilesInHand(tilesInHand);
@@ -156,26 +158,31 @@ public class RMIClient extends Client implements Serializable {
         //Asking in which column the player wishes to place the picked tiles
         do {
            errorReceived = activeAskColumn(tilesInHand);
-        }while (errorReceived!=Error.OK);
+        }while (errorReceived!=Event.OK);
         //Asking the order of insertion
         errorReceived = server.sendMessage(playerInTurn.getMyBookshelf(),UPDATE_BOOKSHELF); //FIXME non sono sicuro che si possa fare così, credo sia il controller che deve aggiornare la bookshelf di player
         errorReceived = server.sendMessage(null,CHECK_REFILL);
 
         //The server checks if the board had to be refilled, the client asks the server
         //if it has been done, if true then it receives an update of the board so that it can be printed
-        if(errorReceived==Error.REFILL)
+        if(errorReceived==Event.REFILL)
             System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
         errorReceived = server.sendMessage(myIndex,END_OF_TURN);
+        System.out.println(errorReceived.getMsg());
+        if(errorReceived == GAME_OVER) {
+            System.out.println("FANGULO STOGGIIOCOD IMMMERDA");
+            System.exit(0);
+        }
         getModel();
     }
     private void passivePlay() throws IOException {
         System.out.println("It's not your turn, here are some actions you can do!");
-        Error status = Error.WAIT;
+        Event status = Event.WAIT;
         do {
             status = server.sendMessage(myIndex,CHECK_MY_TURN);
-            if(status!=Error.OK)
+            if(status!=Event.OK)
                 passivePlayerMenu(status);
-        }while (status!=Error.OK);
+        }while (status!=Event.OK);
         getModel();
     }
 
@@ -246,25 +253,25 @@ public class RMIClient extends Client implements Serializable {
                 System.out.println("What else would you like to do?");
         }while (choice!=6);
     }
-    private Error activeAskNumOfTiles() throws IOException {
+    private Event activeAskNumOfTiles() throws IOException {
         numOfChosenTiles();
         errorReceived = server.sendMessage(numberOfChosenTiles, TURN_AMOUNT);
         System.out.println(errorReceived.getMsg());
         return errorReceived;
     }
 
-    private Error activeAskTiles() throws IOException {
+    private Event activeAskTiles() throws IOException {
         chooseTiles();
         errorReceived = server.sendMessage(cords, TURN_PICKED_TILES);
         System.out.println(errorReceived.getMsg());
         return errorReceived;
     }
     int column;
-    private Error activeAskColumn(ArrayList<Tile> tilesInHand) throws IOException {
+    private Event activeAskColumn(ArrayList<Tile> tilesInHand) throws IOException {
         column = uView.askColumn();
         errorReceived = server.sendMessage(column,TURN_COLUMN);
         System.out.println(errorReceived.getMsg());
-        if(errorReceived == Error.OK)
+        if(errorReceived == Event.OK)
             activePlaceTile(column,tilesInHand);
         return errorReceived;
     }
@@ -275,14 +282,14 @@ public class RMIClient extends Client implements Serializable {
                 pos = uView.askTileToInsert(tilesInHand);
                 errorReceived = server.sendMessage(pos, TURN_POSITION);
                 System.out.println(errorReceived.getMsg());
-            }while (errorReceived!=Error.OK);
+            }while (errorReceived!=Event.OK);
             playerInTurn.setMyBookshelf((Bookshelf) server.getModel(UPDATE_BOOKSHELF,myIndex));
             tilesInHand =(ArrayList<Tile>) server.getModel(TURN_POSITION,myIndex);
             uView.printTilesInHand(tilesInHand);
             uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
         }
     }
-    private void passivePlayerMenu(Error status) throws IOException {
+    private void passivePlayerMenu(Event status) throws IOException {
         int choice = uView.askPassiveAction();
         switch (choice) {
             case 1 -> {

@@ -64,9 +64,10 @@ public class ClientHandlerSocket implements Runnable {
     }
 
     public void receivedMessage() throws IOException, ClassNotFoundException {
-        this.inputObject = input.readObject(); //per ricevere i messaggi dal client
+        this.inputObject =  input.readObject(); //per ricevere i messaggi dal client
         if(this.inputObject!=null) {
-            System.out.println("ogg ricevuto " + this.inputObject + " da " + socketClient.getInetAddress());
+            String temp = ((Message) input.readObject()).getObj().toString();
+            System.out.println("ogg ricevuto " + temp + " da " + socketClient.getInetAddress());
         }
     }
 

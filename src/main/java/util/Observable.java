@@ -3,6 +3,7 @@ package util;
 import distributed.messages.Message;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class Observable{
     private boolean changed = false;
@@ -26,10 +27,11 @@ public class Observable{
         observers.remove(o);
     }
 
-
-    public void notifyObservers() {notifyObservers(null);}
-
-
+    public void notifyObservers(Consumer<Observer> lambda){
+        for(Observer observer: observers){
+            lambda.accept(observer);
+        }
+    }
     public void notifyObservers(Message arg) {
         for (int i = observers.size()-1; i>=0; i--)
             observers.get(i).update(this, arg);
@@ -58,7 +60,7 @@ public class Observable{
      * This method is called automatically by the
      * {@code notifyObservers} methods.
      *
-     * @see     #notifyObservers()
+
      */
     protected synchronized void clearChanged() {
         changed = false;

@@ -29,7 +29,6 @@ public class Board extends Observable implements Serializable {
                     this.livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
                     //After I put a tile on the board I notify the observers, stating that livingRoomBoard has been modified
                     setChanged();
-                    notifyObservers();
                     iTiles++;
                 }
             }

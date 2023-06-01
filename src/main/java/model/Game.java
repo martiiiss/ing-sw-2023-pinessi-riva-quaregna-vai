@@ -90,7 +90,7 @@ public class Game extends Observable implements Serializable {
 
     public void setFinisher(Player finished){
         this.finisher = finished; //set finisher
-        isLastTurn = true; // it updates the value of isLastTurn to TRUE
+        this.isLastTurn = true; // it updates the value of isLastTurn to TRUE
         notifyObservers(new Message(this, Event.SET_FINISHER));
     }
 

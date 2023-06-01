@@ -21,7 +21,7 @@ import java.util.HashMap;
 
 import static util.Event.*;
 
-public class Controller implements Observer {
+public class Controller  {
     private Game game;
     private Bag bag;
     private Board board;
@@ -50,29 +50,29 @@ public class Controller implements Observer {
     }
 
     //this method needs to be fixed -> multithreading TODO
-    public Error chooseNickname(String nickname) throws IOException {
+    public Event chooseNickname(String nickname) throws IOException {
         if(nickname.isEmpty()) { //control for the first player
-            return Error.EMPTY_NICKNAME;
+            return Event.EMPTY_NICKNAME;
         }
         //control for the others
         for(int i = 0; i<game.getPlayers().size();i++) {
             if(game.getPlayers().get(i).getNickname().equals(nickname)){
-                return Error.NOT_AVAILABLE;
+                return Event.NOT_AVAILABLE;
             }
         }
         Player newPlayer = new Player();
         newPlayer.setNickname(nickname);
         game.addPlayer(newPlayer);
-        return Error.OK;
+        return Event.OK;
     }
 
-    public Error chooseUserInterface(int chosenInterface) throws IOException {
+    public Event chooseUserInterface(int chosenInterface) throws IOException {
         switch (chosenInterface) {
             case 1, 2 -> {
-                return Error.OK;
+                return Event.OK;
             }
             default -> {
-                return Error.INVALID_VALUE;
+                return Event.INVALID_VALUE;
             }
         }
     }
@@ -129,12 +129,12 @@ public class Controller implements Observer {
     }
 
 
-    private Error numOfChosenTiles(int numberOfChosenTiles) throws IOException {
+    private Event numOfChosenTiles(int numberOfChosenTiles) throws IOException {
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
         if (numberOfChosenTiles<1 || numberOfChosenTiles>3)
-            return Error.OUT_OF_BOUNDS;
+            return Event.OUT_OF_BOUNDS;
         if(freeSlots < numberOfChosenTiles )
-            return Error.INVALID_VALUE;
+            return Event.INVALID_VALUE;
 
         int temp=0, cont=0;
         if(numberOfChosenTiles!=1) {
@@ -148,27 +148,29 @@ public class Controller implements Observer {
                             int e;
                             temp = 0;
                             for (e = 1; e <= numberOfChosenTiles; e++) {
-                                cord.setCords(i - e * (cont - 1), j + e * (cont));
-                                if (board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.BLOCKED && board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.NOTHING && isTileFreeTile(cord)) {
-                                    temp = e + 1;
-                                } else {
-                                    e = numberOfChosenTiles + 1;
+                                if(i - e * (cont - 1)< board.BOARD_ROW && j + e * (cont)< board.BOARD_COLUMN) {
+                                    cord.setCords(i - e * (cont - 1), j + e * (cont));
+                                    if (board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.BLOCKED && board.getBoard()[i - e * (cont - 1)][j + e * (cont)].getType() != Type.NOTHING && isTileFreeTile(cord)) {
+                                        temp = e + 1;
+                                    } else {
+                                        e = numberOfChosenTiles + 1;
+                                    }
                                 }
                             }
                             if (temp == numberOfChosenTiles) {
                                 this.numberOfChosenTiles = numberOfChosenTiles;
-                                return Error.OK;
+                                return Event.OK;
                             }
                             cont++;
                         }
                     }
                 }
             }
-            return Error.INVALID_VALUE;
+            return Event.INVALID_VALUE;
         } else {
             this.numberOfChosenTiles = numberOfChosenTiles;
         }
-        return Error.OK;
+        return Event.OK;
     }
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
@@ -176,30 +178,30 @@ public class Controller implements Observer {
     //FIXME: Si possono pescare tiles dappertutto, non viene controllato se è disponibile
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
     private ArrayList<Cord> playerCords = new ArrayList<>();
-    public Error chooseTiles(ArrayList<Cord> cords) throws IOException {
+    public Event chooseTiles(ArrayList<Cord> cords) throws IOException {
         for(Cord cord : cords)
             if(cord.getRowCord()>8 || cord.getRowCord()<0 || cord.getColCord()>8 || cord.getColCord()<0)
-                return Error.OUT_OF_BOUNDS;
+                return Event.OUT_OF_BOUNDS;
         for(int i=0; i<cords.size();i++)
             for (int j=i+1; j<cords.size();j++)
                 if(cords.get(i).getRowCord() == cords.get(j).getRowCord() && cords.get(i).getColCord()==cords.get(j).getColCord())
-                    return Error.REPETITION;
+                    return Event.REPETITION;
 
         for (Cord cord : cords){
             if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
                 playerCords.clear();
-                return Error.BLOCKED_NOTHING;
+                return Event.BLOCKED_NOTHING;
             }
             if (!isTileFreeTile(cord)) {
                 playerCords.clear();
-                return Error.NOT_ON_BORDER;
+                return Event.NOT_ON_BORDER;
             }
             if(cords.size()!=1)
                 if(!checkAdj(cords))
-                    return Error.NOT_ADJACENT;
+                    return Event.NOT_ADJACENT;
             playerCords.add(cord);
         }
-        return Error.OK;
+        return Event.OK;
     }
     //FIXME se qualcuno ha voglia si può notevolmente ottimizzare
     private boolean checkAdj(ArrayList<Cord> cords) {
@@ -275,78 +277,80 @@ public class Controller implements Observer {
     }
 
 
-    public Error chooseColumn(int chosenColumn) throws IOException {
+    public Event chooseColumn(int chosenColumn) throws IOException {
         System.out.println("NumOfChosenTiles: "+this.numberOfChosenTiles);
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
         if(chosenColumn<0 || chosenColumn >4)
-            return Error.INVALID_VALUE;
+            return Event.INVALID_VALUE;
         if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING)
-            return Error.OUT_OF_BOUNDS;
+            return Event.OUT_OF_BOUNDS;
         this.chosenColumn = chosenColumn;
-        return Error.OK;
+        return Event.OK;
     }
 
     //after chooseColumn has been invoked
-    public Error chooseTilesDisposition(int index) throws IOException {
+    public Event chooseTilesDisposition(int index) throws IOException {
         if(index <0 || index >= playerHand.size())
-            return Error.INVALID_VALUE;
+            return Event.INVALID_VALUE;
         Player pit = game.getPlayerInTurn();
         System.out.println(game.getPlayerInTurn().getNickname());
         pit.getMyBookshelf().placeTile(this.chosenColumn,playerHand.get(index));
         playerHand.add(index+1,new Tile(Type.NOTHING,0));
         playerHand.remove(index);
-        return Error.OK;
+        return Event.OK;
     }
 
     public void calculateScore(){
         int cgc = game.checkCommonGoalCard();
         int pgc = game.getPlayerInTurn().checkCompletePGC();
-        int adjacencies = game.getPlayerInTurn().checkAdjacentBookshelf();
-        game.getPlayerInTurn().updateScore(cgc+pgc+adjacencies);
+        int adjacency = game.getPlayerInTurn().checkAdjacentBookshelf();
+        game.getPlayerInTurn().updateScore(cgc+pgc+adjacency);
         System.out.println("SCORE PIT: "+game.getPlayerInTurn().getScore());
     }
 
-    public boolean checkIfGameEnd() throws IOException {
+    public Event checkIfGameEnd() throws IOException {
         int index=0;
         if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
             index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
         }
-
-        if(game.getPlayerInTurn().getMyBookshelf().getStatus()){//if Bookshelf is full
-            if(game.getIsLastTurn()) {//is last turn
-                if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame(); //CALL THE END OF GAME
-                    return true;
-                } else {
-                    goToNext(game.getPlayerInTurn()); //set next Player in turn
-                    return false;
+        if(!game.getIsLastTurn()){
+            System.out.println("Hellooo");
+            if(game.getPlayerInTurn().getMyBookshelf().getStatus()) {
+                game.getPlayerInTurn().updateScore(1);
+                System.out.println("Punteggio di quello che ha finito (PIT) incrementato: "+game.getPlayerInTurn().getScore());
+                game.setFinisher(game.getPlayerInTurn());
+                System.out.println("PIT SCORE: "+game.getPlayerInTurn().getScore());
+                if(index==0) //If the PIT is also the first one to finish the game is over instantly
+                {
+                    System.out.println("PIT ha riempito la shelf ed è quello con index 0. La partita finisce subito");
+                    //endOfGame();
+                    return GAME_OVER;
                 }
-            } else{
-                game.setFinisher(game.getPlayerInTurn());//I set the player that finished first and set isLastTurn -> I use a method from method.Game
-                game.getPlayerInTurn().updateScore(1);//I add an extra point to the first player to finish
-                if (game.getPlayers().get(index).getIsFirstPlayer()) {//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame();
-                    return true;
-                } else {
-                    goToNext(game.getPlayerInTurn()); //set next Player in turn
-                    return false;
+                else {
+                    goToNext(game.getPlayerInTurn());
+                    return LAST_TURN;
                 }
             }
-        } else {//Bookshelf NOT full
-            if(game.getIsLastTurn()){
-                if(game.getPlayers().get(index).getIsFirstPlayer()){//if the player next to the current one is THE FIRST PLAYER
-                    endOfGame();//CALL END OF GAME
-                    return true;
-                } else{
-                    goToNext(game.getPlayerInTurn()); //set next Player in turn
-                    return false;
-                }
-            } else{ //not last turn
+            else {
+                System.out.println("PIT non ha riempito la Bookshelf");
                 goToNext(game.getPlayerInTurn());
-                return false;
+                return OK;
             }
         }
-    }//TODO optimize this method
+        else {
+            System.out.println("Siamo già in lastTurn");
+            if(index==0) {
+                System.out.println("Il pit è il primo, partita finisce");
+                //endOfGame();
+                return GAME_OVER;
+            }
+            else {
+                System.out.println("il PIT non è il primo quindi non termina");
+                goToNext(game.getPlayerInTurn());
+                return LAST_TURN;
+            }
+        }
+    }
 
 
     public void goToNext(Player playerInTurn){ //set player in turn
@@ -397,16 +401,14 @@ public class Controller implements Observer {
                 }
             }
         }
-        playAgain();
-    }//TODO ask how to choose the winner if two players have the same score
+        System.out.println("GAME OVER!!!!!!!!!!!");
+        System.exit(0);
+    }
 
 
     public Board getBoard(){ return this.board;}
 
-    @Override
-    public void update(Observable o, Message message) {
 
-    }
 
     public void clearChoice() throws IOException {
     }
@@ -458,8 +460,8 @@ public class Controller implements Observer {
     }
 
 
-    public Error updateController(Object obj, Event event) throws IOException {
-        Error error = Error.OK;
+    public Event updateController(Object obj, Event event) throws IOException {
+        Event error = Event.OK;
         switch (event) {
             case ASK_NUM_PLAYERS -> {
                 game.setNumOfPlayers((int)obj);
@@ -474,16 +476,16 @@ public class Controller implements Observer {
                 if(game.getNumOfPlayers() == game.getPlayers().size()) {
                     System.out.println("The game is starting");
                     initializeGame();
-                    error = Error.OK;
+                    error = Event.OK;
                 }
                 else
-                    error = Error.WAIT;
+                    error = Event.WAIT;
             }
             case GAME_STARTED -> {
                 if(game.getGameStarted())
-                    error = Error.OK;
+                    error = Event.OK;
                 else
-                    error = Error.WAIT;
+                    error = Event.WAIT;
             }
             case TURN_AMOUNT -> {
                 System.out.println("Turn ammount: "+(int) obj);
@@ -504,23 +506,22 @@ public class Controller implements Observer {
                 calculateScore();
                 for(Player p : game.getPlayers())
                     UI.showTUIBookshelf(p.getMyBookshelf());
-                checkIfGameEnd();
-                System.out.println("PIT index"+game.getPlayers().indexOf(game.getPlayerInTurn()));
-                return Error.OK;
+                error = checkIfGameEnd();
+                return error;
             }
             case CHECK_MY_TURN -> {
                 if((int) obj == game.getPlayers().indexOf(game.getPlayerInTurn()))
-                    return Error.OK;
+                    return Event.OK;
                 else
-                    return Error.NOT_YOUR_TURN;
+                    return Event.NOT_YOUR_TURN;
             }
             case CHECK_REFILL -> {
                 if(board.checkBoardStatus()) {
                     checkBoardToBeFilled();
-                    return Error.REFILL;
+                    return Event.REFILL;
                 }
                 else
-                    return Error.BOARD_NOT_EMPTY;
+                    return Event.BOARD_NOT_EMPTY;
             }
         }
         return error;

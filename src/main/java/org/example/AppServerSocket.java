@@ -12,4 +12,5 @@ public class AppServerSocket {
         Thread thread = new Thread(socketServer, "server");
         thread.start();
     }
+
 }

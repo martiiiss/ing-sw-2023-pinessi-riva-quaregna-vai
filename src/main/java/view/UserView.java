@@ -13,15 +13,27 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Spliterator;
 
-public class UserView implements Observer, Serializable {
+import static util.Event.*;
+
+public class UserView extends Observable implements Serializable, ViewInterface {
     private static final long serialVersionUID = -23874204704L;
+
+
 
     public int askNumOfPlayer() throws IOException {
         int numOfPlayer = 0;
         System.out.println("Insert num of player: ");
             BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        try {
-            return Integer.parseInt(reader.readLine());
+        try{
+            int numOfPlayers = Integer.parseInt(reader.readLine());
+            notifyObservers(o -> {
+                try {
+                    o.onUpdate(new Message(numOfPlayer, ASK_NUM_PLAYERS));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return numOfPlayers;
         }catch(NumberFormatException e) {}
         return -1;
     }
@@ -33,6 +45,14 @@ public class UserView implements Observer, Serializable {
             try {
                 System.out.print("\nChoose a nickname:");
                 nickname =  reader.readLine();
+                String finalNickname = nickname;
+                notifyObservers(o -> {
+                    try {
+                        o.onUpdate(new Message(finalNickname, SET_NICKNAME));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             } catch (IllegalArgumentException e) {
                 System.err.println("Invalid input!");
                 throw new IllegalArgumentException();
@@ -47,7 +67,15 @@ public class UserView implements Observer, Serializable {
         try {
             System.out.print("\nChoose a communication protocol, \ndigit 1 for 'Socket', 2 for 'JavaRMI':");
             try {
-                return Integer.parseInt(reader.readLine());
+                int webProtocol = Integer.parseInt(reader.readLine());
+                notifyObservers(o -> {
+                    try {
+                        o.onUpdate(new Message(webProtocol, CHOOSE_NETWORK_PROTOCOL));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                return webProtocol;
             }catch(NumberFormatException e) {}
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
@@ -63,7 +91,15 @@ public class UserView implements Observer, Serializable {
                     Do you prefer a Terminal User Interface (TUI) or a Graphical User Interface (GUI)?
                     Press 1 for 'TUI', 2 for 'GUI':""");
             try {
-                return Integer.parseInt(reader.readLine());
+                int userInterface =  Integer.parseInt(reader.readLine());
+                notifyObservers(o -> {
+                    try {
+                        o.onUpdate(new Message(userInterface, CHOOSE_VIEW));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                return userInterface;
             }catch(NumberFormatException e) {}
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
@@ -73,23 +109,26 @@ public class UserView implements Observer, Serializable {
 
     public void showTUIBoard(Board board) {
         Tile[][] tilesOnBoard = board.getBoard();
-        System.out.print("   0  1  2  3  4  5  6  7  8");
+        System.out.println("┌─0─┬─1─┬─2─┬─3─┬─4─┬─5─┬─6─┬─7─┬─8─┐");
         for (int i = 0; i < board.BOARD_ROW; i++) {
-            System.out.println();
-            System.out.print(+i+" ");
+            System.out.print(i);
             for (int j = 0; j < board.BOARD_COLUMN; j++) {
                 switch (tilesOnBoard[i][j].getType()) {
-                    case BLOCKED -> System.out.print("\033[31;47;1m   \u001B[0m");
-                    case CAT -> System.out.print("\u001B[32m □ \u001B[0m");
-                    case BOOK -> System.out.print("\u001B[97m □ \u001B[0m");
-                    case FRAME -> System.out.print("\u001B[34m □ \u001B[0m");
-                    case GAME -> System.out.print("\u001B[33m □ \u001B[0m");
-                    case PLANT -> System.out.print("\u001B[35m □ \u001B[0m");
-                    case TROPHY -> System.out.print("\u001B[36m □ \u001B[0m");
-                    case NOTHING -> System.out.print("\033[31;40;0m   \u001B[0m");
+                    case BLOCKED -> System.out.print("\033[31;100;1m   \u001B[0m");
+                    case NOTHING -> System.out.print("\033[37;100;1m   \u001B[0m");
+                    case CAT -> System.out.print("\033[37;42;1m   \u001B[0m");
+                    case BOOK -> System.out.print("\033[37;107;1m   \u001B[0m");
+                    case FRAME -> System.out.print("\033[37;44;1m   \u001B[0m");
+                    case GAME -> System.out.print("\033[37;43;1m   \u001B[0m");
+                    case PLANT -> System.out.print("\033[37;45;1m   \u001B[0m");
+                    case TROPHY -> System.out.print("\033[37;46;1m   \u001B[0m");
                 }
+                System.out.print("│");
             }
+            if(i!= board.BOARD_ROW-1)
+                System.out.println("\n├───┼───┼───┼───┼───┼───┼───┼───┼───┤");
         }
+        System.out.println("\n└───┴───┴───┴───┴───┴───┴───┴───┴───┘");
         System.out.println();
     }
     public void showTUIBookshelf(Bookshelf bookshelf) {
@@ -124,7 +163,15 @@ public class UserView implements Observer, Serializable {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             System.out.println("Choose the column, an integer from 0 to 4:");
-            return Integer.parseInt(reader.readLine());
+            int chosenColumn = Integer.parseInt(reader.readLine());
+            notifyObservers(o -> {
+                try {
+                    o.onUpdate(new Message(chosenColumn, TURN_COLUMN));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return chosenColumn;
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
         }
@@ -136,6 +183,14 @@ public class UserView implements Observer, Serializable {
         Cord cord = new Cord();
         System.out.print("Input your coordinates as 2 integers separated by a comma\n(tiles must be adjacent):");
         String in = reader.readLine();
+        String finalIn = in;
+        notifyObservers(o -> {
+            try {
+                o.onUpdate(new Message(finalIn, TURN_POSITION));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         while (in.isEmpty()) {
             System.err.println("Empty, try again");
             in = reader.readLine();
@@ -147,7 +202,15 @@ public class UserView implements Observer, Serializable {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             System.out.println("How many tiles do you want to pick?\nChoose a number between 1 and 3:");
-            return Integer.parseInt(reader.readLine());
+            int numOfChosenTiles =  Integer.parseInt(reader.readLine());
+            notifyObservers(o -> {
+                try {
+                    o.onUpdate(new Message(numOfChosenTiles, TURN_AMOUNT));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            return numOfChosenTiles;
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
         }
@@ -213,6 +276,14 @@ public class UserView implements Observer, Serializable {
                 System.out.print("Type the index of the one you wish to insert first:");
                 try {
                     index = Integer.parseInt(reader.readLine());
+                    int finalIndex = index;
+                    notifyObservers(o -> {
+                        try {
+                            o.onUpdate(new Message(finalIndex, TURN_PICKED_TILES));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 }catch (NumberFormatException ex) {}
             }while (index<1 || index>tilesInHand.size());
             index--;
@@ -367,16 +438,8 @@ public class UserView implements Observer, Serializable {
         System.out.println("6) Show the player list");
         try {
             return Integer.parseInt(reader.readLine());
-        }catch (NumberFormatException e) {}
+        } catch (NumberFormatException e) {
+        }
         return -1;
-    }
-
-    /**
-     * @param observable
-     * @param message
-     */
-    @Override
-    public void update(Observable observable, Message message) {
-
     }
 }

@@ -1,10 +1,15 @@
 package Control;
 
 import controller.Controller;
+import jdk.jshell.SourceCodeAnalysis;
 import model.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.CsvSource;
+import util.Event;
 import view.UserView;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.awt.*;
 import java.io.IOException;
 
 public class ControlTest {
@@ -97,4 +102,74 @@ public class ControlTest {
         System.out.print("\u001B[36m □ \u001B[0m");
 
     }
+
+
+
+    Tile[][] bookshelf2 = {
+            {frame, nothing, frame, frame, frame},
+            {frame, frame, frame, frame, frame},
+            {frame, frame, frame, frame, frame},
+            {frame, frame, frame, frame, frame},
+            {frame, frame, frame, frame, frame},
+            {frame, frame, frame, frame, frame}};
+    Tile[][] bookshelf3 = {
+            {frame, nothing, frame, frame, frame},
+            {frame, nothing, frame, frame, frame},
+            {frame, frame, frame, frame, frame},
+            {frame, frame, frame, frame, frame},
+            {frame, frame, frame, frame, frame},
+            {frame, frame, frame, frame, frame}};
+    @Test
+    void checkIfGameEnd() throws IOException {
+        controller.getInstanceOfGame().setNumOfPlayers(3);
+        bookshelf.setBookshelf(bookshelf2);
+        player.setMyBookshelf(bookshelf);
+        player.setNickname("Numero 0");
+        controller.getInstanceOfGame().addPlayer(player);
+        controller.getInstanceOfGame().setPlayerInTurn(player);
+
+        Player player1 = new Player();
+        player1.setNickname("Centro");
+        Bookshelf bookshelf4 = new Bookshelf();
+        bookshelf4.setBookshelf(bookshelf3);
+        player1.setMyBookshelf(bookshelf4);
+        controller.getInstanceOfGame().addPlayer(player1);
+
+        Player player2 = new Player();
+        player2.setNickname("Coda");
+        Bookshelf bookshelf5 = new Bookshelf();
+        bookshelf5.setBookshelf(bookshelf1);
+        player2.setMyBookshelf(bookshelf5);
+        controller.getInstanceOfGame().addPlayer(player2);
+
+        System.out.println("LIST OF THINGS: ");
+
+        System.out.println("# Players: "+controller.getInstanceOfGame().getPlayers().size());
+
+        System.out.println("Player 1: "+controller.getInstanceOfGame().getPlayers().get(0).getNickname());
+        System.out.println("Bookshelf P1: ");
+        userView.showTUIBookshelf(player.getMyBookshelf());
+
+        System.out.println("Player 2: "+ controller.getInstanceOfGame().getPlayers().get(1).getNickname());
+        System.out.println("Bookshelf P2: ");
+        userView.showTUIBookshelf(player1.getMyBookshelf());
+        controller.getInstanceOfGame().getPlayerInTurn().getMyBookshelf().placeTile(1,frame);
+        userView.showTUIBookshelf(controller.getInstanceOfGame().getPlayerInTurn().getMyBookshelf());
+       /* Event event = controller.checkIfGameEnd();
+        System.out.println(event);
+        System.out.println("NEXT CALL..");
+        System.out.println("Adding 2 tiles to second player...");
+        controller.getInstanceOfGame().getPlayerInTurn().getMyBookshelf().placeTile(1, frame);
+        controller.getInstanceOfGame().getPlayerInTurn().getMyBookshelf().placeTile(1, frame);
+        userView.showTUIBookshelf(player1.getMyBookshelf());
+        */
+        Event event;
+        do {
+            event = controller.checkIfGameEnd();
+            System.out.println("Event rec: "+event);
+        } while (event!=Event.GAME_OVER);
+
+
+    }
+
 }
