@@ -12,10 +12,13 @@ public class PersonalGoalCard implements Serializable {
 
     private Tile[][] seedOfCard;
 
+    private int number;
+
     //numOfPGC is the "name of the card that has to be generated" this number is extracted in game by Rand(). It has to be
     //passed as a param since it needs to be different from all the previous and next generated numOfCards (Every player must
     //have a different card)
     public PersonalGoalCard (int numberOfPGC){
+        this.number = numberOfPGC;
         if(numberOfPGC<=0 || numberOfPGC>12) throw new IllegalArgumentException("Cannot access the card "+numberOfPGC+", it doesn't exist!");
         this.seedOfCard = new Tile[6][5];
         Tile mockTile = new Tile(Type.NOTHING,0);
@@ -70,4 +73,7 @@ public class PersonalGoalCard implements Serializable {
         return this.seedOfCard;
     }
 
+    public int getNumber() {
+        return number;
+    }
 }

@@ -10,6 +10,7 @@ import distributed.messages.Message;
 import model.Tile;
 import util.Event;
 import util.Observable;
+import util.TileForMessages;
 
 public class Bookshelf extends Observable implements Serializable {
     private static final long serialVersionUID = 4784659265294763952L;
@@ -55,11 +56,12 @@ public class Bookshelf extends Observable implements Serializable {
         for(int i=SHELF_ROW-1;i>=0; i--){
             if(bookshelf[i][columnToBeFilled].getType() == NOTHING){
                 bookshelf[i][columnToBeFilled] = tile;
+                TileForMessages tileForMessages = new TileForMessages(this, i, columnToBeFilled, tile);
+                notifyObservers(new Message(tileForMessages, Event.SET_TILE_BOOKSHELF));
 
                 i = -1;
             }
         }
-        notifyObservers(new Message(this, Event.SET_TILE_BOOKSHELF));
     }
     public Tile[][] getBookshelf(){
         return this.bookshelf;

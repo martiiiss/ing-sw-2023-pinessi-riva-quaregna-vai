@@ -1,6 +1,9 @@
-package view;
+package view.GUI;
 
 import model.Tile;
+import model.Type;
+import util.ImagePanel;
+import util.ImageReader;
 
 
 import javax.swing.*;
@@ -39,6 +42,15 @@ public class BookshelfView extends JInternalFrame {
             if (bookshelfTiles[i][column].getIcon() == null) {
                 this.bookshelfTiles[i][column].setIcon(imageReader.readIcon("resources/TileImages/" + tile.getType() + "/" + tile.getNumType() + ".png", 50, 50));
                 i = -1;
+            }
+        }
+    }
+    public void updateBookshelf(Tile[][] tiles){
+        ImageReader imageReader = new ImageReader();
+        for (int i=0; i<=6; i++){
+            for (int j=0; j<=5; j++) {
+                if (tiles[i][j].getType() != Type.NOTHING)
+                    this.bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/" + tiles[i][j].getType() + "/" + tiles[i][j].getNumType() + ".png", 50, 50));
             }
         }
     }

@@ -3,7 +3,7 @@ package model;
 import distributed.messages.Message;
 import util.Event;
 import util.Observable;
-import util.Observer;
+import util.TileForMessages;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -103,7 +103,8 @@ public class Board extends Observable implements Serializable {
         livingRoomBoard[row][column] = new Tile(Type.NOTHING, 0);
         //After a tile is picked up I change that tile, I have to notify the observers that something has changed
         setChanged();
-        notifyObservers(new Message(this, Event.REMOVE_TILE_BOARD));
+        TileForMessages tileForMessages = new TileForMessages(this, row, column, null);
+        notifyObservers(new Message(tileForMessages, Event.REMOVE_TILE_BOARD));
         return removedTile;
     }
 

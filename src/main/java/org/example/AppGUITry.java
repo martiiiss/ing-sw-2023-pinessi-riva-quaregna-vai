@@ -4,8 +4,7 @@ import model.Bag;
 import model.Board;
 import model.Game;
 import model.Tile;
-import view.BoardView;
-import view.GUIView;
+import view.GUI.GUIView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ public class AppGUITry {
         game.setCommonGoalCards();
         ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
         board.setUpBoard(tiles);//filled the board
-        view = new GUIView(game, board);
+        view = new GUIView();
 
     }
 }
