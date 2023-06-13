@@ -9,6 +9,7 @@ import util.Observable;
 import util.Observer;
 import util.TileForMessages;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class GraphicUserInterface implements Observer {
@@ -53,5 +54,14 @@ public class GraphicUserInterface implements Observer {
 
 
         }
+    }
+
+    /**
+     * @param message
+     * @throws IOException
+     */
+    @Override
+    public void onUpdate(Message message) throws IOException {
+
     }
 }
