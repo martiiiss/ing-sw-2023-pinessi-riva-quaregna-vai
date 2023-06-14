@@ -1,6 +1,7 @@
 package model;
 
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -9,10 +10,8 @@ import util.Event;
 import util.Observable;
 import java.util.Random;
 
-import static util.Event.ASK_NUM_PLAYERS;
-
-
 public class Game extends Observable implements Serializable {
+    @Serial
     private static final long serialVersionUID = -5788544275616187567L; //random number
     private Player winner;
     private int numberOfPlayers;
@@ -24,18 +23,12 @@ public class Game extends Observable implements Serializable {
     private ArrayList<CommonGoalCard> commonGoalCards;
     private boolean gameStarted;
 
-    private ArrayList<Event> nextEventPlayer;
-
-
-
-
     public Game() { // added the constructor
         this.commonGoalCards = new ArrayList<>();
         this.players = new ArrayList<>();
         this.numberOfPlayers = 0;
         this.isLastTurn = false;
         this.gameStarted = false;
-        this.nextEventPlayer = new ArrayList<>();
     }
 
     public boolean getGameStarted(){return this.gameStarted;}
@@ -191,33 +184,6 @@ public class Game extends Observable implements Serializable {
             }
         }
         return scoreST;
-    }
-
-
-
-    public ArrayList<Event> getNextEventPlayer(){
-        return this.nextEventPlayer;
-    }
-
-    public void setNextEventPlayer(Event event, int n, int numOfClientConnected){
-        if(this.nextEventPlayer.size()>n) {
-            this.nextEventPlayer.set(n, event);
-        } else{
-            if(this.nextEventPlayer==null || this.nextEventPlayer.size()!=numOfClientConnected){
-                for(int i=0; i<numOfClientConnected-this.nextEventPlayer.size(); i++ ){
-                    if(this.nextEventPlayer!=null && this.nextEventPlayer.size()>1){
-                        this.nextEventPlayer.add(this.nextEventPlayer.size()-1+i, ASK_NUM_PLAYERS);
-                    }
-                    if(nextEventPlayer==null){
-                        this.nextEventPlayer=new ArrayList<>();
-                        this.nextEventPlayer.add(0, ASK_NUM_PLAYERS);
-                    }
-                }
-            }
-            else {
-                this.nextEventPlayer.add(n, event);
-            }
-        }
     }
 }
 

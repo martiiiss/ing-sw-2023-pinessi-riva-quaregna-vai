@@ -1,7 +1,6 @@
 package model;
 
 import distributed.messages.Message;
-import jdk.jshell.spi.ExecutionControl;
 import util.Cord;
 import util.Event;
 import util.Observable;
@@ -290,19 +289,5 @@ public class Player extends Observable implements Serializable {
         return true;  //return true if myBookshelf is full
     }
 
-
-    /**This two methods refer to the chat, we have to chose if they're ok in Player
-     * and if they're ok as they are
-     */
-    public ArrayList<String> readChat(){
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-        return null;
-        //TODO implement this method
-    }
-
-    public void writeChat(){
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-        //TODO implement this method
-    }
 }
 
