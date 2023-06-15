@@ -3,11 +3,9 @@ package distributed.RMI;
 import distributed.Client;
 import model.*;
 import util.Cord;
-import util.Error;
 import util.Event;
 import view.UserView;
 
-import java.awt.print.Book;
 import java.io.*;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -15,8 +13,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import static java.lang.System.err;
-import static java.lang.System.exit;
+import static java.lang.System.*;
 import static util.Event.*;
 
 public class RMIClient extends Client implements Serializable {
@@ -29,6 +26,7 @@ public class RMIClient extends Client implements Serializable {
     private Event errorReceived;
     private int myIndex;
 
+    private Object lock;
 
     public RMIClient(String address, int port) throws RemoteException {
         super(address, port);
@@ -36,6 +34,7 @@ public class RMIClient extends Client implements Serializable {
         this.port = port;
     }
 
+    //FIXME: ci sraà da cambiare la exit con il mutlipartita. Cioè se il client dovesse provare a connettersi ad una partita già esistente ma full non deve terminare il processo ma deve avere la possibilità
     @Override
     public void startConnection() throws RemoteException, NotBoundException {
         try {
@@ -72,8 +71,12 @@ public class RMIClient extends Client implements Serializable {
         //TODO implement this
     }
     int numOfPlayers = 0;
+    Thread threadWaitTurn;
+    private boolean isFirstTurn = true;
+
 
     public void lobby() throws IOException { //TODO Metti il sincro per la stampa brutta
+        this.lock = new Object();
         Event errorReceived;
         if(myIndex==0) {//Vuol dire che sono il primo client connesso
             numOfPlayers = uView.askNumOfPlayer();
@@ -102,6 +105,25 @@ public class RMIClient extends Client implements Serializable {
                 errorReceived = server.sendMessage(null, ALL_CONNECTED);
             }
         }
+        System.out.println("Pre thread");
+        this.threadWaitTurn = new Thread(()->{
+            System.out.println("lock");
+            synchronized (lock){
+                while(!Thread.currentThread().isInterrupted()){
+                    try {
+                        System.out.println("entra: ");
+                        waitTurn();
+                        lock.wait();
+                        System.out.println("esce ");
+                    } catch (InterruptedException | RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+        });
+        threadWaitTurn.start();
+        System.out.println("After thread");
         getModel();
     }
 
@@ -114,6 +136,7 @@ public class RMIClient extends Client implements Serializable {
     private int indexOfPIT;
     private boolean hasGameStarted = false;
     public void getModel() throws IOException {
+        disabledInput = false;
         Event errorReceived = Event.WAIT;
         if(!hasGameStarted) {
             errorReceived = server.sendMessage(null, GAME_STARTED);
@@ -131,11 +154,16 @@ public class RMIClient extends Client implements Serializable {
             activePlay();
         }
         else {
+            synchronized (lock) {
+                System.out.println("Risveglio il lock");
+                this.lock.notifyAll();
+                }
             passivePlay();
             getModel();
         }
     }
     private void activePlay() throws IOException {
+
         Event errorReceived;
         playerInTurn = listOfPlayers.get(myIndex);
         //SHOWS THE PLAYER ALL THE ACTIONS THEY CAN DO
@@ -290,37 +318,60 @@ public class RMIClient extends Client implements Serializable {
         }
     }
     private void passivePlayerMenu(Event status) throws IOException {
-        int choice = uView.askPassiveAction();
-        switch (choice) {
-            case 1 -> {
-                this.board =(Board) server.getModel(GAME_BOARD,myIndex);
-                System.out.println("Here's the game board...");
-                uView.showTUIBoard(board);
-            }
-            case 2 -> {
-                System.out.println("Here are the CommonGoalCards...");
-                uView.showCGC(commonGoalCard);
-            }
-            case 3 -> {
-                System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
-                uView.showPGC(listOfPlayers.get(myIndex).getPersonalGoalCard());
-            }
-            case 4 -> {
-                System.out.println("Here's everyone's Bookshelf");
-                this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex); //used to update the bookshelves
-                for (Player player : listOfPlayers) {
-                    System.out.println("\u001B[36m"+player.getNickname()+"\u001B[0m's bookshelf:");
-                    uView.showTUIBookshelf(player.getMyBookshelf());
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        uView.askPassiveAction();
+        int choice = uView.waitInput();
+        if(!disabledInput){
+            switch (choice) {
+                case 1 -> {
+                    this.board =(Board) server.getModel(GAME_BOARD,myIndex);
+                    System.out.println("Here's the game board...");
+                    uView.showTUIBoard(board);
+                }
+                case 2 -> {
+                    System.out.println("Here are the CommonGoalCards...");
+                    uView.showCGC(commonGoalCard);
+                }
+                case 3 -> {
+                    System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
+                    uView.showPGC(listOfPlayers.get(myIndex).getPersonalGoalCard());
+                }
+                case 4 -> {
+                    System.out.println("Here's everyone's Bookshelf");
+                    this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex); //used to update the bookshelves
+                    for (Player player : listOfPlayers) {
+                        System.out.println("\u001B[36m"+player.getNickname()+"\u001B[0m's bookshelf:");
+                        uView.showTUIBookshelf(player.getMyBookshelf());
+                    }
+                }
+                case 5 -> {
+                    uView.chatOptions(listOfPlayers.get(myIndex));
+                }
+                case 6 -> {
+                    this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex); //get the latest update
+                    uView.showPlayers(listOfPlayers);
                 }
             }
-            case 5 -> {
-                uView.chatOptions(listOfPlayers.get(myIndex));
-            }
-            case 6 -> {
-                this.listOfPlayers = (ArrayList<Player>) server.getModel(GAME_PLAYERS,myIndex); //get the latest update
-                uView.showPlayers(listOfPlayers);
-            }
         }
+
     }
+    private boolean disabledInput;
+
+    public void waitTurn() throws RemoteException, InterruptedException {
+        int pitIndex;
+        do {
+            //System.out.println("true");
+            pitIndex = (int) server.getModel(GAME_PIT, myIndex);
+            //System.out.println("jk " + pitIndex);
+        }while (pitIndex != myIndex);
+        System.out.println("You turn");
+        System.out.println("Press enter to start your turn....");
+        disabledInput = true;
+
+        //this.lock.wait();
+        //this.threadWaitTurn.wait();
+
+        }
+
 //FIXME:Al momento il metodo del calcolo punteggio è sbagliato, non tiene conto dei punteggi aggiunti in precedenza
 }

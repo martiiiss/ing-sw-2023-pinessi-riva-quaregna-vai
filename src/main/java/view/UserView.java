@@ -428,7 +428,7 @@ public class UserView extends Observable implements Serializable, ViewInterface 
             i++;
         }
     }
-    public int askPassiveAction() throws IOException {
+    public void askPassiveAction()  {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1) Look at the Board");
         System.out.println("2) Check the CommonGoalCards");
@@ -436,9 +436,13 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         System.out.println("4) Look at other player's Bookshelves");
         System.out.println("5) Open the chat");
         System.out.println("6) Show the player list");
+    }
+
+    public int waitInput() {
+        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             return Integer.parseInt(reader.readLine());
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | IOException e) {
         }
         return -1;
     }
