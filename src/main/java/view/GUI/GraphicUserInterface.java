@@ -49,7 +49,7 @@ public class GraphicUserInterface  implements Observer {
             }
             case SET_SCORING_TOKEN_2 -> {
                 if(Objects.equals(((Player) message.getObj()).getNickname(), nickname))
-                    guiView.getHandView().setSC(guiView.getScv(1).getValueDisplayed(), 1);
+                    guiView.getHandView().setSC(guiView.getScv(1).getValueDisplayed(), 0);
             }
 
 

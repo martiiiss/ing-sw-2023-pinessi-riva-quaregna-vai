@@ -1,23 +1,20 @@
 package model;
 
 import distributed.messages.Message;
-import jdk.jshell.SourceCodeAnalysis;
-import jdk.jshell.spi.ExecutionControl;
 import util.Cord;
 import util.Event;
 import util.Observable;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static model.Type.NOTHING;
 
 
 
 public class Player extends Observable implements Serializable {
+    @Serial
     private static final long serialVersionUID = 627657924675627426L;
     private String nickname;
     private PersonalGoalCard myGoalCard;
@@ -46,10 +43,14 @@ public class Player extends Observable implements Serializable {
     public boolean getIsFirstPlayer(){return isFirstPlayer;}
 
     /*Sets the player's nickname this method will be invoked by the view and will pass the arg "nickname"*/
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-        notifyObservers(new Message(this, Event.SET_NICKNAME));
-
+    public void setNickname(String nickname){
+        if(nickname.isEmpty() || nickname.equals(null)){
+            throw new IllegalArgumentException();
+        }
+        else {
+                this.nickname = nickname;
+                notifyObservers(new Message(this, Event.SET_NICKNAME));
+        }
     }
     public String getNickname(){return this.nickname;}
 
@@ -288,19 +289,5 @@ public class Player extends Observable implements Serializable {
         return true;  //return true if myBookshelf is full
     }
 
-
-    /**This two methods refer to the chat, we have to chose if they're ok in Player
-     * and if they're ok as they are
-     */
-    public ArrayList<String> readChat(){
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-        return null;
-        //TODO implement this method
-    }
-
-    public void writeChat(){
-        try{/*code*/ throw new ExecutionControl.NotImplementedException("Method not yet implemented");} catch (Exception ex) {System.out.println("Method not yet implemented");}
-        //TODO implement this method
-    }
 }
 

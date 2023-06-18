@@ -1,23 +1,13 @@
 package controller;
 
-import distributed.Client;
-import distributed.Server;
-import distributed.messages.Message;
 import model.*;
-import org.example.App;
 import util.Cord;
-import util.Error;
 import util.Event;
-import util.Observable;
-import util.Observer;
 import view.UserInterface;
-import view.UserView;
-
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+
 
 import static util.Event.*;
 
@@ -38,7 +28,7 @@ public class Controller  {
     }
 
     //Before the game actually starts
-    public void createGame() throws IOException {
+    public void createGame() {
         //this.nextEventPlayer = new ArrayList();
         this.game = new Game(); /*I create the Game object */
 //         chooseNumOfPlayer();
@@ -50,7 +40,7 @@ public class Controller  {
     }
 
     //this method needs to be fixed -> multithreading TODO
-    public Event chooseNickname(String nickname) throws IOException {
+    public Event chooseNickname(String nickname) {
         if(nickname.isEmpty()) { //control for the first player
             return Event.EMPTY_NICKNAME;
         }
@@ -66,7 +56,7 @@ public class Controller  {
         return Event.OK;
     }
 
-    public Event chooseUserInterface(int chosenInterface) throws IOException {
+    public Event chooseUserInterface(int chosenInterface) {
         switch (chosenInterface) {
             case 1, 2 -> {
                 return Event.OK;
@@ -97,17 +87,6 @@ public class Controller  {
 
     //button START GAME somewhere
 
-    //TODO create the GameFlow
-   /* public void gameFlow() throws IOException {
-        do {
-            UI.showTUIBookshelf(game.getPlayerInTurn().getMyBookshelf());
-            UI.showTUIBoard(board);
-            checkBoardToBeFilled();
-            for (int i = 0; i < numberOfChosenTiles; i++) {
-            }
-            calculateScore();//I calculate the score every time a Player puts some tiles into its Bookshelf
-        } while (!checkIfGameEnd());//this method controls if the Bookshelf is full and determines how to proceed
-    }*/
     public void checkBoardToBeFilled(){
         if(board.checkBoardStatus()){ //true if board need to be filled
             for(int r=0;r<9;r++){
@@ -129,7 +108,7 @@ public class Controller  {
     }
 
 
-    private Event numOfChosenTiles(int numberOfChosenTiles) throws IOException {
+    private Event numOfChosenTiles(int numberOfChosenTiles) {
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
         if (numberOfChosenTiles<1 || numberOfChosenTiles>3)
             return Event.OUT_OF_BOUNDS;
@@ -178,7 +157,7 @@ public class Controller  {
     //FIXME: Si possono pescare tiles dappertutto, non viene controllato se è disponibile
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
     private ArrayList<Cord> playerCords = new ArrayList<>();
-    public Event chooseTiles(ArrayList<Cord> cords) throws IOException {
+    public Event chooseTiles(ArrayList<Cord> cords) {
         for(Cord cord : cords)
             if(cord.getRowCord()>8 || cord.getRowCord()<0 || cord.getColCord()>8 || cord.getColCord()<0)
                 return Event.OUT_OF_BOUNDS;
@@ -277,7 +256,7 @@ public class Controller  {
     }
 
 
-    public Event chooseColumn(int chosenColumn) throws IOException {
+    public Event chooseColumn(int chosenColumn) {
         System.out.println("NumOfChosenTiles: "+this.numberOfChosenTiles);
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
         if(chosenColumn<0 || chosenColumn >4)
@@ -289,7 +268,7 @@ public class Controller  {
     }
 
     //after chooseColumn has been invoked
-    public Event chooseTilesDisposition(int index) throws IOException {
+    public Event chooseTilesDisposition(int index) {
         if(index <0 || index >= playerHand.size())
             return Event.INVALID_VALUE;
         Player pit = game.getPlayerInTurn();
@@ -308,7 +287,7 @@ public class Controller  {
         System.out.println("SCORE PIT: "+game.getPlayerInTurn().getScore());
     }
 
-    public Event checkIfGameEnd() throws IOException {
+    public Event checkIfGameEnd() {
         int index=0;
         if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
             index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
@@ -383,7 +362,7 @@ public class Controller  {
         }
     }//TODO the cases are useful, we need to implement the choice
 
-    public void endOfGame() throws IOException {
+    public void endOfGame() {
         ArrayList<Integer> rankNumber = new ArrayList<>();
         for(int i=0; i<game.getPlayers().size(); i++){
             rankNumber.add(game.getPlayers().get(i).getScore());
@@ -408,11 +387,6 @@ public class Controller  {
 
     public Board getBoard(){ return this.board;}
 
-
-
-    public void clearChoice() throws IOException {
-    }
-
     public ArrayList<Tile> getTilesFromBoard() {
         ArrayList<Tile> removedTiles = new ArrayList<>();
         for(Cord cord : playerCords) {
@@ -426,41 +400,7 @@ public class Controller  {
     }
 
 
-    public Event getNextEvent(int num, int numOfClientConnected) {
-        if (this.game.getNextEventPlayer().size() == 0) {
-            return ASK_NUM_PLAYERS;
-        }
-        if(this.game.getPlayerInTurn()==null && this.game.getPlayers().size()!=0){
-            this.game.setPlayerInTurn(this.game.getPlayers().get(0));
-        }
-
-        if(this.game.getNextEventPlayer()==null || this.game.getNextEventPlayer().size()!=numOfClientConnected){
-            for(int i=0; i<numOfClientConnected-this.game.getNextEventPlayer().size(); i++ ){
-                this.game.getNextEventPlayer().add(this.game.getNextEventPlayer().size()-1+i, ASK_NUM_PLAYERS);
-            }
-        }
-        if(this.game.getNextEventPlayer().size()>num && this.game.getPlayers().size()>num) {
-            if (this.game.getNextEventPlayer().get(num) == WAIT && this.game.getPlayers().get(num).equals(this.game.getPlayerInTurn()) && this.game.getPlayers().size() == this.game.getNumOfPlayers()) {
-                System.out.println("num è in WAIT: " + num);
-
-                if (num == this.game.getNumOfPlayers() - 1) { //sono l'ultimo giocatore
-                    this.game.setPlayerInTurn(this.game.getPlayers().get(0));
-                    this.game.setNextEventPlayer(START, 0, numOfClientConnected); //il primo giocatore inizia il gioco
-                    System.out.println("parte primo player");
-                    initializeGame();
-
-                } else if (num < this.game.getNumOfPlayers() - 1) {
-                    this.game.setPlayerInTurn(this.game.getPlayers().get(num + 1));
-                    System.out.println("parte" + (num + 1) + " player");
-                    this.game.setNextEventPlayer(START, num + 1, numOfClientConnected);
-                }
-            }
-        }
-        return this.game.getNextEventPlayer().get(num);
-    }
-
-
-    public Event updateController(Object obj, Event event) throws IOException {
+    public Event updateController(Object obj, Event event) {
         Event error = Event.OK;
         switch (event) {
             case ASK_NUM_PLAYERS -> {
