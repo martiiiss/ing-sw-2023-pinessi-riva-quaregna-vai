@@ -1,19 +1,24 @@
 package view.GUI;
 
+import distributed.messages.Message;
 import model.Tile;
 import model.Type;
+import util.Event;
 import util.ImagePanel;
 import util.ImageReader;
+import util.Observable;
 
 
 import javax.swing.*;
 import java.awt.*;
 
 
-public class BookshelfView extends JInternalFrame {
+public class BookshelfView extends Observable {
 
     private JInternalFrame bookshelfDisplayed;
     private JButton [][] bookshelfTiles;
+
+    private boolean columnChosen = false;
 
     public BookshelfView(){ //creates the bookshelf GUI section
         ImageReader imageReader = new ImageReader();
@@ -25,7 +30,14 @@ public class BookshelfView extends JInternalFrame {
                 bookshelfTiles[i][j].setPreferredSize(new Dimension(50,50));
                 bookshelfDisplayed.add(bookshelfTiles[i][j]);
                 bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
-        }
+                int column = j;
+                bookshelfTiles[i][j].addActionListener(e -> {
+                    if(!columnChosen) {
+                        notifyObservers(new Message(column, Event.COLUMN_CHOSEN));
+                        columnChosen = true;
+                    }
+                });
+            }
 
         bookshelfDisplayed.setMinimumSize(new Dimension(800, 450));
         bookshelfDisplayed.setMaximumSize(new Dimension(800, 450));
@@ -55,4 +67,11 @@ public class BookshelfView extends JInternalFrame {
         }
     }
 
+    public boolean isColumnChosen() {
+        return columnChosen;
+    }
+
+    public void setColumnChosen(boolean columnChosen) {
+        this.columnChosen = columnChosen;
+    }
 }

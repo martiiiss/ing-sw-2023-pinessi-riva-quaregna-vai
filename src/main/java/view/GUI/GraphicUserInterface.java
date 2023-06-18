@@ -9,9 +9,10 @@ import util.Observable;
 import util.Observer;
 import util.TileForMessages;
 
+import java.io.IOException;
 import java.util.Objects;
 
-public class GraphicUserInterface implements Observer {
+public class GraphicUserInterface  implements Observer {
     private GUIView guiView;
 
     private int playerNumber; //position of the player in the array players
@@ -48,10 +49,15 @@ public class GraphicUserInterface implements Observer {
             }
             case SET_SCORING_TOKEN_2 -> {
                 if(Objects.equals(((Player) message.getObj()).getNickname(), nickname))
-                    guiView.getHandView().setSC(guiView.getScv(1).getValueDisplayed(), 0);
+                    guiView.getHandView().setSC(guiView.getScv(1).getValueDisplayed(), 1);
             }
 
 
         }
+    }
+
+    @Override
+    public void onUpdate(Message message) throws IOException {
+
     }
 }
