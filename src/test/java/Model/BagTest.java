@@ -11,26 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BagTest {
     private Bag bag = new Bag();
-
-    /*
-    @Test
-    void controlBag(){
-        for(int i=0; i<6; i++){
-            for(int j=0; j<22; j++){
-                switch (i) {
-                    case 0 -> {
-                        assertEquals(Type.CAT, bag.getTilesContained().get(j).getType());
-                        System.out.println((j + 22 * i) + " tipo " + bag.getTilesContained().get(j + 22 * i).getType() + bag.getTilesContained().get(j + 22 * i).getNumType());
-                    }
-                    case 1 -> {
-                        assertEquals(Type.BOOK, bag.getTilesContained().get(j + 22 * i).getType());
-                        System.out.println((j + 22 * i) + " tipo " + bag.getTilesContained().get(j + 22 * i).getType() + bag.getTilesContained().get(j + 22 * i).getNumType());
-                    }
-                }
-            }
-        }
-    }
-*/
     @Test
     void getBagTilesTest() {
         assertEquals(6, bag.getBagTiles(6).size());

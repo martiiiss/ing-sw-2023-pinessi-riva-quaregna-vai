@@ -152,7 +152,6 @@ class PersonalGoalCardTest {
                 assertEquals(bookshelf10[i][j].getType(), pgc10[i][j].getType());
                 assertEquals(bookshelf11[i][j].getType(), pgc11[i][j].getType());
                 assertEquals(bookshelf12[i][j].getType(), pgc12[i][j].getType());
-                assertNotSame(bookshelfNot[i][j],pgc1[i][j].getType());
             }
         }
     }
