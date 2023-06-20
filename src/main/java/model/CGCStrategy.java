@@ -1,4 +1,5 @@
 package model;
+
 /**Class that represents the Common Goal Card Strategy Pattern*/
 public interface CGCStrategy {
     /**

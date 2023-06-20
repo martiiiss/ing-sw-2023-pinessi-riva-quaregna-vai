@@ -3,6 +3,7 @@ package model;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+
 /**This class represents the control of the eleventh Common Goal Card*/
 /*same type 8 tiles*/
 public class CGC11 implements CGCStrategy, Serializable {

@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serial;
 import java.io.Serializable;
+
 /**This class represents the Tile*/
 public class Tile implements Serializable {
     @Serial

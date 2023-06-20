@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serial;
 import java.io.Serializable;
+
 /**Class that represents the Scoring Token*/
 public class ScoringToken implements Serializable {
     @Serial

@@ -4,6 +4,7 @@ import util.Observable;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Stack;
+
 /**Class that represents the Common Goal Card*/
 public class CommonGoalCard extends Observable implements Serializable {
     @Serial

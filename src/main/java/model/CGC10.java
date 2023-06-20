@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serial;
 import java.io.Serializable;
-
 import static model.Type.BLOCKED;
 import static model.Type.NOTHING;
 

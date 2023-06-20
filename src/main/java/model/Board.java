@@ -4,7 +4,6 @@ import distributed.messages.Message;
 import util.Event;
 import util.Observable;
 import util.TileForMessages;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;

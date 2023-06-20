@@ -21,7 +21,6 @@ public class Player extends Observable implements Serializable {
     private Bookshelf myBookshelf;
     private int scorePGC = 0;
     int scoreAdj = 0;
-
     private boolean scoringToken1;
     private boolean scoringToken2;
 

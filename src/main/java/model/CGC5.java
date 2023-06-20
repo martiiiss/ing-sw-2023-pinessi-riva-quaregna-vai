@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import static model.Type.NOTHING;
 
-
 /**This class represents the control of the fifth Common Goal Card*/
 public class CGC5 implements CGCStrategy, Serializable {
     @Serial

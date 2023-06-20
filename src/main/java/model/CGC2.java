@@ -5,6 +5,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import static model.Bookshelf.SHELF_ROW;
 import static model.Bookshelf.SHELF_COLUMN;
+
 /**This class represents the control of the second Common Goal Card*/
 public class CGC2 implements CGCStrategy, Serializable {
     @Serial

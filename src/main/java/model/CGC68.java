@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serial;
 import java.io.Serializable;
-
 import static model.Type.NOTHING;
 
 /**This class represents the control of the sixth and eight Common Goal Card*/

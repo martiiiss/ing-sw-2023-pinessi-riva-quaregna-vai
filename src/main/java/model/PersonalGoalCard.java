@@ -1,4 +1,5 @@
 package model;
+
 import com.google.gson.stream.JsonReader;
 import java.io.FileReader;
 import java.io.IOException;

@@ -7,6 +7,7 @@ import distributed.messages.Message;
 import util.Event;
 import util.Observable;
 import java.util.Random;
+
 /**Class that represents the Game*/
 public class Game extends Observable implements Serializable {
     @Serial
