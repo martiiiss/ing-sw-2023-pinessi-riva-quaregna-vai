@@ -1,9 +1,12 @@
 package model;
 
 
+import java.io.Serial;
 import java.io.Serializable;
 
+/**This class represents the control of the seventh Common Goal Card*/
 public class CGC7 implements CGCStrategy, Serializable {
+    @Serial
     private static final long serialVersionUID = 998176289351890649L;
     public boolean compareRule(Bookshelf bks, int id){
         int counter = 0;
@@ -73,8 +76,7 @@ public class CGC7 implements CGCStrategy, Serializable {
                         counter = 0;
                         break;
                     }
-                /**Effettivamente questa condizione è sempre falsa, nella versione semplificata che ho fatto usando una matrice di int però è necessaria...*/
-                if (counter == 4 && j==2 && i>=2 && i<4) //Not along the borders
+                    if (counter == 4 && j==2 && i>=2 && i<4) //Not along the borders
                     if (temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType()) && temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()!=(bookshelf[i - 1][j + 1].getType())) {
                         numOfBlocks++;
                         counter = 0;

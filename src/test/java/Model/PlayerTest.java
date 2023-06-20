@@ -99,7 +99,6 @@ public class PlayerTest {
         chosenOnes.add(t1);
         chosenOnes.add(t2);
         chosenOnes.add(t3);
-        p.setTilesInHand(chosenOnes);
         assertNotNull(chosenOnes);
         assertEquals(t1, chosenOnes.get(0));
         assertNotEquals(t1, chosenOnes.get(2));

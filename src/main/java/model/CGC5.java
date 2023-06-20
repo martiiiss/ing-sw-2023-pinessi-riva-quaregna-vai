@@ -2,15 +2,16 @@ package model;
 
 import util.Cord;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import static model.Type.NOTHING;
 
 
-
+/**This class represents the control of the fifth Common Goal Card*/
 public class CGC5 implements CGCStrategy, Serializable {
+    @Serial
     private static final long serialVersionUID = 2808176289351890649L;
-
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
         Cord cords = new Cord();
@@ -47,6 +48,16 @@ public class CGC5 implements CGCStrategy, Serializable {
         return score == 4;
     }
 
+    /**
+     * <p>
+     *     Method used to check the adjacencies in a bookshelf.
+     * </p>
+     * @param bookshelf represents the bookshelf on which will be performed the control
+     * @param cord is a cord, used to perform the control
+     * @param listOfCords is an <code>ArrayList</code> of Cord
+     * @return an <code>ArrayList</code> of Cord
+     *
+     * @see util.Cord*/
     private ArrayList<Cord> checkAdj(Tile[][] bookshelf, ArrayList<Cord> listOfCords, Cord cord) {
         int i = cord.getRowCord();
         int j = cord.getColCord();

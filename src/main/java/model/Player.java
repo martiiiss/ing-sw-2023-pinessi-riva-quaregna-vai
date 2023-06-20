@@ -1,18 +1,16 @@
 package model;
 
 import distributed.messages.Message;
+import org.jetbrains.annotations.NotNull;
 import util.Cord;
 import util.Event;
 import util.Observable;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import static model.Type.NOTHING;
 
-
-
+/**Class that represents the Player*/
 public class Player extends Observable implements Serializable {
     @Serial
     private static final long serialVersionUID = 627657924675627426L;
@@ -21,13 +19,18 @@ public class Player extends Observable implements Serializable {
     private boolean isFirstPlayer;
     private int score;
     private Bookshelf myBookshelf;
-    private ArrayList<Tile> tilesInHand; //This attribute saves the tiles selected by the player in chooseNTiles so that the bookshelf can be filled with fillBookshelf
-    private int scorePGC = 0;  //progressive score of PGC
+    private int scorePGC = 0;
     int scoreAdj = 0;
 
     private boolean scoringToken1;
     private boolean scoringToken2;
-    // the last two attributes are used to control if the Player has already completed the CGC
+
+    /**
+     * <p>
+     *     Constructor of the Class.<br>
+     *     This sets the two flags <code>scoringToken</code> to <b>false</b>,
+     *     initializes the score to 0 and sets the flag <code>isFirstPlayer</code> to <b>false</b>.
+     * </p>*/
     public Player () {
         scoringToken1 = false;
         scoringToken2 = false;
@@ -35,16 +38,35 @@ public class Player extends Observable implements Serializable {
         isFirstPlayer = false;
     }
 
-    /*This method will be launched when the game starts once game chooses the first player. it will update isFirstPlayer*/
+    /**
+     * <p>
+     *     Method that sets a <code>Player</code> as first player.
+     *     This also notifies the Observers with a {@link Message}.
+     * </p>*/
     public void setAsFirstPlayer() {
         this.isFirstPlayer = true;
         notifyObservers(new Message(this, Event.SET_FIRST_PLAYER));
     }
+
+    /**
+     * <p>
+     *     Method that returns the status of a player.
+     * </p>
+     * @return <b>true</b> if the player has the flag
+     * <code>isFirstPlayer</code> set to <b>true</b>, <b>false</b> otherwise*/
     public boolean getIsFirstPlayer(){return isFirstPlayer;}
 
-    /*Sets the player's nickname this method will be invoked by the view and will pass the arg "nickname"*/
-    public void setNickname(String nickname){
-        if(nickname.isEmpty() || nickname.equals(null)){
+
+    /**
+     * <p>
+     *     Method that given a <code>String</code> parameter sets is as the player nickname,
+     *     after checking that the parameter is not <b>null</b>.
+     *     This also notifies the Observers with a {@link Message}
+     * </p>
+     * @param nickname a String
+     * @throws IllegalArgumentException if <code>nickname</code> is empty*/
+    public void setNickname(@NotNull String nickname){
+        if(nickname.isEmpty()){
             throw new IllegalArgumentException();
         }
         else {
@@ -52,6 +74,12 @@ public class Player extends Observable implements Serializable {
                 notifyObservers(new Message(this, Event.SET_NICKNAME));
         }
     }
+
+    /**
+     * <p>
+     *     Method that returns the nickname of the <code>Player</code>.
+     * </p>
+     * @return a <code>String</code> that represents the nickname*/
     public String getNickname(){return this.nickname;}
 
     /*Assign to each player their bookshelf*/
@@ -61,65 +89,108 @@ public class Player extends Observable implements Serializable {
 
     }
 
-    /*Returns the player's bookshelf*/
+    /**
+     * <p>
+     *     Method that returns the player's bookshelf.
+     * </p>
+     * @return a <code>Bookshelf</code>, belonging to the player */
     public Bookshelf getMyBookshelf() {
         return this.myBookshelf;
     }
 
-    /*Returns the player's current score*/
+    /**
+     * <p>
+     *     Method that returns the player's score.
+     * </p>
+     * @return an int that represents the player's score*/
     public int getScore(){
         return this.score;
     }
 
-    /*Updates the score: add addScore*/
+    /**
+     * <p>
+     *     Method that given an int, updates the player's score.
+     *     This also notifies the Observers with a {@link Message}.
+     * </p>
+     * @param score an int that represents one of the three possible partial scores */
     public void updateScore (int score) {this.score += score;
         notifyObservers(new Message(this, Event.UPDATED_SCORE));
 
     }
 
-    /*Each player gets assigned a personal goal card that they have to complete*/
+
+    /**
+     * <p>
+     *     Method that sets the given <code>PersonalGoalCard</code> parameter as the player's personal goal card.
+     *     This also notifies the Observers with a {@link Message}
+     * </p>
+     * @param pgc a <code>PersonalGoalCard</code>*/
     public void setPersonalGoalCard(PersonalGoalCard pgc) {this.myGoalCard = pgc;
         notifyObservers(new Message(this, Event.SET_PGC));
 
     }
 
-    /*Returns the player's personal goal card*/
+    /**
+     * <p>
+     *     Method that returns the player's personal goal card.
+     * </p>
+     * @return <code>PersonalGoalCard</code>*/
     public PersonalGoalCard getPersonalGoalCard() {
         return this.myGoalCard;
     }
 
+    /**
+     * <p>
+     *     Method that returns the status of the first scoring token.
+     * </p>
+     * @return <b>true</b> if the player has already picked the scoring token of the first common goal card,
+     * <b>false</b> otherwise*/
     public boolean getScoringToken1(){return this.scoringToken1;}
 
 
-    /*Once the player completes a CommonGoalCard, they won't be able to collect other points from that CGC.
-    /*This method updates the flag that keeps track of whether the player has already collected points from the first card or not*/
+    /**
+     * <p>
+     *     Method that sets to true the flag <code>scoringToken1</code>. This
+     *     also notifies the Observers with a {@link Message}.<br>
+     *     <b>NOTE:</b> Once the player completes a CommonGoalCard,
+     *     they won't be able to collect other points from that CGC,
+     *     this method is invoked when a players completes a common goal .
+     * </p>*/
     public void setScoringToken1(){
         this.scoringToken1 = true;
         notifyObservers(new Message(this, Event.SET_SCORING_TOKEN_1));
 
     }
 
+    /**
+     * <p>
+     *     Method that returns the status of the second scoring token.
+     * </p>
+     * @return <b>true</b> if the player has already picked the scoring token of the second common goal card,
+     * <b>false</b> otherwise*/
     public boolean getScoringToken2(){ return this.scoringToken2; }
 
+    /**
+     * <p>
+     *     Method that sets to true the flag <code>scoringToken2</code>. This
+     *     also notifies the Observers with a {@link Message}.<br>
+     *     <b>NOTE:</b> Once the player completes a CommonGoalCard,
+     *     they won't be able to collect other points from that CGC,
+     *     this method is invoked when a players completes a common goal .
+     * </p>*/
     public void setScoringToken2(){
         this.scoringToken2 = true;
         notifyObservers(new Message(this, Event.SET_SCORING_TOKEN_2));
-
     }
-
-    /*TilesInHand correspond to the tiles that the player wishes to add to their bookshelf*/
-    public ArrayList<Tile> getTilesInHand(){
-        return this.tilesInHand;
-    }
-
-    public void setTilesInHand(ArrayList<Tile> chosenTiles){
-        this.tilesInHand = chosenTiles;
-        notifyObservers(new Message(this, Event.SET_TILES_IN_HAND));
-    }
-
-
+    /**
+     * <p>
+     *     Method that returns the reached score of the personal goal card.
+     *     Based on how many tiles are rightly placed, an int that represents
+     *     the personal goal card score, gets returned.
+     * </p>
+     * @throws IllegalStateException when a number of tiles completed is different from an int in between 0 and 6
+     * @return an int that represents the "delta" of the score that has to be added to the general score*/
     public int checkCompletePGC(){
-        Tile[][] bks = myBookshelf.getBookshelf();
         int PGCScore;
         int numberOfTilesCompleted = 0;
         int r,c;
@@ -131,10 +202,6 @@ public class Player extends Observable implements Serializable {
                 }
             }
         }
-        /*Based on how many tiles are completed I assign the PGCScore
-         *This is good because I don't have to check everytime if
-         *I already completed that tile
-         */
 
         switch (numberOfTilesCompleted) {
             case 0 -> PGCScore = 0;
@@ -152,7 +219,12 @@ public class Player extends Observable implements Serializable {
         return deltaScore;
     }
 
-
+    /**
+     * <p>
+     *     Method that returns a partial score regarding the adjacencies
+     *     of tiles of the same tipe in the player's bookshelf.
+     * </p>
+     * @return an int that represents the adjacencies score that has to be added to the general score*/
     public int checkAdjacentBookshelf(){
         System.out.println("\u001B[36mScore Before call: "+score);
         System.out.println("\u001B[36mScore Adj Before call: "+scoreAdj+"\u001B[0m");
@@ -174,7 +246,6 @@ public class Player extends Observable implements Serializable {
         ArrayList<Cord> listOfCords = new ArrayList<>();
         Tile nothing = new Tile(NOTHING,0);
         int i,j;
-        int points=0;
 
         for (int x=0; x<6; x++) {
             for (int y = 0; y <5; y++) {
@@ -278,7 +349,11 @@ public class Player extends Observable implements Serializable {
     }
 
 
-
+    /**
+     * <p>
+     *     Method that returns the status of a bookshelf.
+     * </p>
+     * @return <b>true</b> if a bookshelf has one or more tiles of a regular type, <b>false</b> otherwise.*/
     public boolean checkBookshelf(){
         for(int i=0; i<5; i++) {
             if (myBookshelf.getBookshelf()[0][i].getType() == Type.NOTHING) {
@@ -286,8 +361,7 @@ public class Player extends Observable implements Serializable {
             }
         }
         myBookshelf.setAsFull();
-        return true;  //return true if myBookshelf is full
+        return true;
     }
-
 }
 

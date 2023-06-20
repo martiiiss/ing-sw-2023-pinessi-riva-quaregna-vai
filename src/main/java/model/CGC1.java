@@ -1,14 +1,26 @@
 package model;
-import util.Cord;
 
+import org.jetbrains.annotations.NotNull;
+import util.Cord;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-
 import static model.Type.NOTHING;
-
+/**This class represents the control of the first Common Goal Card*/
 public class CGC1 implements CGCStrategy, Serializable {
+    @Serial
     private static final long serialVersionUID = 6808176289351920649L;
-    private ArrayList<Cord> checkAdj(Tile[][] bookshelf, ArrayList<Cord> listOfCords, Cord cord){
+
+    /**
+     * <p>
+     *     Method used to check the adjacencies in a bookshelf.
+     * </p>
+     * @param bookshelf represents the bookshelf on which will be performed the control
+     * @param cord is a {@link Cord} used to perform the control
+     * @param listOfCords is an <code>ArrayList</code> of {@link Cord}
+     * @return an <code>ArrayList</code> of {@link Cord}
+     * */
+    private ArrayList<Cord> checkAdj(Tile[][] bookshelf, @NotNull ArrayList<Cord> listOfCords, @NotNull Cord cord){
         int i=cord.getRowCord();
         int j=cord.getColCord();
         boolean newCord;
@@ -92,7 +104,6 @@ public class CGC1 implements CGCStrategy, Serializable {
         }
         return listOfCords;
     }
-
 
     public boolean compareRule(Bookshelf bks, int id){
         Tile[][] bookshelf = bks.getBookshelf();

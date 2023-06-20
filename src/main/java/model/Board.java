@@ -5,41 +5,70 @@ import util.Event;
 import util.Observable;
 import util.TileForMessages;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**This class represents the Board of the game*/
 public class Board extends Observable implements Serializable {
+    @Serial
     private static final long serialVersionUID = 4758892564965792652L;
     private int numOfCells;
     public final int  BOARD_ROW = 9;
     public final int  BOARD_COLUMN = 9;
-    private Tile[][] livingRoomBoard;
+    private final Tile[][] livingRoomBoard;
 
-    public Board(int numOfPlayers){ //constructor
+    /**
+     * <p>
+     *     Constructor of the class Board.
+     *     It initializes the livingRoomBoard by calling:<br>
+     *     - <code>setNumOfCells(int numOfPlayers)</code> <br>
+     *     - <code>initializeBoard(int numOfPlayers)</code>
+     *     methods.
+     * </p>
+     * @param numOfPlayers an integer, it represents the number of players of the Game
+     *
+     * */
+    public Board(int numOfPlayers){
         this.livingRoomBoard = new Tile[BOARD_ROW][BOARD_COLUMN];
         setNumOfCells(numOfPlayers);
         initializeBoard(numOfPlayers);
     }
 
-    public void setUpBoard(ArrayList<Tile> tilesToPutOnBoard) { //add tiles to the board.
+    /**
+     * <p>
+     *     This method is used to add a specific number of tiles to the board.
+     *     After the board has been filled the observers are notified with a message,
+     *     stating that <code>livingRoomBoard</code> has been modified.
+     * </p>
+     *
+     * @param tilesToPutOnBoard is an <code>ArrayList</code> of Tile that represents the tile that will be added to the Board
+     *
+     * */
+    public void setUpBoard(ArrayList<Tile> tilesToPutOnBoard) {
         int iTiles=0;
         for(int i=0; i<BOARD_ROW; i++){
             for(int j=0; j<BOARD_COLUMN; j++){
                 if(this.livingRoomBoard[i][j].getType()==Type.NOTHING){
                     this.livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
-                    //After I put a tile on the board I notify the observers, stating that livingRoomBoard has been modified
                     setChanged();
                     iTiles++;
                 }
             }
         }
-        //BOARD IS CHANGED
         notifyObservers(new Message(this, Event.SET_UP_BOARD));
     }
-    /** fixed creating a variable Tile blocked which I insert every time that that cell has to be blocked*/
 
-    public void initializeBoard(int nOfPlayers){ // at the beginning
-        // set cells (livingRoomBoard[][]) that cannot be used during the game to BLOCKED
+    /**
+     * <p>
+     *     This method is called by the constructor <code>Board(int numOfPlayers)</code>.
+     *     Based on the number of players it sets the disposition of the blocked tiles.
+     *     It also fills the board (where there are no <b>blocked</b> tiles) with <b>nothing</b> tiles.
+     * </p>
+     *
+     * @param nOfPlayers an integer that represents the number of players
+     */
+    public void initializeBoard(int nOfPlayers){
         Tile blocked = new Tile(Type.BLOCKED,0);
         for(int r=0; r<=3; r++){
             for(int c=0; c<=2; c++){
@@ -52,7 +81,7 @@ public class Board extends Observable implements Serializable {
             }
         }
 
-        if(nOfPlayers<=3){ //block cell 4
+        if(nOfPlayers<=3){
             int i=0, j=4;
             while(i<=1 && j<=5){
                     livingRoomBoard[i][j]=blocked;
@@ -64,7 +93,7 @@ public class Board extends Observable implements Serializable {
                 }
         }
 
-        if(nOfPlayers==2) { //block cell 3
+        if(nOfPlayers==2) {
             int i=0, j= 3;
             while(i<=2 && j>=2){
                 livingRoomBoard[i][j]=blocked;
@@ -86,34 +115,68 @@ public class Board extends Observable implements Serializable {
         }
     }
 
-    public void setNumOfCells(int nOfPlayers) { //at the beginning
-        //set numOfCell that can be used during the game (depends on nOfPlayers)
-        switch (nOfPlayers) {
+    /**
+     * <p>
+     *     This method sets the number of cells that can be used during the game (using the nOfPlayers).<br>
+     * </p>
+     *
+     * @param nOfPlayers an integer that represents the number of players in game
+     * */
+
+    public void setNumOfCells(int nOfPlayers) {
+            switch (nOfPlayers) {
             case 2 -> this.numOfCells = 29;
             case 3 -> this.numOfCells = 37;
             case 4 -> this.numOfCells = 45;
         }
     }
 
-    /** Changed the method having it return the tile (UML)**/
+    /**
+     * <p>
+     *     Given two parameters (the coordinates of the tile that has to be removed), this method
+     *     returns the Tile that has been selected and substitutes the tile with a <b>nothing</b> tile. <br>
+     *     After a tile has been removed the observers are notified with a message.
+     * </p>
+     * @param column is an integer that represents the coordinate of the column
+     * @param row is an integer that represents the coordinate of the row
+     *
+     * @return a Tile
+     * */
 
-    public Tile removeTile(int row, int column) { //remove the tile in (row, column) --> NOTHING
+    public Tile removeTile(int row, int column) {
         Tile removedTile = livingRoomBoard[row][column];
         livingRoomBoard[row][column] = new Tile(Type.NOTHING, 0);
-        //After a tile is picked up I change that tile, I have to notify the observers that something has changed
         setChanged();
         TileForMessages tileForMessages = new TileForMessages(this, row, column, null);
         notifyObservers(new Message(tileForMessages, Event.REMOVE_TILE_BOARD));
         return removedTile;
     }
 
+    /**
+     * <p>
+     *     Method used to get the disposition of the tiles on the Board.
+     * </p>
+     *
+     * @return a matrix of tiles
+     * */
     public Tile[][] getBoard(){
         return this.livingRoomBoard;
     }
 
+    /**
+     * <p>
+     *     Method used to get the number of available cells of the Board.
+     * </p>
+     * @return an integer that represents the number of available cells
+     * */
     public int getNumOfCells(){return this.numOfCells;}
 
-    public boolean checkBoardStatus(){ //return true if board needs to be filled
+    /**
+     * <p>
+     *     This method returns <b>true</b> if board needs to be filled, <b>false</b> otherwise.
+     * </p>
+     * */
+    public boolean checkBoardStatus(){
         for(int i=0; i<BOARD_ROW; i++){
             for(int j=0; j<BOARD_COLUMN; j++){
                 if(livingRoomBoard[i][j].getType()!=Type.BLOCKED && livingRoomBoard[i][j].getType()!=Type.NOTHING){ //in this cell there is a tile
@@ -127,9 +190,28 @@ public class Board extends Observable implements Serializable {
        return true;
     }
 
+    /**
+     * <p>
+     *     This method returns the Type of a selected Tile
+     *     (selected using the two parameters <code>row</code> and <code>column</code>).
+     * </p>
+     *
+     * @param column is an integer that represents the coordinate of the column
+     * @param row is an integer that represents the coordinate of the row
+     * @return the Type of the selected tile
+     * */
     public Type getSelectedType(int row, int column){
         return (livingRoomBoard[row][column]).getType();
     }
 
+    /**
+     * <p>
+     *     Method that returns the number of the selected Tile Type
+     *     (selected using the two parameters <code>row</code> and <code>column</code>).
+     * </p>
+     * @param column is an integer that represents the coordinate of the column
+     * @param row is an integer that represents the coordinate of the row
+     * @return an integer in between 0 and 3
+     * */
     public int getSelectedNumType(int row, int column) {return (livingRoomBoard[row][column]).getNumType();}
 }
