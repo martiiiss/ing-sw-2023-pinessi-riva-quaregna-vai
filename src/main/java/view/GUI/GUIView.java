@@ -204,7 +204,7 @@ public class GUIView extends Observable implements Observer { //class that conta
         }
         return hand.getTileToInsert();
     }
-    public void addTIle(Tile tile){ //add the tile to the bookshelf
+    public void addTile(Tile tile){ //add the tile to the bookshelf
         bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
     }
 }
