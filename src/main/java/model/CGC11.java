@@ -1,11 +1,15 @@
 package model;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**This class represents the control of the eleventh Common Goal Card*/
 /*same type 8 tiles*/
 public class CGC11 implements CGCStrategy, Serializable {
+    @Serial
     private static final long serialVersionUID = 3332176289351890649L;
+
     public boolean compareRule(Bookshelf bks, int id){
         Tile[][] bookshelf = bks.getBookshelf();
         int i, j;
@@ -17,7 +21,6 @@ public class CGC11 implements CGCStrategy, Serializable {
             for(j=0; j<5; j++){
                 switch (bookshelf[i][j].getType()){
                     case CAT -> count.set(0, count.get(0) + 1);
-
                     case BOOK -> count.set(1, count.get(1) + 1);
                     case GAME -> count.set(2, count.get(2) + 1);
                     case FRAME -> count.set(3, count.get(3) + 1);
@@ -30,6 +33,5 @@ public class CGC11 implements CGCStrategy, Serializable {
             if (count.get(i)>=8)
                 result= true;
         return result;
-
     }
 }
