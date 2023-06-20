@@ -18,7 +18,7 @@ public class BookshelfView extends Observable {
     private JInternalFrame bookshelfDisplayed;
     private JButton [][] bookshelfTiles;
 
-    private boolean columnChosen = false;
+    private int columnChosen = -1;
 
     public BookshelfView(){ //creates the bookshelf GUI section
         ImageReader imageReader = new ImageReader();
@@ -32,10 +32,8 @@ public class BookshelfView extends Observable {
                 bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
                 int column = j;
                 bookshelfTiles[i][j].addActionListener(e -> {
-                    if(!columnChosen) {
-                        notifyObservers(new Message(column, Event.COLUMN_CHOSEN));
-                        columnChosen = true;
-                    }
+                    if(columnChosen==0)
+                        columnChosen = column;
                 });
             }
 
@@ -67,11 +65,11 @@ public class BookshelfView extends Observable {
         }
     }
 
-    public boolean isColumnChosen() {
+    public int getColumnChosen() {
         return columnChosen;
     }
 
-    public void setColumnChosen(boolean columnChosen) {
+    public void setColumnChosen(int columnChosen) {
         this.columnChosen = columnChosen;
     }
 }

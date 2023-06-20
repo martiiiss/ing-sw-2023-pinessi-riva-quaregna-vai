@@ -15,7 +15,7 @@ public class HandView extends Observable { //class to represent the "hand", the 
     private JButton [] hand;
     private JInternalFrame imageDisplayed;
 
-    private int maxHand = 3;
+    private int tileToInsert = 0;
 
     private int [] order;
     public HandView(){
@@ -31,13 +31,13 @@ public class HandView extends Observable { //class to represent the "hand", the 
             imageDisplayed.add(hand[i]);
             hand[i].setPreferredSize(new Dimension(50, 50));
             if(i<3){
-                int position = i;
+                int finalI = i;
                 hand[i].addActionListener(e -> {
-                    if(order[0] != -1)
-                        notifyObservers(new Message(this, Event.END_PICK));
+                    if(hand[finalI].getIcon()!=null && tileToInsert==0){
+                        removeTileInHand(finalI);
+                        this.tileToInsert=finalI;
+                    }
 
-                    if(order[maxHand-1] == -1)
-                        notifyObservers(new Message(position, Event.SET_TILE_ORDER));
                 });
             }
         }
@@ -93,15 +93,17 @@ public class HandView extends Observable { //class to represent the "hand", the 
         return false;
     }
 
-    public int getMaxHand() {
-        return maxHand;
-    }
 
-    public void setMaxHand(int maxHand) {
-        this.maxHand = maxHand;
-    }
     public void setEndgame(){
         ImageReader imageReader = new ImageReader();
         this.hand[5].setIcon(imageReader.readIcon("resources/ScoringTokenImages/endgame.jpg", 50, 50));
+    }
+
+    public int getTileToInsert() {
+        return this.tileToInsert;
+    }
+
+    public void setTileToInsert(int tileToInsert) {
+        this.tileToInsert = tileToInsert;
     }
 }

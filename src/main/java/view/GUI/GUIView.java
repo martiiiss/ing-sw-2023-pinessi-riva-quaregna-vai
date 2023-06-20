@@ -4,15 +4,14 @@ import distributed.messages.Message;
 import model.Board;
 import model.Game;
 import model.Player;
+import model.Tile;
+import util.*;
 import util.Event;
-import util.ImageReader;
-import util.Observable;
-import util.Observer;
-import util.TileForMessages;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class GUIView extends Observable implements Observer { //class that contains all the GUI elements
@@ -31,6 +30,8 @@ public class GUIView extends Observable implements Observer { //class that conta
     private boolean isMyTurn;
 
     private int tilesMoved = 0;
+
+    private ArrayList <Cord> listTilesPicked;
 
     public GUIView() {
         JFrame GUI = new JFrame();
@@ -68,6 +69,7 @@ public class GUIView extends Observable implements Observer { //class that conta
         GUI.add(hand.getImageDisplayed());
         hand.addObserver(this);
         bookshelfView = new BookshelfView();
+        bookshelfView.addObserver(this);
         GUI.add(bookshelfView.getBookshelfDisplayed());
         pgc = new PGCView();
         GUI.add(pgc.getDisplayedImage());
@@ -130,7 +132,7 @@ public class GUIView extends Observable implements Observer { //class that conta
             case SET_COMMONGC -> {
                 getCGC(0).setCGCView(((Game) message.getObj()).getCommonGoalCard().get(0).getIdCGC());
                 getCGC(1).setCGCView(((Game) message.getObj()).getCommonGoalCard().get(1).getIdCGC());
-                getScv(0).setDisplayedImage(((Game) message.getObj()).getCommonGoalCard().get(1).getTokenStack().get(((Game) message.getObj()).getNumOfPlayers() - 1).getValue());
+                getScv(0).setDisplayedImage(((Game) message.getObj()).getCommonGoalCard().get(0).getTokenStack().get(((Game) message.getObj()).getNumOfPlayers() - 1).getValue());
                 getScv(1).setDisplayedImage(((Game) message.getObj()).getCommonGoalCard().get(1).getTokenStack().get(((Game) message.getObj()).getNumOfPlayers() - 1).getValue());
             }
             case SET_PLAYER_IN_TURN, SET_FIRST_PLAYER -> {
@@ -145,9 +147,9 @@ public class GUIView extends Observable implements Observer { //class that conta
             }
             case SET_SCORING_TOKEN_2 -> {
                 if (Objects.equals(((Player) message.getObj()).getNickname(), nickname))
-                    hand.setSC(getScv(1).getValueDisplayed(), 0);
+                    hand.setSC(getScv(1).getValueDisplayed(), 1);
             }
-            case ASK_CAN_PICK -> notifyObservers(message);
+            case ASK_CAN_PICK -> this.listTilesPicked.add((Cord) message.getObj());
             case OK_TO_PICK -> {
                 if (boardView.isCanPick()) {
                     boardView.pickTile(((TileForMessages) message.getObj()).getRow(), ((TileForMessages) message.getObj()).getColumn());
@@ -155,24 +157,10 @@ public class GUIView extends Observable implements Observer { //class that conta
                     notifyObservers(new Message(message.getObj(), Event.TILE_PICKED));
                 }
             }
-            case END_PICK -> {
-                if (boardView.getTilesPicked() > 0) {
-                    hand.setMaxHand(boardView.getTilesPicked());
-                    boardView.setCanPick(false);
-                }
 
-            }
             case SET_TILE_ORDER -> {
                 if (!boardView.isCanPick() && !hand.searchOrder((int) message.getObj())) {
                     hand.insertFirstVoid((int) message.getObj());
-                }
-            }
-            case COLUMN_CHOSEN -> {
-                if (hand.getOrder(hand.getMaxHand() - 1) != -1) {
-                    for (int i = 0; i < hand.getMaxHand(); i++) {
-                        notifyObservers(new Message(message.getObj(), Event.COLUMN_CHOSEN));
-                        notifyObservers(new Message(hand.getOrder(), Event.ORDER_CHOSEN));
-                    }
                 }
             }
 
@@ -184,5 +172,39 @@ public class GUIView extends Observable implements Observer { //class that conta
     @Override
     public void onUpdate(Message message) throws IOException {
 
+    }
+    //aggiungo metodo per setup
+    public ArrayList <Cord> askTiles(){ //invoked by client, asks the GUI to choose tiles and returns an arraylist of them
+        //crea pop up per chiedere quante tiles prendere con 3 pulsanti
+        //setTilesPicked(int valore pop up)
+        boardView.setCanPick(true);
+        while (boardView.getTilesPicked()!=0){
+        }
+        boardView.setCanPick(false);
+        return this.listTilesPicked;
+    }
+    public void pickTiles(ArrayList<Cord> cords, ArrayList<Tile> tiles){ //pick the tiles from the board and put them in the hand
+        int i=0;
+        while(cords.get(i)!=null){
+            boardView.pickTile(cords.get(i).getRowCord(), cords.get(i).getColCord());
+            hand.setTilesInHand(tiles.get(i));
+        }
+    }
+    public int chooseColumn(){ //choose the column where i want to put the tile and return it
+        bookshelfView.setColumnChosen(0);
+        while(bookshelfView.getColumnChosen()==0){
+
+        }
+        return bookshelfView.getColumnChosen();
+    }
+    public int chooseTile(){ //choose the tile to insert and return its position
+        hand.setTileToInsert(0);
+        while(hand.getTileToInsert()==0){
+
+        }
+        return hand.getTileToInsert();
+    }
+    public void addTIle(Tile tile){ //add the tile to the bookshelf
+        bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
     }
 }

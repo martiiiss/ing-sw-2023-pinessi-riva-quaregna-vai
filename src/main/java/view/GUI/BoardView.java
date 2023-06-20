@@ -3,11 +3,8 @@ package view.GUI;
 import distributed.messages.Message;
 import model.Board;
 import model.Type;
+import util.*;
 import util.Event;
-import util.ImagePanel;
-import util.ImageReader;
-import util.Observable;
-import util.TileForMessages;
 
 
 import javax.swing.*;
@@ -36,12 +33,15 @@ public class BoardView extends Observable {
                     boardTiles[row][column].setContentAreaFilled(false);
                     boardTiles[row][column].setBorderPainted(false);
                     int finalRow = row;
-                    int finalColumn = column;
+                    int
+                            finalColumn = column;
                     boardTiles[row][column].addActionListener(e -> {
-                        if(canPick){
-                            TileForMessages tile = new TileForMessages(this, finalRow, finalColumn, null);
+                        if(canPick && tilesPicked !=0 &&boardTiles[finalRow][finalColumn].getIcon()!=null){
+                            Cord tile = new Cord();
+                            tile.setCords(finalRow, finalColumn);
                             Message message = new Message(tile, Event.ASK_CAN_PICK);
                             notifyObservers(message);
+                            tilesPicked--;
                         }
                     });
 
@@ -63,9 +63,8 @@ public class BoardView extends Observable {
             this.boardTiles[row][column].setOpaque(false);
             this.boardTiles[row][column].setContentAreaFilled(false);
             this.boardTiles[row][column].setBorderPainted(false);
-            tilesPicked++;
-            if(tilesPicked==3)
-                setCanPick(false);
+            //if(tilesPicked==3)
+               // setCanPick(false);
     }
     public void updateBoard(Board board){ //method that checks all the board and update the GUI
         ImageReader imageReader = new ImageReader();
@@ -95,5 +94,12 @@ public class BoardView extends Observable {
 
     public int getTilesPicked() {
         return tilesPicked;
+    }
+
+    public void decrementTilesPicked(){
+        this.tilesPicked++;
+    }
+    public void setTilesPicked(int i){
+        this.tilesPicked = 0;
     }
 }
