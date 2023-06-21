@@ -7,9 +7,11 @@ import util.Event;
 import util.Event;
 
 import java.io.IOException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.List;
 
 public class RMIServer extends Server implements ServerRMIInterface {
     private final Server server;
@@ -24,23 +26,32 @@ public class RMIServer extends Server implements ServerRMIInterface {
         this.port = port;
     }
 
+    private Registry registry;
     public void startServer(ServerRMIInterface stub) throws RemoteException{
         try{
-            Registry registry = LocateRegistry.createRegistry(this.port);
+            registry = LocateRegistry.createRegistry(this.port);
             registry.rebind("server", stub); //this è l'oggetto remoto
         } catch(Exception e){
             e.printStackTrace();
             System.err.println("Failed to bind to RMI registry");
         }
+        Thread disconnection = new Thread(()-> {
+            rmiconnectionManager();
+        }, "Thread disconnection handler");
+        disconnection.start();
     }
 
     public void disconnect(){
         //TODO
     }
 
-    @Override
-    public int initClient(Client rmiClient) throws IOException {
-        return server.connection(rmiClient);
+    private int index = 0;
+    public int initClient(ClientInterface rmiClient) throws IOException, AlreadyBoundException {
+        ClientInterface clientInterface = (ClientInterface) rmiClient;
+        registry.bind("Client"+index,clientInterface);
+        index++;
+        System.out.println(registry.list());
+        return server.connection(clientInterface);
     }
 
     public int getNumberOfConnections() {
@@ -53,5 +64,19 @@ public class RMIServer extends Server implements ServerRMIInterface {
     }
     public Object getModel(Event event, Object clientIndex) throws RemoteException{
         return server.getServerModel(event, clientIndex);
+    }
+    private void rmiconnectionManager() {
+        List<ClientInterface> clientInterfaces = server.getClients();
+        for (ClientInterface client : clientInterfaces) {
+            try {
+                client.ping();
+            } catch (RemoteException exception) {
+                System.out.println("Client disconnesso");
+            }
+        }
+    }
+
+    public boolean getDisconnection() throws RemoteException{
+        return server.getDisconnections();
     }
 }

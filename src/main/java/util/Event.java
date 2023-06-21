@@ -45,6 +45,9 @@ public enum Event {
     WAIT("\u001B[35mWaiting for all the players...\u001B[0m"),
     GAME_OVER("\u001B[35mGame over\u001B[0m"),
     LAST_TURN("\u001B[35mThis is the last turn!\u001B[0m"),
+    GUI_VIEW(""),
+    TUI_VIEW(""),
+    DISCONNECTION("\u001B[35mGame over due to a Disconnection\u001B[0m"),
 
 
 

@@ -1,5 +1,7 @@
 package distributed;
 
+import distributed.RMI.ClientCallback;
+import distributed.RMI.ClientInterface;
 import distributed.RMI.RMIClient;
 import util.Event;
 import util.Observable;
@@ -12,8 +14,9 @@ import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Timer;
-public abstract class Client extends Observable implements Remote, Serializable {
+public abstract class Client extends UnicastRemoteObject implements Remote, Serializable, ClientInterface {
     private static final long serialVersionUID = -8499166750855847908L; //random number
     //transient DisconnectionListener disconnectionListener
     private transient Timer pingTimer;
@@ -23,7 +26,8 @@ public abstract class Client extends Observable implements Remote, Serializable 
     private String token;
     private UserView userView = new UserView();
 
-    protected Client(String username, int port) {
+    protected Client(String username, int port) throws RemoteException {
+        super();
         System.out.println("Client creato");
         this.username = username;
         //   this.address = address;
@@ -80,5 +84,14 @@ public abstract class Client extends Observable implements Remote, Serializable 
     }
 
     public void showMessage(String message) {
+    }
+    public boolean checkDisconnectionClient() throws RemoteException {
+        String test = checkConnection();
+        return !test.isEmpty();
+    }
+
+    public String checkConnection() throws RemoteException{
+        //Just to see the connection
+        return "Ping";
     }
 }

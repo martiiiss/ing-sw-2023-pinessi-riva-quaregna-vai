@@ -1,9 +1,7 @@
 package distributed;
 
 import controller.Controller;
-import distributed.RMI.RMIClient;
-import distributed.RMI.RMIServer;
-import distributed.RMI.ServerRMIInterface;
+import distributed.RMI.*;
 import distributed.Socket.SocketServer;
 import model.Board;
 import model.Game;
@@ -14,14 +12,13 @@ import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private int socketPort;
     private int RMIPort;
-    private List<Client> clientsConnected; //username - connection
+    private List<ClientInterface> clientsConnected; //username - connection
     private Object clientsLock;
     private Controller controller ;
     private Game game ;
@@ -30,10 +27,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     // private int numOfClientsConnected=0;
     private int maxNumOfClients = 200;
-
-    public List<Client> getClientsConnectedList(){
-        return this.clientsConnected;
-    }
 
     public Server(int portSocket, int portRMI) throws IOException {
         if(portRMI==-1) { //Socket
@@ -49,7 +42,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         //this.RMIPort = RMIPort;
         this.controller= new Controller();
         this.game = controller.getInstanceOfGame();
-        this.clientsConnected=new ArrayList<>();
+        this.clientsConnected= Collections.synchronizedList(new ArrayList<>());
+
         System.out.println("\u001B[32mServer Ready! \u001B[0m");
     }
 
@@ -70,14 +64,22 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private void reconnectionOfPlayer(String username, Connection connection) throws RemoteException{ //FIXME non può richiedere come parametro il nickname dato che viene richiesto solo dopo che si è connesso        //TODO
     }
 
-    public int connection (Client client) throws IOException {
+    public int connection (ClientInterface client){
         if(getNumberOfClientsConnected()<maxNumOfClients) {
+            if(clientsConnected.size()==1){
+                Thread disconnection = new Thread(()-> {
+                    startClientStatusCheckTimer();
+                }, "Thread disconnection handler");
+                disconnection.start();
+            }
             this.clientsConnected.add(client);
+            startClientStatusCheckTimer();
             System.out.println("Clients: " + getNumberOfClientsConnected());
             return clientsConnected.size() - 1;
         }
         return -1;
     }
+
 
     public int getNumberOfClientsConnected() {
         /*for(Client c: clientsConnected){
@@ -103,6 +105,9 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public int getClientsConnected() {
         return this.clientsConnected.size();
+    }
+    public List<ClientInterface> getClients(){
+        return clientsConnected;
     }
 
     public boolean isEveryoneConnected() {
@@ -130,5 +135,34 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public Object getServerModel(Event event, Object clientIndex) {
         return controller.getControllerModel(event, clientIndex);
+    }
+    private boolean clientDisconnected = false;
+
+    public boolean getDisconnections() {
+        return clientDisconnected;
+    }
+
+
+    private void startClientStatusCheckTimer() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                checkClientStatus();
+            }
+        }, 0, 1000);
+    }
+
+    private void checkClientStatus() {
+        Iterator<ClientInterface> iterator = clientsConnected.iterator();
+        while (iterator.hasNext()) {
+            ClientInterface client = iterator.next();
+            try {
+                client.ping();
+            } catch (RemoteException e) {
+                clientDisconnected = true;
+                System.exit(-1);
+                }
+        }
     }
 }

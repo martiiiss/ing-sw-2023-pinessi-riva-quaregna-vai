@@ -3,8 +3,10 @@ package controller;
 import model.*;
 import util.Cord;
 import util.Event;
+import view.GUI.GUIView;
 import view.UserInterface;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -58,8 +60,11 @@ public class Controller  {
 
     public Event chooseUserInterface(int chosenInterface) {
         switch (chosenInterface) {
-            case 1, 2 -> {
-                return Event.OK;
+            case 1 -> {
+                return TUI_VIEW;
+            }
+            case 2 -> {
+                return GUI_VIEW;
             }
             default -> {
                 return Event.INVALID_VALUE;
@@ -68,7 +73,7 @@ public class Controller  {
     }
 
     /**this method initializes the Game after all the players are connected*/
-    public void initializeGame(){
+    public void initializeGame() throws RemoteException {
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
        // while(!countPlayers()){/*we make the server wait*/}
@@ -400,7 +405,7 @@ public class Controller  {
     }
 
 
-    public Event updateController(Object obj, Event event) {
+    public Event updateController(Object obj, Event event) throws RemoteException {
         Event error = Event.OK;
         switch (event) {
             case ASK_NUM_PLAYERS -> {

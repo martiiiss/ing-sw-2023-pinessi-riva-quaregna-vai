@@ -6,6 +6,7 @@ import util.Observable;
 import util.TileForMessages;
 import java.io.Serial;
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**This class represents the Board of the game*/

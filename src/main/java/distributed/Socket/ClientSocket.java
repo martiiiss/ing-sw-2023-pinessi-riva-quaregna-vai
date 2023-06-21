@@ -6,6 +6,7 @@ import distributed.messages.Message;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
@@ -94,7 +95,10 @@ public class ClientSocket extends Client {
         //TODO implement this
     };
 
+    @Override
+    public void ping() throws RemoteException {
 
+    }
 
 
 }

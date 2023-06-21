@@ -28,7 +28,7 @@ public class ClientController implements Observer {
 
     public void initClient(String address, int portSocket) throws IOException {
         this.clientSocket = new ClientSocket(address, portSocket);
-        this.clientSocket.addObserver(this);
+        //this.clientSocket.addObserver(this);
         try{
             clientSocket.startConnection();
         } catch (IOException e) {

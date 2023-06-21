@@ -2,6 +2,7 @@ package org.example;
 
 import controller.Controller;
 import distributed.Client;
+import distributed.RMI.ClientInterface;
 import distributed.RMI.RMIClient;
 import model.Game;
 import view.UserInterface;
@@ -26,10 +27,10 @@ public class AppClient {
         }
         if(choice==2) {
             String name = "rmi://localhost:45398/server";
-            RMIClient client = new RMIClient(name, 45398);
-            client.startConnection();
+            ClientInterface client = new RMIClient(name, 45398);
+            ((RMIClient) client).startConnection();
             System.out.println("You chose RMI!");
-            client.lobby();
+            ((RMIClient) client).lobby();
 
         } else if(choice == 1){
             //clientSocket
