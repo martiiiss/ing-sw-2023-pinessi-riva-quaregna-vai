@@ -69,9 +69,9 @@ public enum Event {
     //per GUI
     ASK_CAN_PICK(""),
     OK_TO_PICK(""),
-    NOT_OK_TO_PICK(""),
+    TILES_NOT_VALID(""),
     TILE_PICKED(""),
-    END_PICK(""),
+    COLUMN_NOT_VALID(""),
     SET_TILE_ORDER(""),
     COLUMN_CHOSEN(""),
     ORDER_CHOSEN("");

@@ -10,16 +10,15 @@ import util.Event;
 import javax.swing.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 
-
-
-
-public class BoardView extends Observable {
+public class BoardView {
     private int tilesPicked;
     private boolean canPick;
     private JInternalFrame boardDisplayed;
     private JButton [][] boardTiles;
+    private ArrayList<Cord> listTilesPicked;
     public BoardView (){ //creates and initializes the board section of the GUI
         ImageReader imageReader = new ImageReader();
         boardDisplayed = new ImagePanel("Board", imageReader.readImage("resources/livingroomResized.png", 467, 467), 9,9, 2, 2);
@@ -39,8 +38,7 @@ public class BoardView extends Observable {
                         if(canPick && tilesPicked !=0 &&boardTiles[finalRow][finalColumn].getIcon()!=null){
                             Cord tile = new Cord();
                             tile.setCords(finalRow, finalColumn);
-                            Message message = new Message(tile, Event.ASK_CAN_PICK);
-                            notifyObservers(message);
+                            listTilesPicked.add(tile);
                             tilesPicked--;
                         }
                     });
@@ -101,5 +99,9 @@ public class BoardView extends Observable {
     }
     public void setTilesPicked(int i){
         this.tilesPicked = 0;
+    }
+
+    public ArrayList<Cord> getListTilesPicked() {
+        return listTilesPicked;
     }
 }

@@ -1,10 +1,7 @@
 package view.GUI;
 
 import distributed.messages.Message;
-import model.Board;
-import model.Game;
-import model.Player;
-import model.Tile;
+import model.*;
 import util.*;
 import util.Event;
 
@@ -14,9 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class GUIView extends Observable implements Observer { //class that contains all the GUI elements
-    private String nickname;
-    private int playerNumber;
+public class GUIView{ //class that contains all the GUI elements
     private BoardView boardView;
     private ScoringTokenView[] scv;
     private BookshelfView bookshelfView;
@@ -27,11 +22,7 @@ public class GUIView extends Observable implements Observer { //class that conta
 
     private CGCView[] cgc;
 
-    private boolean isMyTurn;
-
     private int tilesMoved = 0;
-
-    private ArrayList <Cord> listTilesPicked;
 
     public GUIView() {
         JFrame GUI = new JFrame();
@@ -49,7 +40,6 @@ public class GUIView extends Observable implements Observer { //class that conta
         JInternalFrame CGCArea = new JInternalFrame();
         GUI.setLayout(new GridBagLayout());
         boardView = new BoardView();
-        boardView.addObserver(this);
         GUI.add(boardView.getBoardDisplayed());
         cgc = new CGCView[2];
         CGCArea.setLayout(new GridLayout(2, 2));
@@ -67,9 +57,7 @@ public class GUIView extends Observable implements Observer { //class that conta
         GUI.add(CGCArea);
         hand = new HandView();
         GUI.add(hand.getImageDisplayed());
-        hand.addObserver(this);
         bookshelfView = new BookshelfView();
-        bookshelfView.addObserver(this);
         GUI.add(bookshelfView.getBookshelfDisplayed());
         pgc = new PGCView();
         GUI.add(pgc.getDisplayedImage());
@@ -78,9 +66,9 @@ public class GUIView extends Observable implements Observer { //class that conta
 
     }
 
-    public void changeSC(int valueDisplayed, int romanNumber) {
-        scv[romanNumber].popSCV(valueDisplayed);
-        hand.setSC(valueDisplayed, romanNumber);
+    public void changeScoringToken(ScoringToken sc) { //changes the scoring token displayed in the romanNumber position
+        scv[sc.getRomanNumber()].popSCV(sc.getValue());
+        hand.setSC(sc.getValue(), sc.getRomanNumber());
     }
 
     public HandView getHandView() {
@@ -107,81 +95,40 @@ public class GUIView extends Observable implements Observer { //class that conta
         return cgc[i];
     }
 
-    public boolean getIsMyTurn() {
-        return this.isMyTurn;
+    public void updateBoard(Board board){ //set up the board or update it after someone else pick tiles
+        boardView.updateBoard(board);
     }
-
-    public void setIsMyTurn(boolean value) {
-        this.isMyTurn = value;
+    public void setupCGC(CommonGoalCard cgc){ //set up the cgc and the scoring token
+        getCGC(cgc.getRomanNumber()).setCGCView(cgc.getIdCGC());
+        getScv(cgc.getRomanNumber()).setDisplayedImage(cgc.getTokenStack().firstElement().getValue());
     }
-
-    @Override
-    public void update(Observable observable, Message message) {
-        switch (message.getMessageEvent()) {
-            case REMOVE_TILE_BOARD ->
-                    boardView.pickTile(((TileForMessages) message.getObj()).getRow(), ((TileForMessages) message.getObj()).getColumn());
-            case UPDATE_BOOKSHELF -> {
-                hand.removeTileInHand(tilesMoved);
-                bookshelfView.insertTile(((TileForMessages) message.getObj()).getColumn(), ((TileForMessages) message.getObj()).getTile());
-                tilesMoved++;
-            }
-            //case SET_SCORING_TOKEN_1 -> guiView.changeSC(message.getObj()controller.getInstanceOfGame().getCommonGoalCard().get(0).getTokenStack().get((this.controller.getInstanceOfGame().getNumOfPlayers())-1).getValue(), 1); // these two will add the scoringToken I took to my hand
-            //case SET_SCORING_TOKEN_2 -> guiView.changeSC(this.controller.getInstanceOfGame().getCommonGoalCard().get(0).getTokenStack().get((this.controller.getInstanceOfGame().getNumOfPlayers())-1).getValue(), 2);
-            case SET_UP_BOARD -> boardView.updateBoard(((Board) message.getObj()));
-            case SET_PGC -> pgc.setDisplayedImage(((Game) message.getObj()).getPlayers().get(playerNumber).getPersonalGoalCard().getNumber());
-            case SET_COMMONGC -> {
-                getCGC(0).setCGCView(((Game) message.getObj()).getCommonGoalCard().get(0).getIdCGC());
-                getCGC(1).setCGCView(((Game) message.getObj()).getCommonGoalCard().get(1).getIdCGC());
-                getScv(0).setDisplayedImage(((Game) message.getObj()).getCommonGoalCard().get(0).getTokenStack().get(((Game) message.getObj()).getNumOfPlayers() - 1).getValue());
-                getScv(1).setDisplayedImage(((Game) message.getObj()).getCommonGoalCard().get(1).getTokenStack().get(((Game) message.getObj()).getNumOfPlayers() - 1).getValue());
-            }
-            case SET_PLAYER_IN_TURN, SET_FIRST_PLAYER -> {
-                if (((Game) message.getObj()).getPlayers().get(playerNumber).getIsFirstPlayer()) {
-                    setIsMyTurn(true);
-                    boardView.setCanPick(true);
-                }
-            }
-            case SET_SCORING_TOKEN_1 -> {
-                if (Objects.equals(((Player) message.getObj()).getNickname(), nickname))
-                    hand.setSC(getScv(0).getValueDisplayed(), 0);
-            }
-            case SET_SCORING_TOKEN_2 -> {
-                if (Objects.equals(((Player) message.getObj()).getNickname(), nickname))
-                    hand.setSC(getScv(1).getValueDisplayed(), 1);
-            }
-            case ASK_CAN_PICK -> this.listTilesPicked.add((Cord) message.getObj());
-            case OK_TO_PICK -> {
-                if (boardView.isCanPick()) {
-                    boardView.pickTile(((TileForMessages) message.getObj()).getRow(), ((TileForMessages) message.getObj()).getColumn());
-                    hand.setTilesInHand(((TileForMessages) message.getObj()).getTile());
-                    notifyObservers(new Message(message.getObj(), Event.TILE_PICKED));
-                }
-            }
-
-            case SET_TILE_ORDER -> {
-                if (!boardView.isCanPick() && !hand.searchOrder((int) message.getObj())) {
-                    hand.insertFirstVoid((int) message.getObj());
-                }
-            }
-
-        }
+    public void setupPGC(int pgcID){  //set up the pgc
+        this.pgc.setDisplayedImage(pgcID);
     }
-
-    //TODO set tilesMoved to 0 once turn ends
-
-    @Override
-    public void onUpdate(Message message) throws IOException {
-
-    }
-    //aggiungo metodo per setup
     public ArrayList <Cord> askTiles(){ //invoked by client, asks the GUI to choose tiles and returns an arraylist of them
-        //crea pop up per chiedere quante tiles prendere con 3 pulsanti
-        //setTilesPicked(int valore pop up)
+        JFrame frame = new JFrame();
+        for(int i=1 ; i<4; i++){
+            JButton button = new JButton();
+            frame.add(button);
+            button.setText(""+i);
+            button.setVisible(true);
+            int finalI = i;
+            button.addActionListener(e ->{
+                boardView.setTilesPicked(finalI);
+                frame.dispose();
+            });
+        }
+        frame.setVisible(true);
+        frame.setLayout(new GridLayout());
+        frame.setSize(400,200);
+        frame.setTitle("How many tiles you want to pick?");
+        boardView.getBoardDisplayed().setTitle("Click the tiles to pick them");
         boardView.setCanPick(true);
         while (boardView.getTilesPicked()!=0){
         }
         boardView.setCanPick(false);
-        return this.listTilesPicked;
+        boardView.getBoardDisplayed().setTitle("Board");
+        return boardView.getListTilesPicked();
     }
     public void pickTiles(ArrayList<Cord> cords, ArrayList<Tile> tiles){ //pick the tiles from the board and put them in the hand
         int i=0;
@@ -191,14 +138,17 @@ public class GUIView extends Observable implements Observer { //class that conta
         }
     }
     public int chooseColumn(){ //choose the column where i want to put the tile and return it
+        bookshelfView.getBookshelfDisplayed().setTitle("Choose the column to insert tiles by clicking one of its buttons");
         bookshelfView.setColumnChosen(0);
         while(bookshelfView.getColumnChosen()==0){
 
         }
+        bookshelfView.getBookshelfDisplayed().setTitle("Bookshelf");
         return bookshelfView.getColumnChosen();
     }
     public int chooseTile(){ //choose the tile to insert and return its position
         hand.setTileToInsert(0);
+        hand.getImageDisplayed().setTitle("Choose the first tile to insert by clicking on it");
         while(hand.getTileToInsert()==0){
 
         }
@@ -206,5 +156,30 @@ public class GUIView extends Observable implements Observer { //class that conta
     }
     public void addTile(Tile tile){ //add the tile to the bookshelf
         bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
+    }
+    public void showError(Event e){
+        switch (e){
+            case TILES_NOT_VALID-> boardView.getBoardDisplayed().setTitle("Tiles not valid, select again");
+            case COLUMN_NOT_VALID -> bookshelfView.getBookshelfDisplayed().setTitle("You selected a column with not enough space,try again");
+        }
+    }
+    public void scoringTokenTakenByMe(ScoringToken sc){ //put the scoring token in my hand
+        hand.setSC(sc.getValue(), sc.getRomanNumber());
+        changeScoringToken(sc);
+    }
+    public void firstToFinish(){ //assign me the token for the first player to finish
+        hand.setEndgame();
+    }
+    public void results(String nickname, int myPoints){ //show the winner and my points
+        JFrame frame = new JFrame();
+        JLabel label = new JLabel(""+nickname+" won, you got "+myPoints+ " points");
+        frame.setVisible(true);
+        frame.add(label);
+        frame.setTitle("Game ended");
+        frame.setLayout(new GridLayout());
+        frame.setSize(400,200);
+    }
+    public void endInsertion(){
+        hand.getImageDisplayed().setTitle("Hand");
     }
 }

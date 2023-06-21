@@ -13,7 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class BookshelfView extends Observable {
+public class BookshelfView {
 
     private JInternalFrame bookshelfDisplayed;
     private JButton [][] bookshelfTiles;
