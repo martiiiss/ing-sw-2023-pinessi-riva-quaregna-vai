@@ -161,9 +161,9 @@ public class GUIView { //class that contains all the GUI elements
         return boardView.getListTilesPicked();
     }
 
-    public void pickTiles(ArrayList<Cord> cords, ArrayList<Tile> tiles, int number){ //pick the tiles from the board and put them in the hand
+    public void pickTiles(ArrayList<Cord> cords, ArrayList<Tile> tiles){ //pick the tiles from the board and put them in the hand
         int i=0;
-        while(i<number) {
+        while(i<tiles.size()) {
             boardView.pickTile(cords.get(i).getRowCord(), cords.get(i).getColCord());
             hand.setTilesInHand(tiles.get(i));
             i++;
