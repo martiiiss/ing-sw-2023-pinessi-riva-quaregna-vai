@@ -69,13 +69,16 @@ public class BoardView {
         for(int row=0; row<9; row++)
             for(int column=0; column<9; column++) {
                 if(board.getSelectedType(row, column)!= Type.BLOCKED){
-                    if(board.getSelectedType(row, column) == Type.NOTHING)
-                        boardTiles[row][column].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
-                    else {
+                    if(board.getSelectedType(row, column) != Type.NOTHING){
                         boardTiles[row][column].setIcon(imageReader.readIcon("resources/TileImages/" + board.getSelectedType(row, column) + "/" + board.getSelectedNumType(row, column) + ".png", 50, 50));
                         this.boardTiles[row][column].setOpaque(true);
                         this.boardTiles[row][column].setContentAreaFilled(true);
                         this.boardTiles[row][column].setBorderPainted(true);
+                    }
+                    else{
+                        this.boardTiles[row][column].setOpaque(false);
+                        this.boardTiles[row][column].setContentAreaFilled(false);
+                        this.boardTiles[row][column].setBorderPainted(false);
                     }
                 }
             }

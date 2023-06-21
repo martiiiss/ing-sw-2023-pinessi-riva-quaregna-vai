@@ -19,6 +19,6 @@ public class PGCView extends JPanel { //manages the PersonalGoalCard section of 
 
     public void setDisplayedImage(int pgcId){
         ImageReader imageReader = new ImageReader();
-        this.displayedImage.setIcon(imageReader.readIcon("resources/PersonalGoalCardImages/back.jpg", 200, 300));
+        this.displayedImage.setIcon(imageReader.readIcon("resources/PersonalGoalCardImages/" +pgcId+".png", 200, 300));
     }
 }
