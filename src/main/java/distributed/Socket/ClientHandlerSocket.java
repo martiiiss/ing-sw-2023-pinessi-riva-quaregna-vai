@@ -1,6 +1,7 @@
 package distributed.Socket;
 
 import distributed.messages.Message;
+import util.Event;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -38,9 +39,10 @@ public class ClientHandlerSocket implements Runnable {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (inputLock) {
-                    receivedMessage();
-                    sendMessage("il server ha ricevuto " + this.inputObject);
-                    //socketServer.metodo -> per utilizzare i metodi del ScocketServer
+                    System.out.println("ricevi messaggio: ");
+                    Message message = receivedMessage();
+                    //TODO: socketServer.metodo -> per utilizzare i metodi del ScocketServer
+                    socketServer.receivedMessage(message);
                 }
             }
         }catch(ClassCastException | ClassNotFoundException | IOException e) {
@@ -55,6 +57,7 @@ public class ClientHandlerSocket implements Runnable {
 
     public void sendMessage(Object obj){ //per inviare i messaggi al client
         try {
+            System.out.println("in send mess " + obj);
             output.writeObject(obj);
             output.flush();
             output.reset();
@@ -63,13 +66,16 @@ public class ClientHandlerSocket implements Runnable {
         }
     }
 
-    public void receivedMessage() throws IOException, ClassNotFoundException {
-        this.inputObject =  input.readObject(); //per ricevere i messaggi dal client
+    public Message receivedMessage() throws IOException, ClassNotFoundException {
+        this.inputObject =  (Message)input.readObject(); //per ricevere i messaggi dal client
         if(this.inputObject!=null) {
-            String temp = ((Message) input.readObject()).getObj().toString();
+            String temp = ((Message) this.inputObject).getObj().toString();
             System.out.println("ogg ricevuto " + temp + " da " + socketClient.getInetAddress());
         }
+        return (Message) this.inputObject;
     }
+
+
 
 
 }

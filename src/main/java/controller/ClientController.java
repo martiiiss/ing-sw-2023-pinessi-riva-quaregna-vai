@@ -44,8 +44,7 @@ public class ClientController implements Observer {
             }
         });
     }
-    //in realtà questo metodo è update di observer e observable
-    public void receivedMessage(){
+    public void lobby(){
         executor.execute(() -> {
             try {
                 clientSocket.sendMessageC(new Message(uView.askNumOfPlayer(), Event.ASK_NUM_PLAYERS));

@@ -36,31 +36,33 @@ public class ClientSocket extends Client {
     }
     @Override
     public void startConnection() throws IOException, ClassNotFoundException {
-      Thread clientThread = new Thread(()-> {
+        Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
+                  Message message;
+                  System.out.println("condizione client socket " + !executorService.isShutdown());
                   try{
-                     sendMessageC(null);//FIXME this is to implement, now sendMessageC() has Message as a parameter
+                      System.out.println("leggo: ");
+                      message = (Message) inputStream.readObject();
+                      System.out.println("ho letto " + message);
+                     // sendMessageC(null);//FIXME this is to implement, now sendMessageC() has Message as a parameter
                      // receivedMessage();
-                  } catch (IOException e) {
+                  } catch (IOException | ClassNotFoundException e) {
+                      System.out.println("Pippozoz");
                       throw new RuntimeException(e);
                   }
+                  //notifyObservers(message);
               }
+              System.out.println("esco");
           });
       });
-     // clientThread.start();
+
+      clientThread.start();
     }
 
 
     public void sendMessageC(Message mess) throws IOException {
         try{
-            //view: legge da tastiera
-            /*
-            System.out.println("scrivi qualcosa: ");
-            BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-            Object message = reader.readLine();
-
-             */
             //invio messaggio:
             outputStream.writeObject(mess);
             outputStream.flush();
@@ -71,10 +73,11 @@ public class ClientSocket extends Client {
         }
     }
 
-    public void receivedMessage() throws IOException, ClassNotFoundException {
-        if((serverObj = inputStream.readObject())!=null){
-            System.out.println("ogg da server " + serverObj);
+    public Message receivedMessage() throws IOException, ClassNotFoundException {
+        if((serverObj = (Message) inputStream.readObject())!=null){
+            System.out.println("ogg da server " + ((Message)serverObj).getMessageEvent());
         }
+        return (Message) serverObj;
     }
 
     public void closeConnection(){

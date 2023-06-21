@@ -84,7 +84,7 @@ public class GUIView{ //class that contains all the GUI elements
     }
 
     public ScoringTokenView getScv(int i) {
-        return scv[i];
+        return scv[i-1];
     }
 
     public PGCView getPGC() {
@@ -92,13 +92,14 @@ public class GUIView{ //class that contains all the GUI elements
     }
 
     public CGCView getCGC(int i) {
-        return cgc[i];
+        return cgc[i-1];
     }
 
     public void updateBoard(Board board){ //set up the board or update it after someone else pick tiles
         boardView.updateBoard(board);
     }
     public void setupCGC(CommonGoalCard cgc){ //set up the cgc and the scoring token
+        System.out.println("cgc " + cgc.getRomanNumber());
         getCGC(cgc.getRomanNumber()).setCGCView(cgc.getIdCGC());
         getScv(cgc.getRomanNumber()).setDisplayedImage(cgc.getTokenStack().firstElement().getValue());
     }

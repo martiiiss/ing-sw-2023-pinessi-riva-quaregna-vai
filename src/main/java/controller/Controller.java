@@ -3,8 +3,6 @@ package controller;
 import model.*;
 import util.Cord;
 import util.Event;
-import view.GUI.GUIView;
-import view.UserInterface;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -20,7 +18,6 @@ public class Controller  {
     private int chosenColumn;
     private int numberOfChosenTiles;
     private int protocol = 0;
-    private UserInterface UI = new UserInterface();
     private ArrayList<Player> finalRank;
     private ArrayList<Tile> playerHand;
     //private Event nextEvent;
@@ -347,25 +344,6 @@ public class Controller  {
         System.out.println("NickPIT: "+game.getPlayerInTurn().getNickname());
     }//TODO optimize this
 
-    //asks the player if he wants to play another time
-    public void playAgain() throws IOException {
-        int startAgain = UI.askPlayAgain();
-        boolean flag = false;
-        while(!flag) {
-            switch (startAgain) {
-                case 1 -> {
-                    flag = true;
-                    System.out.println("Ok, starting a new game...");}
-                case 0 -> {
-                    flag = true;
-                    System.out.println("Ok, bye bye!");}
-                default -> {
-                    System.out.println("Sorry, try again...");
-                    startAgain = UI.userInterface();
-                }
-            }
-        }
-    }//TODO the cases are useful, we need to implement the choice
 
     public void endOfGame() {
         ArrayList<Integer> rankNumber = new ArrayList<>();
@@ -449,8 +427,6 @@ public class Controller  {
             }
             case END_OF_TURN -> {
                 calculateScore();
-                for(Player p : game.getPlayers())
-                    UI.showTUIBookshelf(p.getMyBookshelf());
                 error = checkIfGameEnd();
                 return error;
             }

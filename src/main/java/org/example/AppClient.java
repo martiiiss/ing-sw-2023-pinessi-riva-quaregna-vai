@@ -1,11 +1,13 @@
 package org.example;
 
+import controller.ClientController;
 import controller.Controller;
 import distributed.Client;
 import distributed.RMI.ClientInterface;
 import distributed.RMI.RMIClient;
+import distributed.Socket.ClientSocket;
 import model.Game;
-import view.UserInterface;
+import view.UserView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,8 +35,21 @@ public class AppClient {
             ((RMIClient) client).lobby();
 
         } else if(choice == 1){
-            //clientSocket
             System.out.println("You chose Socket!");
+
+            String address = "localhost";
+            int portSocket = 43808;
+            //ClientSocket clientSocket = new ClientSocket(address, portSocket);
+
+            UserView tui = new UserView();
+            ClientController clientController = new ClientController(tui);
+            tui.addObserver(clientController);
+
+            try{
+                clientController.initClient(address,portSocket);
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 }

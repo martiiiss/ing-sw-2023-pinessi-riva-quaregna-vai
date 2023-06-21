@@ -6,6 +6,7 @@ import util.Cord;
 import util.Event;
 import view.GUI.GUIView;
 import view.UserView;
+import view.ViewInterface;
 
 import java.io.*;
 import java.rmi.Naming;
@@ -24,11 +25,14 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     private transient ServerRMIInterface server;
     private String address;
     private int port;
-    private UserView uView = new UserView();
     private Event errorReceived;
     private int myIndex;
 
     private Object lock;
+    private int viewChosen;
+    private GUIView gui;
+    private UserView uView;
+    private boolean isFirstTurn = true;
 
     public RMIClient(String address, int port) throws RemoteException {
         this.address = address; //server
@@ -54,13 +58,13 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
     int numOfPlayers = 0;
     Thread threadWaitTurn;
-    private boolean isFirstTurn = true;
 
 
     public void lobby() throws IOException { //TODO Metti il sincro per la stampa brutta
         this.lock = new Object();
         Event errorReceived;
-        if (myIndex == 0) {//Vuol dire che sono il primo client connesso
+        this.uView = new UserView();
+        if(myIndex==0) {//Vuol dire che sono il primo client connesso
             numOfPlayers = uView.askNumOfPlayer();
             while (numOfPlayers < 2 || numOfPlayers > 4) {
                 System.err.println("Retry...");
@@ -69,15 +73,13 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             errorReceived = server.sendMessage(numOfPlayers, ASK_NUM_PLAYERS); //invia al server il numero di giocatori
             System.out.println(errorReceived.getMsg());
         }
-        errorReceived = server.sendMessage(uView.userInterface(), CHOOSE_VIEW); //invia al server la View desiderata
+        this.viewChosen = uView.userInterface();
+        errorReceived = server.sendMessage(this.viewChosen,CHOOSE_VIEW); //invia al server la View desiderato
         while (errorReceived != GUI_VIEW && errorReceived != TUI_VIEW) {
             System.out.println(errorReceived.getMsg());
-            errorReceived = server.sendMessage(uView.userInterface(), CHOOSE_VIEW);
+            this.viewChosen = uView.userInterface();
+            errorReceived = server.sendMessage(this.viewChosen,CHOOSE_VIEW);
         }
-        GUIView view;
-       /* if(errorReceived == GUI_VIEW)
-            view = new GUIView();
-        */
         String nickname = uView.askPlayerNickname();
         errorReceived = server.sendMessage(nickname, SET_NICKNAME); //invia al server il nickname
         while (errorReceived != Event.OK) {
@@ -91,16 +93,12 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 errorReceived = server.sendMessage(null, ALL_CONNECTED);
             }
         }
-        System.out.println("Pre thread");
         this.threadWaitTurn = new Thread(() -> {
-            System.out.println("lock");
             synchronized (lock) {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
-                        System.out.println("entra: ");
                         waitTurn();
                         lock.wait();
-                        System.out.println("esce ");
                     } catch (InterruptedException | RemoteException e) {
                         throw new RuntimeException(e);
                     }
@@ -108,8 +106,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
             }
         });
-        threadWaitTurn.start();
-        System.out.println("Ha superato il while del thread riga 117");
         getModel();
     }
 
@@ -138,20 +134,46 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         this.indexOfPIT = (int) server.getModel(GAME_PIT, myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
         System.out.println("It's " + playerInTurn.getNickname() + "'s turn!");
-        if (myIndex == indexOfPIT) {
-            activePlay();
-        } else {
-            synchronized (lock) {
-                System.out.println("Risveglio il lock");
-                this.lock.notifyAll();
+
+        if (this.viewChosen == 1) {
+            if (myIndex == indexOfPIT) {
+                activePlay();
+            } else {
+                synchronized (lock) {
+                    this.lock.notifyAll();
+                }
+                if(!threadWaitTurn.isAlive()){
+                    threadWaitTurn.start();
+                }
+                passivePlay();
+                getModel();
             }
-            passivePlay();
-            getModel();
+        } else if (this.viewChosen == 2) {
+            //setup iniziale: istanziare (una sola volta!!)
+            if (this.isFirstTurn) {
+                Bag bag = new Bag();
+                board = new Board(4);
+                Game game = new Game();
+                game.setNumOfPlayers(4);
+                game.setCommonGoalCards();
+                ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
+                gui = new GUIView();
+                this.isFirstTurn = false;
+
+                gui.updateBoard(board);
+                gui.setupCGC((CommonGoalCard) ((ArrayList) server.getModel(GAME_CGC, myIndex)).get(0));
+                gui.setupCGC((CommonGoalCard) ((ArrayList) server.getModel(GAME_CGC, myIndex)).get(1));
+                gui.setupPGC((int) ((PersonalGoalCard) server.getModel(GAME_PGC, myIndex)).getNumber());
+
+            }
+            if (myIndex == indexOfPIT) {
+                flowGui();
+            }
         }
     }
 
     private void activePlay() throws IOException {
-
+        isFirstTurn = false;
         Event errorReceived;
         playerInTurn = listOfPlayers.get(myIndex);
         //SHOWS THE PLAYER ALL THE ACTIONS THEY CAN DO
@@ -348,7 +370,38 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 }
             }
         }
+    }
+//FIXME:Al momento il metodo del calcolo punteggio è sbagliato, non tiene conto dei punteggi aggiunti in precedenza
 
+
+
+
+    public void flowGui() throws IOException {
+        ArrayList<Cord> tilesCords;
+        tilesCords = gui.askTiles();
+        do{
+            errorReceived = server.sendMessage(cords, TURN_PICKED_TILES);
+            // NB: messaggio di errore lato gui se tiles non possono essere prese
+        } while(errorReceived != Event.OK);
+
+        ArrayList<Tile> tilesList = new ArrayList<>();
+        for(int i=0; i<tilesCords.size(); i++){
+            tilesList.add(board.getBoard()[tilesCords.get(i).getRowCord()][tilesCords.get(i).getColCord()]);
+        }
+        gui.pickTiles(tilesCords, tilesList); //aggiunge le tessere alla "mano"
+
+        int column = gui.chooseColumn();
+        //controllare colonna restituita
+        do {
+            errorReceived = server.sendMessage(column, TURN_COLUMN);
+            //nb: messaggio d'errore se colonna sbagliata
+        }while(errorReceived!=Event.OK);
+
+        for(int i=0; i<numberOfChosenTiles; i++){ //TODO controllare dove viene settato numberOfChoosenTiles
+            int pos = gui.chooseTile(); //sceglie quale tessera mettere in una colonna: restituisce la posizione nella mano
+         //FIXME:
+            // gui.addTile(pos); //aggiunge tessera a bookshelf
+        }
     }
 
     private boolean disabledInput;
@@ -367,7 +420,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         //this.lock.wait();
         //this.threadWaitTurn.wait();
     }
-    public Runnable controlDisconnection () {
+    public Runnable controlDisconnection() {
         Thread controlDisconnectionThread = new Thread(()->{
             while (!Thread.currentThread().isInterrupted()) {
                 try {
