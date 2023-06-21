@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 
 public class BoardView {
-    private int tilesPicked;
+    private int tilesPicked=0;
     private boolean canPick;
     private JInternalFrame boardDisplayed;
     private JButton [][] boardTiles;
@@ -25,26 +25,25 @@ public class BoardView {
         boardTiles= new JButton[9][9];
         for(int row=0; row<9; row++)
             for(int column=0; column<9; column++) {
-                    boardTiles[row][column] = new JButton();
-                    boardTiles[row][column].setPreferredSize(new Dimension(50, 50));
-                    boardDisplayed.add(boardTiles[row][column]);
-                    boardTiles[row][column].setOpaque(false);
-                    boardTiles[row][column].setContentAreaFilled(false);
-                    boardTiles[row][column].setBorderPainted(false);
-                    int finalRow = row;
-                    int
-                            finalColumn = column;
-                    boardTiles[row][column].addActionListener(e -> {
-                        if(canPick && tilesPicked !=0 &&boardTiles[finalRow][finalColumn].getIcon()!=null){
-                            Cord tile = new Cord();
-                            tile.setCords(finalRow, finalColumn);
-                            listTilesPicked.add(tile);
-                            tilesPicked--;
-                        }
-                    });
+                boardTiles[row][column] = new JButton();
+                boardTiles[row][column].setPreferredSize(new Dimension(50, 50));
+                boardDisplayed.add(boardTiles[row][column]);
+                boardTiles[row][column].setOpaque(false);
+                boardTiles[row][column].setContentAreaFilled(false);
+                boardTiles[row][column].setBorderPainted(false);
+                int finalRow = row;
+                int finalColumn = column;
+                boardTiles[row][column].addActionListener(e -> {
+                    System.out.println("can pick ? " + canPick + " e tilesPicked = " + tilesPicked + " icon " + boardTiles[finalRow][finalColumn].getIcon());
+                    if(canPick && tilesPicked !=0 && boardTiles[finalRow][finalColumn].getIcon()!=null){
+                        Cord tile = new Cord();
+                        tile.setCords(finalRow, finalColumn);
+                        listTilesPicked.add(tile);
+                        tilesPicked--;
+                    }
+                });
 
-                }
-
+            }
         boardDisplayed.setVisible(true);
         Dimension d= new Dimension(500,530);
         boardDisplayed.setMinimumSize(d);
@@ -90,7 +89,6 @@ public class BoardView {
 
     public void setCanPick(boolean canPick) {
         this.canPick = canPick;
-        tilesPicked = 0;
     }
 
     public int getTilesPicked() {

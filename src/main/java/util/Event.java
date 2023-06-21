@@ -50,7 +50,7 @@ public enum Event {
     TUI_VIEW(""),
     DISCONNECTION("\u001B[35mGame over due to a Disconnection\u001B[0m"),
 
-
+    EMPTY(""),
 
 
     //per notify

@@ -152,7 +152,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             //setup iniziale: istanziare (una sola volta!!)
             if (this.isFirstTurn) {
                 Bag bag = new Bag();
-                board = new Board(4);
                 Game game = new Game();
                 game.setNumOfPlayers(4);
                 game.setCommonGoalCards();
@@ -373,19 +372,16 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
 //FIXME:Al momento il metodo del calcolo punteggio è sbagliato, non tiene conto dei punteggi aggiunti in precedenza
 
-
-
-
+    private ArrayList<Cord> tilesCords = new ArrayList<>();
     public void flowGui() throws IOException {
-        ArrayList<Cord> tilesCords;
-        tilesCords = gui.askTiles();
-        do{
-            errorReceived = server.sendMessage(cords, TURN_PICKED_TILES);
-            // NB: messaggio di errore lato gui se tiles non possono essere prese
-        } while(errorReceived != Event.OK);
+        gui.askTiles();
+
+        tilesCords = gui.getTilesClient();
 
         ArrayList<Tile> tilesList = new ArrayList<>();
+
         for(int i=0; i<tilesCords.size(); i++){
+            out.println("aggiungo " + tilesCords.get(i).getRowCord() + " e " + tilesCords.get(i).getColCord());
             tilesList.add(board.getBoard()[tilesCords.get(i).getRowCord()][tilesCords.get(i).getColCord()]);
         }
         gui.pickTiles(tilesCords, tilesList); //aggiunge le tessere alla "mano"
