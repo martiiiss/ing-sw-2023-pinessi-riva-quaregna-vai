@@ -182,6 +182,9 @@ public class Controller  {
                     return Event.NOT_ADJACENT;
             playerCords.add(cord);
         }
+        if(cords.size()==0 || cords == null){
+            return EMPTY;
+        }
         return Event.OK;
     }
     //FIXME se qualcuno ha voglia si può notevolmente ottimizzare
@@ -415,7 +418,6 @@ public class Controller  {
                 error = numOfChosenTiles((int) obj);
             }
             case TURN_PICKED_TILES -> {
-                System.out.println("Size prima della richiesta "+((ArrayList<Cord>) obj).size());
                 error = chooseTiles((ArrayList<Cord>) obj);
             }
             case TURN_COLUMN -> {
