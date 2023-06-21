@@ -70,7 +70,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
 
 
-    public void lobby() throws IOException { //TODO Metti il sincro per la stampa brutta
+    public void lobby() throws IOException, InterruptedException { //TODO Metti il sincro per la stampa brutta
         this.lock = new Object();
         Event errorReceived;
         this.uView = new UserView();
@@ -119,7 +119,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     private int indexOfPIT;
     private boolean hasGameStarted = false;
 
-    public void getModel() throws IOException {
+    public void getModel() throws IOException, InterruptedException {
         out.println("In model");
         disabledInput = false;
         Event errorReceived = Event.WAIT;
@@ -168,12 +168,12 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
             }
             if (myIndex == indexOfPIT) {
-                //flowGui();
+                flowGui();
             }
         }
     }
 
-    private void activePlay() throws IOException {
+    private void activePlay() throws IOException, InterruptedException {
         isFirstTurn = false;
         Event errorReceived;
         playerInTurn = listOfPlayers.get(myIndex);
@@ -215,7 +215,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         getModel();
     }
 
-    private void passivePlay() throws IOException {
+    private void passivePlay() throws IOException, InterruptedException {
         System.out.println("It's not your turn, here are some actions you can do!");
         Event status = Event.WAIT;
         do {
@@ -375,13 +375,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 //FIXME:Al momento il metodo del calcolo punteggio è sbagliato, non tiene conto dei punteggi aggiunti in precedenza
 
     private ArrayList<Cord> tilesCords = new ArrayList<>();
-    /*public void flowGui() throws IOException {
-        ArrayList<Cord> tilesCords;
-        //tilesCords = gui.askTiles();
-        do{
-            errorReceived = server.sendMessage(this.matchIndex,cords, TURN_PICKED_TILES);
-            // NB: messaggio di errore lato gui se tiles non possono essere prese
-        } while(errorReceived != Event.OK);
+    public void flowGui() throws IOException, InterruptedException {
+        gui.askTiles();
+
+        tilesCords = gui.getTilesClient();
 
         ArrayList<Tile> tilesList = new ArrayList<>();
 
@@ -394,7 +391,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         int column = gui.chooseColumn();
         //controllare colonna restituita
         do {
-            errorReceived = server.sendMessage(this.matchIndex,column, TURN_COLUMN);
+            errorReceived = server.sendMessage(this.myIndex, column, TURN_COLUMN);
             //nb: messaggio d'errore se colonna sbagliata
         }while(errorReceived!=Event.OK);
 
@@ -403,7 +400,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
          //FIXME:
             // gui.addTile(pos); //aggiunge tessera a bookshelf
         }
-    }*/
+    }
 
     private boolean disabledInput;
 

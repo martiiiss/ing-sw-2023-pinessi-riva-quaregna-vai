@@ -125,41 +125,49 @@ public class GUIView{ //class that contains all the GUI elements
         frame.setTitle("How many tiles you want to pick?");
     }
 
-    public ArrayList <Cord> getTilesClient(){
-        while(boardView.getTilesPicked()==0){
+    public ArrayList <Cord> getTilesClient() throws InterruptedException {
+        System.out.println("prima: " + boardView.getTilesPicked());
+        while(boardView.getTilesPicked()<=0){
+            waitUpdate();
         }
         System.out.println("setta a true can pick");
         boardView.setCanPick(true);
 
         boardView.getBoardDisplayed().setTitle("Click the tiles to pick them");
-        while (boardView.getTilesPicked()!=0){}
+        while (boardView.getTilesPicked()!=0){
+            waitUpdate();
+        }
         System.out.println("get tiles picked " + boardView.getTilesPicked() );
         boardView.setCanPick(false);
         boardView.getBoardDisplayed().setTitle("Board");
         return boardView.getListTilesPicked();
     }
 
+    public void waitUpdate() throws InterruptedException {
+        System.out.print("");
+    }
     public void pickTiles(ArrayList<Cord> cords, ArrayList<Tile> tiles){ //pick the tiles from the board and put them in the hand
         int i=0;
         while(cords.get(i)!=null){
             boardView.pickTile(cords.get(i).getRowCord(), cords.get(i).getColCord());
             hand.setTilesInHand(tiles.get(i));
+            i++;
         }
     }
-    public int chooseColumn(){ //choose the column where i want to put the tile and return it
+    public int chooseColumn() throws InterruptedException { //choose the column where i want to put the tile and return it
         bookshelfView.getBookshelfDisplayed().setTitle("Choose the column to insert tiles by clicking one of its buttons");
         bookshelfView.setColumnChosen(0);
         while(bookshelfView.getColumnChosen()==0){
-
+            waitUpdate();
         }
         bookshelfView.getBookshelfDisplayed().setTitle("Bookshelf");
         return bookshelfView.getColumnChosen();
     }
-    public int chooseTile(){ //choose the tile to insert and return its position
+    public int chooseTile() throws InterruptedException { //choose the tile to insert and return its position
         hand.setTileToInsert(0);
         hand.getImageDisplayed().setTitle("Choose the first tile to insert by clicking on it");
         while(hand.getTileToInsert()==0){
-
+            waitUpdate();
         }
         return hand.getTileToInsert();
     }

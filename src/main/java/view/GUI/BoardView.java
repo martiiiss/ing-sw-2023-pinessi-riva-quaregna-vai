@@ -23,6 +23,8 @@ public class BoardView {
         ImageReader imageReader = new ImageReader();
         boardDisplayed = new ImagePanel("Board", imageReader.readImage("resources/livingroomResized.png", 467, 467), 9,9, 2, 2);
         boardTiles= new JButton[9][9];
+        this.listTilesPicked = new ArrayList<>();
+
         for(int row=0; row<9; row++)
             for(int column=0; column<9; column++) {
                     boardTiles[row][column] = new JButton();
@@ -40,6 +42,7 @@ public class BoardView {
                             tile.setCords((int)button.getClientProperty("row"),(int) button.getClientProperty("column"));
                             listTilesPicked.add(tile);
                             tilesPicked--;
+                            System.out.println("tile aggiunta " + tile);
                         }
                     });
 
