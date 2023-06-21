@@ -152,12 +152,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         } else if (this.viewChosen == 2) {
             //setup iniziale: istanziare (una sola volta!!)
             if (this.isFirstTurn) {
-                Bag bag = new Bag();
-                board = new Board(4);
-                Game game = new Game();
-                game.setNumOfPlayers(4);
-                game.setCommonGoalCards();
-                ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
                 gui = new GUIView();
                 this.isFirstTurn = false;
 
@@ -376,9 +370,13 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
     private ArrayList<Cord> tilesCords = new ArrayList<>();
     public void flowGui() throws IOException, InterruptedException {
-        gui.askTiles();
+        gui.askTiles(); //ask number of tiles
 
-        tilesCords = gui.getTilesClient();
+        do {
+            tilesCords = gui.getTilesClient();
+            errorReceived = server.sendMessage(this.matchIndex,cords, TURN_PICKED_TILES);
+            System.out.println(errorReceived.getMsg());
+        } while (errorReceived != Event.OK);
 
         ArrayList<Tile> tilesList = new ArrayList<>();
 
