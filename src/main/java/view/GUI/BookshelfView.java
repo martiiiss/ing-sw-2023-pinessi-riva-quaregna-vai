@@ -30,10 +30,11 @@ public class BookshelfView {
                 bookshelfTiles[i][j].setPreferredSize(new Dimension(50,50));
                 bookshelfDisplayed.add(bookshelfTiles[i][j]);
                 bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
-                int column = j;
+                bookshelfTiles[i][j].putClientProperty("column", j);
                 bookshelfTiles[i][j].addActionListener(e -> {
+                    JButton button = (JButton) e.getSource();
                     if(columnChosen==0)
-                        columnChosen = column;
+                        columnChosen = (int) button.getClientProperty("column");
                 });
             }
 

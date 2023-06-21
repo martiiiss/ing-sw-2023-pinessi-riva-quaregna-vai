@@ -40,6 +40,10 @@ public class BoardView {
                             tile.setCords((int)button.getClientProperty("row"),(int) button.getClientProperty("column"));
                             listTilesPicked.add(tile);
                             tilesPicked--;
+                            if(tilesPicked ==0)
+                                synchronized (this){
+                                notify();
+                                }
                         }
                     });
 
@@ -56,8 +60,7 @@ public class BoardView {
     }
 
     public void pickTile(int row, int column) { // set the tile from the board in the given position to nothing
-            ImageReader imageReader = new ImageReader();
-            this.boardTiles[row][column].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
+            this.boardTiles[row][column].setIcon(null);
             this.boardTiles[row][column].setOpaque(false);
             this.boardTiles[row][column].setContentAreaFilled(false);
             this.boardTiles[row][column].setBorderPainted(false);
@@ -76,6 +79,7 @@ public class BoardView {
                         this.boardTiles[row][column].setBorderPainted(true);
                     }
                     else{
+                        this.boardTiles[row][column].setIcon(null);
                         this.boardTiles[row][column].setOpaque(false);
                         this.boardTiles[row][column].setContentAreaFilled(false);
                         this.boardTiles[row][column].setBorderPainted(false);
