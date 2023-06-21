@@ -1,5 +1,6 @@
 package util;
 
+/**Class that represents an enumeration of events, used in {@link distributed.messages.Message}*/
 public enum Event {
     SET_INDEX(""),
     SET_NICKNAME(""),
@@ -80,9 +81,22 @@ public enum Event {
     ORDER_CHOSEN("");
 
     private String msg;
+
+    /**
+     * <p>
+     *     Constructor of the Class.<br>
+     *     This sets an error message based on the given parameter.
+     * </p>
+     * @param errMsg a <code>String</code> that represents an error message*/
     Event(String errMsg) {
         this.msg = errMsg;
     }
+
+    /**
+     * <p>
+     *     Method that returns an error message.
+     * </p>
+     * @return <code>String</code> that represents an error message*/
     public String getMsg(){
         return msg;
     }

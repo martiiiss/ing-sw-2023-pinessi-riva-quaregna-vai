@@ -1,5 +1,5 @@
 package util;
-
+/**Class that contains an enumeration of possible errors*/
 public enum Error {
     NOT_AVAILABLE("\u001B[35mNickname already taken...\u001B[0m"),
     OK("\u001B[35mAccepted\u001B[0m"),
@@ -16,9 +16,22 @@ public enum Error {
     WAIT("\u001B[35mWaiting for all the players...\u001B[0m");
 
     private String msg;
+
+    /**
+     * <p>
+     *     Constructor of the Class.<br>
+     *     This, given a <code>String</code> as a parameter sets a error message.
+     * </p>
+     * @param errMsg a <code>String</code> that represents an error message*/
     Error(String errMsg) {
         this.msg = errMsg;
     }
+
+    /**
+     * <p>
+     *     Method that returns the error message.
+     * </p>
+     * @return a <code>String</code> that represents the error message*/
     public String getMsg(){
         return msg;
     }
