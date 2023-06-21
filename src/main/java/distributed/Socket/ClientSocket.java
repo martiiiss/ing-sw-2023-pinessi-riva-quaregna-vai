@@ -103,5 +103,10 @@ public class ClientSocket extends Client {
 
     }
 
+    @Override
+    public int askNumOfPlayers() throws IOException {
+        return 0;
+    }
+
 
 }

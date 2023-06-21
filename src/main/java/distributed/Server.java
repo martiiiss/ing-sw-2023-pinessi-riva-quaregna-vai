@@ -7,6 +7,7 @@ import model.Board;
 import model.Game;
 import util.Event;
 import util.Event;
+import util.Match;
 
 import java.io.IOException;
 import java.rmi.Remote;
@@ -18,7 +19,8 @@ import java.util.*;
 public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private int socketPort;
     private int RMIPort;
-    private List<ClientInterface> clientsConnected; //username - connection
+    private List<Match> matchList;
+    //private List<ClientInterface> clientsConnected; //username - connection
     private Object clientsLock;
     private Controller controller ;
     private Game game ;
@@ -29,6 +31,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private int maxNumOfClients = 200;
 
     public Server(int portSocket, int portRMI) throws IOException {
+        matchList = new ArrayList<>();
         if(portRMI==-1) { //Socket
             //    System.out.println("socket");
             this.socketPort = portSocket;
@@ -38,11 +41,9 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         }
 
         //System.out.println("entrambi");
-        //this.socketPort = portSocket;
-        //this.RMIPort = RMIPort;
-        this.controller= new Controller();
-        this.game = controller.getInstanceOfGame();
-        this.clientsConnected= Collections.synchronizedList(new ArrayList<>());
+        this.socketPort = portSocket;
+        this.RMIPort = RMIPort;
+        this.matchList= Collections.synchronizedList(new ArrayList<>());
 
         System.out.println("\u001B[32mServer Ready! \u001B[0m");
     }
@@ -64,8 +65,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private void reconnectionOfPlayer(String username, Connection connection) throws RemoteException{ //FIXME non può richiedere come parametro il nickname dato che viene richiesto solo dopo che si è connesso        //TODO
     }
 
-    public int connection (ClientInterface client){
-        if(getNumberOfClientsConnected()<maxNumOfClients) {
+    public ArrayList<Integer> connection (ClientInterface client) throws IOException {
+        /*if(getNumberOfClientsConnected()<maxNumOfClients) {
             if(clientsConnected.size()==1){
                 Thread disconnection = new Thread(()-> {
                     startClientStatusCheckTimer();
@@ -77,18 +78,48 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
             System.out.println("Clients: " + getNumberOfClientsConnected());
             return clientsConnected.size() - 1;
         }
-        return -1;
-    }
+        return -1;*/
+        Match match = new Match();
+        ArrayList<Integer> indexes = new ArrayList<>();
+        if(matchList.isEmpty()) {
+            System.out.println("No match in list, new match");
+            match.addPlayer(client);
+            match.setMaxSize(client.askNumOfPlayers());
+            match.getGameController().updateController(match.getMaxSize(),Event.ASK_NUM_PLAYERS);
+            matchList.add(match);
+            indexes.add(matchList.indexOf(match));
+            indexes.add((match.getListOfClients().indexOf(client)));
+            System.out.println(indexes.get(0)+" "+indexes.get(1));
+            System.out.println("Match selected is: "+matchList.indexOf(match));
 
-
-    public int getNumberOfClientsConnected() {
-        /*for(Client c: clientsConnected){
-            System.out.println("TESTING "+c.getUsername());
+            return indexes;
         }
-        System.out.println("non stampa lo stesso numero " + this.clientsConnected.size());*/
-        //   return this.numOfClientsConnected;
-        return this.clientsConnected.size();
+        else {
+            for(Match matchIterator : matchList) {
+                if(matchIterator.getMaxSize()>matchIterator.getListOfClients().size()) {
+                    matchIterator.addPlayer(client);
+                    System.err.println(matchIterator.getListOfClients().indexOf(client));
+                    System.out.println("Match selected is: "+matchList.indexOf(matchIterator));
+                    indexes.add(matchList.indexOf(matchIterator));
+                    indexes.add((matchIterator.getListOfClients().indexOf(client)));
+                    return indexes;
+                }
+            }
+        }
+        System.out.println("All Matches are full, new match!");
+        match.setMaxSize(client.askNumOfPlayers());
+        matchList.add(match);
+        match.addPlayer(client);
+        System.out.println("Match selected is: "+matchList.indexOf(match));
+        indexes.add(matchList.indexOf(match));
+        indexes.add((match.getListOfClients().indexOf(client)));
+        match.getGameController().updateController(match.getMaxSize(),Event.ASK_NUM_PLAYERS);
+        return indexes;
     }
+    /*public int returnClientIndex(int matchIndex, ClientInterface client) {
+        return matchList.get(matchIndex).getListOfClients().indexOf(client);
+    }*/
+
 
     private void readyToStart() throws RemoteException{
         //TODO: raggiunto il numero di giocatori necessario la partita può iniziare
@@ -103,38 +134,18 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         //TODO
     }
 
-    public int getClientsConnected() {
-        return this.clientsConnected.size();
-    }
-    public List<ClientInterface> getClients(){
-        return clientsConnected;
-    }
-
-    public boolean isEveryoneConnected() {
-        if(clientsConnected.size()==controller.getInstanceOfGame().getNumOfPlayers()) {
-            System.err.println("Everyone is now connected!");
-            return true;
-        }
-        else if(clientsConnected.size()<controller.getInstanceOfGame().getNumOfPlayers()) {
-            System.err.println("Number of players not yet reached");
-            return false;
-        }
-        System.err.println("DI AL CLIENT CHE CI SONO GIA' TUTTI I PLAYERS CONNESSI...");
-        clientsConnected.remove(clientsConnected.get(clientsConnected.size()-1));
-        return false;
-    }
-
-
     public Board getServerBoard(){ return this.controller.getBoard();}
 
-    public Event sendServerMessage(Object obj, Event event) throws IOException {
+    public Event sendServerMessage(int gameIndex, Object obj, Event event) throws IOException {
         if(event==Event.ASK_NUM_PLAYERS)
-            maxNumOfClients = (int) obj;
-        return controller.updateController(obj,event);
+            matchList.get(gameIndex).getGameController().updateController(matchList.get(gameIndex).getMaxSize(),Event.ASK_NUM_PLAYERS);
+        //System.out.println("Mess rec: "+event+" Match number "+gameIndex);
+        return matchList.get(gameIndex).getGameController().updateController(obj,event);
     }
 
-    public Object getServerModel(Event event, Object clientIndex) {
-        return controller.getControllerModel(event, clientIndex);
+    public Object getServerModel(int gameIndex, Event event, Object clientIndex) {
+        //System.out.println("Event Rec: "+ event+" Match number "+gameIndex);
+        return matchList.get(gameIndex).getGameController().getControllerModel(event, clientIndex);
     }
     private boolean clientDisconnected = false;
 
@@ -154,15 +165,17 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
 
     private void checkClientStatus() {
-        Iterator<ClientInterface> iterator = clientsConnected.iterator();
-        while (iterator.hasNext()) {
-            ClientInterface client = iterator.next();
-            try {
-                client.ping();
-            } catch (RemoteException e) {
-                clientDisconnected = true;
-                System.exit(-1);
+        for (Match match : matchList) {
+            Iterator<ClientInterface> iterator =match.getListOfClients().iterator();
+            while (iterator.hasNext()) {
+                ClientInterface client = iterator.next();
+                try {
+                    client.ping();
+                } catch (RemoteException e) {
+                    clientDisconnected = true;
+                    System.exit(-1);
                 }
+            }
         }
     }
 }

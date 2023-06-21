@@ -67,7 +67,7 @@ public class SocketServer extends Server implements Runnable{
 
     public void receivedMessage(Message message) throws IOException {
         System.out.println("messaggio ricevuto dal server" + message.getMessageEvent());
-        server.sendServerMessage(message.getObj(), message.getMessageEvent());
+        //server.sendServerMessage(message.getObj(), message.getMessageEvent());
         // server return an Error
         updateView(message);
     }

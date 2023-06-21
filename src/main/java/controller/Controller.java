@@ -49,9 +49,12 @@ public class Controller  {
                 return Event.NOT_AVAILABLE;
             }
         }
+        System.out.println("SetUp Nickname");
         Player newPlayer = new Player();
         newPlayer.setNickname(nickname);
+        System.out.println("PlayerNickSet: "+newPlayer.getNickname());
         game.addPlayer(newPlayer);
+        System.out.println("GameSize: "+game.getPlayers().size());
         return Event.OK;
     }
 
@@ -390,15 +393,18 @@ public class Controller  {
         Event error = Event.OK;
         switch (event) {
             case ASK_NUM_PLAYERS -> {
+                System.out.println("Num of players set: "+(int)obj);
                 game.setNumOfPlayers((int)obj);
             }
             case SET_NICKNAME -> {
+                System.out.println("Nickname Rec: "+(String) obj);
                  error = chooseNickname((String) obj);
             }
             case CHOOSE_VIEW -> {
                 error = chooseUserInterface((int) obj);
             }
             case ALL_CONNECTED -> {
+                //System.err.println(game.getPlayers().size()+" "+game.getPlayers().size());
                 if(game.getNumOfPlayers() == game.getPlayers().size()) {
                     System.out.println("The game is starting");
                     initializeGame();

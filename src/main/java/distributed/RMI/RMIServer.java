@@ -11,6 +11,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RMIServer extends Server implements ServerRMIInterface {
@@ -35,10 +36,6 @@ public class RMIServer extends Server implements ServerRMIInterface {
             e.printStackTrace();
             System.err.println("Failed to bind to RMI registry");
         }
-        Thread disconnection = new Thread(()-> {
-            rmiconnectionManager();
-        }, "Thread disconnection handler");
-        disconnection.start();
     }
 
     public void disconnect(){
@@ -46,35 +43,25 @@ public class RMIServer extends Server implements ServerRMIInterface {
     }
 
     private int index = 0;
-    public int initClient(ClientInterface rmiClient) throws IOException, AlreadyBoundException {
+    public ArrayList<Integer> initClient(ClientInterface rmiClient) throws IOException, AlreadyBoundException {
         ClientInterface clientInterface = (ClientInterface) rmiClient;
-        registry.bind("Client"+index,clientInterface);
-        index++;
+        /*registry.bind("Client"+index,clientInterface);
+        index++;*/
         System.out.println(registry.list());
         return server.connection(clientInterface);
     }
 
-    public int getNumberOfConnections() {
-        return server.getClientsConnected();
-    }
 
-    public Event sendMessage(Object obj, Event event) throws IOException {
-        return server.sendServerMessage(obj,event);
+    public Event sendMessage(int gameIndex, Object obj, Event event) throws IOException {
+        return server.sendServerMessage(gameIndex, obj,event);
         //return getInstanceOfController().getNextEvent(super.getNumberOfClientsConnected());
     }
-    public Object getModel(Event event, Object clientIndex) throws RemoteException{
-        return server.getServerModel(event, clientIndex);
+    public Object getModel(int gameIndex, Event event, Object clientIndex) throws RemoteException{
+        return server.getServerModel(gameIndex, event, clientIndex);
     }
-    private void rmiconnectionManager() {
-        List<ClientInterface> clientInterfaces = server.getClients();
-        for (ClientInterface client : clientInterfaces) {
-            try {
-                client.ping();
-            } catch (RemoteException exception) {
-                System.out.println("Client disconnesso");
-            }
-        }
-    }
+   /* public int getClientIndex(int matchIndex, ClientInterface client) {
+        return server.returnClientIndex(matchIndex, client);
+    }*/
 
     public boolean getDisconnection() throws RemoteException{
         return server.getDisconnections();
