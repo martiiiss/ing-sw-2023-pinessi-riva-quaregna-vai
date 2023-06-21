@@ -90,6 +90,7 @@ public class BoardView {
 
     public void setCanPick(boolean canPick) {
         this.canPick = canPick;
+
     }
 
     public int getTilesPicked() {
