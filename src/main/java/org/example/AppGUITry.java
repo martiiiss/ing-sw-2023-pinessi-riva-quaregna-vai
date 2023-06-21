@@ -29,7 +29,7 @@ public class AppGUITry {
         ArrayList<Tile> a = new ArrayList<>();
         Tile b = new Tile(Type.BOOK, 1);
         a.add(b);
-        view.pickTiles(array, a, 1);
+        view.pickTiles(array, a);
 
     }
 }
