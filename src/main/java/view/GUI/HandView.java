@@ -32,11 +32,13 @@ public class HandView { //class to represent the "hand", the tiles picked from t
             hand[i].setOpaque(false);
             hand[i].setContentAreaFilled(false);
             if(i<3){
-                int finalI = i;
+                hand[i].putClientProperty("index", i);
                 hand[i].addActionListener(e -> {
-                    if(hand[finalI].getIcon()!=null && tileToInsert==0){
-                        removeTileInHand(finalI);
-                        this.tileToInsert=finalI;
+                    JButton button = (JButton) e.getSource();
+                    int index = (int) button.getClientProperty("index");
+                    if(hand[index].getIcon()!=null && tileToInsert==0){
+                        removeTileInHand(index);
+                        this.tileToInsert=index;
                     }
 
                 });
@@ -55,6 +57,9 @@ public class HandView { //class to represent the "hand", the tiles picked from t
                 jButton.setBorderPainted(true);
                 jButton.setContentAreaFilled(true);
                 jButton.setIcon(imageReader.readIcon("resources/TileImages/" + tile.getType() + "/" + tile.getNumType() + ".png", 50, 50));
+                synchronized (this){
+                    this.notify();
+                }
                 break;
             }
         }

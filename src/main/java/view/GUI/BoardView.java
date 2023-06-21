@@ -23,8 +23,6 @@ public class BoardView {
         ImageReader imageReader = new ImageReader();
         boardDisplayed = new ImagePanel("Board", imageReader.readImage("resources/livingroomResized.png", 467, 467), 9,9, 2, 2);
         boardTiles= new JButton[9][9];
-        this.listTilesPicked = new ArrayList<>();
-
         for(int row=0; row<9; row++)
             for(int column=0; column<9; column++) {
                     boardTiles[row][column] = new JButton();
@@ -42,7 +40,10 @@ public class BoardView {
                             tile.setCords((int)button.getClientProperty("row"),(int) button.getClientProperty("column"));
                             listTilesPicked.add(tile);
                             tilesPicked--;
-                            System.out.println("tile aggiunta " + tile);
+                            if(tilesPicked ==0)
+                                synchronized (this){
+                                notify();
+                                }
                         }
                     });
 
@@ -59,8 +60,7 @@ public class BoardView {
     }
 
     public void pickTile(int row, int column) { // set the tile from the board in the given position to nothing
-            ImageReader imageReader = new ImageReader();
-            this.boardTiles[row][column].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
+            this.boardTiles[row][column].setIcon(null);
             this.boardTiles[row][column].setOpaque(false);
             this.boardTiles[row][column].setContentAreaFilled(false);
             this.boardTiles[row][column].setBorderPainted(false);
@@ -79,6 +79,7 @@ public class BoardView {
                         this.boardTiles[row][column].setBorderPainted(true);
                     }
                     else{
+                        this.boardTiles[row][column].setIcon(null);
                         this.boardTiles[row][column].setOpaque(false);
                         this.boardTiles[row][column].setContentAreaFilled(false);
                         this.boardTiles[row][column].setBorderPainted(false);

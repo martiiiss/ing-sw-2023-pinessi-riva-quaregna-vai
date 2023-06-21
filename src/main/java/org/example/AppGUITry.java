@@ -1,10 +1,8 @@
 package org.example;
 
-import model.Bag;
-import model.Board;
-import model.Game;
-import model.Tile;
+import model.*;
 import view.GUI.GUIView;
+import util.Cord;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +22,14 @@ public class AppGUITry {
         board.setUpBoard(tiles);//filled the board
         view = new GUIView();
         view.updateBoard(board);
+        view.askTiles();
+        ArrayList <Cord> array;
+        array = view.getTilesClient();
+        System.out.println(array.get(0).getRowCord());
+        ArrayList<Tile> a = new ArrayList<>();
+        Tile b = new Tile(Type.BOOK, 1);
+        a.add(b);
+        view.pickTiles(array, a, 1);
 
     }
 }

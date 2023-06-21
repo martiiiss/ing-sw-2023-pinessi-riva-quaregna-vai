@@ -8,10 +8,11 @@ import util.Event;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class GUIView{ //class that contains all the GUI elements
+public class GUIView { //class that contains all the GUI elements
     private BoardView boardView;
     private ScoringTokenView[] scv;
     private BookshelfView bookshelfView;
@@ -24,7 +25,7 @@ public class GUIView{ //class that contains all the GUI elements
 
     private int tilesMoved = 0;
 
-    public GUIView() {
+    public GUIView () {
         JFrame GUI = new JFrame();
         ImageReader imageReader = new ImageReader();
         GUI.setContentPane(new JPanel() {
@@ -108,6 +109,7 @@ public class GUIView{ //class that contains all the GUI elements
     }
     public void askTiles(){ //invoked by client, asks the GUI to choose tiles and returns an arraylist of them
         JFrame frame = new JFrame();
+        boardView.getListTilesPicked().removeAll(boardView.getListTilesPicked());
         for(int i=1 ; i<4; i++){
             JButton button = new JButton();
             frame.add(button);
@@ -117,6 +119,9 @@ public class GUIView{ //class that contains all the GUI elements
                 boardView.setTilesPicked(Integer.parseInt(button.getText()));
                 frame.dispose();
                 System.out.println("selezionato: " +  boardView.getTilesPicked());
+                synchronized (this){
+                    this.notify();
+                }
             });
         }
         frame.setVisible(true);
@@ -125,17 +130,30 @@ public class GUIView{ //class that contains all the GUI elements
         frame.setTitle("How many tiles you want to pick?");
     }
 
-    public ArrayList <Cord> getTilesClient() throws InterruptedException {
-        System.out.println("prima: " + boardView.getTilesPicked());
-        while(boardView.getTilesPicked()<=0){
-            waitUpdate();
+    public ArrayList <Cord> getTilesClient(){
+        /*while(boardView.getTilesPicked()== -1){
+            System.out.println("WAIT");
+        }*/
+        synchronized (this){
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         System.out.println("setta a true can pick");
         boardView.setCanPick(true);
 
         boardView.getBoardDisplayed().setTitle("Click the tiles to pick them");
-        while (boardView.getTilesPicked()!=0){
-            waitUpdate();
+        /*while (boardView.getTilesPicked()!=0){
+            System.out.println("wait");
+        }*/
+        synchronized (boardView){
+            try {
+                boardView.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         System.out.println("get tiles picked " + boardView.getTilesPicked() );
         boardView.setCanPick(false);
@@ -143,31 +161,32 @@ public class GUIView{ //class that contains all the GUI elements
         return boardView.getListTilesPicked();
     }
 
-    public void waitUpdate() throws InterruptedException {
-        System.out.print("");
-    }
-    public void pickTiles(ArrayList<Cord> cords, ArrayList<Tile> tiles){ //pick the tiles from the board and put them in the hand
+    public void pickTiles(ArrayList<Cord> cords, ArrayList<Tile> tiles, int number){ //pick the tiles from the board and put them in the hand
         int i=0;
-        while(cords.get(i)!=null){
+        while(i<number) {
             boardView.pickTile(cords.get(i).getRowCord(), cords.get(i).getColCord());
             hand.setTilesInHand(tiles.get(i));
             i++;
         }
     }
-    public int chooseColumn() throws InterruptedException { //choose the column where i want to put the tile and return it
+    public int chooseColumn(){ //choose the column where i want to put the tile and return it
         bookshelfView.getBookshelfDisplayed().setTitle("Choose the column to insert tiles by clicking one of its buttons");
         bookshelfView.setColumnChosen(0);
         while(bookshelfView.getColumnChosen()==0){
-            waitUpdate();
+
         }
         bookshelfView.getBookshelfDisplayed().setTitle("Bookshelf");
         return bookshelfView.getColumnChosen();
     }
-    public int chooseTile() throws InterruptedException { //choose the tile to insert and return its position
+    public int chooseTile(){ //choose the tile to insert and return its position
         hand.setTileToInsert(0);
         hand.getImageDisplayed().setTitle("Choose the first tile to insert by clicking on it");
-        while(hand.getTileToInsert()==0){
-            waitUpdate();
+        synchronized (hand){
+            try {
+                hand.wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
         return hand.getTileToInsert();
     }
