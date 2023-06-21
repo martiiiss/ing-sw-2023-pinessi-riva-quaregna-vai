@@ -203,62 +203,6 @@ public class GameTest {
             {p, f, p, p, c},
             {f, p, c, p, f}
     };//CGC1 & CGC3
-    Tile[][] b2 = {
-            {c, b, t, t, f},
-            {g, c, b, f, f},
-            {c, p, c, t, g},
-            {g, g, b, c, t},
-            {t, p, p, c, c},
-            {t, p, c, b, b}
-    };
-    Tile[][] b3 = {
-            {c, n, n, n, c},
-            {c, c, g, b, g},
-            {f, t, c, b, g},
-            {p, t, c, c, b},
-            {g, c, b, p, c},
-            {c, g, g, p, c}
-    };
-    Tile[][] b4 = {
-            {c, n, n, n, c},
-            {p, c, g, c, g},
-            {f, t, c, b, g},
-            {c, c, c, c, c},
-            {g, c, b, c, c},
-            {c, p, c, p, c}
-    };
-    Tile[][] b5 = {
-            {c, c, n, f, f},
-            {c, t, t, t, f},
-            {p, g, t, t, f},
-            {p, f, p, p, f},
-            {p, b, p, p, f},
-            {p, p, c, p, c}
-    };
-    Tile[][] b6 = {
-            {c, b, n, n, c},
-            {p, c, g, c, g},
-            {f, t, c, b, p},
-            {t, g, c, c, t},
-            {g, f, b, c, b},
-            {b, p, c, p, f}
-    };
-    Tile[][] b7 = {
-            {c, c, n, b, c},
-            {c, c, n, b, b},
-            {n, n, n, n, n},
-            {n, n, n, n, n},
-            {n, n, n, c, c},
-            {c, n, n, c, c}
-    };
-    Tile[][] b8 = {
-            {c, c, n, n, c},
-            {c, c, g, c, c},
-            {f, t, g, c, c},
-            {c, c, c, c, c},
-            {p, t, b, g, c},
-            {c, t, g, p, f}
-    };
     Tile[][] b9 = {
             {c, t, n, n, c},
             {p, c, g, c, c},
@@ -266,22 +210,6 @@ public class GameTest {
             {c, c, c, c, c},
             {p, c, b, c, c},
             {c, t, c, p, c}
-    };
-    Tile[][] b10 = {
-            {c, b, c, t, f},
-            {g, c, b, f, f},
-            {c, p, c, t, g},
-            {g, g, b, t, t},
-            {t, p, p, c, b},
-            {t, p, c, b, b}
-    };
-    Tile[][] b11 = {
-            {c, n, n, n, c},
-            {p, c, g, b, g},
-            {f, t, c, b, g},
-            {p, t, c, c, c},
-            {g, c, b, c, c},
-            {c, g, c, p, c}
     };
     Tile[][] b12 = {
             {c, n, n, n, n},

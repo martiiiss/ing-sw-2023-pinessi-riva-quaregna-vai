@@ -5,14 +5,9 @@ import model.Tile;
 import model.Bookshelf;
 import model.CGC5;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-
-
 class CGC5Test {
-    private final int MAX_ROW = 6;
-    private final int MAX_COLUMN = 5;
     Tile cat = new Tile(Type.CAT, 1);
     Tile book = new Tile(Type.BOOK, 2);
     Tile game = new Tile(Type.GAME, 2);

@@ -1,11 +1,13 @@
 package model;
 
+import java.io.Serial;
 import java.io.Serializable;
-
 import static model.Type.NOTHING;
 
+/**This class represents the control of the sixth and eight Common Goal Card*/
 /*two full columns equal with id 6, full row equal with id 8*/
 public class CGC68 implements CGCStrategy, Serializable {
+    @Serial
     private static final long serialVersionUID = 6828176289351890009L;
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();

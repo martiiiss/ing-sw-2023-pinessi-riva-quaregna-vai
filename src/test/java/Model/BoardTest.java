@@ -5,9 +5,7 @@ import model.Board;
 import model.Tile;
 import static model.Type.*;
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 
 class BoardTest {

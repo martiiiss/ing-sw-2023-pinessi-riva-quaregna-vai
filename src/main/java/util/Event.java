@@ -64,7 +64,17 @@ public enum Event {
     SET_COMMONGC(""),
     SET_WINNER(""),
     SET_FINISHER(""),
-    REMOVE_TILE_BOARD("");
+    REMOVE_TILE_BOARD(""),
+
+    //per GUI
+    ASK_CAN_PICK(""),
+    OK_TO_PICK(""),
+    TILES_NOT_VALID(""),
+    TILE_PICKED(""),
+    COLUMN_NOT_VALID(""),
+    SET_TILE_ORDER(""),
+    COLUMN_CHOSEN(""),
+    ORDER_CHOSEN("");
 
     private String msg;
     Event(String errMsg) {

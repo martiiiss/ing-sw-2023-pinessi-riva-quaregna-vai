@@ -1,12 +1,13 @@
 package model;
 
+import java.io.Serial;
 import java.io.Serializable;
-
 import static model.Type.BLOCKED;
 import static model.Type.NOTHING;
 
-/* x pattern, same type */
+/**This class represents the control of the tenth Common Goal Card*/
 public class CGC10 implements CGCStrategy, Serializable {
+    @Serial
     private static final long serialVersionUID = 2228176289351890649L;
     public boolean compareRule(Bookshelf bks, int id) {
         Tile[][] bookshelf = bks.getBookshelf();
