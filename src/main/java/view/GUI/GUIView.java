@@ -115,8 +115,9 @@ public class GUIView{ //class that contains all the GUI elements
             button.setVisible(true);
             int finalI = i;
             button.addActionListener(e ->{
-                boardView.setTilesPicked(finalI);
+                boardView.setTilesPicked(Integer.parseInt(button.getText()));
                 frame.dispose();
+
             });
         }
         frame.setVisible(true);

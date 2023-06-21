@@ -101,7 +101,7 @@ public class BoardView {
         this.tilesPicked++;
     }
     public void setTilesPicked(int i){
-        this.tilesPicked = 0;
+        this.tilesPicked = i;
     }
 
     public ArrayList<Cord> getListTilesPicked() {
