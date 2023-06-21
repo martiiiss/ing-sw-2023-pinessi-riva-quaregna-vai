@@ -8,17 +8,19 @@ import util.Event;
 
 
 import javax.swing.*;
+import javax.xml.transform.Source;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 
 public class BoardView {
-    private int tilesPicked;
+    private int tilesPicked = -1;
     private boolean canPick;
     private JInternalFrame boardDisplayed;
     private JButton [][] boardTiles;
-    private ArrayList<Cord> listTilesPicked;
+    private ArrayList<Cord> listTilesPicked = new ArrayList<>();
     public BoardView (){ //creates and initializes the board section of the GUI
         ImageReader imageReader = new ImageReader();
         boardDisplayed = new ImagePanel("Board", imageReader.readImage("resources/livingroomResized.png", 467, 467), 9,9, 2, 2);
@@ -31,13 +33,13 @@ public class BoardView {
                     boardTiles[row][column].setOpaque(false);
                     boardTiles[row][column].setContentAreaFilled(false);
                     boardTiles[row][column].setBorderPainted(false);
-                    int finalRow = row;
-                    int
-                            finalColumn = column;
+                    boardTiles[row][column].putClientProperty("row", row);
+                    boardTiles[row][column].putClientProperty("column", column);
                     boardTiles[row][column].addActionListener(e -> {
-                        if(canPick && tilesPicked !=0 &&boardTiles[finalRow][finalColumn].getIcon()!=null){
+                        if(canPick && tilesPicked >0){
                             Cord tile = new Cord();
-                            tile.setCords(finalRow, finalColumn);
+                            JButton button = (JButton) e.getSource();
+                            tile.setCords((int)button.getClientProperty("row"),(int) button.getClientProperty("column"));
                             listTilesPicked.add(tile);
                             tilesPicked--;
                         }
@@ -90,7 +92,6 @@ public class BoardView {
 
     public void setCanPick(boolean canPick) {
         this.canPick = canPick;
-        tilesPicked = 0;
     }
 
     public int getTilesPicked() {
