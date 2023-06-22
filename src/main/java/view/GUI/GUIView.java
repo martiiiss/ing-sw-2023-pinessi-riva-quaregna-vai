@@ -65,6 +65,7 @@ public class GUIView { //class that contains all the GUI elements
         GUI.setVisible(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         GUI.setBounds(0,0, screenSize.width, screenSize.height);
+        GUI.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
     }
 
