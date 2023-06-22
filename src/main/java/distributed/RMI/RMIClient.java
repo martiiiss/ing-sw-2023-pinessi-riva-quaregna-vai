@@ -395,10 +395,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             //nb: messaggio d'errore se colonna sbagliata
         }while(errorReceived!=Event.OK);
 
-        for(int i=0; i<numberOfChosenTiles; i++){ //TODO controllare dove viene settato numberOfChoosenTiles
+        System.out.println("pre: number of choosen tiles " + tilesToPick );
+        for(int i=0; i<tilesToPick; i++){
+            out.println("number of choosen tile " + tilesToPick);
             int pos = gui.chooseTile(); //sceglie quale tessera mettere in una colonna: restituisce la posizione nella mano
-         //FIXME:
-            // gui.addTile(pos); //aggiunge tessera a bookshelf
+            gui.addTile(tilesInHand.get(pos));
         }
     }
 
