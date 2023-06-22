@@ -30,6 +30,10 @@ public class AppGUITry {
         Tile b = new Tile(Type.BOOK, 1);
         a.add(b);
         view.pickTiles(array, a);
+        int i= view.chooseColumn();
+        System.out.println(i);
+        i = view.chooseTile();
+        System.out.println(i);
 
     }
 }

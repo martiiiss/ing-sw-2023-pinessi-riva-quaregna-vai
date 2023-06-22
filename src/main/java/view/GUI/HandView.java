@@ -37,8 +37,11 @@ public class HandView { //class to represent the "hand", the tiles picked from t
                     JButton button = (JButton) e.getSource();
                     int index = (int) button.getClientProperty("index");
                     if(hand[index].getIcon()!=null && tileToInsert==0 ){
-                        removeTileInHand(index);
-                        this.tileToInsert=index;
+                        synchronized (this) {
+                            this.tileToInsert = index;
+                            removeTileInHand(index);
+                            this.notify();
+                        }
                     }
 
                 });
