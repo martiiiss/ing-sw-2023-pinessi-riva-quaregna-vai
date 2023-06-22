@@ -13,7 +13,7 @@ public class HandView { //class to represent the "hand", the tiles picked from t
     private JButton [] hand;
     private JInternalFrame imageDisplayed;
 
-    private int tileToInsert = 0;
+    private int tileToInsert = -1;
 
     private int [] order;
     public HandView(){
@@ -36,7 +36,7 @@ public class HandView { //class to represent the "hand", the tiles picked from t
                 hand[i].addActionListener(e -> {
                     JButton button = (JButton) e.getSource();
                     int index = (int) button.getClientProperty("index");
-                    if(hand[index].getIcon()!=null && tileToInsert==0){
+                    if(hand[index].getIcon()!=null && tileToInsert==0 ){
                         removeTileInHand(index);
                         this.tileToInsert=index;
                     }
