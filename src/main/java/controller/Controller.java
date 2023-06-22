@@ -84,6 +84,7 @@ public class Controller  {
         return Event.OK;
     }
 
+
     /**
      * <p>
      *     Method used to chose the type of user interface.<br>
