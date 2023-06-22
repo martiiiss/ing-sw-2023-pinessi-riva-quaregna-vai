@@ -187,7 +187,6 @@ public class Controller  {
                     return Event.NOT_ADJACENT;
             playerCords.add(cord);
         }
-
         return Event.OK;
     }
     //FIXME se qualcuno ha voglia si può notevolmente ottimizzare

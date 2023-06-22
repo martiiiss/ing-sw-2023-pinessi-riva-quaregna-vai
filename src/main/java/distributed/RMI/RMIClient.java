@@ -238,7 +238,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             } while (cord.getRowCord() == 0 && cord.getColCord() == 0);
             cords.add(cord);
         }
-        System.out.println("Size dopo della richiesta " + cords.size());
+        //System.out.println("Size dopo della richiesta " + cords.size());
     }
 
     private void numOfChosenTiles() throws IOException {
@@ -371,24 +371,26 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
         do {
             tilesCords = gui.getTilesClient();
-            System.out.println(tilesCords.get(0).getRowCord());
-
-            errorReceived = server.sendMessage(this.matchIndex,cords, TURN_PICKED_TILES);
-            System.out.println("errore" + errorReceived.getMsg());
+            errorReceived = server.sendMessage(this.matchIndex,tilesCords, TURN_PICKED_TILES);
+            System.out.println("errore: " + errorReceived.getMsg());
         } while (errorReceived != Event.OK);
 
-        ArrayList<Tile> tilesList = new ArrayList<>();
+        ArrayList<Tile> tilesInHand = (ArrayList<Tile>) server.getModel(this.matchIndex,TURN_TILE_IN_HAND, myIndex);
+
+        /*ArrayList<Tile> tilesList = new ArrayList<>();
 
         for(int i=0; i<tilesCords.size(); i++){
             out.println("aggiungo " + tilesCords.get(i).getRowCord() + " e " + tilesCords.get(i).getColCord());
             tilesList.add(board.getBoard()[tilesCords.get(i).getRowCord()][tilesCords.get(i).getColCord()]);
         }
-        gui.pickTiles(tilesCords, tilesList); //aggiunge le tessere alla "mano"
+         */
+        gui.pickTiles(tilesCords, tilesInHand); //aggiunge le tessere alla "mano"
 
         int column = gui.chooseColumn();
         //controllare colonna restituita
         do {
-            errorReceived = server.sendMessage(this.myIndex, column, TURN_COLUMN);
+            errorReceived = server.sendMessage(this.matchIndex, column, TURN_COLUMN);
+            System.out.println("errore colonna: " + errorReceived);
             //nb: messaggio d'errore se colonna sbagliata
         }while(errorReceived!=Event.OK);
 
