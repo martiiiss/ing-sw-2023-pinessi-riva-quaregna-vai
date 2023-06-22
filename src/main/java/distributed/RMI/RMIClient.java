@@ -367,7 +367,12 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
     private ArrayList<Cord> tilesCords = new ArrayList<>();
     public void flowGui() throws IOException, InterruptedException {
-        int tilesToPick = gui.askTiles(); //ask number of tiles
+        int tilesToPick;
+        do {
+            tilesToPick = gui.askTiles(); //ask number of tiles
+            errorReceived = server.sendMessage(this.matchIndex,tilesToPick, TURN_AMOUNT);
+        } while (errorReceived != Event.OK);
+
         do {
             gui.getBoardView().setTilesPicked(tilesToPick);
             System.out.println("tiles picked " + gui.getBoardView().getTilesPicked());
