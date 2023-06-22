@@ -64,6 +64,8 @@ public class GUIView { //class that contains all the GUI elements
         GUI.add(pgc.getDisplayedImage());
         GUI.pack();
         GUI.setVisible(true);
+        Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
+        GUI.setBounds(0,0, screensize.width, screensize.height);
 
     }
 
