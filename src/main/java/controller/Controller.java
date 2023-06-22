@@ -163,14 +163,16 @@ public class Controller  {
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
     private ArrayList<Cord> playerCords = new ArrayList<>();
     public Event chooseTiles(ArrayList<Cord> cords) {
-        for(Cord cord : cords)
-            if(cord.getRowCord()>8 || cord.getRowCord()<0 || cord.getColCord()>8 || cord.getColCord()<0)
+        for(Cord cord : cords) {
+            if (cord.getRowCord() > 8 || cord.getRowCord() < 0 || cord.getColCord() > 8 || cord.getColCord() < 0)
                 return Event.OUT_OF_BOUNDS;
-        for(int i=0; i<cords.size();i++)
-            for (int j=i+1; j<cords.size();j++)
-                if(cords.get(i).getRowCord() == cords.get(j).getRowCord() && cords.get(i).getColCord()==cords.get(j).getColCord())
+        }
+        for(int i=0; i<cords.size();i++) {
+            for (int j = i + 1; j < cords.size(); j++) {
+                if (cords.get(i).getRowCord() == cords.get(j).getRowCord() && cords.get(i).getColCord() == cords.get(j).getColCord())
                     return Event.REPETITION;
-
+            }
+        }
         for (Cord cord : cords){
             if (board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.NOTHING || board.getSelectedType(cord.getRowCord(), cord.getColCord()) == Type.BLOCKED) {
                 playerCords.clear();
@@ -184,9 +186,6 @@ public class Controller  {
                 if(!checkAdj(cords))
                     return Event.NOT_ADJACENT;
             playerCords.add(cord);
-        }
-        if(cords.size()==0 || cords == null){
-            return EMPTY;
         }
         return Event.OK;
     }

@@ -19,7 +19,7 @@ import static util.Event.END;
 import static util.Event.WAIT;
 
 public class AppClient {
-    public static void main(String[] args) throws IOException, NotBoundException {
+    public static void main(String[] args) throws IOException, NotBoundException, InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1 for socket, 2 for RMI :");
         int choice = Integer.parseInt(reader.readLine());
