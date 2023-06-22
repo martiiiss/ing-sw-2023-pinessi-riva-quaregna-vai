@@ -44,13 +44,13 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     public void startConnection() throws RemoteException, NotBoundException {
         try {
             server = (ServerRMIInterface) Naming.lookup(address);
-            Thread connection = new Thread(controlDisconnection(),"ControlDisconnection");
-            connection.start();
             ArrayList<Integer> indexFromServer;
             indexFromServer = server.initClient((ClientInterface) this);
             this.myIndex = indexFromServer.get(1);
             this.matchIndex = indexFromServer.get(0);
             out.println("GameIndex: "+matchIndex+" PlayerIndex"+myIndex);
+            Thread connection = new Thread(controlDisconnection(),"ControlDisconnection");
+            connection.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -433,7 +433,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         Thread controlDisconnectionThread = new Thread(()->{
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    if(server.getDisconnection()) {
+                    if(server.getDisconnection(matchIndex)) {
                         err.println("Somebody disconnected!");
                         Thread.currentThread().interrupt();
                         System.exit(-1);

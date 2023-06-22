@@ -63,7 +63,7 @@ public class RMIServer extends Server implements ServerRMIInterface {
         return server.returnClientIndex(matchIndex, client);
     }*/
 
-    public boolean getDisconnection() throws RemoteException{
-        return server.getDisconnections();
+    public boolean getDisconnection(int matchIndex) throws RemoteException{
+        return server.getDisconnections(matchIndex);
     }
 }

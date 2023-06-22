@@ -24,7 +24,7 @@ public interface ServerRMIInterface extends Remote {
 
     Object getModel(int gameIndex, Event event, Object clientIndex) throws RemoteException;
    // int getClientIndex(int matchIndex, ClientInterface client);
-    boolean getDisconnection() throws RemoteException;
+    boolean getDisconnection(int matchIndex) throws RemoteException;
 
     //richiama i metodi del Controller (per il flusso della partita)x\
 }

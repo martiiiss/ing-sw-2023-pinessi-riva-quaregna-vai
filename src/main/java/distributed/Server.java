@@ -74,7 +74,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
                 disconnection.start();
             }
             this.clientsConnected.add(client);
-            startClientStatusCheckTimer();
             System.out.println("Clients: " + getNumberOfClientsConnected());
             return clientsConnected.size() - 1;
         }
@@ -91,7 +90,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
             indexes.add((match.getListOfClients().indexOf(client)));
             System.out.println(indexes.get(0)+" "+indexes.get(1));
             System.out.println("Match selected is: "+matchList.indexOf(match));
-
+            startClientStatusCheckTimer();
             return indexes;
         }
         else {
@@ -149,8 +148,8 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
     private boolean clientDisconnected = false;
 
-    public boolean getDisconnections() {
-        return clientDisconnected;
+    public boolean getDisconnections(int matchIndex) {
+        return matchList.get(matchIndex).getClientDisconnected();
     }
 
 
@@ -165,17 +164,18 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
 
     private void checkClientStatus() {
-        for (Match match : matchList) {
-            Iterator<ClientInterface> iterator =match.getListOfClients().iterator();
-            while (iterator.hasNext()) {
-                ClientInterface client = iterator.next();
-                try {
-                    client.ping();
-                } catch (RemoteException e) {
-                    clientDisconnected = true;
-                    System.exit(-1);
+            for (Match match : matchList) {
+                if (!match.getClientDisconnected()) {
+                    Iterator<ClientInterface> iterator = match.getListOfClients().iterator();
+                    while (iterator.hasNext()) {
+                        ClientInterface client = iterator.next();
+                        try {
+                            client.ping();
+                        } catch (RemoteException e) {
+                            match.setClientsConnected();
+                        }
+                    }
                 }
             }
-        }
     }
 }

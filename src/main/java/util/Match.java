@@ -14,6 +14,7 @@ public class Match implements Serializable {
     private List<ClientInterface> clientsConnected;
     private Controller gameController;
     private int maxSize = 5;
+    private boolean clientDisconnected = false;
 
     public Match() throws IOException {
         this.clientsConnected = new ArrayList<>();
@@ -34,5 +35,11 @@ public class Match implements Serializable {
     }
     public int getMaxSize() {
         return this.maxSize;
+    }
+    public void setClientsConnected() {
+        this.clientDisconnected = true;
+    }
+    public boolean getClientDisconnected() {
+        return this.clientDisconnected;
     }
 }
