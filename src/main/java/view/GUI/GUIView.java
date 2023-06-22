@@ -109,7 +109,6 @@ public class GUIView { //class that contains all the GUI elements
     }
     public int askTiles(){ //invoked by client, asks the GUI to choose tiles and returns an arraylist of them
         JFrame frame = new JFrame();
-        boardView.getListTilesPicked().removeAll(boardView.getListTilesPicked());
         for(int i=1 ; i<4; i++){
             JButton button = new JButton();
             frame.add(button);
@@ -139,6 +138,7 @@ public class GUIView { //class that contains all the GUI elements
     }
 
     public ArrayList <Cord> getTilesClient(){
+        boardView.getListTilesPicked().removeAll(boardView.getListTilesPicked());
         System.out.println("setta a true can pick");
         boardView.setTilesPicked(tilesToPick);
         boardView.setCanPick(true);
