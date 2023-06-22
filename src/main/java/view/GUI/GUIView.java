@@ -134,17 +134,15 @@ public class GUIView { //class that contains all the GUI elements
                 throw new RuntimeException(e);
             }
         }
+        boardView.setTilesPicked(tilesToPick);
         return this.tilesToPick;
     }
 
     public ArrayList <Cord> getTilesClient(){
         boardView.getListTilesPicked().removeAll(boardView.getListTilesPicked());
         System.out.println("setta a true can pick");
-        boardView.setTilesPicked(tilesToPick);
         boardView.setCanPick(true);
-
         boardView.getBoardDisplayed().setTitle("Click the tiles to pick them");
-
         synchronized (boardView){
             try {
                 boardView.wait();
@@ -169,8 +167,12 @@ public class GUIView { //class that contains all the GUI elements
     public int chooseColumn(){ //choose the column where i want to put the tile and return it
         bookshelfView.getBookshelfDisplayed().setTitle("Choose the column to insert tiles by clicking one of its buttons");
         bookshelfView.setColumnChosen(0);
-        while(bookshelfView.getColumnChosen()==0){
-
+        synchronized (bookshelfView){
+            try{
+                bookshelfView.wait();
+            } catch (InterruptedException e){
+                throw new RuntimeException(e);
+            }
         }
         bookshelfView.getBookshelfDisplayed().setTitle("Bookshelf");
         return bookshelfView.getColumnChosen();

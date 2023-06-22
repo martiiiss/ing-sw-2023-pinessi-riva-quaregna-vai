@@ -367,23 +367,19 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
     private ArrayList<Cord> tilesCords = new ArrayList<>();
     public void flowGui() throws IOException, InterruptedException {
-        gui.askTiles(); //ask number of tiles
-
+        int tilesToPick = gui.askTiles(); //ask number of tiles
         do {
+            gui.getBoardView().setTilesPicked(tilesToPick);
+            System.out.println("tiles picked " + gui.getBoardView().getTilesPicked());
             tilesCords = gui.getTilesClient();
+            out.println("tiles cords " + tilesCords.size());
             errorReceived = server.sendMessage(this.matchIndex,tilesCords, TURN_PICKED_TILES);
             System.out.println("errore: " + errorReceived.getMsg());
         } while (errorReceived != Event.OK);
 
+        out.println("dopo ");
         ArrayList<Tile> tilesInHand = (ArrayList<Tile>) server.getModel(this.matchIndex,TURN_TILE_IN_HAND, myIndex);
 
-        /*ArrayList<Tile> tilesList = new ArrayList<>();
-
-        for(int i=0; i<tilesCords.size(); i++){
-            out.println("aggiungo " + tilesCords.get(i).getRowCord() + " e " + tilesCords.get(i).getColCord());
-            tilesList.add(board.getBoard()[tilesCords.get(i).getRowCord()][tilesCords.get(i).getColCord()]);
-        }
-         */
         gui.pickTiles(tilesCords, tilesInHand); //aggiunge le tessere alla "mano"
 
         int column = gui.chooseColumn();

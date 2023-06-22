@@ -42,7 +42,7 @@ public class BoardView {
                             tilesPicked--;
                             if(tilesPicked ==0)
                                 synchronized (this){
-                                notify();
+                                    notify();
                                 }
                         }
                     });
@@ -64,8 +64,6 @@ public class BoardView {
             this.boardTiles[row][column].setOpaque(false);
             this.boardTiles[row][column].setContentAreaFilled(false);
             this.boardTiles[row][column].setBorderPainted(false);
-            //if(tilesPicked==3)
-               // setCanPick(false);
     }
     public void updateBoard(Board board){ //method that checks all the board and update the GUI
         ImageReader imageReader = new ImageReader();
@@ -111,4 +109,6 @@ public class BoardView {
     public ArrayList<Cord> getListTilesPicked() {
         return listTilesPicked;
     }
+
+    public void resetListTilesPicked () { listTilesPicked.clear();}
 }
