@@ -139,9 +139,6 @@ public class GUIView { //class that contains all the GUI elements
     }
 
     public ArrayList <Cord> getTilesClient(){
-        /*while(boardView.getTilesPicked()== -1){
-            System.out.println("WAIT");
-        }*/
         System.out.println("setta a true can pick");
         boardView.setTilesPicked(tilesToPick);
         boardView.setCanPick(true);
