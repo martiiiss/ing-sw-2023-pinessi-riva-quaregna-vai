@@ -131,9 +131,6 @@ public class GUIView { //class that contains all the GUI elements
     }
 
     public ArrayList <Cord> getTilesClient(){
-        /*while(boardView.getTilesPicked()== -1){
-            System.out.println("WAIT");
-        }*/
         synchronized (this){
             try {
                 this.wait();
@@ -145,9 +142,7 @@ public class GUIView { //class that contains all the GUI elements
         boardView.setCanPick(true);
 
         boardView.getBoardDisplayed().setTitle("Click the tiles to pick them");
-        /*while (boardView.getTilesPicked()!=0){
-            System.out.println("wait");
-        }*/
+
         synchronized (boardView){
             try {
                 boardView.wait();

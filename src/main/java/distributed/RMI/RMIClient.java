@@ -150,16 +150,13 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 getModel();
             }
         } else if (this.viewChosen == 2) {
-            //setup iniziale: istanziare (una sola volta!!)
             if (this.isFirstTurn) {
                 gui = new GUIView();
                 this.isFirstTurn = false;
-
                 gui.updateBoard(board);
-                gui.setupCGC((CommonGoalCard) ((ArrayList) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
-                gui.setupCGC((CommonGoalCard) ((ArrayList) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(1));
+                gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
+                gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(1));
                 gui.setupPGC((int) ((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex)).getNumber());
-
             }
             if (myIndex == indexOfPIT) {
                 flowGui();
@@ -374,8 +371,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
         do {
             tilesCords = gui.getTilesClient();
+            System.out.println(tilesCords.get(0).getRowCord());
+
             errorReceived = server.sendMessage(this.matchIndex,cords, TURN_PICKED_TILES);
-            System.out.println(errorReceived.getMsg());
+            System.out.println("errore" + errorReceived.getMsg());
         } while (errorReceived != Event.OK);
 
         ArrayList<Tile> tilesList = new ArrayList<>();
