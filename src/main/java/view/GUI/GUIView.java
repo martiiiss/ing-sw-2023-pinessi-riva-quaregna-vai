@@ -62,10 +62,9 @@ public class GUIView { //class that contains all the GUI elements
         GUI.add(bookshelfView.getBookshelfDisplayed());
         pgc = new PGCView();
         GUI.add(pgc.getDisplayedImage());
-        GUI.pack();
         GUI.setVisible(true);
-        Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
-        GUI.setBounds(0,0, screensize.width, screensize.height);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        GUI.setBounds(0,0, screenSize.width, screenSize.height);
 
     }
 
