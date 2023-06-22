@@ -23,7 +23,7 @@ public class GUIView { //class that contains all the GUI elements
 
     private CGCView[] cgc;
 
-    private int tilesMoved = 0;
+    private int tilesToPick = 0;
 
     public GUIView () {
         JFrame GUI = new JFrame();
@@ -107,7 +107,7 @@ public class GUIView { //class that contains all the GUI elements
     public void setupPGC(int pgcID){  //set up the pgc
         this.pgc.setDisplayedImage(pgcID);
     }
-    public void askTiles(){ //invoked by client, asks the GUI to choose tiles and returns an arraylist of them
+    public int askTiles(){ //invoked by client, asks the GUI to choose tiles and returns an arraylist of them
         JFrame frame = new JFrame();
         boardView.getListTilesPicked().removeAll(boardView.getListTilesPicked());
         for(int i=1 ; i<4; i++){
@@ -116,9 +116,9 @@ public class GUIView { //class that contains all the GUI elements
             button.setText(""+i);
             button.setVisible(true);
             button.addActionListener(e ->{
-                boardView.setTilesPicked(Integer.parseInt(button.getText()));
+                tilesToPick= (Integer.parseInt(button.getText()));
                 frame.dispose();
-                System.out.println("selezionato: " +  boardView.getTilesPicked());
+                System.out.println("selezionato: " +  tilesToPick);
                 synchronized (this){
                     this.notify();
                 }
@@ -128,12 +128,6 @@ public class GUIView { //class that contains all the GUI elements
         frame.setLayout(new GridLayout());
         frame.setSize(400,200);
         frame.setTitle("How many tiles you want to pick?");
-    }
-
-    public ArrayList <Cord> getTilesClient(){
-        /*while(boardView.getTilesPicked()== -1){
-            System.out.println("WAIT");
-        }*/
         synchronized (this){
             try {
                 this.wait();
@@ -141,7 +135,15 @@ public class GUIView { //class that contains all the GUI elements
                 throw new RuntimeException(e);
             }
         }
+        return this.tilesToPick;
+    }
+
+    public ArrayList <Cord> getTilesClient(){
+        /*while(boardView.getTilesPicked()== -1){
+            System.out.println("WAIT");
+        }*/
         System.out.println("setta a true can pick");
+        boardView.setTilesPicked(tilesToPick);
         boardView.setCanPick(true);
 
         boardView.getBoardDisplayed().setTitle("Click the tiles to pick them");
