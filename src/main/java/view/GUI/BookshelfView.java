@@ -33,8 +33,11 @@ public class BookshelfView {
                 bookshelfTiles[i][j].putClientProperty("column", j);
                 bookshelfTiles[i][j].addActionListener(e -> {
                     JButton button = (JButton) e.getSource();
-                    if(columnChosen==0)
+                    if(columnChosen==1)
+                        synchronized (this){
                         columnChosen = (int) button.getClientProperty("column");
+                        this.notify();
+                    }
                 });
             }
 

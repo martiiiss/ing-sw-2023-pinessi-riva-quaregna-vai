@@ -166,7 +166,7 @@ public class GUIView { //class that contains all the GUI elements
     }
     public int chooseColumn(){ //choose the column where i want to put the tile and return it
         bookshelfView.getBookshelfDisplayed().setTitle("Choose the column to insert tiles by clicking one of its buttons");
-        bookshelfView.setColumnChosen(0);
+        bookshelfView.setColumnChosen(-1);
         synchronized (bookshelfView){
             try{
                 bookshelfView.wait();
