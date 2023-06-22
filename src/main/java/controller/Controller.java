@@ -1,16 +1,14 @@
 package controller;
 
 import model.*;
+import org.jetbrains.annotations.NotNull;
 import util.Cord;
 import util.Event;
-import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
-
-
 import static util.Event.*;
 
+/**lass that represents the Controller*/
 public class Controller  {
     private Game game;
     private Bag bag;
@@ -20,30 +18,58 @@ public class Controller  {
     private int protocol = 0;
     private ArrayList<Player> finalRank;
     private ArrayList<Tile> playerHand;
-    //private Event nextEvent;
+    private ArrayList<Cord> playerCords = new ArrayList<>();
 
-    public Controller() throws IOException {
+    /**
+     * <p>
+     *     Constructor of the Class.<br>
+     *     This creates the Game by calling the method {@code createGame()}.
+     * </p>*/
+    public Controller(){
         createGame();
     }
 
-    //Before the game actually starts
+    /**
+     * <p>
+     *     Method that instantiates the Game.
+     * </p>*/
     public void createGame() {
-        //this.nextEventPlayer = new ArrayList();
-        this.game = new Game(); /*I create the Game object */
-//         chooseNumOfPlayer();
+        this.game = new Game();
     }
 
 
+    /**
+     * <p>
+     *     Method that returns the current instance of Game.
+     * </p>
+     * @return the instance of {@code Game} relative of a specific match*/
     public Game getInstanceOfGame(){
         return this.game;
     }
 
-    //this method needs to be fixed -> multithreading TODO
-    public Event chooseNickname(String nickname) {
-        if(nickname.isEmpty()) { //control for the first player
+    /**Method that returns the instance of {@code Board}.
+     * @return an instance of {@code Board}*/
+    public Board getBoard(){ return this.board;}
+    /**
+     * <p>
+     *     Method that given a {@code String} as a parameter
+     *     creates a new {@code Player} and sets its nickname.<br>
+     *     This also adds the player inside a list of players
+     *     that represents the players in a match.<br>
+     *     If the client chose its nickname correctly this method will
+     *     return an <b>{@code Event.OK}</b>; otherwise, if a client inserted an
+     *     empty string this will return an <b>{@code Event.EMPTY_NICKNAME}</b>, if a client
+     *     inserted a nickname that has already been chosen
+     *     this will return an <b>{@code Event.NOT_AVAILABLE}</b>.
+     * </p>
+     * @param nickname a {@code String} that represents the nickname given in input by the player
+     * @return an {@code Event}, the type of event depends on the input*/
+    public Event chooseNickname(@NotNull String nickname) {
+        //control on emptiness
+        if(nickname.isEmpty()) {
             return Event.EMPTY_NICKNAME;
         }
-        //control for the others
+        //control on nickname duplicates
         for(int i = 0; i<game.getPlayers().size();i++) {
             if(game.getPlayers().get(i).getNickname().equals(nickname)){
                 return Event.NOT_AVAILABLE;
@@ -58,13 +84,23 @@ public class Controller  {
         return Event.OK;
     }
 
+    /**
+     * <p>
+     *     Method used to chose the type of user interface.<br>
+     *     Based on the int in input the client can chose the type of interface that it wants:
+     *     <b>1</b> for a Textual User Interface, <b>2</b> for a Graphical User Interface. <br>
+     *     This method returns an <b>{@code Event.TUI_VIEW}</b> if the client chose a Textual User Interface,
+     *     an <b>{@code Event.GUI_VIEW}</b>, otherwise if the input si not valid this method returns an <b>{@code Event.INVALID_VALUE}</b>.
+     * </p>
+     * @param chosenInterface an int in between 1 and 2
+     * @return an {@code Event}, based on the input*/
     public Event chooseUserInterface(int chosenInterface) {
         switch (chosenInterface) {
             case 1 -> {
-                return TUI_VIEW;
+                return Event.TUI_VIEW;
             }
             case 2 -> {
-                return GUI_VIEW;
+                return Event.GUI_VIEW;
             }
             default -> {
                 return Event.INVALID_VALUE;
@@ -72,47 +108,73 @@ public class Controller  {
         }
     }
 
-    /**this method initializes the Game after all the players are connected*/
-    public void initializeGame() throws RemoteException {
+
+    /**
+     * <p>
+     *     Method that initializes the Game for a match. <br>
+     *     This method instantiates the {@code Bag} and the{@code Board},
+     *     it also assigns an empty {@code Bookshelf}, a {@code PersonalGoalCard},to every player in the match. <br>
+     *     Also, it sets the {@code CommonGoalCards}, the number of cells based on the number of players in the match,
+     *     it fills the {@code Board}.<br>
+     *     Finally it sets a player as the first player, sets the firs player as player in turn and starts the game.
+     * </p>
+     * <p>
+     *     <b>NOTE:</b> This method gets called after all the clients needed to start the game are connected.
+     * </p>*/
+    public void initializeGame() {
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
-       // while(!countPlayers()){/*we make the server wait*/}
         for(int i=0;i<game.getNumOfPlayers();i++){
-            game.getPlayers().get(i).setMyBookshelf(new Bookshelf());//the method of player creates a new Bookshelf
+            game.getPlayers().get(i).setMyBookshelf(new Bookshelf());
         }
         game.assignPersonalGoalCard(game.getNumOfPlayers());
         game.setCommonGoalCards();
         board.setNumOfCells(game.getNumOfPlayers());
         ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
-        board.setUpBoard(tiles);//filled the board
+        board.setUpBoard(tiles);
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
         game.setGameStarted();
     }
 
-    //button START GAME somewhere
-
+    /**
+     * <p>
+     *     Method that, if the {@code Board} needs to be filled,
+     *     gets the needed tiles from the {@code Bag} after eventually emptying the {@code Board}. <br>
+     *     If the {@code Bag} contains enough tiles the {@code Board} gets entirely filled,
+     *     otherwise the {@code Bag} gets emptied and the {@code Board} gets partially filled.
+     * </p>*/
     public void checkBoardToBeFilled(){
-        if(board.checkBoardStatus()){ //true if board need to be filled
+        if(board.checkBoardStatus()){
             for(int r=0;r<9;r++){
                 for(int c=0;c<9;c++){
                     if(board.getBoard()[r][c].getType()!=Type.NOTHING && board.getBoard()[r][c].getType()!=Type.BLOCKED){
-                        bag.addTile(board.removeTile(r,c)); //I add the tiles that are on the board to the bag
+                        bag.addTile(board.removeTile(r,c));
                     }
                 }
             }
-            //I check if inside the bag I have enough Tiles
             if(bag.getTilesContained().size()>= board.getNumOfCells()){
-                //I have enough tiles -> fill board
                 board.setUpBoard(bag.getBagTiles(board.getNumOfCells()));
             } else {
-                //I don't have enough tiles, I add to the board only the tiles I have inside the bag
                 board.setUpBoard(bag.getBagTiles(bag.getTilesContained().size()));
             }
         }
     }
 
-
+    /**
+     * <p>
+     *     Method that gets the number of tiles that a player wants to pick.<br>
+     *     This method, given an int as a parameter, controls if there are enough
+     *     tiles on the board and returns an event accordingly. <br>
+     *     If everything worked, this method sets the input parameter to the attribute {@code numberOfChosenTiles}. <br>
+     *     This method can return the following type of events: <br>
+     *     - <b>{@code Event.OUT_OF_BOUNDS}</b> if <code>numberOfChosenTiles<1 || numberOfChosenTiles>3</code> <br>
+     *     - <b>{@code Event.INVALID_VALUE}</b> if there are not enough free slots in the player's bookshelf
+     *     or if the board doesn't contain enough tiles <br>
+     *     - <b>{@code Event.OK}</b> if everything worked.
+     * </p>
+     * @param numberOfChosenTiles an int in between 1 and 3
+     * @return an {@code Event} accordingly to the input*/
     private Event numOfChosenTiles(int numberOfChosenTiles) {
         int freeSlots = game.getPlayerInTurn().getMyBookshelf().getNumOfFreeSlots();
         if (numberOfChosenTiles<1 || numberOfChosenTiles>3)
@@ -120,7 +182,7 @@ public class Controller  {
         if(freeSlots < numberOfChosenTiles )
             return Event.INVALID_VALUE;
 
-        int temp=0, cont=0;
+        int temp, cont;
         if(numberOfChosenTiles!=1) {
             for (int i = 0; i < board.BOARD_ROW; i++) {
                 for (int j = 0; j < board.BOARD_COLUMN; j++) {
@@ -158,10 +220,22 @@ public class Controller  {
     }
 
     //this method will work together with the view, maybe showing the player which tiles can be chosen
-    //first number chosen is the column, the second is the row
     //FIXME: Si possono pescare tiles dappertutto, non viene controllato se è disponibile
     //FIXME: Va avanti all'infinito se la scelta è diversa da 1
-    private ArrayList<Cord> playerCords = new ArrayList<>();
+    /**
+     * <p>
+     *     Method that given a list of coordinates picks up tiles from the board (only if the player chose correct tiles).<br>
+     *     This method returns a specific {@code Event} based on the input:<br>
+     *     - if the player tries to pick up a tile that is not on the board it returns an {@code Event.OUT_OF_BOUNDS}; <br>
+     *     - if the player tries to pick up the same tile it returns an {@code Event.REPETITION}; <br>
+     *     - if the player tries to pick up a NOTHING or BLOCKED tile it returns an {@code Event.BLOCKED_NOTHING}; <br>
+     *     - if the player tries to pick up tiles that are not on the border it returns an {@code Event.NOT_ON_BORDER}; <br>
+     *     - if the player tries to pick up tiles that are not adjacent it returns an {@code Event.NOT_ADJACENT}; <br>
+     *     - if the player picks up correct tiles it returns an {@code Event.OK}.
+     * </p>
+     * @param cords is an {@code ArrayList} of {@link Cord} that represents a list of coordinates of the chosen tiles
+     * @return an {@code Event} based on the input*/
+
     public Event chooseTiles(ArrayList<Cord> cords) {
         for(Cord cord : cords) {
             if (cord.getRowCord() > 8 || cord.getRowCord() < 0 || cord.getColCord() > 8 || cord.getColCord() < 0)
@@ -190,7 +264,16 @@ public class Controller  {
         return Event.OK;
     }
     //FIXME se qualcuno ha voglia si può notevolmente ottimizzare
-    private boolean checkAdj(ArrayList<Cord> cords) {
+
+    /**
+     * <p>
+     *     Method that checks that all the chosen tiles are adjacent.<br>
+     *     This method returns <b>true</b> if all the chosen tiles
+     *     are on the same row or column and are also adjacent to one another, <b>false</b> otherwise.
+     * </p>
+     * @param cords is an {@code ArrayList} of {@link Cord} that represents a list of coordinates of the chosen tiles
+     * @return a boolean, based on the conditions listed above*/
+    private boolean checkAdj(@NotNull ArrayList<Cord> cords) {
         boolean sameRow = true;
         boolean sameCol = true;
         Cord currCord = cords.get(1);
@@ -229,40 +312,96 @@ public class Controller  {
         return true;
     }
 
-    private boolean isTileFreeTile(Cord cord) {
+
+    /**
+     * <p>
+     *     Method that checks if a tile is available.<br>
+     *     This method returns <b>true</b> if a tile has two or more free sides, <b>false</b> otherwise.
+     * </p>
+     * @param cord is a {@link Cord} that represents the two coordinates of a specific tile
+     * @return a boolean, based on the conditions listed above */
+    private boolean isTileFreeTile(@NotNull Cord cord) {
         int x = cord.getRowCord();
         int y = cord.getColCord();
         if(x==0 || x== board.BOARD_ROW-1 || y==0 || y== board.BOARD_COLUMN-1){
-            if(x==0 && y== 0 && (board.getSelectedType(x + 1, y) == Type.NOTHING  || board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y+1)==Type.BLOCKED || board.getSelectedType(x, y+1)==Type.NOTHING)){
+            if(x==0 && y== 0 &&
+                    (board.getSelectedType(x + 1, y) == Type.NOTHING
+                            || board.getSelectedType(x + 1, y) == Type.BLOCKED
+                            || board.getSelectedType(x, y+1)==Type.BLOCKED
+                            || board.getSelectedType(x, y+1)==Type.NOTHING)){
                 return true;
-            } else if(x==0 && y==board.BOARD_COLUMN-1 && (board.getSelectedType(x +1, y) == Type.NOTHING  || board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y-1)==Type.BLOCKED || board.getSelectedType(x, y-1)==Type.NOTHING)) {
+            } else if(x==0 && y==board.BOARD_COLUMN-1 &&
+                    (board.getSelectedType(x +1, y) == Type.NOTHING
+                            || board.getSelectedType(x + 1, y) == Type.BLOCKED
+                            || board.getSelectedType(x, y-1)==Type.BLOCKED
+                            || board.getSelectedType(x, y-1)==Type.NOTHING)) {
                 return true;
-            } else if(x==board.BOARD_ROW-1 && y==0 && (board.getSelectedType(x -1, y) == Type.NOTHING  || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y+1)==Type.BLOCKED || board.getSelectedType(x, y+1)==Type.NOTHING)) {
+            } else if(x==board.BOARD_ROW-1 && y==0 &&
+                    (board.getSelectedType(x -1, y) == Type.NOTHING
+                            || board.getSelectedType(x - 1, y) == Type.BLOCKED
+                            || board.getSelectedType(x, y+1)==Type.BLOCKED
+                            || board.getSelectedType(x, y+1)==Type.NOTHING)) {
                 return true;
-            } else if(x==board.BOARD_ROW-1 && y==board.BOARD_COLUMN-1 && (board.getSelectedType(x - 1, y) == Type.NOTHING  || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y-1)==Type.BLOCKED || board.getSelectedType(x, y-1)==Type.NOTHING)) {
+            } else if(x==board.BOARD_ROW-1 && y==board.BOARD_COLUMN-1 &&
+                    (board.getSelectedType(x - 1, y) == Type.NOTHING
+                            || board.getSelectedType(x - 1, y) == Type.BLOCKED
+                            || board.getSelectedType(x, y-1)==Type.BLOCKED
+                            || board.getSelectedType(x, y-1)==Type.NOTHING)) {
                 return true;
-            } else if(x==0 && (board.getSelectedType(x + 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING
-                    || board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)){
+            } else if(x==0 &&
+                    (board.getSelectedType(x + 1, y) == Type.NOTHING
+                            || board.getSelectedType(x, y + 1) == Type.NOTHING
+                            || board.getSelectedType(x, y - 1) == Type.NOTHING
+                            || board.getSelectedType(x + 1, y) == Type.BLOCKED
+                            || board.getSelectedType(x, y + 1) == Type.BLOCKED
+                            || board.getSelectedType(x, y - 1) == Type.BLOCKED)){
                 return true;
-            } else if(x==board.BOARD_ROW-1 && (board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING
-                    || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)){
+            } else if(x==board.BOARD_ROW-1 &&
+                    (board.getSelectedType(x - 1, y) == Type.NOTHING
+                            || board.getSelectedType(x, y + 1) == Type.NOTHING
+                            || board.getSelectedType(x, y - 1) == Type.NOTHING
+                            || board.getSelectedType(x - 1, y) == Type.BLOCKED
+                            || board.getSelectedType(x, y + 1) == Type.BLOCKED
+                            || board.getSelectedType(x, y - 1) == Type.BLOCKED)){
                 return true;
-            } else if(y==0 && (board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x+1, y) == Type.NOTHING
-                    || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x+1, y ) == Type.BLOCKED)){
+            } else if(y==0 &&
+                    (board.getSelectedType(x - 1, y) == Type.NOTHING
+                            || board.getSelectedType(x, y + 1) == Type.NOTHING
+                            || board.getSelectedType(x + 1, y) == Type.NOTHING
+                            || board.getSelectedType(x - 1, y) == Type.BLOCKED
+                            || board.getSelectedType(x, y + 1) == Type.BLOCKED
+                            || board.getSelectedType(x + 1, y ) == Type.BLOCKED)){
                 return true;
-            }  else if(y==board.BOARD_COLUMN-1 && (board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y -1) == Type.NOTHING || board.getSelectedType(x+1, y) == Type.NOTHING
-                    || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED || board.getSelectedType(x+1, y ) == Type.BLOCKED)){
-                return true;
-            }
-        } else{
-            if(board.getSelectedType(x + 1, y) == Type.NOTHING || board.getSelectedType(x, y + 1) == Type.NOTHING || board.getSelectedType(x - 1, y) == Type.NOTHING || board.getSelectedType(x, y - 1) == Type.NOTHING
-                    || board.getSelectedType(x + 1, y) == Type.BLOCKED || board.getSelectedType(x, y + 1) == Type.BLOCKED || board.getSelectedType(x - 1, y) == Type.BLOCKED || board.getSelectedType(x, y - 1) == Type.BLOCKED)
-                return true;
+            }  else return y == board.BOARD_COLUMN - 1 &&
+                    (board.getSelectedType(x - 1, y) == Type.NOTHING
+                            || board.getSelectedType(x, y - 1) == Type.NOTHING
+                            || board.getSelectedType(x + 1, y) == Type.NOTHING
+                            || board.getSelectedType(x - 1, y) == Type.BLOCKED
+                            || board.getSelectedType(x, y - 1) == Type.BLOCKED
+                            || board.getSelectedType(x + 1, y) == Type.BLOCKED);
+        } else {
+            return board.getSelectedType(x + 1, y) == Type.NOTHING
+                    || board.getSelectedType(x, y + 1) == Type.NOTHING
+                    || board.getSelectedType(x - 1, y) == Type.NOTHING
+                    || board.getSelectedType(x, y - 1) == Type.NOTHING
+                    || board.getSelectedType(x + 1, y) == Type.BLOCKED
+                    || board.getSelectedType(x, y + 1) == Type.BLOCKED
+                    || board.getSelectedType(x - 1, y) == Type.BLOCKED
+                    || board.getSelectedType(x, y - 1) == Type.BLOCKED;
         }
-        return false;
     }
 
 
+    /**
+     * <p>
+     *     Method that given an int permits the player to chose the column in which it wants to put its tiles.<br>
+     *     This method returns a specific {@code Event} based on the input:<br>
+     *     - if <code>chosenColumn<0 || chosenColumn >4</code> it returns an {@code Event.INVALID_VALUE};<br>
+     *     - if the player tries to put its tiles in a column that doesn't have enough slots it returns an {@code Event.OUT_OF_BOUNDS};<br>
+     *     - if the player made a correct choice it returns an {@code Event.OK}.
+     * </p>
+     * @param chosenColumn an int in between 0 and 4 that represents the number of a column
+     * @return an {@code Event} based on the input*/
     public Event chooseColumn(int chosenColumn) {
         System.out.println("NumOfChosenTiles: "+this.numberOfChosenTiles);
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
@@ -274,7 +413,21 @@ public class Controller  {
         return Event.OK;
     }
 
+
     //after chooseColumn has been invoked
+
+    /**
+     * <p>
+     *     Method that given an int lets the player chose
+     *     the disposition of the tiles as it puts them into the bookshelf.<br>
+     *     This method returns a specific {@code Event} based on the input:<br>
+     *     - if the int is less that zero or is more that the size of the tiles in hand of the player
+     *     it returns an {@code Event.INVALID_VALUE};<br>
+     *     - if the player chooses a correct int it returns an {@code Event.OK}
+     * </p>
+     * @param index an int that represents the index of one of the tiles from the tiles in hand
+     * @return an {@code Event} based on the input */
+
     public Event chooseTilesDisposition(int index) {
         if(index <0 || index >= playerHand.size())
             return Event.INVALID_VALUE;
@@ -286,6 +439,11 @@ public class Controller  {
         return Event.OK;
     }
 
+
+    /**
+     * <p>
+     *     Method that calculates the total score of a player.
+     * </p>*/
     public void calculateScore(){
         int cgc = game.checkCommonGoalCard();
         int pgc = game.getPlayerInTurn().checkCompletePGC();
@@ -294,13 +452,23 @@ public class Controller  {
         System.out.println("SCORE PIT: "+game.getPlayerInTurn().getScore());
     }
 
+
+    /**
+     * <p>
+     *     Method that checks the status of match.<br>
+     *     This method returns a specific {@code Event} based on the match status:<br>
+     *     - if the game is ended it returns an {@code Event.GAME_OVER};<br>
+     *     - if it's the last turn it returns an {@code Event.LAST_TURN};<br>
+     *     - if the game isn't in any of the two previous conditions it returns an {@code Event.OK}.
+     * </p>
+     * @return an {@code Event} based on the match status */
     public Event checkIfGameEnd() {
         int index=0;
-        if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) { //calculate index
-            index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;//index of the next player
+        if (game.getPlayers().indexOf(game.getPlayerInTurn()) != game.getNumOfPlayers() - 1) {
+            index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;
         }
         if(!game.getIsLastTurn()){
-            System.out.println("Hellooo");
+            System.out.println("Hello");
             if(game.getPlayerInTurn().getMyBookshelf().getStatus()) {
                 game.getPlayerInTurn().updateScore(1);
                 System.out.println("Punteggio di quello che ha finito (PIT) incrementato: "+game.getPlayerInTurn().getScore());
@@ -310,17 +478,17 @@ public class Controller  {
                 {
                     System.out.println("PIT ha riempito la shelf ed è quello con index 0. La partita finisce subito");
                     //endOfGame();
-                    return GAME_OVER;
+                    return Event.GAME_OVER;
                 }
                 else {
                     goToNext(game.getPlayerInTurn());
-                    return LAST_TURN;
+                    return Event.LAST_TURN;
                 }
             }
             else {
                 System.out.println("PIT non ha riempito la Bookshelf");
                 goToNext(game.getPlayerInTurn());
-                return OK;
+                return Event.OK;
             }
         }
         else {
@@ -339,7 +507,12 @@ public class Controller  {
     }
 
 
-    public void goToNext(Player playerInTurn){ //set player in turn
+    /**
+     * <p>
+     *     Method that given a {@code Player} as input sets it as the player in turn.<br>
+     * </p>
+     * @param playerInTurn a player that has to be set as the player in turn*/
+    public void goToNext(Player playerInTurn){
         int i = game.getPlayers().indexOf(playerInTurn)+1;
         if(i<game.getNumOfPlayers()){
             game.setPlayerInTurn(game.getPlayers().get(i));
@@ -347,18 +520,20 @@ public class Controller  {
             game.setPlayerInTurn(game.getPlayers().get(0));
         }
         System.out.println("NickPIT: "+game.getPlayerInTurn().getNickname());
-    }//TODO optimize this
+    }
 
 
+    /**
+     * <p>
+     *     Method that calls the end of the match and creates the rank.
+     * </p>*/
     public void endOfGame() {
         ArrayList<Integer> rankNumber = new ArrayList<>();
         for(int i=0; i<game.getPlayers().size(); i++){
             rankNumber.add(game.getPlayers().get(i).getScore());
         }
         Collections.sort(rankNumber);
-
         this.finalRank = new ArrayList<>(game.getPlayers());
-
         for(int i=game.getPlayers().size()-1; i>=0; i--) {
             for(int j=0; j<game.getPlayers().size(); j++){
                 if(rankNumber.get(j)!=-1 && game.getPlayers().get(i).getScore() == rankNumber.get(j)){
@@ -372,9 +547,12 @@ public class Controller  {
         System.exit(0);
     }
 
-
-    public Board getBoard(){ return this.board;}
-
+    /**
+     * <p>
+     *     Method that removes the tiles from the board.<br>
+     * </p>
+     * @return an {@code ArrayList} of {@code Tile}
+     * that represents the list of tiles removed from the board*/
     public ArrayList<Tile> getTilesFromBoard() {
         ArrayList<Tile> removedTiles = new ArrayList<>();
         for(Cord cord : playerCords) {
@@ -387,8 +565,14 @@ public class Controller  {
         //TODO: UPDATE OBSERVERS!
     }
 
-
-    public Event updateController(Object obj, Event event) throws RemoteException {
+    /**
+     * <p>
+     *     Method that updates the controller based on the two received parameters.<br>
+     * </p>
+     * @param event is a specific {@code Event} needed to do a specific update
+     * @param obj is the object that has to be set as an update
+     * @return a specific type of error, for brevity the list of possible errors won't be described*/
+    public Event updateController(Object obj, @NotNull Event event) {
         Event error = Event.OK;
         switch (event) {
             case ASK_NUM_PLAYERS -> {
@@ -396,14 +580,11 @@ public class Controller  {
                 game.setNumOfPlayers((int)obj);
             }
             case SET_NICKNAME -> {
-                System.out.println("Nickname Rec: "+(String) obj);
+                System.out.println("Nickname Rec: "+ obj);
                  error = chooseNickname((String) obj);
             }
-            case CHOOSE_VIEW -> {
-                error = chooseUserInterface((int) obj);
-            }
+            case CHOOSE_VIEW -> error = chooseUserInterface((int) obj);
             case ALL_CONNECTED -> {
-                //System.err.println(game.getPlayers().size()+" "+game.getPlayers().size());
                 if(game.getNumOfPlayers() == game.getPlayers().size()) {
                     System.out.println("The game is starting");
                     initializeGame();
@@ -419,19 +600,17 @@ public class Controller  {
                     error = Event.WAIT;
             }
             case TURN_AMOUNT -> {
-                System.out.println("Turn ammount: "+(int) obj);
+                System.out.println("Turn amount: "+(int) obj);
                 error = numOfChosenTiles((int) obj);
             }
-            case TURN_PICKED_TILES -> {
-                error = chooseTiles((ArrayList<Cord>) obj);
-            }
+            case TURN_PICKED_TILES -> error = chooseTiles((ArrayList<Cord>) obj);
+
             case TURN_COLUMN -> {
                 System.out.println("Colonna: "+(int) obj);
                 error = chooseColumn((int) obj);
             }
-            case TURN_POSITION -> {
-                error = chooseTilesDisposition((int) obj);
-            }
+            case TURN_POSITION -> error = chooseTilesDisposition((int) obj);
+
             case END_OF_TURN -> {
                 calculateScore();
                 error = checkIfGameEnd();
@@ -455,7 +634,16 @@ public class Controller  {
         return error;
     }
 
-    public Object getControllerModel(Event event, Object playerIndex) {
+    /**
+     * <p>
+     *     Method that given two parameters returns a specific object.<br>
+     *     This method is used to make the player make choices during the match.
+     * </p>
+     * @param event is a specific {@code Event} needed to get a specific object
+     * @param playerIndex is an object used to perform specific actions
+     * @return an {@code Object} used to let the player chose some actions during the match
+     */
+    public Object getControllerModel(@NotNull Event event, Object playerIndex) {
         Object obj = null;
         switch (event) {
             case SET_INDEX -> obj = getPlayerFromNick((String) playerIndex);
@@ -466,15 +654,17 @@ public class Controller  {
             case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
             case TURN_POSITION -> obj = this.playerHand;
-            case UPDATE_BOOKSHELF-> {
-                obj =  game.getPlayerInTurn().getMyBookshelf();
-                //calculateScore();
-            }
-            //case TURN_BOOKSHELF -> obj = this.game.getPlayers().get(playerIndex);
+            case UPDATE_BOOKSHELF-> obj =  game.getPlayerInTurn().getMyBookshelf();
         }
         return obj;
     }
 
+    /**
+     * <p>
+     *     Method that given a {@code String}
+     *     that represents the nickname of a player returns it's position in the list of a match.
+     * </p>
+     * @return the index of a player, if the player isn't in a match this returns -1*/
     private int getPlayerFromNick(String nickname) {
         for(Player p : game.getPlayers()) {
             if (p.getNickname().equals(nickname)) {
