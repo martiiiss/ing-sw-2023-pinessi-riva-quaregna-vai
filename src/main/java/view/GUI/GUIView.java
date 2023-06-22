@@ -198,6 +198,10 @@ public class GUIView { //class that contains all the GUI elements
         switch (e){
             case TILES_NOT_VALID-> boardView.getBoardDisplayed().setTitle("Tiles not valid, select again");
             case COLUMN_NOT_VALID -> bookshelfView.getBookshelfDisplayed().setTitle("You selected a column with not enough space,try again");
+            case INVALID_VALUE -> boardView.getBoardDisplayed().setTitle("Retry, invalid value... ");
+            case REPETITION, BLOCKED_NOTHING, NOT_ON_BORDER, NOT_ADJACENT -> boardView.getBoardDisplayed().setTitle(e.getMsg());
+
+            //TODO: aggiungere i vari errori!
         }
     }
     public void scoringTokenTakenByMe(ScoringToken sc){ //put the scoring token in my hand

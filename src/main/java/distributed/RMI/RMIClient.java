@@ -64,7 +64,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         numOfPlayers = userView.askNumOfPlayer();
         while (numOfPlayers < 2 || numOfPlayers > 4) {
             System.err.println("Retry...");
-            numOfPlayers = uView.askNumOfPlayer();
+            numOfPlayers = userView.askNumOfPlayer();
         }
         return numOfPlayers;
     }
@@ -371,6 +371,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         do {
             tilesToPick = gui.askTiles(); //ask number of tiles
             errorReceived = server.sendMessage(this.matchIndex,tilesToPick, TURN_AMOUNT);
+            gui.showError(errorReceived);
         } while (errorReceived != Event.OK);
 
         do {
@@ -379,27 +380,36 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             tilesCords = gui.getTilesClient();
             out.println("tiles cords " + tilesCords.size());
             errorReceived = server.sendMessage(this.matchIndex,tilesCords, TURN_PICKED_TILES);
+            gui.showError(errorReceived);
             System.out.println("errore: " + errorReceived.getMsg());
         } while (errorReceived != Event.OK);
 
-        out.println("dopo ");
         ArrayList<Tile> tilesInHand = (ArrayList<Tile>) server.getModel(this.matchIndex,TURN_TILE_IN_HAND, myIndex);
 
         gui.pickTiles(tilesCords, tilesInHand); //aggiunge le tessere alla "mano"
 
         int column = gui.chooseColumn();
-        //controllare colonna restituita
         do {
             errorReceived = server.sendMessage(this.matchIndex, column, TURN_COLUMN);
             System.out.println("errore colonna: " + errorReceived);
-            //nb: messaggio d'errore se colonna sbagliata
+            gui.showError(errorReceived);
         }while(errorReceived!=Event.OK);
 
-        System.out.println("pre: number of choosen tiles " + tilesToPick );
         for(int i=0; i<tilesToPick; i++){
-            out.println("number of choosen tile " + tilesToPick);
             int pos = gui.chooseTile(); //sceglie quale tessera mettere in una colonna: restituisce la posizione nella mano
             gui.addTile(tilesInHand.get(pos));
+        }
+
+        //FIXME sistemare i seguenti (fine)
+        errorReceived = server.sendMessage(this.matchIndex,null, CHECK_REFILL);
+        if (errorReceived == Event.REFILL) {
+            //visualizzare errore
+            gui.showError(errorReceived);
+        }
+        errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
+        if (errorReceived == GAME_OVER) {
+            gui.showError(errorReceived);
+            System.exit(0);
         }
     }
 
