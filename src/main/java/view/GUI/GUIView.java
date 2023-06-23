@@ -232,7 +232,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
     public void update(Observable o, Message message) {
         switch(message.getMessageEvent()){
             case REMOVE_TILE_BOARD, SET_UP_BOARD -> {
-                updateBoard((Board)o);
+                updateBoard((Board) message.getObj());
                 System.out.println("aggiorna view ");
             }
         }
