@@ -45,7 +45,7 @@ public class Tile implements Serializable {
      *     <i>nothing</i> and <i>blocked</i> tiles aren't candidates to use this method.
      * </p>
      * @param n an int that represents the numType of a tile
-     * @throws IllegalArgumentException when <i>n<0</i> or <i>n>3</i> */
+     * @throws IllegalArgumentException when {@code n<0 or n>3}*/
     public void setNumType(int n) {
         if(n<0||n>3) throw new IllegalArgumentException("Unexpected value: "+n);
         this.numType=n;

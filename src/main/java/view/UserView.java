@@ -2,24 +2,26 @@ package view;
 
 import distributed.messages.Message;
 import model.*;
-import util.Cord;
+import org.jetbrains.annotations.NotNull;
 import util.Observable;
-import util.Observer;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Spliterator;
-
 import static util.Event.*;
 
+/**Class that represents the Textual User Interface*/
 public class UserView extends Observable implements Serializable, ViewInterface {
-    private static final long serialVersionUID = -23874204704L;
+    @Serial
+    private static final long serialVersionUID = -2387426539475804704L;
 
-
-
+    /**
+     * <p>
+     *     Method used to ask the first player number of players it wants to play with.<br>
+     *     If the input from the player is invalid a {@link NumberFormatException} gets caught.
+     *     This method also notifies the observers with a {@link Message} if everything worked.
+     * </p>
+     * @return an int that represents the max number of players for a match, in case of error -1
+     * @throws RuntimeException if a {@code IOException} gets caught
+     */
     public int askNumOfPlayer() throws IOException {
         int numOfPlayer = 0;
         System.out.println("Insert num of player: ");
@@ -34,10 +36,20 @@ public class UserView extends Observable implements Serializable, ViewInterface 
                 }
             });
             return numOfPlayers;
-        }catch(NumberFormatException e) {}
+        }catch(NumberFormatException e) {
+            e.printStackTrace();
+        }
         return -1;
     }
 
+    /**
+     * <p>
+     *     Method used to ask the player its nickname.<br>
+     *     This method notifies the observers if everything worked.
+     * </p>
+     * @return a {@code String} that represents the nickname
+     * @throws RuntimeException if a {@code IOException} gets caught
+     * @throws IllegalArgumentException if the player chooses an inappropriate parameter*/
     public String askPlayerNickname() throws IOException {
         String nickname;
         do {
@@ -62,6 +74,7 @@ public class UserView extends Observable implements Serializable, ViewInterface 
     }
 
 
+//TODO: this method is never used, it probably will be deleted
     public int webProtocol() {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
@@ -83,14 +96,24 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         return -1;
     }
 
-
+/**
+ * <p>
+ *     Method used to ask a player which type of interface he prefers.<br>
+ *     If the player chose a wrong parameter a {@link NumberFormatException} or a {@link IllegalArgumentException}
+ *     will be catch.
+ *     This method also notifies the observers with a {@link Message} if everything worked.
+ *
+ * </p>
+ * @return an int that represents the choice of the player, in case of error -1
+ * @throws RuntimeException if a {@link IOException} gets caught
+ */
     public int userInterface() {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             System.out.print("""
                     Do you prefer a Terminal User Interface (TUI) or a Graphical User Interface (GUI)?
                     Press 1 for 'TUI', 2 for 'GUI':""");
-            try {
+            try{
                 int userInterface =  Integer.parseInt(reader.readLine());
                 notifyObservers(o -> {
                     try {
@@ -100,14 +123,21 @@ public class UserView extends Observable implements Serializable, ViewInterface 
                     }
                 });
                 return userInterface;
-            }catch(NumberFormatException e) {}
+            }catch(NumberFormatException e) {
+                e.printStackTrace();
+            }
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
         }
         return -1;
     }
 
-    public void showTUIBoard(Board board) {
+    /**
+     * <p>
+     *     Method that shows the player the {@code Board}. <br>
+     * </p>
+     * @param board the Board of a match*/
+    public void showTUIBoard(@NotNull Board board) {
         Tile[][] tilesOnBoard = board.getBoard();
         System.out.println("┌─0─┬─1─┬─2─┬─3─┬─4─┬─5─┬─6─┬─7─┬─8─┐");
         for (int i = 0; i < board.BOARD_ROW; i++) {
@@ -131,15 +161,18 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         System.out.println("\n└───┴───┴───┴───┴───┴───┴───┴───┴───┘");
         System.out.println();
     }
-    public void showTUIBookshelf(Bookshelf bookshelf) {
+
+    /**
+     * <p>
+     *     Method that shows the player the {@code Bookshelf}. <br>
+     * </p>
+     * @param bookshelf a specific Bookshelf*/
+    public void showTUIBookshelf(@NotNull Bookshelf bookshelf) {
         Tile[][] tilesInBookshelf = bookshelf.getBookshelf();
         System.out.println("╔═══╦═══╦═══╦═══╦═══╗");
         for (int i = 0; i < 6; i++) {
             if(i>0 && i<=5)
                 System.out.println("\n╠═══╬═══╬═══╬═══╬═══╣");
-            //if(i==5)
-               // System.out.println();
-
             for (int j = 0; j < 5; j++) {
                 if(j==0)
                     System.out.print("║");
@@ -159,6 +192,16 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         System.out.println("║ 0   1   2   3   4 ║");
         System.out.println("╚═══════════════════╝");
     }
+
+    /**
+     * <p>
+     *     Method that asks the player the column in which it wants to put the tiles.<br>
+     *     If the player chose a wrong parameter a {@link IllegalArgumentException}
+     *     will be catch.
+     *     This method also notifies the observers with a {@link Message} if everything worked.
+     * </p>
+     * @return an int that represents the index of the chosen column, in case of error -1
+     * @throws RuntimeException if a {@link IOException} gets caught*/
     public int askColumn() {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
@@ -178,9 +221,15 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         return -1;
     }
 
+    /**
+     * <p>
+     *     Method that makes the player choose the tile on the board.<br>
+     *     This method also notifies the observers with a {@link Message} if everything worked.
+     * </p>
+     * @return a {@code String} of coordinates formed like this: <code>(1,3)</code>
+     * @throws RuntimeException if a {@link IOException} gets caught */
     public String askTilePosition() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        Cord cord = new Cord();
         System.out.print("Input your coordinates as 2 integers separated by a comma\n(tiles must be adjacent):");
         String in = reader.readLine();
         String finalIn = in;
@@ -198,6 +247,15 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         return in;
     }
 
+    /**
+     * <p>
+     *     Method that asks the player how many tiles it wants to pick from the board.<br>
+     *     If the player chose a wrong parameter a {@link IllegalArgumentException}
+     *     will be catch.
+     *     This method also notifies the observers with a {@link Message} if everything worked.
+     * </p>
+     * @return an int that represents the number of tiles that the player wants to pick up from the board, in case of error -1
+     * @throws RuntimeException if a {@link IOException} gets caught*/
     public int askNumberOfChosenTiles() {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
@@ -216,21 +274,19 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         }
         return -1;
     }
-    public void printTilesInHand(ArrayList<Tile> tilesInHand) {
+
+    /**
+     * <p>
+     *     Method that prints the tiles that a player picked.<br>
+     * </p>
+     * @param tilesInHand an {@code ArrayList} of {@code Tiles}
+     * that represents the tiles a player has picked from the board */
+    public void printTilesInHand(@NotNull ArrayList<Tile> tilesInHand) {
         System.out.println("These are the tiles you picked:");
         switch (tilesInHand.size()) {
-            case 1 -> {
-                System.out.println("╔═1═╗");
-                break;
-            }
-            case 2 -> {
-                System.out.println("╔═1═╦═2═╗");
-                break;
-            }
-            case 3 -> {
-                System.out.println("╔═1═╦═2═╦═3═╗");
-                break;
-            }
+            case 1 -> System.out.println("╔═1═╗");
+            case 2 -> System.out.println("╔═1═╦═2═╗");
+            case 3 -> System.out.println("╔═1═╦═2═╦═3═╗");
         }
         System.out.print("║");
         for (Tile tile : tilesInHand) {
@@ -248,26 +304,24 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         System.out.println();
 
         switch (tilesInHand.size()) {
-            case 1 -> {
-                System.out.println("╚═══╝");
-                break;
-            }
-            case 2 -> {
-                System.out.println("╚═══╩═══╝");
-                break;
-            }
-            case 3 -> {
-                System.out.println("╚═══╩═══╩═══╝");
-                break;
-            }
+            case 1 -> System.out.println("╚═══╝");
+            case 2 -> System.out.println("╚═══╩═══╝");
+            case 3 -> System.out.println("╚═══╩═══╩═══╝");
         }
     }
 
-    //This method asks the index of the tile to insert -> print the tiles in hand every time the player puts the tile into the bookshelf
-    //I insert one tile
+    /**
+     * <p>
+     *     Method that asks the player the disposition of the tiles. <br>
+     *     If the player chose a wrong parameter a {@link NumberFormatException}
+     *     will be catch.
+     *     This method also notifies the observers with a {@link Message} if everything worked.
+     * </p>
+     * @param tilesInHand an {@code ArrayList} of {@code Tiles}
+     * @return an int that represents the index of a tile from the {@code tilesInHand}
+     * @throws RuntimeException if a {@link IOException} gets caught*/
     public int askTileToInsert(ArrayList<Tile> tilesInHand) throws IOException {
         int index = -1;
-        boolean valid;
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         do {
             do {
@@ -284,12 +338,22 @@ public class UserView extends Observable implements Serializable, ViewInterface 
                             throw new RuntimeException(e);
                         }
                     });
-                }catch (NumberFormatException ex) {}
-            }while (index<1 || index>tilesInHand.size());
+                } catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                }
+            } while (index<1 || index>tilesInHand.size());
             index--;
         }while (tilesInHand.get(index).getType()==Type.NOTHING);
         return index;
     }
+
+    /**
+     * <p>
+     *     Method that shows a list of actions for an active player.<br>
+     *     If the player chose a wrong parameter a {@link NumberFormatException}
+     *     will be catch.
+     * </p>
+     * @return an int that represents the action that the player, in case of error -1*/
     public int askAction() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1) Look at the Board");
@@ -301,86 +365,95 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         System.out.println("7) Show the player list");
         try {
             return Integer.parseInt(reader.readLine());
-        }catch (NumberFormatException e) {}
+        }catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         return -1;
     }
-    public void showCGC(ArrayList<CommonGoalCard> commonGoalCards) {
+
+    /**
+     * <p>
+     *     Method that shows the textual rule for the common goal cards that have been selected.<br>
+     * </p>
+     * @param commonGoalCards an {@code ArrayList} of {@code CommonGoalCard} that represents the two chosen common goal cards*/
+    public void showCGC(@NotNull ArrayList<CommonGoalCard> commonGoalCards) {
         int id;
         for (CommonGoalCard commonGoalCard : commonGoalCards){
             printScoringToken(commonGoalCard);
             id = commonGoalCard.getIdCGC();
             System.out.println("\u001B[35m");
             switch (id) {
-                case 1 -> {
-                    System.out.println("Six groups each containing at least\n" +
-                            "2 tiles of the same type (not necessarily\n" +
-                            "in the depicted shape).\n" +
-                            "The tiles of one group can be different\n" +
-                            "from those of another group.");
-                }
-                case 2 -> {
-                    System.out.println("Five tiles of the same type forming a\n" +
+                case 1 -> System.out.println("""
+                        Six groups each containing at least
+                        2 tiles of the same type (not necessarily
+                        in the depicted shape).
+                        The tiles of one group can be different
+                        from those of another group.""");
+
+                case 2 -> System.out.println("Five tiles of the same type forming a\n" +
                             "diagonal. ");
-                }
-                case 3 -> {
-                    System.out.println("Four groups each containing at least\n" +
-                            "4 tiles of the same type (not necessarily\n" +
-                            "in the depicted shape).\n" +
-                            "The tiles of one group can be different\n" +
-                            "from those of another group.");
-                }
-                case 4 -> {
-                    System.out.println("Four lines each formed by 5 tiles of\n" +
-                            "maximum three different types. One\n" +
-                            "line can show the same or a different\n" +
-                            "combination of another line.");
-                }
-                case 5 -> {
-                    System.out.println("Four tiles of the same type in the four\n" +
+
+                case 3 -> System.out.println("""
+                        Four groups each containing at least
+                        4 tiles of the same type (not necessarily
+                        in the depicted shape).
+                        The tiles of one group can be different
+                        from those of another group.""");
+
+                case 4 -> System.out.println("""
+                        Four lines each formed by 5 tiles of
+                        maximum three different types. One
+                        line can show the same or a different
+                        combination of another line.""");
+
+                case 5 -> System.out.println("Four tiles of the same type in the four\n" +
                             "corners of the bookshelf.");
-                }
-                case 6 -> {
-                    System.out.println("Two columns each formed by 6\n" +
+
+                case 6 -> System.out.println("Two columns each formed by 6\n" +
                             "different types of tiles.");
-                }
-                case 7 -> {
-                    System.out.println("Two groups each containing 4 tiles of\n" +
-                            "the same type in a 2x2 square. The tiles\n" +
-                            "of one square can be different from\n" +
-                            "those of the other square.");
-                }
-                case 8 -> {
-                    System.out.println("Two lines each formed by 5 different\n" +
-                            "types of tiles. One line can show the\n" +
-                            "same or a different combination of the\n" +
-                            "other line.");
-                }
-                case 9 -> {
-                    System.out.println("Three columns each formed by 6 tiles \n" +
-                            "of maximum three different types. One\n" +
-                            "column can show the same or a different\n" +
-                            "combination of another column");
-                }
-                case 10 -> {
-                    System.out.println("Five tiles of the same type forming an X.");
-                }
-                case 11 -> {
-                    System.out.println("Eight tiles of the same type. There’s no\n" +
-                            "restriction about the position of these\n" +
-                            "tiles.");
-                }
-                case 12 -> {
-                    System.out.println("Five columns of increasing or decreasing\n" +
-                            "height. Starting from the first column on\n" +
-                            "the left or on the right, each next column\n" +
-                            "must be made of exactly one more tile.\n" +
-                            "Tiles can be of any type.");
-                }
+
+                case 7 -> System.out.println("""
+                        Two groups each containing 4 tiles of
+                        the same type in a 2x2 square. The tiles
+                        of one square can be different from
+                        those of the other square.""");
+
+                case 8 -> System.out.println("""
+                        Two lines each formed by 5 different
+                        types of tiles. One line can show the
+                        same or a different combination of the
+                        other line.""");
+
+                case 9 -> System.out.println("""
+                        Three columns each formed by 6 tiles\s
+                        of maximum three different types. One
+                        column can show the same or a different
+                        combination of another column""");
+
+                case 10 -> System.out.println("Five tiles of the same type forming an X.");
+
+                case 11 -> System.out.println("""
+                        Eight tiles of the same type. There’s no
+                        restriction about the position of these
+                        tiles.""");
+
+                case 12 -> System.out.println("""
+                        Five columns of increasing or decreasing
+                        height. Starting from the first column on
+                        the left or on the right, each next column
+                        must be made of exactly one more tile.
+                        Tiles can be of any type.""");
             }
             System.out.print("\u001B[0m");
         }
     }
-    private void printScoringToken(CommonGoalCard commonGoalCard) {
+
+    /**
+     * <p>
+     *     Method used to print the scoring token.<br>
+     * </p>
+     * @param commonGoalCard the {@code CommonGoalCard} to which the scoring token refers*/
+    private void printScoringToken(@NotNull CommonGoalCard commonGoalCard) {
         if(commonGoalCard.getTokenStack().size()==0) {
             System.out.println("\u001B[35mThere are no more Scoring Tokens for this Common Goal Card...");
         }
@@ -388,15 +461,17 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         System.out.println(commonGoalCard.getTokenStack().get(commonGoalCard.getTokenStack().size()-1).getValue()+"\u001B[0m");
     }
 
-    public void showPGC(PersonalGoalCard personalGoalCard) {
+    /**
+     * <p>
+     *     Method that prints the personal goal card of a player.<br>
+     * </p>
+     * @param personalGoalCard the {@code PersonalGoalCard} associated to a player*/
+    public void showPGC(@NotNull PersonalGoalCard personalGoalCard) {
         Tile[][] pgc = personalGoalCard.getPGC();
         System.out.println("╔═══╦═══╦═══╦═══╦═══╗");
         for (int i = 0; i < 6; i++) {
             if(i>0 && i<=5)
                 System.out.println("\n╠═══╬═══╬═══╬═══╬═══╣");
-            //if(i==5)
-            // System.out.println();
-
             for (int j = 0; j < 5; j++) {
                 if(j==0)
                     System.out.print("║");
@@ -420,7 +495,13 @@ public class UserView extends Observable implements Serializable, ViewInterface 
     public void chatOptions(Player player) {
         System.err.println("\uD83D\uDDEA NON ANCORA IMPLEMENTATO :P");
     }
-    public void showPlayers(ArrayList<Player> listOfPlayers) {
+
+    /**
+     * <p>
+     *     Method that prints the lit of players for a match.<br>
+     * </p>
+     * @param listOfPlayers an {@code ArrayList} of {@code Players} that represents the players in a match*/
+    public void showPlayers(@NotNull ArrayList<Player> listOfPlayers) {
         int i = 1;
         System.out.println("Here's the list of Players!\nEach one with their score");
         for(Player player : listOfPlayers) {
@@ -428,6 +509,11 @@ public class UserView extends Observable implements Serializable, ViewInterface 
             i++;
         }
     }
+
+    /**
+     * <p>
+     *     Method that shows a list of actions for a passive player.<br>
+     * </p>*/
     public void askPassiveAction()  {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1) Look at the Board");
@@ -438,11 +524,19 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         System.out.println("6) Show the player list");
     }
 
+    /**
+     * <p>
+     *     Method that waits for an input by the player.<br>
+     *     If the player chose a wrong parameter a {@link NumberFormatException} o a {@link IOException}
+     *     will be catch.
+     * </p>
+     * @return an int that represents the input from the player, in case of error -1*/
     public int waitInput() {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             return Integer.parseInt(reader.readLine());
         } catch (NumberFormatException | IOException e) {
+            e.printStackTrace();
         }
         return -1;
     }

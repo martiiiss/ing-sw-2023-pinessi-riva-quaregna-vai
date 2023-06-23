@@ -2,6 +2,7 @@ package model;
 
 /**Class that represents the Common Goal Card Strategy Pattern*/
 public interface CGCStrategy {
+
     /**
      * <p>Method that gets override in the implementations of this interface.<br>
      * This method is used to check the condition of a specific common goal card.

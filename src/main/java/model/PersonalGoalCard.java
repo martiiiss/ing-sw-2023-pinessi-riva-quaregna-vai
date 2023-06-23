@@ -25,7 +25,7 @@ public class PersonalGoalCard implements Serializable {
      *     This also calls the method <code>readerJSON</code>.
      * </p>
      * @param numberOfPGC an int that represents a specific PersonalGoalCard
-     * @throws IllegalArgumentException when the <code>numberOfPGC</code> doesn't respect the rule <i>0<=numberOfPGC<12</i>
+     * @throws IllegalArgumentException when the {@code numberOfPGC} doesn't respect the rule {@code 0 <= numberOfPGC < 12}
      * */
 
     public PersonalGoalCard (int numberOfPGC){

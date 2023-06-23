@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import static util.Event.*;
 
-/**lass that represents the Controller*/
+/**Class that represents the Controller*/
 public class Controller  {
     private Game game;
     private Bag bag;
@@ -397,7 +397,7 @@ public class Controller  {
      * <p>
      *     Method that given an int permits the player to chose the column in which it wants to put its tiles.<br>
      *     This method returns a specific {@code Event} based on the input:<br>
-     *     - if <code>chosenColumn<0 || chosenColumn >4</code> it returns an {@code Event.INVALID_VALUE};<br>
+     *     - if {@code chosenColumn<0 || chosenColumn >4} it returns an {@code Event.INVALID_VALUE};<br>
      *     - if the player tries to put its tiles in a column that doesn't have enough slots it returns an {@code Event.OUT_OF_BOUNDS};<br>
      *     - if the player made a correct choice it returns an {@code Event.OK}.
      * </p>
