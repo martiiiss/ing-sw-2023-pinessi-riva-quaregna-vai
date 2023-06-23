@@ -136,6 +136,7 @@ public class Controller  {
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
         game.setGameStarted();
+        System.err.println(board);
     }
 
     /**

@@ -6,7 +6,7 @@ import javax.swing.*;
 
 
 public class ScoringTokenView extends JPanel { //manages the ScoringToken section of the GUI
-
+    private static final long serialVersionUID = 4758892564965420652L;
     private JLabel displayedImage;
 
     private int valueDisplayed;

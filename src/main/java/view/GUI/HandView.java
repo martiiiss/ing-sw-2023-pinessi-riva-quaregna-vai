@@ -7,9 +7,11 @@ import util.Event;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 
 
-public class HandView { //class to represent the "hand", the tiles picked from the board and not placed in the bookshelf yet and the ScoringTokens taken by the player
+public class HandView implements Serializable { //class to represent the "hand", the tiles picked from the board and not placed in the bookshelf yet and the ScoringTokens taken by the player
+    private static final long serialVersionUID = 4758892564965792611L;
     private JButton [] hand;
     private JInternalFrame imageDisplayed;
 
