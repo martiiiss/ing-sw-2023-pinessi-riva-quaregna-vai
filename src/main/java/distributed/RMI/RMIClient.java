@@ -163,8 +163,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         } else if (this.viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
+                this.board.addObserver(gui);
+                System.out.println("aggiunta gui " + board);
                 this.isFirstTurn = false;
-                gui.updateBoard(board);
+                gui.updateBoard(this.board);
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(1));
                 gui.setupPGC((int) ((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex)).getNumber());
@@ -181,6 +183,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         playerInTurn = listOfPlayers.get(myIndex);
         //SHOWS THE PLAYER ALL THE ACTIONS THEY CAN DO
         activePlayerMenu();
+
+        out.println("indirizzo board " + this.board + this.board.getObservers().size());
+
         System.out.println("Here's your Bookshelf:");
         uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
         uView.showTUIBoard(this.board);

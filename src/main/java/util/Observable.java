@@ -12,7 +12,7 @@ public class Observable{
     /**Constructor of the Class. <br>
      * This creates an <code>ArrayList</code> of observers.*/
     public Observable() {
-        observers = new ArrayList<>();
+        this.observers = new ArrayList<>();
     }
 
     /**
@@ -24,10 +24,14 @@ public class Observable{
     public synchronized void addObserver(Observer o) {
         if (o == null)
             throw new NullPointerException();
-        if (!observers.contains(o)) {
-            observers.add(o);
+        if (!this.observers.contains(o)) {
+            this.observers.add(o);
+            System.out.println("aggiungo observer " + this.observers.get(0) + " a " + this);
         }
     }
+
+
+    public ArrayList<Observer> getObservers () { return this.observers; }
 
     /**
      * <p>
@@ -46,7 +50,7 @@ public class Observable{
      * </p>
      * @param lambda a {@link Consumer} with <code>Observer</code> as parameter*/
     public void notifyObservers(Consumer<Observer> lambda){
-        for(Observer observer: observers){
+        for(Observer observer: this.observers){
             lambda.accept(observer);
         }
     }
@@ -57,14 +61,17 @@ public class Observable{
      * </p>
      * @param arg a <code>Message</code> created by the Class that calls this method*/
     public void notifyObservers(Message arg) {
-        for (int i = observers.size()-1; i>=0; i--)
-            observers.get(i).update(this, arg);
+        System.out.println("notify observer " + this + " e size " + this.observers.size());
+        for (int i = 0; i<this.observers.size(); i++) {
+            System.out.println("notifyObserver!" + i);
+            this.observers.get(i).update(this, arg);
+        }
     }
 
     /**
      * Method that clears the observer list so that this object no longer has any observers.
      */
-    public synchronized void deleteObservers() {observers.clear();}
+    public synchronized void deleteObservers() {this.observers.clear();}
 
     /**
      * <p>

@@ -12,7 +12,7 @@ import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class GUIView { //class that contains all the GUI elements
+public class GUIView implements Observer { //class that contains all the GUI elements
     private BoardView boardView;
     private ScoringTokenView[] scv;
     private BookshelfView bookshelfView;
@@ -222,5 +222,20 @@ public class GUIView { //class that contains all the GUI elements
     }
     public void endInsertion(){
         hand.getImageDisplayed().setTitle("Hand");
+    }
+
+    @Override
+    public void update(Observable o, Message message) {
+        switch(message.getMessageEvent()){
+            case REMOVE_TILE_BOARD, SET_UP_BOARD -> {
+                updateBoard((Board)o);
+                System.out.println("aggiorna view ");
+            }
+        }
+    }
+
+    @Override
+    public void onUpdate(Message message) throws IOException {
+
     }
 }

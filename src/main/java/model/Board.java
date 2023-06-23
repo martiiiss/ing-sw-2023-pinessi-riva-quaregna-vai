@@ -4,6 +4,8 @@ import distributed.messages.Message;
 import util.Event;
 import util.Observable;
 import util.TileForMessages;
+
+import javax.sound.midi.SysexMessage;
 import java.io.Serial;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -148,7 +150,8 @@ public class Board extends Observable implements Serializable {
         livingRoomBoard[row][column] = new Tile(Type.NOTHING, 0);
         setChanged();
         TileForMessages tileForMessages = new TileForMessages(this, row, column, null);
-        notifyObservers(new Message(tileForMessages, Event.REMOVE_TILE_BOARD));
+        System.out.println("lancio notify in removeTile (model)");
+        this.notifyObservers(new Message(tileForMessages, Event.REMOVE_TILE_BOARD));
         return removedTile;
     }
 
