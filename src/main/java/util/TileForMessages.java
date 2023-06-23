@@ -2,7 +2,10 @@ package util;
 
 import model.Tile;
 
-public class TileForMessages {
+import java.io.Serializable;
+
+public class TileForMessages implements Serializable {
+    private static final long serialVersionUID = -2387426531023024704L;
     private Object object;
     private int row;
     private int column;

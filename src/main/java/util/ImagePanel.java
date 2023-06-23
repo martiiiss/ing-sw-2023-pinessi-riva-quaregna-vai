@@ -2,9 +2,11 @@ package util;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 
 
-public class ImagePanel extends JInternalFrame{ //class to create a JInternalFrame and set its background image
+public class ImagePanel extends JInternalFrame implements Serializable { //class to create a JInternalFrame and set its background image
+    private static final long serialVersionUID = -2387426453695936563L;
     private Image img;
 
 
