@@ -631,6 +631,11 @@ public class Controller  {
                 else
                     return Event.BOARD_NOT_EMPTY;
             }
+            case CHECK_ENDGAME -> {
+                {
+                    return checkIfGameEnd();
+                }
+            }
         }
         return error;
     }
