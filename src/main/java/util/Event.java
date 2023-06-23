@@ -29,6 +29,7 @@ public enum Event {
     CHECK_REFILL(""),
     TURN_PICKED_TILES(""),
     UPDATE_BOOKSHELF(""),
+    CHECK_ENDGAME(""),
 
    //Errors
     NOT_AVAILABLE("\u001B[35mNickname already taken...\u001B[0m"),

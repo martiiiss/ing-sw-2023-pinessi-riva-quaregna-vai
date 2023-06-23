@@ -45,12 +45,9 @@ public class RMIServer extends Server implements ServerRMIInterface {
     private int index = 0;
     public ArrayList<Integer> initClient(ClientInterface rmiClient) throws IOException, AlreadyBoundException {
         ClientInterface clientInterface = (ClientInterface) rmiClient;
-        /*registry.bind("Client"+index,clientInterface);
-        index++;*/
         System.out.println(registry.list());
         return server.connection(clientInterface);
     }
-
 
     public Event sendMessage(int gameIndex, Object obj, Event event) throws IOException {
         return server.sendServerMessage(gameIndex, obj,event);
@@ -59,10 +56,6 @@ public class RMIServer extends Server implements ServerRMIInterface {
     public Object getModel(int gameIndex, Event event, Object clientIndex) throws RemoteException{
         return server.getServerModel(gameIndex, event, clientIndex);
     }
-   /* public int getClientIndex(int matchIndex, ClientInterface client) {
-        return server.returnClientIndex(matchIndex, client);
-    }*/
-
     public boolean getDisconnection(int matchIndex) throws RemoteException{
         return server.getDisconnections(matchIndex);
     }

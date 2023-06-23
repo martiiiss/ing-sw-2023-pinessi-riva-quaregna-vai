@@ -58,6 +58,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
     int numOfPlayers = 0;
     Thread threadWaitTurn;
+    Thread threadEndGame;
 
     public int askNumOfPlayers() throws IOException {
         UserView userView = new UserView();
@@ -94,13 +95,21 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 errorReceived = server.sendMessage(this.matchIndex,null, ALL_CONNECTED);
             }
         }
+        this.threadEndGame = new Thread(()-> {
+            try {
+                checkEndGame();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         this.threadWaitTurn = new Thread(() -> {
             synchronized (lock) {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
                         waitTurn();
                         lock.wait();
-                    } catch (InterruptedException | RemoteException e) {
+                    } catch (InterruptedException | IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -135,6 +144,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         this.indexOfPIT = (int) server.getModel(this.matchIndex,GAME_PIT, myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
         System.out.println("It's " + playerInTurn.getNickname() + "'s turn!");
+        if(!threadEndGame.isAlive())
+            threadEndGame.start();
 
         if (this.viewChosen == 1) {
             if (myIndex == indexOfPIT) {
@@ -199,10 +210,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
         errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
         System.out.println(errorReceived.getMsg());
-        if (errorReceived == GAME_OVER) {
-            System.out.println("FANGULO STOGGIIOCOD IMMMERDA");
+        /*if (errorReceived == GAME_OVER) {
+            uView.gameOver(listOfPlayers);
             System.exit(0);
-        }
+        }*/
         getModel();
     }
 
@@ -415,7 +426,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
     private boolean disabledInput;
 
-    public void waitTurn() throws RemoteException, InterruptedException {
+    public void waitTurn() throws IOException, InterruptedException {
         int pitIndex;
         do {
             //System.out.println("true");
@@ -426,8 +437,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         System.out.println("Press enter to start your turn....");
         disabledInput = true;
 
-        //this.lock.wait();
-        //this.threadWaitTurn.wait();
     }
     public Runnable controlDisconnection() {
         Thread controlDisconnectionThread = new Thread(()->{
@@ -449,6 +458,17 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         return null;
     }
     public void ping() throws RemoteException{
+    }
+    private Runnable checkEndGame() throws IOException {
+        Event errRec;
+        do {
+            errRec = server.sendMessage(matchIndex, null, CHECK_ENDGAME);
+        }while (errRec!=GAME_OVER);
+        uView.gameOver(listOfPlayers);
+        threadWaitTurn.interrupt();
+        Thread.currentThread().interrupt();
+        System.exit(0);
+        return null;
     }
 
 }

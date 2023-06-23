@@ -536,8 +536,13 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         try {
             return Integer.parseInt(reader.readLine());
         } catch (NumberFormatException | IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return -1;
+    }
+    public void gameOver(ArrayList<Player> listOfPlayers) {
+        System.out.println("\n\n\n\n\n<GAME OVER>");
+        System.out.println("FINAL SCOREBOARD:");
+        showPlayers(listOfPlayers);
     }
 }
