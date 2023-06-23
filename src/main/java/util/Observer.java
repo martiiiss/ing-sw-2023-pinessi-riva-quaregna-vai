@@ -23,8 +23,4 @@ public interface Observer {
      * @param message is a {@code Message} that is needed to choose a specific action tha has to be done
      */
     void onUpdate(Message message) throws IOException;
-
-
-
-
 }

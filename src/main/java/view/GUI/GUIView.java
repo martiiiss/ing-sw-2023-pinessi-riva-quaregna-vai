@@ -8,11 +8,15 @@ import util.Event;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
 import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class GUIView implements Observer { //class that contains all the GUI elements
+public class GUIView implements Observer, Serializable { //class that contains all the GUI elements
+    @Serial
+    private static final long serialVersionUID = 3573316570282498841L;
     private BoardView boardView;
     private ScoringTokenView[] scv;
     private BookshelfView bookshelfView;

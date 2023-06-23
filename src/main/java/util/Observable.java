@@ -24,14 +24,14 @@ public class Observable{
     public synchronized void addObserver(Observer o) {
         if (o == null)
             throw new NullPointerException();
+        if (observers == null){
+            observers = new ArrayList<>();
+        }
         if (!this.observers.contains(o)) {
             this.observers.add(o);
             System.out.println("aggiungo observer " + this.observers.get(0) + " a " + this);
         }
     }
-
-
-    public ArrayList<Observer> getObservers () { return this.observers; }
 
     /**
      * <p>
@@ -61,7 +61,7 @@ public class Observable{
      * </p>
      * @param arg a <code>Message</code> created by the Class that calls this method*/
     public void notifyObservers(Message arg) {
-        System.out.println("notify observer " + this + " e size " + this.observers.size());
+        System.out.println("notify observer " + this + " e indice " + this.observers.size());
         for (int i = 0; i<this.observers.size(); i++) {
             System.out.println("notifyObserver!" + i);
             this.observers.get(i).update(this, arg);
@@ -117,5 +117,11 @@ public class Observable{
      */
     public synchronized int countObservers() {
         return observers.size();
+    }
+
+
+
+    public ArrayList<Observer> getObservers(){
+        return observers;
     }
 }

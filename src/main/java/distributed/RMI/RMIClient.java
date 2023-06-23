@@ -145,9 +145,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
         System.out.println("It's " + playerInTurn.getNickname() + "'s turn!");
         if(!threadEndGame.isAlive())
-            threadEndGame.start();
+           // threadEndGame.start();
 
         if (this.viewChosen == 1) {
+            out.println("observers: " + board.getObservers());
+
             if (myIndex == indexOfPIT) {
                 activePlay();
             } else {
@@ -164,7 +166,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             if (this.isFirstTurn) {
                 gui = new GUIView();
                 this.board.addObserver(gui);
-                System.out.println("aggiunta gui " + board);
                 this.isFirstTurn = false;
                 gui.updateBoard(this.board);
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
@@ -173,6 +174,18 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             }
             if (myIndex == indexOfPIT) {
                 flowGui();
+            } else {
+                synchronized (lock) {
+                    this.lock.notifyAll();
+                }
+                if(!threadWaitTurn.isAlive()){
+                    threadWaitTurn.start();
+                }
+                Event status = Event.WAIT;
+                do {
+                    status = server.sendMessage(this.matchIndex,myIndex, CHECK_MY_TURN);
+                } while (status != Event.OK);
+                getModel();
             }
         }
     }
@@ -183,9 +196,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         playerInTurn = listOfPlayers.get(myIndex);
         //SHOWS THE PLAYER ALL THE ACTIONS THEY CAN DO
         activePlayerMenu();
-
-        out.println("indirizzo board " + this.board + this.board.getObservers().size());
-
         System.out.println("Here's your Bookshelf:");
         uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
         uView.showTUIBoard(this.board);
@@ -427,6 +437,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             gui.showError(errorReceived);
             System.exit(0);
         }
+
+        getModel();
     }
 
     private boolean disabledInput;
@@ -438,10 +450,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             pitIndex = (int) server.getModel(this.matchIndex,GAME_PIT, myIndex);
             //System.out.println("jk " + pitIndex);
         } while (pitIndex != myIndex);
-        System.out.println("You turn");
-        System.out.println("Press enter to start your turn....");
+        if(viewChosen==1) {
+            System.out.println("You turn");
+            System.out.println("Press enter to start your turn....");
+        }
         disabledInput = true;
-
     }
     public Runnable controlDisconnection() {
         Thread controlDisconnectionThread = new Thread(()->{

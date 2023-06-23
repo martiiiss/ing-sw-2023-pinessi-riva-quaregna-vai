@@ -10,10 +10,14 @@ import util.Event;
 import javax.swing.*;
 
 import java.awt.*;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class BoardView {
+public class BoardView implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 4758892564965792652L;
     private int tilesPicked = -1;
     private boolean canPick;
     private JInternalFrame boardDisplayed;
