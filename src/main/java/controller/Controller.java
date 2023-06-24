@@ -411,8 +411,10 @@ public class Controller  {
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
         if(chosenColumn<0 || chosenColumn >4)
             return Event.INVALID_VALUE;
-        if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING)
+        if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING){
+            System.out.println("out: " + (numberOfChosenTiles-1));
             return Event.OUT_OF_BOUNDS;
+        }
         this.chosenColumn = chosenColumn;
         return Event.OK;
     }

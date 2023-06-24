@@ -416,8 +416,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
         gui.pickTiles(tilesCords, tilesInHand); //aggiunge le tessere alla "mano"
 
-        int column = gui.chooseColumn();
         do {
+            int column = gui.chooseColumn();
             errorReceived = server.sendMessage(this.matchIndex, column, TURN_COLUMN);
             System.out.println("errore colonna: " + errorReceived);
             gui.showError(errorReceived);
@@ -426,7 +426,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         for(int i=0; i<tilesToPick; i++){
             int pos = gui.chooseTile(); //sceglie quale tessera mettere in una colonna: restituisce la posizione nella mano
             gui.addTile(tilesInHand.get(pos));
+            errorReceived = server.sendMessage(this.matchIndex, pos, TURN_POSITION);
         }
+        gui.getHandView().setTileToInsert(-1);
 
         //FIXME sistemare i seguenti (fine)
         errorReceived = server.sendMessage(this.matchIndex,null, CHECK_REFILL);

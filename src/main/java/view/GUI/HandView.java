@@ -38,7 +38,7 @@ public class HandView implements Serializable { //class to represent the "hand",
                 hand[i].addActionListener(e -> {
                     JButton button = (JButton) e.getSource();
                     int index = (int) button.getClientProperty("index");
-                    if(hand[index].getIcon()!=null && tileToInsert==0 ){
+                    if(hand[index].getIcon()!=null && tileToInsert==0){
                         synchronized (this) {
                             this.tileToInsert = index;
                             removeTileInHand(index);
