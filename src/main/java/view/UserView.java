@@ -89,7 +89,9 @@ public class UserView extends Observable implements Serializable, ViewInterface 
                     }
                 });
                 return webProtocol;
-            }catch(NumberFormatException e) {}
+            }catch(NumberFormatException e) {
+                e.printStackTrace();
+            }
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
         }
@@ -515,7 +517,7 @@ public class UserView extends Observable implements Serializable, ViewInterface 
      *     Method that shows a list of actions for a passive player.<br>
      * </p>*/
     public void askPassiveAction()  {
-        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+        //BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1) Look at the Board");
         System.out.println("2) Check the CommonGoalCards");
         System.out.println("3) Check your PersonalGoalCard");
@@ -535,11 +537,15 @@ public class UserView extends Observable implements Serializable, ViewInterface 
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             return Integer.parseInt(reader.readLine());
-        } catch (NumberFormatException | IOException e) {
-            //e.printStackTrace();
-        }
+        } catch (NumberFormatException | IOException e) {}
         return -1;
     }
+
+    /**
+     * <p>
+     *     Method that prints the final rank of a match.<br>
+     * </p>
+     * @param listOfPlayers an {@code ArrayList} of {@code Player} that represents the final rank of a match*/
     public void gameOver(ArrayList<Player> listOfPlayers) {
         System.out.println("\n\n\n\n\n<GAME OVER>");
         System.out.println("FINAL SCOREBOARD:");

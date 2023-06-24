@@ -11,10 +11,11 @@ import util.Observable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 
 
-public class BookshelfView {
-
+public class BookshelfView implements Serializable {
+    private static final long serialVersionUID = 4758892563965792612L;
     private JInternalFrame bookshelfDisplayed;
     private JButton [][] bookshelfTiles;
 

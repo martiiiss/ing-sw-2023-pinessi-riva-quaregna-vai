@@ -136,6 +136,7 @@ public class Controller  {
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
         game.setGameStarted();
+        System.err.println(board);
     }
 
     /**
@@ -237,7 +238,7 @@ public class Controller  {
      * @param cords is an {@code ArrayList} of {@link Cord} that represents a list of coordinates of the chosen tiles
      * @return an {@code Event} based on the input*/
 
-    public Event chooseTiles(ArrayList<Cord> cords) {
+    public Event chooseTiles(@NotNull ArrayList<Cord> cords) {
         for(Cord cord : cords) {
             if (cord.getRowCord() > 8 || cord.getRowCord() < 0 || cord.getColCord() > 8 || cord.getColCord() < 0)
                 return Event.OUT_OF_BOUNDS;
