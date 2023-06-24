@@ -284,17 +284,19 @@ public class Controller  {
         Cord prevCord = cords.get(0);
         if (currCord.getRowCord() != prevCord.getRowCord())
             sameRow = false;
-        if(currCord.getColCord()!=prevCord.getColCord())
+        if(currCord.getColCord() != prevCord.getColCord())
             sameCol = false;
         ArrayList<Integer> col = new ArrayList<>();
         ArrayList<Integer> row = new ArrayList<>();
         if(cords.size()==3) {
             Cord lastCord = cords.get(2);
-            if (currCord.getRowCord() != lastCord.getRowCord() && prevCord.getRowCord() != lastCord.getRowCord())
+            if (currCord.getRowCord() != lastCord.getRowCord() || prevCord.getRowCord() != lastCord.getRowCord())
                 sameRow = false;
-            if(currCord.getColCord() != lastCord.getColCord() && prevCord.getColCord() != lastCord.getColCord())
+            if(currCord.getColCord() != lastCord.getColCord() || prevCord.getColCord() != lastCord.getColCord())
                 sameCol = false;
         }
+        if (!sameCol && !sameRow)
+            return false;
         if(sameRow) {
             for (Cord cord : cords)
                 col.add(cord.getColCord());

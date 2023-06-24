@@ -30,6 +30,7 @@ public enum Event {
     TURN_PICKED_TILES(""),
     UPDATE_BOOKSHELF(""),
     CHECK_ENDGAME(""),
+    UPDATE_SCORINGTOKEN(""),
 
    //Errors
     NOT_AVAILABLE("\u001B[35mNickname already taken...\u001B[0m"),

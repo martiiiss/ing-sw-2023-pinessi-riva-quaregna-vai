@@ -31,13 +31,13 @@ public class UserView extends Observable implements Serializable, ViewInterface 
             notifyObservers(o -> {
                 try {
                     o.onUpdate(new Message(numOfPlayer, ASK_NUM_PLAYERS));
-                } catch (IOException e) {
+                } catch (IOException | NumberFormatException e) {
                     throw new RuntimeException(e);
                 }
             });
             return numOfPlayers;
         }catch(NumberFormatException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return -1;
     }

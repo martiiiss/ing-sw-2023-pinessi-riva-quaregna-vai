@@ -144,7 +144,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         this.myPersonalGoalCard = (PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex);
         this.indexOfPIT = (int) server.getModel(this.matchIndex,GAME_PIT, myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
-        System.out.println("It's " + playerInTurn.getNickname() + "'s turn!");
         if(!threadEndGame.isAlive())
            // threadEndGame.start();
 
@@ -174,13 +173,13 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(1));
                 gui.setupPGC((int) ((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex)).getNumber());
-            } else{
-                Event e = server.sendMessage(this.matchIndex, myIndex, CHECK_REFILL);
+            } //else{
+               /* Event e = server.sendMessage(this.matchIndex, myIndex, CHECK_REFILL);
                 if(e==REFILL){
                     board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
                     gui.update(board, new Message(board, SET_UP_BOARD));
                 }
-            }
+            }*/
             if (myIndex == indexOfPIT) {
                 flowGui();
                 getModel();
@@ -419,8 +418,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             gui.getBoardView().setTilesPicked(tilesToPick);
             System.out.println("tiles picked " + gui.getBoardView().getTilesPicked());
             tilesCords = gui.getTilesClient();
-            out.println("tiles cords " + tilesCords.size());
+            System.out.println("tiles cords " + tilesCords.size());
             errorReceived = server.sendMessage(this.matchIndex,tilesCords, TURN_PICKED_TILES);
+            System.out.println(errorReceived.getMsg());
             gui.showError(errorReceived);
             System.out.println("errore: " + errorReceived.getMsg());
         } while (errorReceived != Event.OK);
@@ -492,10 +492,17 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
     public void ping() throws RemoteException{
     }
-    private Runnable checkEndGame() throws IOException {
+    private Runnable checkEndGame() throws IOException {//TODO change name to thread
         Event errRec;
+        Event ev2;
         do {
             errRec = server.sendMessage(matchIndex, null, CHECK_ENDGAME);
+            this.board = (Board) server.getModel(matchIndex,GAME_BOARD,myIndex);
+            gui.update(board,new Message(board,SET_UP_BOARD));
+            this.commonGoalCard = (ArrayList<CommonGoalCard>) server.getModel(matchIndex,GAME_CGC,myIndex);
+            for (CommonGoalCard cgc : commonGoalCard)
+                gui.update(cgc, new Message(commonGoalCard,UPDATE_SCORINGTOKEN));
+
         }while (errRec!=GAME_OVER);
         uView.gameOver(listOfPlayers);
         threadWaitTurn.interrupt();
