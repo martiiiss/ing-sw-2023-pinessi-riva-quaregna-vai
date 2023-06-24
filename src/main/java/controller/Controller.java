@@ -407,12 +407,10 @@ public class Controller  {
      * @param chosenColumn an int in between 0 and 4 that represents the number of a column
      * @return an {@code Event} based on the input*/
     public Event chooseColumn(int chosenColumn) {
-        System.out.println("NumOfChosenTiles: "+this.numberOfChosenTiles);
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
         if(chosenColumn<0 || chosenColumn >4)
             return Event.INVALID_VALUE;
         if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING){
-            System.out.println("out: " + (numberOfChosenTiles-1));
             return Event.OUT_OF_BOUNDS;
         }
         this.chosenColumn = chosenColumn;
@@ -628,6 +626,12 @@ public class Controller  {
                 else
                     return Event.NOT_YOUR_TURN;
             }
+            case SET_UP_BOARD ->{
+                if(board.hasChanged()){
+                    board.clearChanged();
+                    return SET_UP_BOARD;
+                }
+            }
             case CHECK_REFILL -> {
                 if(board.checkBoardStatus()) {
                     checkBoardToBeFilled();
@@ -688,7 +692,6 @@ public class Controller  {
         }
         return -1;
     }
-
 
     public void addGui(GUIView gui){
         board.addObserver(gui);

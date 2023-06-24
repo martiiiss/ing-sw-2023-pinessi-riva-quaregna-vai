@@ -150,8 +150,6 @@ public class Board extends Observable implements Serializable {
         Tile removedTile = livingRoomBoard[row][column];
         livingRoomBoard[row][column] = new Tile(Type.NOTHING, 0);
         setChanged();
-        System.out.println("lancio notify in removeTile (model)");
-        setChanged();
         notifyObservers(new Message(this, Event.REMOVE_TILE_BOARD));
         return removedTile;
     }

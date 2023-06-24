@@ -236,7 +236,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
         System.out.println("update in gui della board ");
         switch(message.getMessageEvent()){
             case SET_UP_BOARD, REMOVE_TILE_BOARD -> {
-                updateBoard((Board) message.getObj());
+                updateBoard((Board)o);
                 System.out.println("aggiorna view ");
             }
         }

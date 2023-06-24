@@ -1,6 +1,7 @@
 package distributed.RMI;
 
 import distributed.Client;
+import distributed.messages.Message;
 import model.*;
 import util.Cord;
 import util.Event;
@@ -186,6 +187,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 Event status = Event.WAIT;
                 do {
                     status = server.sendMessage(this.matchIndex,myIndex, CHECK_MY_TURN);
+                    Event e = server.sendMessage(this.matchIndex, myIndex, SET_UP_BOARD);
+                    if(e==SET_UP_BOARD){
+                        board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
+                        gui.update(board, new Message(board, SET_UP_BOARD));
+                    }
                 } while (status != Event.OK);
                 getModel();
             }
