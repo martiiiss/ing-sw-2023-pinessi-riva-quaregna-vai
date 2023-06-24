@@ -231,9 +231,12 @@ public class GUIView implements Observer, Serializable { //class that contains a
     @Override
     public void update(Observable o, Message message) {
         switch(message.getMessageEvent()){
-            case REMOVE_TILE_BOARD, SET_UP_BOARD -> {
+            case SET_UP_BOARD -> {
                 updateBoard((Board) message.getObj());
                 System.out.println("aggiorna view ");
+            }
+            case REMOVE_TILE_BOARD -> {
+                boardView.pickTile(((TileForMessages) message.getObj()).getRow(), ((TileForMessages) message.getObj()).getColumn());
             }
         }
     }
