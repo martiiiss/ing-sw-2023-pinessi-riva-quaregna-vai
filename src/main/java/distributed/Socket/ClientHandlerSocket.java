@@ -43,6 +43,7 @@ public class ClientHandlerSocket implements Runnable {
                     Message message = receivedMessage();
                     //TODO: socketServer.metodo -> per utilizzare i metodi del ScocketServer
                     socketServer.receivedMessage(message);
+                    sendMessage("ricevuto ! ");
                 }
             }
         }catch(ClassCastException | ClassNotFoundException | IOException e) {

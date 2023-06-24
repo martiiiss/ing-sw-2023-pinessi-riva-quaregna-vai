@@ -104,7 +104,6 @@ public class GUIView implements Observer, Serializable { //class that contains a
     }
 
     public void updateBoard(Board board){ //set up the board or update it after someone else pick tiles
-        System.out.println("AAAAAAAAAAAAA");
         if(boardView!=null)
             boardView.updateBoard(board);
     }
