@@ -5,10 +5,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.io.Serializable;
 
 public class ImageReader implements Serializable {
-    private static final long serialVersionUID = -2387463748735472704L;
+    @Serial
+    private static final long serialVersionUID = -7539948344374909126L;
     //class to read an image or an icon from the folder resources and return it by invoking the correct method
 
     public ImageIcon readIcon(String location, int x, int y){

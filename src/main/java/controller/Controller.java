@@ -4,6 +4,8 @@ import model.*;
 import org.jetbrains.annotations.NotNull;
 import util.Cord;
 import util.Event;
+import view.GUI.GUIView;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import static util.Event.*;
@@ -637,6 +639,10 @@ public class Controller  {
                     return checkIfGameEnd();
                 }
             }
+            case ADD_OBSERVER -> {
+                addGui((GUIView) obj);
+                return Event.OK;
+            }
         }
         return error;
     }
@@ -679,6 +685,11 @@ public class Controller  {
             }
         }
         return -1;
+    }
+
+
+    public void addGui(GUIView gui){
+        board.addObserver(gui);
     }
 }
 

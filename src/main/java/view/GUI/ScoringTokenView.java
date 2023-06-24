@@ -3,10 +3,13 @@ package view.GUI;
 import util.ImageReader;
 
 import javax.swing.*;
+import java.io.Serial;
+import java.io.Serializable;
 
 
-public class ScoringTokenView extends JPanel { //manages the ScoringToken section of the GUI
-    private static final long serialVersionUID = 4758892564965420652L;
+public class ScoringTokenView extends JPanel implements Serializable { //manages the ScoringToken section of the GUI
+    @Serial
+    private static final long serialVersionUID = -879879869L;
     private JLabel displayedImage;
 
     private int valueDisplayed;

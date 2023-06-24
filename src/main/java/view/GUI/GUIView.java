@@ -17,31 +17,32 @@ import java.util.Objects;
 public class GUIView implements Observer, Serializable { //class that contains all the GUI elements
     @Serial
     private static final long serialVersionUID = 3573316570282498841L;
-    private BoardView boardView;
-    private ScoringTokenView[] scv;
-    private BookshelfView bookshelfView;
+    private transient BoardView boardView;
+    private transient ScoringTokenView[] scv;
+    private transient BookshelfView bookshelfView;
 
-    private HandView hand;
+    private transient HandView hand;
 
-    private PGCView pgc;
+    private transient PGCView pgc;
 
-    private CGCView[] cgc;
+    private transient CGCView[] cgc;
 
     private int tilesToPick = 0;
+
+    private transient Image image;
 
     public GUIView () {
         JFrame GUI = new JFrame();
         ImageReader imageReader = new ImageReader();
-        GUI.setContentPane(new JPanel() {
+        image = imageReader.readImage("resources/parquet.jpg", 2000, 2000);
+        JPanel imagePanel = new JPanel(){
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(imageReader.readImage("resources/parquet.jpg", 2000, 2000), 0, 0, null);
+                g.drawImage(image, 0, 0, null);
             }
-
-            ;
-
-        });
+        };
+        GUI.setContentPane(imagePanel);
         JInternalFrame CGCArea = new JInternalFrame();
         GUI.setLayout(new GridBagLayout());
         this.boardView = new BoardView();
@@ -103,7 +104,9 @@ public class GUIView implements Observer, Serializable { //class that contains a
     }
 
     public void updateBoard(Board board){ //set up the board or update it after someone else pick tiles
-        boardView.updateBoard(board);
+        System.out.println("AAAAAAAAAAAAA");
+        if(boardView!=null)
+            boardView.updateBoard(board);
     }
     public void setupCGC(CommonGoalCard cgc){ //set up the cgc and the scoring token
         System.out.println("cgc " + cgc.getRomanNumber());
@@ -230,13 +233,11 @@ public class GUIView implements Observer, Serializable { //class that contains a
 
     @Override
     public void update(Observable o, Message message) {
+        System.out.println("update in gui della board ");
         switch(message.getMessageEvent()){
-            case SET_UP_BOARD -> {
+            case SET_UP_BOARD, REMOVE_TILE_BOARD -> {
                 updateBoard((Board) message.getObj());
                 System.out.println("aggiorna view ");
-            }
-            case REMOVE_TILE_BOARD -> {
-                boardView.pickTile(((TileForMessages) message.getObj()).getRow(), ((TileForMessages) message.getObj()).getColumn());
             }
         }
     }

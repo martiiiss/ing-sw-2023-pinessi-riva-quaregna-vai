@@ -30,7 +30,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
     private Object lock;
     private int viewChosen;
-    private GUIView gui;
+    private  GUIView gui;
     private UserView uView;
     private boolean isFirstTurn = true;
 
@@ -165,7 +165,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         } else if (this.viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
-                this.board.addObserver(gui);
+               // this.board.addObserver(gui);
+                server.sendMessage(matchIndex, gui, ADD_OBSERVER);
                 this.isFirstTurn = false;
                 gui.updateBoard(this.board);
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
@@ -174,6 +175,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             }
             if (myIndex == indexOfPIT) {
                 flowGui();
+                getModel();
             } else {
                 synchronized (lock) {
                     this.lock.notifyAll();
@@ -437,8 +439,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             gui.showError(errorReceived);
             System.exit(0);
         }
-
-        getModel();
     }
 
     private boolean disabledInput;

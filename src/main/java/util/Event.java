@@ -79,7 +79,8 @@ public enum Event {
     COLUMN_NOT_VALID(""),
     SET_TILE_ORDER(""),
     COLUMN_CHOSEN(""),
-    ORDER_CHOSEN("");
+    ORDER_CHOSEN(""),
+    ADD_OBSERVER("");
 
     private String msg;
 
