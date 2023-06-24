@@ -164,6 +164,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 getModel();
             }
         } else if (this.viewChosen == 2) {
+
             if (this.isFirstTurn) {
                 gui = new GUIView();
                // this.board.addObserver(gui);
@@ -173,6 +174,12 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(1));
                 gui.setupPGC((int) ((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex)).getNumber());
+            } else{
+                Event e = server.sendMessage(this.matchIndex, myIndex, CHECK_REFILL);
+                if(e==REFILL){
+                    board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
+                    gui.update(board, new Message(board, SET_UP_BOARD));
+                }
             }
             if (myIndex == indexOfPIT) {
                 flowGui();
