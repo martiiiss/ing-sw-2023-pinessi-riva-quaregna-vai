@@ -10,9 +10,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
-import java.net.http.WebSocket;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class GUIView implements Observer, Serializable { //class that contains all the GUI elements
     @Serial
@@ -27,11 +25,14 @@ public class GUIView implements Observer, Serializable { //class that contains a
 
     private transient CGCView[] cgc;
 
+    private transient JLabel errorLog;
+
     private int tilesToPick = 0;
 
     private transient Image image;
 
     public GUIView () {
+        GridBagConstraints constraints = new GridBagConstraints();
         JFrame GUI = new JFrame();
         ImageReader imageReader = new ImageReader();
         image = imageReader.readImage("resources/parquet.jpg", 2000, 2000);
@@ -45,8 +46,12 @@ public class GUIView implements Observer, Serializable { //class that contains a
         GUI.setContentPane(imagePanel);
         JInternalFrame CGCArea = new JInternalFrame();
         GUI.setLayout(new GridBagLayout());
+        constraints.gridx= 0;
+        constraints.gridy =0;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.FIRST_LINE_START;
         this.boardView = new BoardView();
-        GUI.add(this.boardView.getBoardDisplayed());
+        GUI.add(this.boardView.getBoardDisplayed(), constraints);
         cgc = new CGCView[2];
         CGCArea.setLayout(new GridLayout(2, 2));
         CGCArea.setTitle("CommonGoalCards");
@@ -60,17 +65,36 @@ public class GUIView implements Observer, Serializable { //class that contains a
         }
         CGCArea.setVisible(true);
         CGCArea.setMinimumSize(new Dimension(250, 250));
-        GUI.add(CGCArea);
+        constraints.gridy = 1;
+        constraints.insets = new Insets(10, 10,10,10);
+        constraints.gridwidth = 1;
+        GUI.add(CGCArea, constraints);
         hand = new HandView();
-        GUI.add(hand.getImageDisplayed());
+        constraints.gridx = 1;
+        GUI.add(hand.getImageDisplayed(), constraints);
         bookshelfView = new BookshelfView();
-        GUI.add(bookshelfView.getBookshelfDisplayed());
+        constraints.gridy = 0;
+        constraints.gridx = 2;
+        GUI.add(bookshelfView.getBookshelfDisplayed(), constraints);
         pgc = new PGCView();
-        GUI.add(pgc.getDisplayedImage());
+        constraints.gridx = 3;
+        GUI.add(pgc.getDisplayedImage(), constraints);
+        errorLog = new JLabel();
+        JInternalFrame errorLogFrame = new JInternalFrame();
+        errorLogFrame.setVisible(true);
+        errorLogFrame.setTitle("Error Log");
+        errorLogFrame.setPreferredSize(new Dimension(300,100));
+        errorLog.setPreferredSize(new Dimension(250, 70));
+        errorLog.setMinimumSize(new Dimension(250,70));
+        constraints.gridx = 2;
+        constraints.gridy = 1;
+        errorLogFrame.add(errorLog);
+        GUI.add(errorLogFrame, constraints);
         GUI.setVisible(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         GUI.setBounds(0,0, screenSize.width, screenSize.height);
         GUI.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
 
     }
 
@@ -203,10 +227,10 @@ public class GUIView implements Observer, Serializable { //class that contains a
     }
     public void showError(Event e){
         switch (e){
-            case TILES_NOT_VALID-> boardView.getBoardDisplayed().setTitle("Tiles not valid, select again");
-            case COLUMN_NOT_VALID -> bookshelfView.getBookshelfDisplayed().setTitle("You selected a column with not enough space,try again");
-            case INVALID_VALUE -> boardView.getBoardDisplayed().setTitle("Retry, invalid value... ");
-            case REPETITION, BLOCKED_NOTHING, NOT_ON_BORDER, NOT_ADJACENT -> boardView.getBoardDisplayed().setTitle(e.getMsg());
+            case TILES_NOT_VALID-> errorLog.setText("<html><p>Tiles not valid, select again</p><html>");
+            case COLUMN_NOT_VALID -> errorLog.setText("<html><p>You selected a column with not enough space,try again</p><html>");
+            case INVALID_VALUE -> errorLog.setText("<html><p>Retry, invalid value... </p><html>");
+            case REPETITION, BLOCKED_NOTHING, NOT_ON_BORDER, NOT_ADJACENT -> errorLog.setText("<html>"+e.getMsg()+"</p><html>");
 
             //TODO: aggiungere i vari errori!
         }

@@ -1,6 +1,7 @@
 package org.example;
 
 import model.*;
+import util.Event;
 import view.GUI.GUIView;
 import util.Cord;
 
@@ -22,6 +23,7 @@ public class AppGUITry {
         board.setUpBoard(tiles);//filled the board
         view = new GUIView();
         view.updateBoard(board);
+        view.showError(Event.COLUMN_NOT_VALID);
         view.askTiles();
         ArrayList <Cord> array;
         array = view.getTilesClient();

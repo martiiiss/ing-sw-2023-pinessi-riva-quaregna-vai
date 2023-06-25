@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
 
+import static java.awt.GridBagConstraints.*;
+
 
 public class HandView implements Serializable { //class to represent the "hand", the tiles picked from the board and not placed in the bookshelf yet and the ScoringTokens taken by the player
     private static final long serialVersionUID = 4758892564965792611L;
@@ -25,15 +27,22 @@ public class HandView implements Serializable { //class to represent the "hand",
         }
         imageDisplayed = new JInternalFrame();
         hand = new JButton[6];
-        imageDisplayed.setLayout(new GridLayout(2,3));
+        imageDisplayed.setLayout(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = FIRST_LINE_START;
+
         for(int i=0; i<6;i++) {
             hand[i] = new JButton();
-            imageDisplayed.add(hand[i]);
             hand[i].setPreferredSize(new Dimension(50, 50));
+            hand[i].setMinimumSize(new Dimension(50,50));
             hand[i].setBorderPainted(false);
             hand[i].setOpaque(false);
             hand[i].setContentAreaFilled(false);
             if(i<3){
+                constraints.gridx = i;
+                constraints.gridy = 0;
+                imageDisplayed.add(hand[i], constraints);
                 hand[i].putClientProperty("index", i);
                 hand[i].addActionListener(e -> {
                     JButton button = (JButton) e.getSource();
@@ -48,10 +57,16 @@ public class HandView implements Serializable { //class to represent the "hand",
 
                 });
             }
+            else{
+                constraints.gridx = i-3;
+                constraints.gridy = 1;
+                imageDisplayed.add(hand[i], constraints);
+            }
         }
-    imageDisplayed.setVisible(true);
-    imageDisplayed.setMinimumSize(new Dimension(250, 150));
-    imageDisplayed.setTitle("Hand");
+
+        imageDisplayed.setVisible(true);
+        imageDisplayed.setMinimumSize(new Dimension(250, 200));
+        imageDisplayed.setTitle("Hand");
     }
 
     public void setTilesInHand(Tile tile) { //set the "hand" given the tiles in hand in the model
@@ -123,4 +138,5 @@ public class HandView implements Serializable { //class to represent the "hand",
     public void setTileToInsert(int tileToInsert) {
         this.tileToInsert = tileToInsert;
     }
+
 }
