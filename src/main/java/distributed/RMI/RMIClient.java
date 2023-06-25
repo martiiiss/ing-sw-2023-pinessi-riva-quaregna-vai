@@ -10,9 +10,11 @@ import view.UserView;
 import view.ViewInterface;
 
 import java.io.*;
+import java.net.SocketException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.UnmarshalException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -111,7 +113,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                         waitTurn();
                         lock.wait();
                     } catch (InterruptedException | IOException e) {
-                        throw new RuntimeException(e);
+                        //throw new RuntimeException(e);
                     }
                 }
 
@@ -192,12 +194,14 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 }
                 Event status = Event.WAIT;
                 do {
-                    status = server.sendMessage(this.matchIndex,myIndex, CHECK_MY_TURN);
-                    Event e = server.sendMessage(this.matchIndex, myIndex, SET_UP_BOARD);
-                    if(e==SET_UP_BOARD){
-                        board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
-                        gui.update(board, new Message(board, SET_UP_BOARD));
-                    }
+                    try {
+                        status = server.sendMessage(this.matchIndex,myIndex, CHECK_MY_TURN);
+                        Event e = server.sendMessage(this.matchIndex, myIndex, SET_UP_BOARD);
+                        if(e==SET_UP_BOARD) {
+                            board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
+                            gui.update(board, new Message(board, SET_UP_BOARD));
+                        }
+                    } catch (SocketException | UnmarshalException ex) {}
                 } while (status != Event.OK);
                 getModel();
             }
@@ -451,8 +455,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         }
         errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
         if (errorReceived == GAME_OVER) {
+            gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
             gui.showError(errorReceived);
-            System.exit(0);
+            //System.exit(0);
         }
     }
 

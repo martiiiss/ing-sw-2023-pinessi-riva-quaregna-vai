@@ -18,12 +18,13 @@ public class ImageReader implements Serializable {
         Image img;
         try {
             img = ImageIO.read(is);
+            Image scaledImg = img.getScaledInstance(x, y, Image.SCALE_SMOOTH);
+            ImageIcon im = new ImageIcon(scaledImg);
+            return im;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
-        Image scaledImg = img.getScaledInstance(x, y, Image.SCALE_SMOOTH);
-         ImageIcon im = new ImageIcon(scaledImg);
-        return im;
+        return null;
      }
     public Image readImage(String location, int x, int y){
         InputStream is = this.getClass().getClassLoader().getResourceAsStream(location);
