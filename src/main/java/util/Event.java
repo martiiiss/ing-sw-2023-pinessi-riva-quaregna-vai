@@ -83,7 +83,7 @@ public enum Event {
     ORDER_CHOSEN(""),
     ADD_OBSERVER("");
 
-    private String msg;
+    private final String msg;
 
     /**
      * <p>
