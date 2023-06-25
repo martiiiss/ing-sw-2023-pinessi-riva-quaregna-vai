@@ -427,6 +427,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             gui.addTile(tilesInHand.get(pos));
             errorReceived = server.sendMessage(this.matchIndex, pos, TURN_POSITION);
         }
+        gui.endInsertion();
         gui.getHandView().setTileToInsert(-1);
 
         //FIXME sistemare i seguenti (fine)
