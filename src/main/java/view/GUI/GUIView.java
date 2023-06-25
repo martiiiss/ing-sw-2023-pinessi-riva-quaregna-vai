@@ -221,8 +221,8 @@ public class GUIView implements Observer, Serializable { //class that contains a
         }
         return hand.getTileToInsert();
     }
-    public void addTile(Tile tile, int row){ //add the tile to the bookshelf
-        bookshelfView.insertTile(bookshelfView.getColumnChosen(), row, tile);
+    public void addTile(Tile tile){ //add the tile to the bookshelf
+        bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
     }
     public void showError(Event e){
         switch (e){

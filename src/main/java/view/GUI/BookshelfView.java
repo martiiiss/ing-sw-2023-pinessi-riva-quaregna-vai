@@ -32,6 +32,7 @@ public class BookshelfView implements Serializable {
                 bookshelfDisplayed.add(bookshelfTiles[i][j]);
                 bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
                 bookshelfTiles[i][j].putClientProperty("column", j);
+                bookshelfTiles[i][j].putClientProperty("status", 0);
                 bookshelfTiles[i][j].addActionListener(e -> {
                     JButton button = (JButton) e.getSource();
                     if(columnChosen==-1)
@@ -51,16 +52,24 @@ public class BookshelfView implements Serializable {
         return bookshelfDisplayed;
     }
 
-    public void insertTile(int column, int row, Tile tile){ //modify the GUI bookshelf inserting the given tile to the first free position in the given column
+    public void insertTile(int column, Tile tile){ //modify the GUI bookshelf inserting the given tile to the first free position in the given column
         ImageReader imageReader = new ImageReader();
-        this.bookshelfTiles[row][column].setIcon(imageReader.readIcon("resources/TileImages/" + tile.getType() + "/" + tile.getNumType() + ".png", 50, 50))
+        for(int i=5; i>=0; i--){
+            if((int)bookshelfTiles[i][column].getClientProperty("status")==0){
+                this.bookshelfTiles[i][column].setIcon(imageReader.readIcon("resources/TileImages/" + tile.getType() + "/" + tile.getNumType() + ".png", 50, 50));
+                this.bookshelfTiles[i][column].putClientProperty("status", 1);
+                break;
+            }
+        }
     }
-    public void updateBookshelf(Tile[][] tiles){
+    public void updateBookshelf(Tile[][] tiles) {
         ImageReader imageReader = new ImageReader();
-        for (int i=0; i<=6; i++){
-            for (int j=0; j<=5; j++) {
-                if (tiles[i][j].getType() != Type.NOTHING)
+        for (int i = 0; i <= 6; i++) {
+            for (int j = 0; j <= 5; j++) {
+                if (tiles[i][j].getType() != Type.NOTHING) {
                     this.bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/" + tiles[i][j].getType() + "/" + tiles[i][j].getNumType() + ".png", 50, 50));
+                    this.bookshelfTiles[i][j].putClientProperty("status", 1);
+                }
             }
         }
     }
