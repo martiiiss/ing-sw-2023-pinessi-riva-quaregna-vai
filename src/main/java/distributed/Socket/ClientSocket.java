@@ -2,6 +2,7 @@ package distributed.Socket;
 
 import distributed.Client;
 import distributed.messages.Message;
+import util.Event;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -43,12 +44,16 @@ public class ClientSocket extends Client {
                   System.out.println("condizione client socket " + !executorService.isShutdown());
                   try{
                       System.out.println("leggo: ");
-                      message = (Message) inputStream.readObject();
-                      System.out.println("ho letto " + message);
-                     // sendMessageC(null);//FIXME this is to implement, now sendMessageC() has Message as a parameter
-                     // receivedMessage();
-                  } catch (IOException | ClassNotFoundException e) {
+
+
+                      sendMessageC(new Message("ciaoooo", Event.SET_UP_BOARD));//FIXME this is to implement, now sendMessageC() has Message as a parameter
+                      message = new Message(inputStream.readObject(), Event.GAME_STARTED);
+                      System.out.println("ho letto " + message.getObj());
+                      // receivedMessage();
+                  } catch (IOException e) {
                       System.out.println("Pippozoz");
+                      throw new RuntimeException(e);
+                  } catch (ClassNotFoundException e) {
                       throw new RuntimeException(e);
                   }
                   //notifyObservers(message);

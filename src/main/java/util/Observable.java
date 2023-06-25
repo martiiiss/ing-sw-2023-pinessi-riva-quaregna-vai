@@ -92,7 +92,7 @@ public class Observable{
      *
 
      */
-    protected synchronized void clearChanged() {
+    public synchronized void clearChanged() {
         changed = false;
     }
 

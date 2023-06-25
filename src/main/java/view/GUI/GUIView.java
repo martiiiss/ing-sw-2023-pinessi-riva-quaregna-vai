@@ -128,14 +128,13 @@ public class GUIView implements Observer, Serializable { //class that contains a
     }
 
     public void updateBoard(Board board){ //set up the board or update it after someone else pick tiles
-        System.out.println("AAAAAAAAAAAAA");
         if(boardView!=null)
             boardView.updateBoard(board);
     }
     public void setupCGC(CommonGoalCard cgc){ //set up the cgc and the scoring token
         System.out.println("cgc " + cgc.getRomanNumber());
         getCGC(cgc.getRomanNumber()).setCGCView(cgc.getIdCGC());
-        getScv(cgc.getRomanNumber()).setDisplayedImage(cgc.getTokenStack().firstElement().getValue());
+        getScv(cgc.getRomanNumber()).setDisplayedImage(cgc.getTokenStack().lastElement().getValue());
     }
     public void setupPGC(int pgcID){  //set up the pgc
         this.pgc.setDisplayedImage(pgcID);
@@ -172,7 +171,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
     }
 
     public ArrayList <Cord> getTilesClient(){
-        boardView.getListTilesPicked().removeAll(boardView.getListTilesPicked());
+        boardView.getListTilesPicked().clear();
         System.out.println("setta a true can pick");
         boardView.setCanPick(true);
         boardView.getBoardDisplayed().setTitle("Click the tiles to pick them");
@@ -260,8 +259,12 @@ public class GUIView implements Observer, Serializable { //class that contains a
         System.out.println("update in gui della board ");
         switch(message.getMessageEvent()){
             case SET_UP_BOARD, REMOVE_TILE_BOARD -> {
-                updateBoard((Board) message.getObj());
+                updateBoard((Board)o);
                 System.out.println("aggiorna view ");
+            }
+            case UPDATE_SCORINGTOKEN -> {
+                CommonGoalCard cgc = (CommonGoalCard) message.getObj();
+                scv[cgc.getRomanNumber()-1].setDisplayedImage(cgc.getTokenStack().lastElement().getValue());
             }
         }
     }

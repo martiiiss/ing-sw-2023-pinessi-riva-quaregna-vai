@@ -284,17 +284,19 @@ public class Controller  {
         Cord prevCord = cords.get(0);
         if (currCord.getRowCord() != prevCord.getRowCord())
             sameRow = false;
-        if(currCord.getColCord()!=prevCord.getColCord())
+        if(currCord.getColCord() != prevCord.getColCord())
             sameCol = false;
         ArrayList<Integer> col = new ArrayList<>();
         ArrayList<Integer> row = new ArrayList<>();
         if(cords.size()==3) {
             Cord lastCord = cords.get(2);
-            if (currCord.getRowCord() != lastCord.getRowCord() && prevCord.getRowCord() != lastCord.getRowCord())
+            if (currCord.getRowCord() != lastCord.getRowCord() || prevCord.getRowCord() != lastCord.getRowCord())
                 sameRow = false;
-            if(currCord.getColCord() != lastCord.getColCord() && prevCord.getColCord() != lastCord.getColCord())
+            if(currCord.getColCord() != lastCord.getColCord() || prevCord.getColCord() != lastCord.getColCord())
                 sameCol = false;
         }
+        if (!sameCol && !sameRow)
+            return false;
         if(sameRow) {
             for (Cord cord : cords)
                 col.add(cord.getColCord());
@@ -407,12 +409,12 @@ public class Controller  {
      * @param chosenColumn an int in between 0 and 4 that represents the number of a column
      * @return an {@code Event} based on the input*/
     public Event chooseColumn(int chosenColumn) {
-        System.out.println("NumOfChosenTiles: "+this.numberOfChosenTiles);
         Tile[][] playerBookshelf = game.getPlayerInTurn().getMyBookshelf().getBookshelf();
         if(chosenColumn<0 || chosenColumn >4)
             return Event.INVALID_VALUE;
-        if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING)
+        if(playerBookshelf[this.numberOfChosenTiles-1][chosenColumn].getType() != Type.NOTHING){
             return Event.OUT_OF_BOUNDS;
+        }
         this.chosenColumn = chosenColumn;
         return Event.OK;
     }
@@ -626,6 +628,12 @@ public class Controller  {
                 else
                     return Event.NOT_YOUR_TURN;
             }
+            case SET_UP_BOARD ->{
+                if(board.hasChanged()){
+                    board.clearChanged();
+                    return SET_UP_BOARD;
+                }
+            }
             case CHECK_REFILL -> {
                 if(board.checkBoardStatus()) {
                     checkBoardToBeFilled();
@@ -686,7 +694,6 @@ public class Controller  {
         }
         return -1;
     }
-
 
     public void addGui(GUIView gui){
         board.addObserver(gui);

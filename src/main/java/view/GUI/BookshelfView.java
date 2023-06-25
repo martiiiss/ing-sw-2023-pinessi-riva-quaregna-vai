@@ -37,7 +37,7 @@ public class BookshelfView implements Serializable {
                     JButton button = (JButton) e.getSource();
                     if(columnChosen==-1)
                         synchronized (this){
-                        columnChosen = (int) button.getClientProperty("column");
+                            columnChosen = (int) button.getClientProperty("column");
                             columnChosen = finalJ;
                             this.notify();
                         }
