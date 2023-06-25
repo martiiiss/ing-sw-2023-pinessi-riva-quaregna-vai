@@ -3,12 +3,8 @@ package model;
 import distributed.messages.Message;
 import util.Event;
 import util.Observable;
-import util.TileForMessages;
-
-import javax.sound.midi.SysexMessage;
 import java.io.Serial;
 import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**This class represents the Board of the game*/
@@ -29,7 +25,6 @@ public class Board extends Observable implements Serializable {
      *     methods.
      * </p>
      * @param numOfPlayers an integer, it represents the number of players of the Game
-     *
      * */
     public Board(int numOfPlayers){
         this.livingRoomBoard = new Tile[BOARD_ROW][BOARD_COLUMN];
@@ -177,7 +172,7 @@ public class Board extends Observable implements Serializable {
      * <p>
      *     This method returns <b>true</b> if board needs to be filled, <b>false</b> otherwise.
      * </p>
-     * */
+     * @return <b>true</b> if board needs to be filled, <b>false</b> otherwise*/
     public boolean checkBoardStatus(){
         for(int i=0; i<BOARD_ROW; i++){
             for(int j=0; j<BOARD_COLUMN; j++){

@@ -1,23 +1,17 @@
 package distributed;
 
-import distributed.RMI.ClientCallback;
 import distributed.RMI.ClientInterface;
-import distributed.RMI.RMIClient;
 import util.Event;
-import util.Observable;
 import view.UserView;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Serializable;
+import java.io.*;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Timer;
 public abstract class Client extends UnicastRemoteObject implements Remote, Serializable, ClientInterface {
-    private static final long serialVersionUID = -8499166750855847908L; //random number
+    @Serial
+    private static final long serialVersionUID = -8499166750855847908L;
     //transient DisconnectionListener disconnectionListener
     private transient Timer pingTimer;
     private String address;
@@ -30,7 +24,6 @@ public abstract class Client extends UnicastRemoteObject implements Remote, Seri
         super();
         System.out.println("Client creato");
         this.username = username;
-        //   this.address = address;
         this.port = port;
     }
 
