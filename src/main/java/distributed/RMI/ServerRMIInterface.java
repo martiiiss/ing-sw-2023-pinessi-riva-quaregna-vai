@@ -16,7 +16,7 @@ public interface ServerRMIInterface extends Remote {
     void startServer(ServerRMIInterface serverRmi) throws RemoteException;
     // void login(String username, ClientConnectionRMI clientConnection) throws RemoteException;
 
-    ArrayList<Integer> initClient(ClientInterface rmiClient) throws IOException, AlreadyBoundException;
+    ArrayList<Integer> initClient(ClientInterface rmiClient) throws IOException, AlreadyBoundException, ClassNotFoundException;
 
     //boolean getNumberOfPlayer(int num) throws IOException;
 

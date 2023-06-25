@@ -32,15 +32,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
     public Server(int portSocket, int portRMI) throws IOException {
         matchList = new ArrayList<>();
-        if(portRMI==-1) { //Socket
-            //    System.out.println("socket");
-            this.socketPort = portSocket;
-        } else if(portSocket == -1){
-            //     System.out.println("rmi");
-            this.RMIPort = portRMI;
-        }
-
-        //System.out.println("entrambi");
         this.socketPort = portSocket;
         this.RMIPort = RMIPort;
         this.matchList= Collections.synchronizedList(new ArrayList<>());
@@ -65,7 +56,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     private void reconnectionOfPlayer(String username, Connection connection) throws RemoteException{ //FIXME non può richiedere come parametro il nickname dato che viene richiesto solo dopo che si è connesso        //TODO
     }
 
-    public ArrayList<Integer> connection (ClientInterface client) throws IOException {
+    public ArrayList<Integer> connection (ClientInterface client) throws IOException, ClassNotFoundException {
         /*if(getNumberOfClientsConnected()<maxNumOfClients) {
             if(clientsConnected.size()==1){
                 Thread disconnection = new Thread(()-> {
@@ -95,6 +86,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         }
         else {
             for(Match matchIterator : matchList) {
+                System.out.println("MATCH" + matchIterator);
                 if(matchIterator.getMaxSize()>matchIterator.getListOfClients().size()) {
                     matchIterator.addPlayer(client);
                     System.err.println(matchIterator.getListOfClients().indexOf(client));

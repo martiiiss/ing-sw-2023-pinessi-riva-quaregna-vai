@@ -2,6 +2,7 @@ package controller;
 
 import distributed.Socket.ClientSocket;
 import distributed.messages.Message;
+import distributed.messages.SocketMessage;
 import model.Board;
 import util.Event;
 import util.Observable;
@@ -16,6 +17,7 @@ public class ClientController implements Observer {
     private final UserView uView;
     private ClientSocket clientSocket;
     private ExecutorService executor;
+    private int numOfPlayers;
 
 
     public ClientController(UserView uView) {
@@ -29,28 +31,39 @@ public class ClientController implements Observer {
     public void initClient(String address, int portSocket) throws IOException {
         this.clientSocket = new ClientSocket(address, portSocket);
         //this.clientSocket.addObserver(this);
-        try{
+      /*  try{
             clientSocket.startConnection();
         } catch (IOException e) {
             System.err.println(e.getMessage());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         executor.execute(() -> {
             try {
-                uView.askPlayerNickname();
+                clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.ASK_NUM_PLAYERS));
+                if(clientSocket.receivedMessageC().getMessageEvent()==Event.ASK_NUM_PLAYERS){
+                    numOfPlayers = uView.askNumOfPlayer();
+                    while(numOfPlayers<2 || numOfPlayers>4){
+                        System.err.println("Retry...");
+                        numOfPlayers = uView.askNumOfPlayer();
+                    }
+                    clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.ASK_NUM_PLAYERS));
+                }
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         });
     }
+
     public void lobby(){
         executor.execute(() -> {
-            try {
-                clientSocket.sendMessageC(new Message(uView.askNumOfPlayer(), Event.ASK_NUM_PLAYERS));
+        /*    try {
+               // clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), ));
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
+            }*/
         });
     }
 
@@ -70,7 +83,8 @@ public class ClientController implements Observer {
     }
     @Override
     public void onUpdate(Message message) throws IOException {
-        clientSocket.sendMessageC(message);
+       // SocketMessage socketMessage = new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), message.getObj(), message.getMessageEvent());
+       // clientSocket.sendMessageC(socketMessage);
     }
 
 }

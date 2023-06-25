@@ -6,5 +6,5 @@ import java.rmi.RemoteException;
 
 public interface ClientInterface extends Remote {
     void ping() throws RemoteException;
-    int askNumOfPlayers() throws IOException;
+    int askNumOfPlayers() throws IOException, ClassNotFoundException;
 }

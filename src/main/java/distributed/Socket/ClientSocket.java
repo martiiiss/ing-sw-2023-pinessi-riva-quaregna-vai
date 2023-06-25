@@ -1,15 +1,16 @@
 package distributed.Socket;
 
 import distributed.Client;
+import distributed.RMI.ClientInterface;
 import distributed.messages.Message;
+import distributed.messages.SocketMessage;
 import util.Event;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,6 +24,8 @@ public class ClientSocket extends Client {
     private final ObjectOutputStream outputStream;
     private final ExecutorService executorService;
     private Object serverObj;
+    private int myIndex;
+    private int myMatch;
 
 
     public ClientSocket(String address, int port) throws IOException {
@@ -34,26 +37,26 @@ public class ClientSocket extends Client {
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.inputStream = new ObjectInputStream(socket.getInputStream());
         this.executorService = Executors.newSingleThreadScheduledExecutor();
+        this.myIndex = -1;
+        this.myMatch = -1;
     }
     @Override
     public void startConnection() throws IOException, ClassNotFoundException {
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
-                  Message message;
-                  System.out.println("condizione client socket " + !executorService.isShutdown());
+                  SocketMessage message;
                   try{
-                      System.out.println("leggo: ");
+                      message= receivedMessageC();
+                      System.out.println("ho ricevuto " + message.getMessageEvent());
+                      if(message.getMessageEvent() == Event.SET_CLIENT_INDEX){
+                          this.myIndex = message.getClientIndex();
+                          this.myMatch = message.getMatchIndex();
+                          System.out.println("my index " + myIndex);
+                      }
 
-
-                      sendMessageC(new Message("ciaoooo", Event.SET_UP_BOARD));//FIXME this is to implement, now sendMessageC() has Message as a parameter
-                      message = new Message(inputStream.readObject(), Event.GAME_STARTED);
-                      System.out.println("ho letto " + message.getObj());
-                      // receivedMessage();
-                  } catch (IOException e) {
-                      System.out.println("Pippozoz");
-                      throw new RuntimeException(e);
-                  } catch (ClassNotFoundException e) {
+                 //     sendMessageC(new SocketMessage(myIndex, myMatch, "ciao", Event.SET_UP_BOARD));//FIXME this is to implement, now sendMessageC() has Message as a parameter
+                  } catch (IOException | ClassNotFoundException e) {
                       throw new RuntimeException(e);
                   }
                   //notifyObservers(message);
@@ -66,24 +69,31 @@ public class ClientSocket extends Client {
     }
 
 
-    public void sendMessageC(Message mess) throws IOException {
+    public void sendMessageC(SocketMessage mess) throws IOException {
         try{
             //invio messaggio:
             outputStream.writeObject(mess);
             outputStream.flush();
             outputStream.reset();
         }catch (IOException e){
-            //disconnessione
+            //TODO disconnessione
             //notifyObserver con messaggio di errore
         }
     }
 
-    public Message receivedMessage() throws IOException, ClassNotFoundException {
-        if((serverObj = (Message) inputStream.readObject())!=null){
-            System.out.println("ogg da server " + ((Message)serverObj).getMessageEvent());
-        }
-        return (Message) serverObj;
+    public SocketMessage receivedMessageC() throws IOException, ClassNotFoundException {
+        SocketMessage message = (SocketMessage) inputStream.readObject();
+        return message;
     }
+
+    public int getMyIndex(){
+        return myIndex;
+    }
+
+    public int getMyMatch(){
+        return myMatch;
+    }
+
 
     public void closeConnection(){
         //TODO implement this

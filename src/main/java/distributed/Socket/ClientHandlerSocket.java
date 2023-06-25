@@ -1,6 +1,9 @@
 package distributed.Socket;
 
+import distributed.Client;
+import distributed.RMI.ClientInterface;
 import distributed.messages.Message;
+import distributed.messages.SocketMessage;
 import util.Event;
 
 import java.io.IOException;
@@ -8,9 +11,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
-public class ClientHandlerSocket implements Runnable {
+public class ClientHandlerSocket implements Runnable, ClientInterface {
     private Socket socketClient;
     private SocketServer socketServer;
     private final Object inputLock;
@@ -18,6 +22,9 @@ public class ClientHandlerSocket implements Runnable {
     private ObjectOutputStream output; //per inviare
     private ObjectInputStream input; //per ricevere
     private Object inputObject;
+    private int clientIndex;
+    private int matchIndex;
+    private int numOfPlayers;
 
     public ClientHandlerSocket(Socket socket, SocketServer socketServer) {
         this.socketServer = socketServer;
@@ -40,10 +47,12 @@ public class ClientHandlerSocket implements Runnable {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (inputLock) {
                     System.out.println("ricevi messaggio: ");
-                    Message message = receivedMessage();
-                    //TODO: socketServer.metodo -> per utilizzare i metodi del ScocketServer
+                    SocketMessage message = receivedMessage();
+                    if(message.getMessageEvent()==Event.ASK_NUM_PLAYERS){
+                        numOfPlayers = (int)message.getObj();
+                    }
                     socketServer.receivedMessage(message);
-                    sendMessage("ricevuto ! ");
+                    sendMessage(new SocketMessage(clientIndex, matchIndex, "ricevuto ! ", Event.GAME_CGC));
                 }
             }
         }catch(ClassCastException | ClassNotFoundException | IOException e) {
@@ -56,10 +65,10 @@ public class ClientHandlerSocket implements Runnable {
         }
     }
 
-    public void sendMessage(Object obj){ //per inviare i messaggi al client
+    public void sendMessage(SocketMessage message){ //per inviare i messaggi al client
         try {
-            System.out.println("in send mess " + obj);
-            output.writeObject(obj);
+            System.out.println("in send mess " + message.getMessageEvent());
+            output.writeObject(message);
             output.flush();
             output.reset();
         } catch (IOException e) {
@@ -67,16 +76,25 @@ public class ClientHandlerSocket implements Runnable {
         }
     }
 
-    public Message receivedMessage() throws IOException, ClassNotFoundException {
-        this.inputObject =  (Message)input.readObject(); //per ricevere i messaggi dal client
+    public SocketMessage receivedMessage() throws IOException, ClassNotFoundException {
+        SocketMessage message = (SocketMessage) input.readObject(); //per ricevere i messaggi dal client
+        this.inputObject = message.getObj();
         if(this.inputObject!=null) {
-            String temp = ((Message) this.inputObject).getObj().toString();
+            String temp = this.inputObject.toString();
             System.out.println("ogg ricevuto " + temp + " da " + socketClient.getInetAddress());
         }
-        return (Message) this.inputObject;
+        return message;
     }
 
 
+    @Override
+    public void ping() throws RemoteException {
 
+    }
 
+    @Override
+    public int askNumOfPlayers() throws IOException, ClassNotFoundException {
+        sendMessage(new SocketMessage(clientIndex, matchIndex, numOfPlayers, Event.ASK_NUM_PLAYERS));
+        return (int)receivedMessage().getObj();
+    }
 }

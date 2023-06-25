@@ -51,7 +51,7 @@ public enum Event {
     GUI_VIEW(""),
     TUI_VIEW(""),
     DISCONNECTION("\u001B[35mGame over due to a Disconnection\u001B[0m"),
-
+    SET_CLIENT_INDEX(""),
     EMPTY(""),
 
 

@@ -11,9 +11,10 @@ import java.io.IOException;
 public class View implements Observer, ViewInterface {
 
     private final ClientHandlerSocket clientHandler;
-
+    private UserView uView;
 
     public View (ClientHandlerSocket cl){
+        this.uView = new UserView();
         this.clientHandler = cl;
     }
     @Override
@@ -31,8 +32,14 @@ public class View implements Observer, ViewInterface {
     }
 
 
-    public void ask(){
+    public void ask(Message message) throws IOException {
         System.out.println("ricevo in ask in view " + this.clientHandler);
-        this.clientHandler.sendMessage("ciao");
+        //this.clientHandler.sendMessage("ciao");
+        switch (message.getMessageEvent()){
+            case SET_NICKNAME -> {
+               // uView.askPlayerNickname();
+            }
+
+        }
     }
 }

@@ -22,7 +22,7 @@ public class AppClient {
     public static void main(String[] args) throws IOException, NotBoundException, InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1 for socket, 2 for RMI :");
-        int choice = Integer.parseInt(reader.readLine());
+        int choice = Integer.parseInt(reader.readLine()); //TODO controllo number exception
         while(choice!=2 && choice!=1){
             System.err.println("Retry (1 Socket, 2 RMI): ");
             choice = Integer.parseInt(reader.readLine());
@@ -35,18 +35,14 @@ public class AppClient {
             ((RMIClient) client).lobby();
 
         } else if(choice == 1){
-            System.out.println("You chose Socket!");
-
             String address = "localhost";
             int portSocket = 43808;
-            //ClientSocket clientSocket = new ClientSocket(address, portSocket);
-
             UserView tui = new UserView();
             ClientController clientController = new ClientController(tui);
             tui.addObserver(clientController);
-
             try{
                 clientController.initClient(address,portSocket);
+                System.out.println("You chose Socket!");
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }
