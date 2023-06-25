@@ -32,13 +32,11 @@ public class BookshelfView implements Serializable {
                 bookshelfDisplayed.add(bookshelfTiles[i][j]);
                 bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
                 bookshelfTiles[i][j].putClientProperty("column", j);
-                int finalJ = j;
                 bookshelfTiles[i][j].addActionListener(e -> {
                     JButton button = (JButton) e.getSource();
                     if(columnChosen==-1)
                         synchronized (this){
                             columnChosen = (int) button.getClientProperty("column");
-                            columnChosen = finalJ;
                             this.notify();
                         }
                 });
