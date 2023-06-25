@@ -43,6 +43,7 @@ public class AppClient {
             try{
                 clientController.initClient(address,portSocket);
                 System.out.println("You chose Socket!");
+                clientController.lobby();
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }

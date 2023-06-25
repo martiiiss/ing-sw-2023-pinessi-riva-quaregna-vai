@@ -33,7 +33,7 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
     }
 
     @Override
-    public void run()  {
+    public void run()  {  //METODO CHE ATTENDE LA CONNESSIONE DI CLIENT
         try{
             serverSocket = new ServerSocket(port);
         } catch (IOException e){
@@ -43,7 +43,6 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
         System.out.println("ServerSocket ready on port: "+port);
         while(!Thread.currentThread().isInterrupted()){
             try{
-                System.out.println("attendo client...");
                 Socket socketClient = serverSocket.accept(); //client socket
                 socketClient.setSoTimeout(0); //inf
                 ClientHandlerSocket clientHandlerSocket = new ClientHandlerSocket(socketClient, this);
@@ -61,10 +60,10 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
 
     }
 
-    public void askMyIndex () throws IOException, ClassNotFoundException {
+    public synchronized Object askMyIndex () throws IOException, ClassNotFoundException {
         ArrayList<Integer> indexFromServer = server.connection((ClientInterface) clients.get(clients.size()-1));
-        clients.get(clients.size()-1).sendMessage(new SocketMessage(indexFromServer.get(1), indexFromServer.get(0), numOfClients, Event.SET_CLIENT_INDEX));
-        System.out.println("MY INDEX " + indexFromServer.get(1) + " MY MATCH "+ indexFromServer.get(0));
+        System.out.println("MY INDEX " + indexFromServer.get(1) + " MY MATCH "+ indexFromServer.get(0) + " client in lista " + clients.get(clients.size()-1) + " num " + (clients.size()-1));
+        return indexFromServer;
     }
 
     private static void broadcastMessage(SocketMessage message){
@@ -73,22 +72,21 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
         }
     }
 
-    public void receivedMessage(SocketMessage message) throws IOException, ClassNotFoundException {
-        System.out.println("Il server ha ricevuto " + message.getMessageEvent() + message.getObj());
+    public Object receivedMessage(SocketMessage message) throws IOException, ClassNotFoundException {
+        Object obj;
         if(message.getMessageEvent()==Event.ASK_NUM_PLAYERS){
-            numOfClients = (int)message.getObj();
-            askMyIndex();
+            obj = askMyIndex();
         } else {
-            server.sendServerMessage(message.getMatchIndex(), message.getObj(), message.getMessageEvent());
+            obj = server.sendServerMessage(message.getMatchIndex(), message.getObj(), message.getMessageEvent());
         }
         // server return an Error
 
         //updateView(message, clientIndex, matchIndex);
+        return obj;
     }
 
 
     public void updateView(Message message, int clientIndex, int matchIndex) throws IOException {
-        System.out.println("messaggio in socjet server update view: " + message.getMessageEvent());
         clientsView.get(clientIndex).ask(message); //TODO: devo gestire una lista di client co myIndex e matchIndex
     }
 }

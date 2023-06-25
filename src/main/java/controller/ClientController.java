@@ -31,27 +31,23 @@ public class ClientController implements Observer {
     public void initClient(String address, int portSocket) throws IOException {
         this.clientSocket = new ClientSocket(address, portSocket);
         //this.clientSocket.addObserver(this);
-      /*  try{
-            clientSocket.startConnection();
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }*/
         executor.execute(() -> {
             try {
                 clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.ASK_NUM_PLAYERS));
-                if(clientSocket.receivedMessageC().getMessageEvent()==Event.ASK_NUM_PLAYERS){
+                SocketMessage socketMessage = clientSocket.receivedMessageC();
+                if(socketMessage.getMessageEvent()==Event.ASK_NUM_PLAYERS){
                     numOfPlayers = uView.askNumOfPlayer();
                     while(numOfPlayers<2 || numOfPlayers>4){
                         System.err.println("Retry...");
                         numOfPlayers = uView.askNumOfPlayer();
                     }
                     clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.ASK_NUM_PLAYERS));
+                }else if(socketMessage.getMessageEvent()==Event.SET_CLIENT_INDEX){
+                    clientSocket.setMyIndex(socketMessage.getClientIndex());
+                    clientSocket.setMatchIndex(socketMessage.getMatchIndex());
+                    clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.CHOOSE_VIEW));
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -59,6 +55,13 @@ public class ClientController implements Observer {
 
     public void lobby(){
         executor.execute(() -> {
+            try{
+                clientSocket.lobby(uView);
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         /*    try {
                // clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), ));
             } catch (IOException e) {
