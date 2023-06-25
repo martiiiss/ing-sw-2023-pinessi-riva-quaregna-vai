@@ -30,7 +30,7 @@ public class BookshelfView implements Serializable {
                 bookshelfTiles[i][j] = new JButton();
                 bookshelfTiles[i][j].setPreferredSize(new Dimension(50,50));
                 bookshelfDisplayed.add(bookshelfTiles[i][j]);
-                //bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
+                bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
                 bookshelfTiles[i][j].putClientProperty("column", j);
                 int finalJ = j;
                 bookshelfTiles[i][j].addActionListener(e -> {
@@ -53,14 +53,9 @@ public class BookshelfView implements Serializable {
         return bookshelfDisplayed;
     }
 
-    public void insertTile(int column, Tile tile){ //modify the GUI bookshelf inserting the given tile to the first free position in the given column
+    public void insertTile(int column, int row, Tile tile){ //modify the GUI bookshelf inserting the given tile to the first free position in the given column
         ImageReader imageReader = new ImageReader();
-        for (int i = 5; i >= 0; i--) {
-            if (bookshelfTiles[i][column].getIcon() == null) {
-                this.bookshelfTiles[i][column].setIcon(imageReader.readIcon("resources/TileImages/" + tile.getType() + "/" + tile.getNumType() + ".png", 50, 50));
-                i = -1;
-            }
-        }
+        this.bookshelfTiles[row][column].setIcon(imageReader.readIcon("resources/TileImages/" + tile.getType() + "/" + tile.getNumType() + ".png", 50, 50))
     }
     public void updateBookshelf(Tile[][] tiles){
         ImageReader imageReader = new ImageReader();

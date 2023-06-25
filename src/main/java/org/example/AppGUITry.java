@@ -36,7 +36,7 @@ public class AppGUITry {
         System.out.println(i);
         i = view.chooseTile();
         System.out.println(i);
-        view.addTile(b);
+        //view.addTile(b);
 
     }
 }
