@@ -37,7 +37,6 @@ public class UserView extends Observable implements Serializable {
             });
             return numOfPlayers;
         }catch(NumberFormatException e) {
-            //e.printStackTrace();
         }
         return -1;
     }
@@ -90,7 +89,6 @@ public class UserView extends Observable implements Serializable {
                 });
                 return webProtocol;
             }catch(NumberFormatException e) {
-                e.printStackTrace();
             }
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Invalid input!");
@@ -120,7 +118,6 @@ public class UserView extends Observable implements Serializable {
                     try {
                         o.onUpdate(new Message(userInterface, CHOOSE_VIEW));
                     } catch (IOException | NumberFormatException e) {
-                        //throw new RuntimeException(e);
                     }
                 });
                 return userInterface;
@@ -337,7 +334,6 @@ public class UserView extends Observable implements Serializable {
                         }
                     });
                 } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
                 }
             } while (index<1 || index>tilesInHand.size());
             index--;
@@ -364,7 +360,6 @@ public class UserView extends Observable implements Serializable {
         try {
             return Integer.parseInt(reader.readLine());
         }catch (NumberFormatException e) {
-            e.printStackTrace();
         }
         return -1;
     }
