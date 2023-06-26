@@ -52,8 +52,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
 
 
-    private void reconnectionOfPlayer(String username, Connection connection) throws RemoteException{ //FIXME non può richiedere come parametro il nickname dato che viene richiesto solo dopo che si è connesso        //TODO
-    }
 
     public ArrayList<Integer> connection (ClientInterface client) throws IOException, ClassNotFoundException {
         /*if(getNumberOfClientsConnected()<maxNumOfClients) {
@@ -114,9 +112,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         //TODO: raggiunto il numero di giocatori necessario la partita può iniziare
     }
 
-    public void playerDisconnected(Connection connection) throws RemoteException{
-        //TODO: avvisa utenti che un giocatore si è disconnesso
-    }
+
 
     @Override
     public void run() { //throws InterruptedException {

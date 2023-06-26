@@ -52,12 +52,13 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                     if(message.getObj() == Event.ASK_MODEL){
                         sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), obj, message.getMessageEvent()));
                     } else{
+                        System.out.println("update");
                         update(obj, message);
                     }
                 }
             }
         }catch(ClassCastException | ClassNotFoundException | IOException e) {
-            e.printStackTrace();
+            System.out.println("");
         }
         try {
             socketClient.close();
@@ -102,11 +103,12 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 }while (obj!=Event.OK);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.OK));
             }
-            case TURN_AMOUNT, TURN_PICKED_TILES -> {
+            case TURN_AMOUNT, TURN_PICKED_TILES, TURN_COLUMN, TURN_POSITION, CHECK_REFILL, END_OF_TURN -> {
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, (Event)obj));
             }
-            case TURN_COLUMN -> {
-                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, (Event)obj));
+            case CHECK_MY_TURN -> {
+                System.out.println("check " + obj);
+                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, (Event) obj));
             }
 
         }
@@ -124,7 +126,8 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     }
 
     public SocketMessage receivedMessage() throws IOException, ClassNotFoundException {
-        SocketMessage message = (SocketMessage) input.readObject(); //per ricevere i messaggi dal client
+        Object o = input.readObject();
+        SocketMessage message = (SocketMessage) o ; //per ricevere i messaggi dal client
         return message;
     }
 

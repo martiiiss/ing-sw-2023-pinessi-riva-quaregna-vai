@@ -33,7 +33,6 @@ public class RMIServer extends UnicastRemoteObject implements ServerRMIInterface
             registry = LocateRegistry.createRegistry(this.port);
             registry.rebind("server", stub);
         } catch (Exception e){
-            e.printStackTrace();
             System.err.println("Failed to bind to RMI registry");
         }
     }
