@@ -26,8 +26,6 @@ public class AppClient {
             System.out.println("1 for socket, 2 for RMI :");
             try {
                 choice = Integer.parseInt(reader.readLine());
-                    System.err.println("Retry (1 Socket, 2 RMI): ");
-                    choice = Integer.parseInt(reader.readLine());
             } catch (NumberFormatException e) {
                 System.err.println("Invalid value!");
             }

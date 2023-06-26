@@ -83,6 +83,8 @@ public class GUIView implements Observer, Serializable { //class that contains a
         JInternalFrame errorLogFrame = new JInternalFrame();
         errorLogFrame.setVisible(true);
         errorLogFrame.setTitle("Error Log");
+        errorLog.setFont(new Font("Arial", Font.BOLD, 18));
+        errorLog.setForeground(Color.RED);
         errorLogFrame.setPreferredSize(new Dimension(300,100));
         errorLog.setPreferredSize(new Dimension(250, 70));
         errorLog.setMinimumSize(new Dimension(250,70));
@@ -225,14 +227,15 @@ public class GUIView implements Observer, Serializable { //class that contains a
         bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
     }
     public void showError(Event e){
-        switch (e){
+        errorLog.setText("<html>"+e.getMsg()+"</p><html>");
+       /* switch (e){
             case TILES_NOT_VALID-> errorLog.setText("<html><p>Tiles not valid, select again</p><html>");
             case COLUMN_NOT_VALID -> errorLog.setText("<html><p>You selected a column with not enough space,try again</p><html>");
             case INVALID_VALUE -> errorLog.setText("<html><p>Retry, invalid value... </p><html>");
             case REPETITION, BLOCKED_NOTHING, NOT_ON_BORDER, NOT_ADJACENT -> errorLog.setText("<html>"+e.getMsg()+"</p><html>");
 
             //TODO: aggiungere i vari errori!
-        }
+        }*/
     }
     public void scoringTokenTakenByMe(ScoringToken sc){ //put the scoring token in my hand
         hand.setSC(sc.getValue(), sc.getRomanNumber());
