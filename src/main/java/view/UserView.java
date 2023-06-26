@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import static util.Event.*;
 
 /**Class that represents the Textual User Interface*/
-public class UserView extends Observable implements Serializable, ViewInterface {
+public class UserView extends Observable implements Serializable {
     @Serial
     private static final long serialVersionUID = -2387426539475804704L;
 

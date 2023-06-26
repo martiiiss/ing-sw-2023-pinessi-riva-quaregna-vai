@@ -2,13 +2,12 @@ package view;
 
 import distributed.Socket.ClientHandlerSocket;
 import distributed.messages.Message;
-import util.Event;
 import util.Observable;
 import util.Observer;
 
 import java.io.IOException;
 
-public class View implements Observer, ViewInterface {
+public class View implements Observer {
 
     private final ClientHandlerSocket clientHandler;
     private UserView uView;
