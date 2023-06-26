@@ -4,6 +4,10 @@ import distributed.Client;
 import distributed.RMI.ClientInterface;
 import distributed.messages.Message;
 import distributed.messages.SocketMessage;
+import model.Board;
+import model.CommonGoalCard;
+import model.PersonalGoalCard;
+import model.Player;
 import util.Event;
 import view.UserView;
 
@@ -16,6 +20,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
+
+import static util.Event.*;
+import static util.Event.GAME_PIT;
 
 public class ClientSocket {
     private String address;
@@ -30,6 +37,14 @@ public class ClientSocket {
     private UserView uView;
     private int viewChosen;
     private String nickname;
+    private boolean hasGameStarted = false;
+    private Board board;
+    private ArrayList<Player> listOfPlayers;
+    private ArrayList<CommonGoalCard> commonGoalCard;
+    private PersonalGoalCard myPersonalGoalCard;
+    private int indexOfPIT;
+    private Player playerInTurn;
+
 
 
     public ClientSocket(String address, int port) throws IOException {
@@ -47,6 +62,7 @@ public class ClientSocket {
 
     public void lobby(UserView userView) throws IOException, ClassNotFoundException {
         uView = userView;
+        System.out.println("istanzio uView!!");
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
@@ -55,7 +71,6 @@ public class ClientSocket {
                       SocketMessage message = receivedMessageC();
                       System.out.println("ho ricevuto " + message.getMessageEvent());
                       update(message);
-
                   } catch (IOException | ClassNotFoundException e) {
                       throw new RuntimeException(e);
                   }
@@ -68,7 +83,7 @@ public class ClientSocket {
       clientThread.start();
     }
 
-    public void update(SocketMessage message) throws IOException {
+    public void update(SocketMessage message) throws IOException, ClassNotFoundException {
         switch (message.getMessageEvent()){
             case SET_CLIENT_INDEX ->{
                 this.myIndex = message.getClientIndex();
@@ -89,9 +104,12 @@ public class ClientSocket {
                 this.nickname = uView.askPlayerNickname();
                 sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, Event.SET_NICKNAME));
             }
-
+            case ALL_CONNECTED -> {
+                getModel();
+            }
         }
     }
+
     public void sendMessageC(SocketMessage mess) throws IOException {
         try{
             //invio messaggio:
@@ -107,6 +125,28 @@ public class ClientSocket {
     public SocketMessage receivedMessageC() throws IOException, ClassNotFoundException {
         SocketMessage message = (SocketMessage) inputStream.readObject();
         return message;
+    }
+
+    public void getModel() throws IOException, ClassNotFoundException {
+        if(!hasGameStarted){
+            sendMessageC(new SocketMessage(this.myIndex, this.myMatch,null, GAME_STARTED));
+            if(receivedMessageC().getMessageEvent()==Event.OK){
+                System.out.println("ricevuto ok");
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+                this.board = (Board) receivedMessageC().getObj();
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
+                this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
+                this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
+                this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
+                this.indexOfPIT = (int) receivedMessageC().getObj();
+                this.playerInTurn = listOfPlayers.get(indexOfPIT);
+            }
+
+        }
+        System.out.println("ho il model ora devo startare la partita!");
     }
 
     public int getMyIndex(){

@@ -81,6 +81,7 @@ public enum Event {
     SET_TILE_ORDER(""),
     COLUMN_CHOSEN(""),
     ORDER_CHOSEN(""),
+    ASK_MODEL(""),
     ADD_OBSERVER("");
 
     private final String msg;

@@ -25,6 +25,7 @@ public class RMIServer extends UnicastRemoteObject implements ServerRMIInterface
         this.port = port;
     }
 
+
     /**@throws RemoteException if an error occurs during a remote call*/
     public void startServer(ServerRMIInterface stub) throws RemoteException{
         try{

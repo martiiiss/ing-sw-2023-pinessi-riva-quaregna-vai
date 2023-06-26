@@ -48,8 +48,15 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (inputLock) {
                     SocketMessage message = receivedMessage();
-                    Object obj= socketServer.receivedMessage(message);
-                    update(obj, message);
+                    Object obj=null;
+                    if(message.getMessageEvent()!=Event.OK) {
+                        obj = socketServer.receivedMessage(message);
+                    }
+                    if(message.getObj() == Event.ASK_MODEL){
+                        sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), socketServer.receivedMessage(message), message.getMessageEvent()));
+                    } else{
+                        update(obj, message);
+                    }
                 }
             }
         }catch(ClassCastException | ClassNotFoundException | IOException e) {
@@ -64,10 +71,15 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
 
     //SWITCH ERRORI DA SERVER/CONTROLLER
     public void update(Object obj, SocketMessage message) throws IOException, ClassNotFoundException {
+        System.out.println("ARRIVA " + message.getClientIndex() + " " + message.getMatchIndex() + " " + message.getObj() + " " +message.getMessageEvent());
         switch (message.getMessageEvent()){
+            case OK ->{
+                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
+            }
             case ASK_NUM_PLAYERS ->{
                 this.matchIndex = (int) ((ArrayList)obj).get(0);
                 this.clientIndex = (int) ((ArrayList)obj).get(1);
+                System.out.println("HO SETTATO GLI INDICI " + matchIndex + clientIndex);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
             }
             case CHOOSE_VIEW -> {
@@ -87,26 +99,31 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                         obj = socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, null, Event.ALL_CONNECTED));
                     }while (obj!=Event.OK);
                     System.out.println("pronti a partire!");
+                    sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.ALL_CONNECTED));
                 }
+            }
+            case GAME_STARTED -> {
+                do{
+                    obj = socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, null, Event.GAME_STARTED));
+                }while (obj!=Event.OK);
+                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.OK));
             }
         }
     }
 
+
     public void sendMessage(SocketMessage message){ //per inviare i messaggi al client
         try {
-            System.out.println("invio il mess " + message.getMessageEvent());
             output.writeObject(message);
             output.flush();
             output.reset();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("esco");
     }
 
     public SocketMessage receivedMessage() throws IOException, ClassNotFoundException {
         SocketMessage message = (SocketMessage) input.readObject(); //per ricevere i messaggi dal client
-        this.inputObject = message.getObj();
         return message;
     }
 

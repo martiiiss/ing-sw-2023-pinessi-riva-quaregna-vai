@@ -42,10 +42,8 @@ public class ClientController implements Observer {
                         numOfPlayers = uView.askNumOfPlayer();
                     }
                     clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.ASK_NUM_PLAYERS));
-                }else if(socketMessage.getMessageEvent()==Event.SET_CLIENT_INDEX){
-                    clientSocket.setMyIndex(socketMessage.getClientIndex());
-                    clientSocket.setMatchIndex(socketMessage.getMatchIndex());
-                    clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.CHOOSE_VIEW));
+                }else{
+                    clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.OK));
                 }
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
@@ -53,24 +51,21 @@ public class ClientController implements Observer {
         });
     }
 
+
     public void lobby(){
         executor.execute(() -> {
             try{
-                clientSocket.lobby(uView);
+                if(uView!=null)
+                    clientSocket.lobby(uView);
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-        /*    try {
-               // clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), ));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }*/
         });
     }
 
-
+    //PROBABILMENTE SI PUç RIMUOVERE
     @Override
     public void update(Observable o, Message message) {
         //switch case per gestire il flusso di gioco con chiamate a view
@@ -84,6 +79,7 @@ public class ClientController implements Observer {
 
         }
     }
+
     @Override
     public void onUpdate(Message message) throws IOException {
        // SocketMessage socketMessage = new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), message.getObj(), message.getMessageEvent());

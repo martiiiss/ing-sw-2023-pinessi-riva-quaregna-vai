@@ -72,9 +72,12 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
         }
     }
 
+
     public Object receivedMessage(SocketMessage message) throws IOException, ClassNotFoundException {
         Object obj;
-        if(message.getMessageEvent()==Event.ASK_NUM_PLAYERS){
+        if(message.getObj()==Event.ASK_MODEL){
+            obj = server.getServerModel(message.getMatchIndex(), message.getMessageEvent(), message.getClientIndex());
+        } else if(message.getMessageEvent()==Event.ASK_NUM_PLAYERS){
             obj = askMyIndex();
         } else {
             obj = server.sendServerMessage(message.getMatchIndex(), message.getObj(), message.getMessageEvent());
