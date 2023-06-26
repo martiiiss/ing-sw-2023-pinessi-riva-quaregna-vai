@@ -227,6 +227,11 @@ public class GUIView implements Observer, Serializable { //class that contains a
         bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
     }
     public void showError(Event e){
+        errorLog.setForeground(Color.RED);
+        if(e==Event.OK)
+            errorLog.setForeground(Color.GREEN);
+        if(e==Event.START_YOUR_TURN || e==Event.NOT_YOUR_TURN)
+            errorLog.setForeground(Color.BLACK);
         errorLog.setText("<html>"+e.getMsg()+"</p><html>");
        /* switch (e){
             case TILES_NOT_VALID-> errorLog.setText("<html><p>Tiles not valid, select again</p><html>");

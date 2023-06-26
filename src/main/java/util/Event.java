@@ -9,7 +9,7 @@ public enum Event {
     CHOOSE_NETWORK_PROTOCOL(""),
     CHOOSE_VIEW(""),
     START(""),
-    START_YOUR_TURN(""),
+    START_YOUR_TURN("It's your turn!"),
     ALL_CONNECTED(""),
     END(""),
     GAME_BOARD(""),
@@ -41,7 +41,7 @@ public enum Event {
     BLOCKED_NOTHING("You are trying to pick up a tile that doesn't exist..."),
     NOT_ON_BORDER("This tile cannot be picked up right now..."),
     NOT_ADJACENT("You can only pick up tiles that are adjacent one to the other..."),
-    NOT_YOUR_TURN(""),
+    NOT_YOUR_TURN("It's not your turn..."),
     REFILL("The board had to be refilled and is now ready for the next turn..."),
     BOARD_NOT_EMPTY(""),
     REPETITION("Invalid input, you put the same coordinate more than once"),
@@ -50,9 +50,7 @@ public enum Event {
     LAST_TURN("This is the last turn!"),
     GUI_VIEW(""),
     TUI_VIEW(""),
-    DISCONNECTION("Game over due to a Disconnection"),
     SET_CLIENT_INDEX(""),
-    EMPTY(""),
 
 
     //per notify
@@ -104,4 +102,5 @@ public enum Event {
     public String getMsg(){
         return msg;
     }
+    public String getTUIMsg() {return "\u001B[35m"+msg+"\u001B[0m";}
 }
