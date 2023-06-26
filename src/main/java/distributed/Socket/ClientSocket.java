@@ -36,7 +36,6 @@ public class ClientSocket {
     private PersonalGoalCard myPersonalGoalCard;
     private int indexOfPIT;
     private Player playerInTurn;
-    private Thread threadEndGame;
     private Thread threadWaitTurn;
     private Object lock;
     private boolean disabledInput;
@@ -61,6 +60,8 @@ public class ClientSocket {
 
     public void lobby(UserView userView) throws IOException, ClassNotFoundException {
         uView = userView;
+        this.lock = new Object();
+
         System.out.println("istanzio uView!!");
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
@@ -128,10 +129,6 @@ public class ClientSocket {
     }
 
     public void startThread(){
-        this.threadEndGame = new Thread(()-> {
-            //TODO: aggiungere checkEndGame();
-        });
-
         this.threadWaitTurn = new Thread(() -> {
             synchronized (lock) {
                 while (!Thread.currentThread().isInterrupted()) {
@@ -144,7 +141,7 @@ public class ClientSocket {
                 }
 
             }
-        });
+        }, "WaitForTurnThread");
     }
 
     public void waitTurn() throws IOException, ClassNotFoundException {
@@ -264,21 +261,20 @@ public class ClientSocket {
             errorReceived = activeAskColumn(tilesInHand);
         } while (errorReceived != Event.OK);
 
-        /*
+
         //Asking the order of insertion
-        errorReceived = server.sendMessage(this.matchIndex,playerInTurn.getMyBookshelf(), UPDATE_BOOKSHELF);
-        errorReceived = server.sendMessage(this.matchIndex,null, CHECK_REFILL);
+        sendMessageC(new SocketMessage(myIndex, myMatch, null, CHECK_REFILL));
+        errorReceived = (Event) receivedMessageC().getObj();
 
         //The server checks if the board had to be refilled, the client asks the server
         //if it has been done, if true then it receives an update of the board so that it can be printed
         if (errorReceived == Event.REFILL)
             System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
-        errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
+
+        sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
+        errorReceived = (Event) receivedMessageC().getObj();
         System.out.println(errorReceived.getMsg());
-
         getModel();
-
- */
     }
 
 
@@ -406,15 +402,50 @@ public class ClientSocket {
 
 
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
-      /*  System.out.println("It's not your turn, here are some actions you can do!");
-        Event status;
-        do {
-            status = server.sendMessage(this.matchIndex,myIndex, CHECK_MY_TURN);
-            if (status != Event.OK)
-                passivePlayerMenu();
-        } while (status != Event.OK);
+        System.out.println("It's not your turn, here are some actions you can do!");
+        passivePlayerMenu();
         getModel();
-    */}
+    }
+
+    private void passivePlayerMenu() throws IOException, ClassNotFoundException {
+        uView.askPassiveAction();
+        int choice = uView.waitInput();
+        if (!disabledInput) {
+            switch (choice) {
+                case 1 -> {
+                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+                    this.board = (Board) receivedMessageC().getObj();
+                    System.out.println("Here's the game board...");
+                    uView.showTUIBoard(board);
+                }
+                case 2 -> {
+                    System.out.println("Here are the CommonGoalCards...");
+                    uView.showCGC(commonGoalCard);
+                }
+                case 3 -> {
+                    System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
+                    uView.showPGC(listOfPlayers.get(myIndex).getPersonalGoalCard());
+                }
+                case 4 -> {
+                    System.out.println("Here's everyone's Bookshelf");
+                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
+                    this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
+                    for (Player player : listOfPlayers) {
+                        System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
+                        uView.showTUIBookshelf(player.getMyBookshelf());
+                    }
+                }
+                case 5 -> {
+                    uView.chatOptions(listOfPlayers.get(myIndex));
+                }
+                case 6 -> {
+                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
+                    this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
+                    uView.showPlayers(listOfPlayers);
+                }
+            }
+        }
+    }
 
     public int getMyIndex(){
         return myIndex;
