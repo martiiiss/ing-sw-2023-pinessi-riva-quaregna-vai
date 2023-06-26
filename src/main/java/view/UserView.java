@@ -111,7 +111,6 @@ public class UserView extends Observable implements Serializable, ViewInterface 
  */
     public int userInterface() {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        try {
             System.out.print("""
                     Do you prefer a Terminal User Interface (TUI) or a Graphical User Interface (GUI)?
                     Press 1 for 'TUI', 2 for 'GUI':""");
@@ -120,16 +119,13 @@ public class UserView extends Observable implements Serializable, ViewInterface 
                 notifyObservers(o -> {
                     try {
                         o.onUpdate(new Message(userInterface, CHOOSE_VIEW));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    } catch (IOException | NumberFormatException e) {
+                        //throw new RuntimeException(e);
                     }
                 });
                 return userInterface;
-            }catch(NumberFormatException e) {
-                e.printStackTrace();
-            }
         } catch (IllegalArgumentException | IOException e) {
-            System.err.println("Invalid input!");
+                System.out.println();
         }
         return -1;
     }

@@ -21,12 +21,17 @@ import static util.Event.WAIT;
 public class AppClient {
     public static void main(String[] args) throws IOException, NotBoundException, InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        System.out.println("1 for socket, 2 for RMI :");
-        int choice = Integer.parseInt(reader.readLine()); //TODO controllo number exception
-        while(choice!=2 && choice!=1){
-            System.err.println("Retry (1 Socket, 2 RMI): ");
-            choice = Integer.parseInt(reader.readLine());
-        }
+        int choice = 0;
+        do {
+            System.out.println("1 for socket, 2 for RMI :");
+            try {
+                choice = Integer.parseInt(reader.readLine());
+                    System.err.println("Retry (1 Socket, 2 RMI): ");
+                    choice = Integer.parseInt(reader.readLine());
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid value!");
+            }
+        }while (choice != 2 && choice != 1);
         if(choice==2) {
             String name = "rmi://localhost:45398/server";
             ClientInterface client = new RMIClient(name, 45398);

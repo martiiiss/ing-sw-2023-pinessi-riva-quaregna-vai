@@ -75,7 +75,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             Thread connection = new Thread(controlDisconnection(),"ControlDisconnection");
             connection.start();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -541,12 +540,12 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     if(server.getDisconnection(matchIndex)) {
-                        err.println("Somebody disconnected!");
+                        err.println("\n\nSomebody disconnected!");
                         Thread.currentThread().interrupt();
                         System.exit(-1);
                     }
                 } catch (RemoteException e) {
-                    System.err.println("Server crashed!");
+                    System.err.println("\n\nServer crashed!");
                     Thread.currentThread().interrupt();
                     System.exit(-1);
                 }
@@ -562,29 +561,4 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     public void ping() throws RemoteException{
     }
 
-    /**
-     * Method used to check if a match has ended.<br>
-     * @return a {@link Runnable}
-     * @throws IOException if an error occurs
-     * @throws InterruptedException if a thread gets interrupted*/
-    private Runnable checkEndGame() throws IOException, InterruptedException {
-        Event isGameOver;
-        do {
-            isGameOver = server.sendMessage(matchIndex,null,CHECK_ENDGAME);
-        }while (isGameOver != GAME_OVER);
-        uView.gameOver(listOfPlayers);
-        Thread.currentThread().interrupt();
-        wait(5000);
-        System.exit(10);
-       /* Event errRec;
-        do {
-            errRec = server.sendMessage(matchIndex, null, CHECK_ENDGAME);
-        }while (errRec!=GAME_OVER);
-        uView.gameOver(listOfPlayers);
-        threadWaitTurn.interrupt();
-        threadEndGame.interrupt();
-        //Thread.currentThread().interrupt();
-        System.exit(0);*/
-        return null;
-    }
 }
