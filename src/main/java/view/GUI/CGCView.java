@@ -9,12 +9,12 @@ public class CGCView extends JLabel implements Serializable {
     private static final long serialVersionUID = 4758892564965722613L;
     public CGCView(){
         ImageReader imageReader = new ImageReader();
-        setIcon(imageReader.readIcon("resources/CommonGoalCardImages/back.jpg", 100,100));
+        setIcon(imageReader.readIcon("resources/CommonGoalCardImages/back.jpg", 75, 75));
         setVisible(true);
     }
 
     public void setCGCView(int id){
         ImageReader imageReader = new ImageReader();
-        setIcon(imageReader.readIcon("resources/CommonGoalCardImages/"+id+".jpg", 100,100));
+        setIcon(imageReader.readIcon("resources/CommonGoalCardImages/"+id+".jpg", 75,75));
     }
 }

@@ -4,7 +4,6 @@ import distributed.messages.Message;
 import model.*;
 import util.*;
 import util.Event;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -32,6 +31,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
     private transient Image image;
 
     public GUIView () {
+        //All the page
         GridBagConstraints constraints = new GridBagConstraints();
         JFrame GUI = new JFrame();
         ImageReader imageReader = new ImageReader();
@@ -44,41 +44,65 @@ public class GUIView implements Observer, Serializable { //class that contains a
             }
         };
         GUI.setContentPane(imagePanel);
-        JInternalFrame CGCArea = new JInternalFrame();
+
+        //Board
         GUI.setLayout(new GridBagLayout());
-        constraints.gridx= 0;
-        constraints.gridy =0;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        constraints.gridheight = 2;
         this.boardView = new BoardView();
         GUI.add(this.boardView.getBoardDisplayed(), constraints);
-        cgc = new CGCView[2];
-        CGCArea.setLayout(new GridLayout(2, 2));
-        CGCArea.setTitle("CommonGoalCards");
 
-        scv = new ScoringTokenView[2];
-        for (int i = 0; i < 2; i++) {
-            cgc[i] = new CGCView();
-            CGCArea.add(cgc[i]);
-            scv[i] = new ScoringTokenView();
-            CGCArea.add(scv[i].getDisplayedImage());
-        }
-        CGCArea.setVisible(true);
-        CGCArea.setMinimumSize(new Dimension(250, 250));
-        constraints.gridy = 1;
-        constraints.insets = new Insets(10, 10,10,10);
-        constraints.gridwidth = 1;
-        GUI.add(CGCArea, constraints);
-        hand = new HandView();
-        constraints.gridx = 1;
-        GUI.add(hand.getImageDisplayed(), constraints);
+        //Bookshelf
         bookshelfView = new BookshelfView();
         constraints.gridy = 0;
         constraints.gridx = 2;
+        constraints.gridwidth = 2;
+        constraints.gridheight = 2;
         GUI.add(bookshelfView.getBookshelfDisplayed(), constraints);
+
+        //Tiles in hand
+        hand = new HandView();
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        GUI.add(hand.getImageDisplayed(), constraints);
+
+        //CGC
+        JInternalFrame CGCArea = new JInternalFrame();
+        CGCArea.setLayout(new GridLayout(2, 2));
+        CGCArea.setTitle("CommonGoalCards");
+        cgc = new CGCView[2];
+        CGCArea.setVisible(true);
+        CGCArea.setMinimumSize(new Dimension(175, 175));
+        constraints.gridy = 1;
+        constraints.gridx = 4;
+        //constraints.insets = new Insets(5, 5,5,5);
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
+        GUI.add(CGCArea, constraints);
+
+        //Scoring token
+        scv = new ScoringTokenView[2];
+        for (int i = 0; i < 2; i++) {
+            scv[i] = new ScoringTokenView();
+            CGCArea.add(scv[i].getDisplayedImage());
+            cgc[i] = new CGCView();
+            CGCArea.add(cgc[i]);
+        }
+
+        //PersonalGoalCard
         pgc = new PGCView();
-        constraints.gridx = 3;
+        constraints.gridx = 4;
+        constraints.gridy = 0;
+        constraints.gridwidth = 1;
+        constraints.gridheight = 1;
         GUI.add(pgc.getDisplayedImage(), constraints);
+
+        //Error log
         errorLog = new JLabel();
         JInternalFrame errorLogFrame = new JInternalFrame();
         errorLogFrame.setVisible(true);
@@ -89,15 +113,15 @@ public class GUIView implements Observer, Serializable { //class that contains a
         errorLog.setPreferredSize(new Dimension(250, 70));
         errorLog.setMinimumSize(new Dimension(250,70));
         constraints.gridx = 2;
-        constraints.gridy = 1;
+        constraints.gridy = 2;
         errorLogFrame.add(errorLog);
         GUI.add(errorLogFrame, constraints);
+
+
         GUI.setVisible(true);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         GUI.setBounds(0,0, screenSize.width, screenSize.height);
-        GUI.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-
+        GUI.setResizable(true);
     }
 
     public void changeScoringToken(ScoringToken sc) { //changes the scoring token displayed in the romanNumber position
@@ -278,7 +302,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
     }
 
     @Override
-    public void onUpdate(Message message) throws IOException {
+    public void onUpdate(Message message){
 
     }
 }

@@ -52,11 +52,9 @@ public class BoardView implements Serializable {
                     });
 
                 }
-
         boardDisplayed.setVisible(true);
         Dimension d= new Dimension(500,530);
         boardDisplayed.setMinimumSize(d);
-
     }
 
     public JInternalFrame getBoardDisplayed() {

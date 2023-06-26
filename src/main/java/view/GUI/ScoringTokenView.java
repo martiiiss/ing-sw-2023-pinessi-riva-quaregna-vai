@@ -16,7 +16,7 @@ public class ScoringTokenView extends JPanel implements Serializable { //manages
 
     public ScoringTokenView (){
         ImageReader imageReader = new ImageReader();
-        this.displayedImage = new JLabel(imageReader.readIcon("resources/ScoringTokenImages/back.jpg", 100, 100));
+        this.displayedImage = new JLabel(imageReader.readIcon("resources/ScoringTokenImages/back.jpg", 75, 75));
         setVisible(true);
     }
 
@@ -27,7 +27,7 @@ public class ScoringTokenView extends JPanel implements Serializable { //manages
     public void setDisplayedImage(int valueDisplayed) {
         this.valueDisplayed = valueDisplayed;
         ImageReader imageReader = new ImageReader();
-        displayedImage.setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 100, 100));
+        displayedImage.setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 75, 75));
     }
 
     public int getValueDisplayed(){
