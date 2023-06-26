@@ -21,6 +21,7 @@ public interface Observer {
      *      Given a {@link Message} as a parameter this decides to do a specific action.
      * </p>
      * @param message is a {@code Message} that is needed to choose a specific action tha has to be done
+     * @throws IOException if an error occurs
      */
     void onUpdate(Message message) throws IOException;
 }

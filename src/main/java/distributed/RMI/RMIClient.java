@@ -48,12 +48,22 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     private ArrayList<Cord> tilesCords = new ArrayList<>();
     private boolean disabledInput;
 
+
+    /**
+     * Constructor of rhe Class, this initializes an RMI Client with the two given parameters.
+     * @param port an int that represents the RMI port
+     * @param address a {@code String} that represents the address of the server
+     * @throws RemoteException if an error occurs during a remote call */
     public RMIClient(String address, int port) throws RemoteException {
         this.address = address;
         this.port = port;
     }
 
 
+    /**
+     *Method that starts the connection with the server.
+     *
+     *@throws RemoteException if an error occurs during a remote call*/
     public void startConnection() throws RemoteException {
         try {
             server = (ServerRMIInterface) Naming.lookup(address);
@@ -70,6 +80,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
 
 
+    /**
+     * Method used to ask the first player of a match how many players it wants to play with.<br>
+     * This method also performs a check on the input.
+     * @return an int that represents the number of players chosen by the first player
+     * @throws IOException if an error occurs*/
     public int askNumOfPlayers() throws IOException {
         UserView userView = new UserView();
         numOfPlayers = userView.askNumOfPlayer();
@@ -81,18 +96,29 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
 
 
+    /**
+     * Method used to make the players wait while a match hasn't started yet.<br>
+     * <p>
+     *     In this method the player gets asked the type of user interface and the nickname;
+     *     for every action the Clients sends a message to the Server and if the input given by the user was correct
+     *     the user gets asked the next input, otherwise the client will receive an error and will be asked again.
+     * </p>
+     * This method also starts two treads: {@code threadEndGame} is used to check if the match is ending
+     * and {@code threadWaitTurn} is used to handle the turn of a player that isn't in turn.
+     * @throws IOException if an error occurs
+     * @throws InterruptedException if a thread gets interrupted*/
     public void lobby() throws IOException, InterruptedException {
         this.lock = new Object();
         this.uView = new UserView();
         this.viewChosen = uView.userInterface();
-        errorReceived = server.sendMessage(this.matchIndex, this.viewChosen,CHOOSE_VIEW); //invia al server la View desiderato
+        errorReceived = server.sendMessage(this.matchIndex, this.viewChosen,CHOOSE_VIEW);
         while (errorReceived != GUI_VIEW && errorReceived != TUI_VIEW) {
             System.out.println(errorReceived.getMsg());
             this.viewChosen = uView.userInterface();
             errorReceived = server.sendMessage(this.matchIndex,this.viewChosen,CHOOSE_VIEW);
         }
         String nickname = uView.askPlayerNickname();
-        errorReceived = server.sendMessage(this.matchIndex,nickname, SET_NICKNAME); //invia al server il nickname
+        errorReceived = server.sendMessage(this.matchIndex,nickname, SET_NICKNAME);
         while (errorReceived != Event.OK) {
             System.out.println(errorReceived.getMsg());
             errorReceived = server.sendMessage(this.matchIndex,uView.askPlayerNickname(), SET_NICKNAME);
@@ -121,7 +147,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                         waitTurn();
                         lock.wait();
                     } catch (InterruptedException | IOException e) {
-                        //throw new RuntimeException(e);
                     }
                 }
             }
@@ -130,6 +155,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
 
 
+    /**
+     * Method used to get updates in game from the model.<br>
+     * This method manages to maintain coherence in real time of all the interfaces (TUI and GUI).
+     * @throws IOException if an error occurs
+     * @throws InterruptedException if a thread gets interrupted*/
     public void getModel() throws IOException, InterruptedException {
         disabledInput = false;
         errorReceived = Event.WAIT;
@@ -198,6 +228,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         }
     }
 
+    /**
+     * Method used to handle the various choices that an <b>active player</b> can do.<br>
+     * @throws IOException if an error occurs
+     * @throws InterruptedException if a thread gets interrupted*/
     private void activePlay() throws IOException, InterruptedException {
         isFirstTurn = false;
         playerInTurn = listOfPlayers.get(myIndex);
@@ -225,7 +259,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         //Asking the order of insertion
         errorReceived = server.sendMessage(this.matchIndex,playerInTurn.getMyBookshelf(), UPDATE_BOOKSHELF);
         errorReceived = server.sendMessage(this.matchIndex,null, CHECK_REFILL);
-
         //The server checks if the board had to be refilled, the client asks the server
         //if it has been done, if true then it receives an update of the board so that it can be printed
         if (errorReceived == Event.REFILL)
@@ -240,6 +273,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         getModel();
     }
 
+    /**
+     * Method used to handle the various choices that a <b>passive player</b> can do.<br>
+     * @throws IOException if an error occurs
+     * @throws InterruptedException if a thread gets interrupted*/
     private void passivePlay() throws IOException, InterruptedException {
         System.out.println("It's not your turn, here are some actions you can do!");
         Event status;
@@ -252,6 +289,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
 
 
+    /**
+     * Method used to ask a player the coordinates of the tiles it wants to pick from the board.<br>
+     * @throws IOException if an error occurs*/
     public void chooseTiles() throws IOException {
         cords.removeAll(cords);
         System.out.println("Size prima della richiesta " + cords.size());
@@ -272,10 +312,15 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         }
     }
 
+    /**
+     * Method used to ask the player how many tiles it wants to pick from the board.*/
     private void numOfChosenTiles() {
         this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
     }
 
+    /**
+     * Method that represents the menu of an active player.<br>
+     * @throws IOException if an error occurs*/
     private void activePlayerMenu() throws IOException {
         int choice;
         System.out.println("Would you like to do any of these actions before making your move?");
@@ -316,6 +361,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         } while (choice != 6);
     }
 
+    /**
+     * Method that returns an event for the call of the method {@code numOfChosenTiles()}.<br>
+     * @return an {@link Event} that is the event returned by the server
+     * @throws IOException if an error occurs*/
     private Event activeAskNumOfTiles() throws IOException {
         numOfChosenTiles();
         errorReceived = server.sendMessage(this.matchIndex,numberOfChosenTiles, TURN_AMOUNT);
@@ -323,6 +372,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         return errorReceived;
     }
 
+    /**
+     * Method that returns an event for the call of the method {@code chooseTiles()}.<br>
+     * @return an {@link Event} that is the event returned by the server
+     * @throws IOException if an error occurs*/
     private Event activeAskTiles() throws IOException {
         chooseTiles();
         errorReceived = server.sendMessage(this.matchIndex,cords, TURN_PICKED_TILES);
@@ -330,6 +383,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         return errorReceived;
     }
 
+    /**
+     * Method that returns an event when the player gets asked the column in which it wants to put its tiles.<br>
+     * @param tilesInHand is an {@code ArrayList} that represents the tiles that a player ahs previously picked from th board
+     * @return an {@link Event} that is the event returned by the server
+     * @throws IOException if an error occurs*/
     private Event activeAskColumn(ArrayList<Tile> tilesInHand) throws IOException {
         column = uView.askColumn();
         errorReceived = server.sendMessage(this.matchIndex,column, TURN_COLUMN);
@@ -339,6 +397,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         return errorReceived;
     }
 
+    /**
+     * Method used to place the tiles in hand of a player into the Bookshelf.<br>
+     * @param tilesInHand is an {@code ArrayList} that represents the tiles that a player ahs previously picked from th board
+     * @throws IOException if an error occurs*/
     private void activePlaceTile(ArrayList<Tile> tilesInHand) throws IOException {
         int pos;
         for (int i = 0; i < numberOfChosenTiles; i++) {
@@ -354,6 +416,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         }
     }
 
+    /**
+     * Method that represents the menu for a passive player.
+     * @throws IOException if an error occurs*/
     private void passivePlayerMenu() throws IOException {
         uView.askPassiveAction();
         int choice = uView.waitInput();
@@ -392,6 +457,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
 
 
+    /**
+     * Method used to handle the game flow of the Graphical User Interface.<br>
+     * @throws IOException if an error occurs
+     * @throws InterruptedException if a thread gets interrupted*/
     public void flowGui() throws IOException, InterruptedException {
         int tilesToPick;
         do {
@@ -413,7 +482,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
         ArrayList<Tile> tilesInHand = (ArrayList<Tile>) server.getModel(this.matchIndex,TURN_TILE_IN_HAND, myIndex);
 
-        gui.pickTiles(tilesCords, tilesInHand); //aggiunge le tessere alla "mano"
+        gui.pickTiles(tilesCords, tilesInHand); //adds the tile to tiles in hand
 
         do {
             int column = gui.chooseColumn();
@@ -423,7 +492,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         }while(errorReceived!=Event.OK);
 
         for(int i=0; i<tilesToPick; i++){
-            int pos = gui.chooseTile(); //sceglie quale tessera mettere in una colonna: restituisce la posizione nella mano
+            int pos = gui.chooseTile();
             gui.addTile(tilesInHand.get(pos));
             errorReceived = server.sendMessage(this.matchIndex, pos, TURN_POSITION);
         }
@@ -448,6 +517,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         }
     }
 
+    /**
+     * Method used to handle the turns.
+     * @throws IOException if an error occurs
+     * @throws InterruptedException if a thread gets interrupted*/
     public void waitTurn() throws IOException, InterruptedException {
         int pitIndex;
         do {
@@ -459,6 +532,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         }
         disabledInput = true;
     }
+
+    /**
+     * Method used to handle the disconnections.<br>
+     * @return a {@link Runnable}*/
     public Runnable controlDisconnection() {
         Thread controlDisconnectionThread = new Thread(()->{
             while (!Thread.currentThread().isInterrupted()) {
@@ -478,8 +555,18 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         controlDisconnectionThread.start();
         return null;
     }
+
+    /**
+     * Method used to handle disconnections.
+     *@throws RemoteException if an error occurs during a remote call*/
     public void ping() throws RemoteException{
     }
+
+    /**
+     * Method used to check if a match has ended.<br>
+     * @return a {@link Runnable}
+     * @throws IOException if an error occurs
+     * @throws InterruptedException if a thread gets interrupted*/
     private Runnable checkEndGame() throws IOException, InterruptedException {
         Event isGameOver;
         do {
