@@ -1,6 +1,7 @@
 package view.GUI;
 
 import distributed.messages.Message;
+import model.Bookshelf;
 import model.Tile;
 import model.Type;
 import util.Event;
@@ -18,6 +19,7 @@ public class BookshelfView implements Serializable {
     private static final long serialVersionUID = 4758892563965792612L;
     private JInternalFrame bookshelfDisplayed;
     private JButton [][] bookshelfTiles;
+    private Bookshelf bookshelf;
 
     private int columnChosen = -1;
 

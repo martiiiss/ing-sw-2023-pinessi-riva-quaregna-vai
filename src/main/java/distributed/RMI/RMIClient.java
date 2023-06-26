@@ -104,13 +104,15 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                 errorReceived = server.sendMessage(this.matchIndex,null, ALL_CONNECTED);
             }
         }
-        this.threadEndGame = new Thread(()-> {
+       /* this.threadEndGame = new Thread(()-> {
             try {
                 checkEndGame();
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-        });
+        });*/
 
         this.threadWaitTurn = new Thread(() -> {
             synchronized (lock) {
@@ -122,9 +124,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
                         //throw new RuntimeException(e);
                     }
                 }
-
             }
-        });
+        },"WaitForTurnThread");
         getModel();
     }
 
@@ -144,12 +145,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         this.myPersonalGoalCard = (PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex);
         this.indexOfPIT = (int) server.getModel(this.matchIndex,GAME_PIT, myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
-        if(!threadEndGame.isAlive())
-           // threadEndGame.start();
-
+       /* if (threadEndGame.getState() == Thread.State.NEW) {
+           threadEndGame.start();
+        }*/
         if (this.viewChosen == 1) {
             out.println("observers: " + board.getObservers());
-
             if (myIndex == indexOfPIT) {
                 activePlay();
             } else {
@@ -233,10 +233,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
             System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
         errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
         System.out.println(errorReceived.getMsg());
-        /*if (errorReceived == GAME_OVER) {
+        if (errorReceived == GAME_OVER) {
             uView.gameOver(listOfPlayers);
+            wait(10000);
             System.exit(0);
-        }*/
+        }
         getModel();
     }
 
@@ -392,7 +393,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
 
 
-    public void flowGui() throws IOException{
+    public void flowGui() throws IOException, InterruptedException {
         int tilesToPick;
         do {
             tilesToPick = gui.askTiles(); //ask number of tiles
@@ -434,13 +435,17 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
         errorReceived = server.sendMessage(this.matchIndex,null, CHECK_REFILL);
         if (errorReceived == Event.REFILL) {
             //visualizzare errore
+            this.board = (Board) server.getModel(matchIndex,GAME_BOARD,myIndex);
+            gui.update(board,new Message(board,SET_UP_BOARD));
             gui.showError(errorReceived);
         }
         errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
+        if(errorReceived != OK)
+            gui.showError(errorReceived);
         if (errorReceived == GAME_OVER) {
             gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
-            gui.showError(errorReceived);
-            //System.exit(0);
+            wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
+            System.exit(10);
         }
     }
 
@@ -476,21 +481,24 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
     }
     public void ping() throws RemoteException{
     }
-    private Runnable checkEndGame() throws IOException {//TODO change name to thread
-        Event errRec;
+    private Runnable checkEndGame() throws IOException, InterruptedException {
+        Event isGameOver;
+        do {
+            isGameOver = server.sendMessage(matchIndex,null,CHECK_ENDGAME);
+        }while (isGameOver != GAME_OVER);
+        uView.gameOver(listOfPlayers);
+        Thread.currentThread().interrupt();
+        wait(5000);
+        System.exit(10);
+       /* Event errRec;
         do {
             errRec = server.sendMessage(matchIndex, null, CHECK_ENDGAME);
-            this.board = (Board) server.getModel(matchIndex,GAME_BOARD,myIndex);
-            gui.update(board,new Message(board,SET_UP_BOARD));
-            this.commonGoalCard = (ArrayList<CommonGoalCard>) server.getModel(matchIndex,GAME_CGC,myIndex);
-            for (CommonGoalCard cgc : commonGoalCard)
-                gui.update(cgc, new Message(commonGoalCard,UPDATE_SCORINGTOKEN));
-
         }while (errRec!=GAME_OVER);
         uView.gameOver(listOfPlayers);
         threadWaitTurn.interrupt();
-        Thread.currentThread().interrupt();
-        System.exit(0);
+        threadEndGame.interrupt();
+        //Thread.currentThread().interrupt();
+        System.exit(0);*/
         return null;
     }
 }
