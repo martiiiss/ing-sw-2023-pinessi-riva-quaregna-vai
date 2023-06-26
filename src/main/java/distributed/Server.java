@@ -86,7 +86,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         }
         else {
             for(Match matchIterator : matchList) {
-                System.out.println("MATCH" + matchIterator);
                 if(matchIterator.getMaxSize()>matchIterator.getListOfClients().size()) {
                     matchIterator.addPlayer(client);
                     System.err.println(matchIterator.getListOfClients().indexOf(client));
@@ -143,6 +142,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     public boolean getDisconnections(int matchIndex) {
         return matchList.get(matchIndex).getClientDisconnected();
     }
+
 
 
     private void startClientStatusCheckTimer() {

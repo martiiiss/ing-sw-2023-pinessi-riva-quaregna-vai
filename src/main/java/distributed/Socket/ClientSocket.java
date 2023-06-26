@@ -4,7 +4,12 @@ import distributed.Client;
 import distributed.RMI.ClientInterface;
 import distributed.messages.Message;
 import distributed.messages.SocketMessage;
+import model.Board;
+import model.CommonGoalCard;
+import model.PersonalGoalCard;
+import model.Player;
 import util.Event;
+import view.UserView;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -16,7 +21,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Stream;
 
-public class ClientSocket extends Client {
+import static util.Event.*;
+import static util.Event.GAME_PIT;
+
+public class ClientSocket {
     private String address;
     private int port;
     private final Socket socket;
@@ -26,10 +34,20 @@ public class ClientSocket extends Client {
     private Object serverObj;
     private int myIndex;
     private int myMatch;
+    private UserView uView;
+    private int viewChosen;
+    private String nickname;
+    private boolean hasGameStarted = false;
+    private Board board;
+    private ArrayList<Player> listOfPlayers;
+    private ArrayList<CommonGoalCard> commonGoalCard;
+    private PersonalGoalCard myPersonalGoalCard;
+    private int indexOfPIT;
+    private Player playerInTurn;
+
 
 
     public ClientSocket(String address, int port) throws IOException {
-        super(address,port);
         this.port = port;
         this.address = address;
         this.socket = new Socket();
@@ -40,22 +58,19 @@ public class ClientSocket extends Client {
         this.myIndex = -1;
         this.myMatch = -1;
     }
-    @Override
-    public void startConnection() throws IOException, ClassNotFoundException {
+
+
+    public void lobby(UserView userView) throws IOException, ClassNotFoundException {
+        uView = userView;
+        System.out.println("istanzio uView!!");
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
-                  SocketMessage message;
                   try{
-                      message= receivedMessageC();
+                      System.out.println("attendo messaggio...");
+                      SocketMessage message = receivedMessageC();
                       System.out.println("ho ricevuto " + message.getMessageEvent());
-                      if(message.getMessageEvent() == Event.SET_CLIENT_INDEX){
-                          this.myIndex = message.getClientIndex();
-                          this.myMatch = message.getMatchIndex();
-                          System.out.println("my index " + myIndex);
-                      }
-
-                 //     sendMessageC(new SocketMessage(myIndex, myMatch, "ciao", Event.SET_UP_BOARD));//FIXME this is to implement, now sendMessageC() has Message as a parameter
+                      update(message);
                   } catch (IOException | ClassNotFoundException e) {
                       throw new RuntimeException(e);
                   }
@@ -68,6 +83,32 @@ public class ClientSocket extends Client {
       clientThread.start();
     }
 
+    public void update(SocketMessage message) throws IOException, ClassNotFoundException {
+        switch (message.getMessageEvent()){
+            case SET_CLIENT_INDEX ->{
+                this.myIndex = message.getClientIndex();
+                this.myMatch = message.getMatchIndex();
+                update(new SocketMessage(myIndex, myMatch, null, Event.CHOOSE_VIEW));
+            }
+            case CHOOSE_VIEW -> {
+                if(message.getObj()!=null){
+                    System.out.println(((Event)message.getObj()).getMsg());
+                }
+                this.viewChosen = uView.userInterface();
+                sendMessageC(new SocketMessage(myIndex, myMatch, this.viewChosen, Event.CHOOSE_VIEW));
+            }
+            case SET_NICKNAME -> {
+                if(message.getObj()!=null){
+                    System.out.println(((Event)message.getObj()).getMsg());
+                }
+                this.nickname = uView.askPlayerNickname();
+                sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, Event.SET_NICKNAME));
+            }
+            case ALL_CONNECTED -> {
+                getModel();
+            }
+        }
+    }
 
     public void sendMessageC(SocketMessage mess) throws IOException {
         try{
@@ -86,6 +127,28 @@ public class ClientSocket extends Client {
         return message;
     }
 
+    public void getModel() throws IOException, ClassNotFoundException {
+        if(!hasGameStarted){
+            sendMessageC(new SocketMessage(this.myIndex, this.myMatch,null, GAME_STARTED));
+            if(receivedMessageC().getMessageEvent()==Event.OK){
+                System.out.println("ricevuto ok");
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+                this.board = (Board) receivedMessageC().getObj();
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
+                this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
+                this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
+                this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
+                this.indexOfPIT = (int) receivedMessageC().getObj();
+                this.playerInTurn = listOfPlayers.get(indexOfPIT);
+            }
+
+        }
+        System.out.println("ho il model ora devo startare la partita!");
+    }
+
     public int getMyIndex(){
         return myIndex;
     }
@@ -102,7 +165,6 @@ public class ClientSocket extends Client {
     /**
      *
      */
-    @Override
     public void disconnected() {
 
     }
@@ -113,15 +175,12 @@ public class ClientSocket extends Client {
         //TODO implement this
     };
 
-    @Override
-    public void ping() throws RemoteException {
 
+    public void setMatchIndex(int i){
+        this.myMatch = i;
     }
 
-    @Override
-    public int askNumOfPlayers() throws IOException {
-        return 0;
+    public void setMyIndex(int i){
+        this.myIndex = i;
     }
-
-
 }

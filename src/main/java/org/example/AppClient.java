@@ -34,6 +34,7 @@ public class AppClient {
             System.out.println("You chose RMI!");
             ((RMIClient) client).lobby();
 
+
         } else if(choice == 1){
             String address = "localhost";
             int portSocket = 43808;
@@ -43,6 +44,7 @@ public class AppClient {
             try{
                 clientController.initClient(address,portSocket);
                 System.out.println("You chose Socket!");
+                clientController.lobby();
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }

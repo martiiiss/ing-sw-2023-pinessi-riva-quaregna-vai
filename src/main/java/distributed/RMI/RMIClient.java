@@ -131,7 +131,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable,Clien
 
 
     public void getModel() throws IOException, InterruptedException {
-        out.println("In model");
         disabledInput = false;
         errorReceived = Event.WAIT;
         if (!hasGameStarted) {
