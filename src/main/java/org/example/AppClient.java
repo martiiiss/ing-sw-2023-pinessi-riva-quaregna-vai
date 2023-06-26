@@ -1,22 +1,14 @@
 package org.example;
 
 import controller.ClientController;
-import controller.Controller;
-import distributed.Client;
-import distributed.RMI.ClientInterface;
+import distributed.ClientInterface;
 import distributed.RMI.RMIClient;
-import distributed.Socket.ClientSocket;
-import model.Game;
 import view.UserView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.rmi.NotBoundException;
-
-import static util.Event.END;
-import static util.Event.WAIT;
 
 public class AppClient {
     public static void main(String[] args) throws IOException, NotBoundException, InterruptedException {

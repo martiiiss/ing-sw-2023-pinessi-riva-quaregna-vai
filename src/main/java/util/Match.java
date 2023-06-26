@@ -1,7 +1,7 @@
 package util;
 
 import controller.Controller;
-import distributed.RMI.ClientInterface;
+import distributed.ClientInterface;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

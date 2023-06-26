@@ -1,4 +1,4 @@
-package distributed.RMI;
+package distributed;
 
 import java.io.IOException;
 import java.rmi.Remote;

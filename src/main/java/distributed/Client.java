@@ -1,6 +1,5 @@
 package distributed;
 
-import distributed.RMI.ClientInterface;
 import util.Event;
 import view.UserView;
 import java.io.*;

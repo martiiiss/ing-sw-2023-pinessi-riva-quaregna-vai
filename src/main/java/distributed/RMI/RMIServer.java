@@ -1,5 +1,6 @@
 package distributed.RMI;
 
+import distributed.ClientInterface;
 import distributed.Server;
 import util.Event;
 import java.io.IOException;

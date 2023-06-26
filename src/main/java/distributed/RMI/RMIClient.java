@@ -1,6 +1,7 @@
 package distributed.RMI;
 
 
+import distributed.ClientInterface;
 import distributed.messages.Message;
 import model.*;
 import util.Cord;
@@ -18,7 +19,7 @@ import static java.lang.System.*;
 import static util.Event.*;
 
 /**Class that represents an RMI Client*/
-public class RMIClient extends UnicastRemoteObject implements Serializable,ClientInterface{
+public class RMIClient extends UnicastRemoteObject implements Serializable, ClientInterface {
     @Serial
     private static final long serialVersionUID = -3489512533622391685L;
     private transient ServerRMIInterface server;

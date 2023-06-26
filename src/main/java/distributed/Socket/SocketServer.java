@@ -1,6 +1,6 @@
 package distributed.Socket;
 
-import distributed.RMI.ClientInterface;
+import distributed.ClientInterface;
 import distributed.Server;
 import distributed.messages.Message;
 import distributed.messages.SocketMessage;
@@ -8,16 +8,10 @@ import util.Event;
 import view.View;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class SocketServer extends UnicastRemoteObject implements Runnable{
     private final Server server;
@@ -49,7 +43,6 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
                 View view = new View(clientHandlerSocket);
                 clients.add(clientHandlerSocket);
                 clientsView.add(view);
-
                 Thread clientThread = new Thread(clientHandlerSocket);
                 clientThread.start();
                 System.out.println("un nuovo client si è connesso!");
@@ -62,7 +55,6 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
 
     public synchronized Object askMyIndex () throws IOException, ClassNotFoundException {
         ArrayList<Integer> indexFromServer = server.connection((ClientInterface) clients.get(clients.size()-1));
-        System.out.println("MY INDEX " + indexFromServer.get(1) + " MY MATCH "+ indexFromServer.get(0) + " client in lista " + clients.get(clients.size()-1) + " num " + (clients.size()-1));
         return indexFromServer;
     }
 

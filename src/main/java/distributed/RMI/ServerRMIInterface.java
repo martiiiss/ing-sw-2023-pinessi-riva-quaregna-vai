@@ -1,6 +1,7 @@
 package distributed.RMI;
 
 
+import distributed.ClientInterface;
 import util.Event;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;

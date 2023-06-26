@@ -6,7 +6,6 @@ import distributed.Socket.SocketServer;
 import model.Board;
 import model.Game;
 import util.Event;
-import util.Event;
 import util.Match;
 
 import java.io.IOException;
@@ -129,7 +128,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     public Event sendServerMessage(int gameIndex, Object obj, Event event) throws IOException {
         if(event==Event.ASK_NUM_PLAYERS)
             matchList.get(gameIndex).getGameController().updateController(matchList.get(gameIndex).getMaxSize(),Event.ASK_NUM_PLAYERS);
-        //System.out.println("Mess rec: "+event+" Match number "+gameIndex);
         return matchList.get(gameIndex).getGameController().updateController(obj,event);
     }
 

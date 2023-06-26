@@ -1,19 +1,16 @@
 package distributed.Socket;
 
-import distributed.Client;
-import distributed.RMI.ClientInterface;
-import distributed.messages.Message;
+import distributed.ClientInterface;
 import distributed.messages.SocketMessage;
+import model.Tile;
 import util.Event;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class ClientHandlerSocket implements Runnable, ClientInterface {
     private Socket socketClient;
@@ -53,7 +50,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                         obj = socketServer.receivedMessage(message);
                     }
                     if(message.getObj() == Event.ASK_MODEL){
-                        sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), socketServer.receivedMessage(message), message.getMessageEvent()));
+                        sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), obj, message.getMessageEvent()));
                     } else{
                         update(obj, message);
                     }
@@ -71,7 +68,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
 
     //SWITCH ERRORI DA SERVER/CONTROLLER
     public void update(Object obj, SocketMessage message) throws IOException, ClassNotFoundException {
-        System.out.println("ARRIVA " + message.getClientIndex() + " " + message.getMatchIndex() + " " + message.getObj() + " " +message.getMessageEvent());
         switch (message.getMessageEvent()){
             case OK ->{
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
@@ -79,7 +75,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             case ASK_NUM_PLAYERS ->{
                 this.matchIndex = (int) ((ArrayList)obj).get(0);
                 this.clientIndex = (int) ((ArrayList)obj).get(1);
-                System.out.println("HO SETTATO GLI INDICI " + matchIndex + clientIndex);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
             }
             case CHOOSE_VIEW -> {
@@ -96,9 +91,8 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                     sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_NICKNAME));
                 } else{
                     do{
-                        obj = socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, null, Event.ALL_CONNECTED));
+                        obj = socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.ALL_CONNECTED));
                     }while (obj!=Event.OK);
-                    System.out.println("pronti a partire!");
                     sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.ALL_CONNECTED));
                 }
             }
@@ -108,6 +102,13 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 }while (obj!=Event.OK);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.OK));
             }
+            case TURN_AMOUNT, TURN_PICKED_TILES -> {
+                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, (Event)obj));
+            }
+            case TURN_COLUMN -> {
+                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, (Event)obj));
+            }
+
         }
     }
 

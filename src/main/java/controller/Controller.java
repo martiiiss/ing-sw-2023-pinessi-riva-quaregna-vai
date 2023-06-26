@@ -606,13 +606,11 @@ public class Controller  {
                     error = Event.WAIT;
             }
             case TURN_AMOUNT -> {
-                System.out.println("Turn amount: "+(int) obj);
                 error = numOfChosenTiles((int) obj);
             }
             case TURN_PICKED_TILES -> error = chooseTiles((ArrayList<Cord>) obj);
 
             case TURN_COLUMN -> {
-                System.out.println("Colonna: "+(int) obj);
                 error = chooseColumn((int) obj);
             }
             case TURN_POSITION -> error = chooseTilesDisposition((int) obj);
