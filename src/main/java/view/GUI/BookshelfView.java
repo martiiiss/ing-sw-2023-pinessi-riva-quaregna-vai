@@ -19,7 +19,7 @@ public class BookshelfView implements Serializable {
     private static final long serialVersionUID = 4758892563965792612L;
     private JInternalFrame bookshelfDisplayed;
     private JButton [][] bookshelfTiles;
-    private Bookshelf bookshelf;
+    private boolean canChange = true;
 
     private int columnChosen = -1;
 
@@ -75,6 +75,21 @@ public class BookshelfView implements Serializable {
             }
         }
     }
+    public void changeBookshelf(Bookshelf bks){
+        ImageReader imageReader = new ImageReader();
+        for (int i = 0; i <= 6; i++){
+            for (int j = 0; j<= 5; j++){
+                if (bks.getBookshelf()[i][j].getType() !=Type.NOTHING){
+                    this.bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/" + bks.getBookshelf()[i][j].getType() + "/" + bks.getBookshelf()[i][j].getNumType() + ".png", 50, 50));
+                    this.bookshelfTiles[i][j].putClientProperty("status", 1);
+                 }
+                else{
+                    bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
+                    this.bookshelfTiles[i][j].putClientProperty("status", 0);
+                }
+            }
+        }
+    }
 
     public int getColumnChosen() {
         return columnChosen;
@@ -82,5 +97,13 @@ public class BookshelfView implements Serializable {
 
     public void setColumnChosen(int columnChosen) {
         this.columnChosen = columnChosen;
+    }
+
+    public boolean isCanChange() {
+        return canChange;
+    }
+
+    public void setCanChange(boolean canChange) {
+        this.canChange = canChange;
     }
 }

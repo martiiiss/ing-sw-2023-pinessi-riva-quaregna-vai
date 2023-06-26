@@ -30,6 +30,12 @@ public class GUIView implements Observer, Serializable { //class that contains a
 
     private transient Image image;
 
+    private boolean bksChanged = false;
+
+    private final JButton bksButton;
+
+    private boolean bksReturned = false;
+
     public GUIView () {
         //All the page
         GridBagConstraints constraints = new GridBagConstraints();
@@ -71,6 +77,26 @@ public class GUIView implements Observer, Serializable { //class that contains a
         constraints.gridheight = 1;
         GUI.add(hand.getImageDisplayed(), constraints);
 
+        //button to change bookshelf
+        JInternalFrame bksButtonFrame = new JInternalFrame();
+        bksButtonFrame.setTitle("Press to change bookshelf");
+        bksButton = new JButton();
+        bksButton.setVisible(true);
+        bksButton.setPreferredSize(new Dimension(200,50));
+        bksButtonFrame.setLayout(new GridLayout(1,1));
+        bksButtonFrame.add(bksButton);
+        bksButton.addActionListener(e ->{
+            synchronized (bksButton){
+                if(bookshelfView.isCanChange()){
+                    bksChanged = true;
+                    bksButton.notify();
+                }
+            }
+        });
+        bksButtonFrame.setVisible(true);
+        constraints.gridx = 1;
+        GUI.add(bksButtonFrame, constraints);
+
         //CGC
         JInternalFrame CGCArea = new JInternalFrame();
         CGCArea.setLayout(new GridLayout(2, 2));
@@ -106,7 +132,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
         errorLog = new JLabel();
         JInternalFrame errorLogFrame = new JInternalFrame();
         errorLogFrame.setVisible(true);
-        errorLogFrame.setTitle("Error Log");
+        errorLogFrame.setTitle("Message Log");
         errorLog.setFont(new Font("Arial", Font.BOLD, 18));
         errorLog.setForeground(Color.RED);
         errorLogFrame.setPreferredSize(new Dimension(300,100));
@@ -223,6 +249,11 @@ public class GUIView implements Observer, Serializable { //class that contains a
         }
     }
     public int chooseColumn(){ //choose the column where i want to put the tile and return it
+        synchronized (bksButton){
+            bookshelfView.setCanChange(false);
+            bksReturned = true;
+            bksButton.notify();
+        }
         bookshelfView.getBookshelfDisplayed().setTitle("Choose the column to insert tiles by clicking one of its buttons");
         bookshelfView.setColumnChosen(-1);
         synchronized (bookshelfView){
@@ -283,7 +314,36 @@ public class GUIView implements Observer, Serializable { //class that contains a
         frame.setSize(400,200);
     }
     public void endInsertion(){
-        hand.getImageDisplayed().setTitle("Hand");
+        synchronized (bksButton) {
+            hand.getImageDisplayed().setTitle("Hand");
+            bookshelfView.setCanChange(true);
+        }
+    }
+    public boolean nextBookshelf(ArrayList <Player> players, int nextPlayerIndex) {
+        synchronized (bksButton){
+            while (!bksChanged && !bksReturned) {
+                try {
+                    bksButton.wait();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if(bksChanged) {
+                bookshelfView.changeBookshelf(players.get(nextPlayerIndex).getMyBookshelf());
+                bookshelfView.getBookshelfDisplayed().setTitle("" + players.get(nextPlayerIndex).getNickname() + "'s Bookshelf");
+            }
+            if(bksReturned) {
+                bksReturned = false;
+                return true;
+            }
+            bksChanged = false;
+            return false;
+
+        }
+    }
+    public void returnToMyBookshelf(ArrayList <Player> players, int nextPlayerIndex){
+        bookshelfView.changeBookshelf(players.get(nextPlayerIndex).getMyBookshelf());
+        bookshelfView.getBookshelfDisplayed().setTitle("" + players.get(nextPlayerIndex).getNickname() + "'s Bookshelf");
     }
 
     @Override
