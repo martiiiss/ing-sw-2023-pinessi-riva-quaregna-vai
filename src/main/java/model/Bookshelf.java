@@ -15,7 +15,9 @@ public class Bookshelf extends Observable implements Serializable {
     @Serial
     private static final long serialVersionUID = 4784659265294763952L;
     private Tile[][] bookshelf;
+    /**The bookshelf row max value*/
     public static final int SHELF_ROW = 6;
+    /**The bookshelf column max value*/
     public static final int SHELF_COLUMN = 5;
     private boolean isFull = false;
 

@@ -1,25 +1,23 @@
 package view.GUI;
 
-import distributed.messages.Message;
 import model.Tile;
 import util.*;
-import util.Event;
-
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serial;
 import java.io.Serializable;
-
 import static java.awt.GridBagConstraints.*;
 
-
-public class HandView implements Serializable { //class to represent the "hand", the tiles picked from the board and not placed in the bookshelf yet and the ScoringTokens taken by the player
+/**Class that represents the frame of the tiles in hand in the Graphic User Interface.*/
+public class HandView implements Serializable {
+    @Serial
     private static final long serialVersionUID = 4758892564965792611L;
-    private JButton [] hand;
-    private JInternalFrame imageDisplayed;
-
+    private final JButton [] hand;
+    private final JInternalFrame imageDisplayed;
     private int tileToInsert = -1;
+    private final int [] order;
 
-    private int [] order;
+    /**Constructor of the Class.*/
     public HandView(){
         order = new int[3];
         for (int i=0; i<3; i++){
@@ -56,20 +54,21 @@ public class HandView implements Serializable { //class to represent the "hand",
                     }
 
                 });
-            }
-            else{
+            } else {
                 constraints.gridx = i-3;
                 constraints.gridy = 1;
                 imageDisplayed.add(hand[i], constraints);
             }
         }
-
         imageDisplayed.setVisible(true);
         imageDisplayed.setMinimumSize(new Dimension(250, 200));
         imageDisplayed.setTitle("Hand");
     }
 
-    public void setTilesInHand(Tile tile) { //set the "hand" given the tiles in hand in the model
+    /**
+     * Method used to set the tiles in hand given the tiles in hand in the model.
+     * @param tile is a {@code Tile} that has to be set graphically as a tile in hand*/
+    public void setTilesInHand(Tile tile) {
         ImageReader imageReader = new ImageReader();
         for (JButton jButton : hand) {
             if (jButton.getIcon() == null) {
@@ -85,56 +84,49 @@ public class HandView implements Serializable { //class to represent the "hand",
         }
     }
 
-    public  void setSC(int valueDisplayed, int romanNumber){
+    /**
+     * Method used to set the scoring tokens.
+     * @param romanNumber is an int used to identify the CGC t which the Scoring token belongs
+     * @param valueDisplayed is an int that represents the value of the Scoring token*/
+    public void setSC(int valueDisplayed, int romanNumber){
         ImageReader imageReader = new ImageReader();
         this.hand[romanNumber+3].setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 50, 50));
     }
 
-    public void removeTileInHand(int i){ //set the given position in the hand to null since it's been picked
+    /**
+     * Method that sets the given position in the hand to null when a tile it's picked
+     * @param i is the index of the tile to remove*/
+    public void removeTileInHand(int i){
         hand[i].setIcon(null);
         hand[i].setBorderPainted(false);
         hand[i].setOpaque(false);
         hand[i].setContentAreaFilled(false);
     }
 
+    /**
+     * Method used to get the JInternalFrame relative to the tiles in hand.
+     * @return a {@link JInternalFrame}*/
     public JInternalFrame getImageDisplayed(){
         return this.imageDisplayed;
     }
 
-    public int getOrder(int pos) {
-        return order[pos];
-    }
-
-    public int[] getOrder(){
-        return order;
-    }
-
-    public void insertFirstVoid(int value) {
-        for(int i=0; i<3; i++)
-            if(order[i]== -1) {
-                order[i] = value;
-                break;
-            }
-    }
-
-    public boolean searchOrder(int value){
-        for(int i=0; i<3; i++){
-            if(order[i] == value)
-                return true;
-        }
-        return false;
-    }
-
-
+    /**
+     * Method used to change the image after the game has ended*/
     public void setEndgame(){
         ImageReader imageReader = new ImageReader();
         this.hand[5].setIcon(imageReader.readIcon("resources/ScoringTokenImages/endgame.jpg", 50, 50));
     }
 
+    /**
+     * Method used to get an int that represents the index of tile to insert
+     * @return an int, the index of the tile to insert*/
     public int getTileToInsert() {
         return this.tileToInsert;
     }
 
+    /**
+     * Method used to set an int that represents the index of tile to insert
+     * @param tileToInsert  an int, the index of the tile to insert*/
     public void setTileToInsert(int tileToInsert) {
         this.tileToInsert = tileToInsert;
     }

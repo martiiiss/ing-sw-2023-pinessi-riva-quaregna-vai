@@ -12,7 +12,9 @@ public class Board extends Observable implements Serializable {
     @Serial
     private static final long serialVersionUID = 4758892564965792652L;
     private int numOfCells;
+    /**The board row max value*/
     public final int  BOARD_ROW = 9;
+    /**The board column max value*/
     public final int  BOARD_COLUMN = 9;
     private final Tile[][] livingRoomBoard;
 
