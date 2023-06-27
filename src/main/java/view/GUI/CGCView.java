@@ -18,7 +18,8 @@ public class CGCView extends JLabel implements Serializable {
     }
 
     /**
-     * This method sets the number of the Common Goal Card.*/
+     * This method sets the number of the Common Goal Card.
+     * @param id an int that represents the id of a common goal card*/
     public void setCGCView(int id){
         ImageReader imageReader = new ImageReader();
         setIcon(imageReader.readIcon("resources/CommonGoalCardImages/"+id+".jpg", 75,75));
