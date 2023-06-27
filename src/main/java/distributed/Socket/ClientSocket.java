@@ -50,6 +50,8 @@ public class ClientSocket {
     private GUIView gui;
     private ArrayList<Cord> tilesCords = new ArrayList<>();
     private ArrayList<Tile> tilesInHand;
+    private boolean isYourTurn;
+
     public ClientSocket(String address, int port) throws IOException {
         this.port = port;
         this.address = address;
@@ -132,12 +134,14 @@ public class ClientSocket {
         return message;
     }
 
-    public void startThread(){
+    public void startThread() throws IOException {
+        ObjectInputStream threadInputStream =  new ObjectInputStream(socket.getInputStream());;
+        ObjectOutputStream threadOutputStream  = new ObjectOutputStream(socket.getOutputStream());;
         this.threadWaitTurn = new Thread(() -> {
             synchronized (lock) {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
-                        waitTurn();
+                        waitTurn(threadInputStream, threadOutputStream);
                         lock.wait();
                     } catch (InterruptedException | IOException | ClassNotFoundException e) {
                         //throw new RuntimeException(e);
@@ -148,19 +152,30 @@ public class ClientSocket {
         }, "WaitForTurnThread");
     }
 
-    public void waitTurn() throws IOException, ClassNotFoundException, InterruptedException {
+    public void waitTurn(ObjectInputStream i, ObjectOutputStream o) throws IOException, ClassNotFoundException, InterruptedException {
         int pitIndex;
         do {
             threadWaitTurn.sleep(100);
-            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
-            pitIndex = (int) receivedMessageC().getObj();
+            try{
+                //invio messaggio:
+                o.writeObject(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
+                o.flush();
+                o.reset();
+            }catch (IOException e){
+                //TODO disconnessione
+                //notifyObserver con messaggio di errore
+            }
+            SocketMessage message = (SocketMessage) i.readObject();
+            pitIndex = (int) message.getObj();
         } while (pitIndex != myIndex);
+
         if(viewChosen==1) {
             System.out.println("You turn");
             System.out.println("Press enter to start your turn....");
         } else{
             System.out.println("you turn");
         }
+        isYourTurn = true;
         disabledInput = true;
     }
 
@@ -428,19 +443,12 @@ public class ClientSocket {
 
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
         System.out.println("It's not your turn, here are some actions you can do!");
-        Event status;
         do {
-            System.out.println("pre");
-            sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
-            System.out.println("inviato");
-            status = receivedMessageC().getMessageEvent();
-            System.out.println("status " + status);
-            if (status != Event.OK)
-                passivePlayerMenu();
-        } while (status != Event.OK);
+            passivePlayerMenu();
+        } while (!isYourTurn);
+        isYourTurn = false;
         getModel();
     }
-
     private void passivePlayerMenu() throws IOException, ClassNotFoundException {
         uView.askPassiveAction();
         int choice = uView.waitInput();
