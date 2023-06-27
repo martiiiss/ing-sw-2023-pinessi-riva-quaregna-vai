@@ -21,9 +21,12 @@ public class AppClient {
             } catch (NumberFormatException e) {
                 System.err.println("Invalid value!");
             }
+
         }while (choice != 2 && choice != 1);
+
+        String add = "localhost";
         if(choice==2) {
-            String name = "rmi://localhost:45398/server";
+            String name = "rmi://"+add+":45398/server";
             ClientInterface client = new RMIClient(name, 45398);
             ((RMIClient) client).startConnection();
             System.out.println("You chose RMI!");
@@ -31,7 +34,7 @@ public class AppClient {
 
 
         } else if(choice == 1){
-            String address = "localhost";
+            String address = add;
             int portSocket = 43808;
             UserView tui = new UserView();
             ClientController clientController = new ClientController(tui);
