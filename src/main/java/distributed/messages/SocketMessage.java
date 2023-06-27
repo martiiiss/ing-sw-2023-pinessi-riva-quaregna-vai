@@ -3,7 +3,12 @@ package distributed.messages;
 import distributed.Socket.SocketServer;
 import util.Event;
 
-public class SocketMessage extends Message{
+import java.io.Serial;
+import java.io.Serializable;
+
+public class SocketMessage extends Message implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -877833848389371489L;
     private int clientIndex;
     private int matchIndex;
 
