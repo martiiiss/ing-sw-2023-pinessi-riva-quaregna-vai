@@ -34,6 +34,7 @@ public class AppGUITry {
         view.pickTiles(array, a);
         int i= view.chooseColumn();
         System.out.println(i);
+        System.out.println(i);
         i = view.chooseTile();
         System.out.println(i);
         view.addTile(b);

@@ -185,6 +185,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         } else if (this.viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
+                gui.loadPlayers(listOfPlayers); //FIXME: Nulla da fixare solo il comando da copiare in Socket una volta finito
                 server.sendMessage(matchIndex, gui, ADD_OBSERVER);
                 this.isFirstTurn = false;
                 gui.updateBoard(this.board);
@@ -259,7 +260,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         System.out.println(errorReceived.getTUIMsg());
         if (errorReceived == GAME_OVER) {
             uView.gameOver(listOfPlayers);
-            wait(10000);
+            wait(10000); //FIXME POTREBBE NON FUNZIONARE NON CANCELLARE STO FIXME
             System.exit(0);
         }
         getModel();
@@ -455,6 +456,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
      * @throws InterruptedException if a thread gets interrupted*/
     public void flowGui() throws IOException, InterruptedException {
         int tilesToPick;
+        gui.loadPlayers(listOfPlayers);
+        out.println("Score del primo:" +listOfPlayers.get(0).getScore());
         do {
             tilesToPick = gui.askTiles(); //ask number of tiles
             errorReceived = server.sendMessage(this.matchIndex,tilesToPick, TURN_AMOUNT);
@@ -488,6 +491,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             gui.addTile(tilesInHand.get(pos));
             errorReceived = server.sendMessage(this.matchIndex, pos, TURN_POSITION);
         }
+
         gui.endInsertion();
         gui.getHandView().setTileToInsert(-1);
 
@@ -507,6 +511,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
             System.exit(10);
         }
+        listOfPlayers = (ArrayList<Player>) server.getModel(matchIndex,GAME_PLAYERS,myIndex); //Used to update the score after placing my tiles
+        gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
+        gui.loadPlayers(listOfPlayers);
     }
 
     /**
@@ -516,6 +523,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
     public void waitTurn() throws IOException, InterruptedException {
         int pitIndex;
         do {
+            if(viewChosen==2) {
+                listOfPlayers = (ArrayList<Player>) server.getModel(matchIndex, GAME_PLAYERS, myIndex); //Used to update the score after placing my tiles
+                gui.update(null, new Message(listOfPlayers, UPDATED_SCORE));
+                gui.loadPlayers(listOfPlayers);
+            }
             pitIndex = (int) server.getModel(this.matchIndex,GAME_PIT, myIndex);
         } while (pitIndex != myIndex);
         if(viewChosen==1) {

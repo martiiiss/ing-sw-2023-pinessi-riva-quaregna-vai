@@ -25,6 +25,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
     private transient CGCView[] cgc;
 
     private transient JLabel errorLog;
+    private transient  JTextArea playerList;
 
     private int tilesToPick = 0;
 
@@ -77,25 +78,23 @@ public class GUIView implements Observer, Serializable { //class that contains a
         constraints.gridheight = 1;
         GUI.add(hand.getImageDisplayed(), constraints);
 
-        //button to change bookshelf
-        JInternalFrame bksButtonFrame = new JInternalFrame();
-        bksButtonFrame.setTitle("Press to change bookshelf");
+
         bksButton = new JButton();
-        bksButton.setVisible(true);
-        bksButton.setPreferredSize(new Dimension(200,50));
-        bksButtonFrame.setLayout(new GridLayout(1,1));
-        bksButtonFrame.add(bksButton);
-        bksButton.addActionListener(e ->{
-            synchronized (bksButton){
-                if(bookshelfView.isCanChange()){
-                    bksChanged = true;
-                    bksButton.notify();
-                }
-            }
-        });
-        bksButtonFrame.setVisible(true);
+
+        playerList = new JTextArea();
+        JInternalFrame playerListFrame = new JInternalFrame();
+        playerListFrame.setVisible(true);
+        playerListFrame.setTitle("Players List");
+        playerList.setFont(new Font("Arial", Font.BOLD, 14));
+        playerList.setForeground(Color.black);
+        playerListFrame.setPreferredSize(new Dimension(300,150));
+        playerList.setPreferredSize(new Dimension(250, 100));
+        playerList.setMinimumSize(new Dimension(250,70));
+        playerListFrame.add(playerList);
+        playerListFrame.setVisible(true);
         constraints.gridx = 1;
-        GUI.add(bksButtonFrame, constraints);
+        GUI.add(playerListFrame, constraints);
+
 
         //CGC
         JInternalFrame CGCArea = new JInternalFrame();
@@ -297,6 +296,16 @@ public class GUIView implements Observer, Serializable { //class that contains a
             //TODO: aggiungere i vari errori!
         }*/
     }
+    private ArrayList<Player> listPlayers = new ArrayList<>();
+    public void loadPlayers(ArrayList<Player> list) {
+        if (listPlayers.isEmpty())
+            listPlayers = list;
+        StringBuilder textToPrint = new StringBuilder();
+        for (Player p : list) {
+            textToPrint.append(p.getNickname()).append(" SCORE: ").append(p.getScore()).append("\n");
+        }
+        playerList.setText(textToPrint.toString());
+    }
     public void scoringTokenTakenByMe(ScoringToken sc){ //put the scoring token in my hand
         hand.setSC(sc.getValue(), sc.getRomanNumber());
         changeScoringToken(sc);
@@ -357,6 +366,10 @@ public class GUIView implements Observer, Serializable { //class that contains a
             case UPDATE_SCORINGTOKEN -> {
                 CommonGoalCard cgc = (CommonGoalCard) message.getObj();
                 scv[cgc.getRomanNumber()-1].setDisplayedImage(cgc.getTokenStack().lastElement().getValue());
+            }
+            case UPDATED_SCORE -> {
+                ArrayList<Player> listRec = (ArrayList<Player>) message.getObj();
+                loadPlayers(listRec);
             }
         }
     }
