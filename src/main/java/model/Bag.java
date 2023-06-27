@@ -25,7 +25,7 @@ public class Bag extends Observable implements Serializable {
     public ArrayList<Tile> getBagTiles(int requestedTiles) { //take tiles from bag
         ArrayList<Tile> returnedTiles = new ArrayList<>();
         for(int e=0; e<requestedTiles && !tilesContained.isEmpty(); e++) {
-            int i = (new Random()).nextInt(tilesContained.size()-1);
+            int i = (new Random()).nextInt(tilesContained.size());
             returnedTiles.add(tilesContained.get(i));
             tilesContained.remove(tilesContained.get(i));//Remove the tiles from the ArrayList
         }
