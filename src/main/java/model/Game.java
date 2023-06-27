@@ -16,6 +16,11 @@ public class Game extends Observable implements Serializable {
     private int numberOfPlayers;
     private Player playerInTurn;
     private Player finisher;
+
+    public void setLastTurn(boolean lastTurn) {
+        isLastTurn = lastTurn;
+    }
+
     private boolean isLastTurn;
     private ArrayList<Player> players;
     private ArrayList<CommonGoalCard> commonGoalCards;

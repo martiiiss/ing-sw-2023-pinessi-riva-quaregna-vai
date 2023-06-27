@@ -16,10 +16,25 @@ public class Controller  {
     private Bag bag;
     private Board board;
     private int chosenColumn;
+
+    public void setNumberOfChosenTiles(int numberOfChosenTiles) {
+        this.numberOfChosenTiles = numberOfChosenTiles;
+    }
+
     private int numberOfChosenTiles;
     private int protocol = 0;
     private ArrayList<Player> finalRank;
+
+    public void setPlayerHand(ArrayList<Tile> playerHand) {
+        this.playerHand = playerHand;
+    }
+
     private ArrayList<Tile> playerHand;
+
+    public void setPlayerCords(ArrayList<Cord> playerCords) {
+        this.playerCords = playerCords;
+    }
+
     private ArrayList<Cord> playerCords = new ArrayList<>();
 
     /**
@@ -39,7 +54,9 @@ public class Controller  {
         this.game = new Game();
     }
 
-
+    /**Method that returns the instance of {@code Bag}.
+     * @return an instance of {@code Bag}*/
+    public Bag getBag() {return bag;}
     /**
      * <p>
      *     Method that returns the current instance of Game.
@@ -53,7 +70,6 @@ public class Controller  {
      * @return an instance of {@code Board}*/
     public Board getBoard(){ return this.board;}
     /**
-     * <p>
      *     Method that given a {@code String} as a parameter
      *     creates a new {@code Player} and sets its nickname.<br>
      *     This also adds the player inside a list of players
@@ -63,20 +79,15 @@ public class Controller  {
      *     empty string this will return an <b>{@code Event.EMPTY_NICKNAME}</b>, if a client
      *     inserted a nickname that has already been chosen
      *     this will return an <b>{@code Event.NOT_AVAILABLE}</b>.
-     * </p>
      * @param nickname a {@code String} that represents the nickname given in input by the player
      * @return an {@code Event}, the type of event depends on the input*/
     public Event chooseNickname(@NotNull String nickname) {
         //control on emptiness
-        if(nickname.isEmpty()) {
-            return Event.EMPTY_NICKNAME;
-        }
+        if(nickname.isEmpty()) {return Event.EMPTY_NICKNAME;}
         //control on nickname duplicates
         for(int i = 0; i<game.getPlayers().size();i++) {
             if(game.getPlayers().get(i).getNickname().equals(nickname)){
-                return Event.NOT_AVAILABLE;
-            }
-        }
+                return Event.NOT_AVAILABLE;}}
         System.out.println("SetUp Nickname");
         Player newPlayer = new Player();
         newPlayer.setNickname(nickname);
@@ -85,51 +96,39 @@ public class Controller  {
         System.out.println("GameSize: "+game.getPlayers().size());
         return Event.OK;
     }
-
-
     /**
-     * <p>
-     *     Method used to chose the type of user interface.<br>
-     *     Based on the int in input the client can chose the type of interface that it wants:
+     *
+     *     Method used to choose the type of user interface.<br>
+     *     Based on the int in input the client can choose the type of interface that it wants:
      *     <b>1</b> for a Textual User Interface, <b>2</b> for a Graphical User Interface. <br>
      *     This method returns an <b>{@code Event.TUI_VIEW}</b> if the client chose a Textual User Interface,
      *     an <b>{@code Event.GUI_VIEW}</b>, otherwise if the input si not valid this method returns an <b>{@code Event.INVALID_VALUE}</b>.
-     * </p>
+     *
      * @param chosenInterface an int in between 1 and 2
      * @return an {@code Event}, based on the input*/
     public Event chooseUserInterface(int chosenInterface) {
         switch (chosenInterface) {
-            case 1 -> {
-                return Event.TUI_VIEW;
-            }
-            case 2 -> {
-                return Event.GUI_VIEW;
-            }
-            default -> {
-                return Event.INVALID_VALUE;
-            }
+            case 1 -> {return Event.TUI_VIEW;}
+            case 2 -> {return Event.GUI_VIEW;}
+            default -> {return Event.INVALID_VALUE;}
         }
     }
-
-
     /**
-     * <p>
+     *
      *     Method that initializes the Game for a match. <br>
      *     This method instantiates the {@code Bag} and the{@code Board},
      *     it also assigns an empty {@code Bookshelf}, a {@code PersonalGoalCard},to every player in the match. <br>
      *     Also, it sets the {@code CommonGoalCards}, the number of cells based on the number of players in the match,
      *     it fills the {@code Board}.<br>
-     *     Finally it sets a player as the first player, sets the firs player as player in turn and starts the game.
-     * </p>
+     *     Finally, it sets a player as the first player, sets the firs player as player in turn and starts the game.
+     *
      * <p>
      *     <b>NOTE:</b> This method gets called after all the clients needed to start the game are connected.
      * </p>*/
     public void initializeGame() {
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
-        for(int i=0;i<game.getNumOfPlayers();i++){
-            game.getPlayers().get(i).setMyBookshelf(new Bookshelf());
-        }
+        for(int i=0;i<game.getNumOfPlayers();i++){game.getPlayers().get(i).setMyBookshelf(new Bookshelf());}
         game.assignPersonalGoalCard(game.getNumOfPlayers());
         game.setCommonGoalCards();
         board.setNumOfCells(game.getNumOfPlayers());
@@ -142,19 +141,17 @@ public class Controller  {
     }
 
     /**
-     * <p>
      *     Method that, if the {@code Board} needs to be filled,
      *     gets the needed tiles from the {@code Bag} after eventually emptying the {@code Board}. <br>
      *     If the {@code Bag} contains enough tiles the {@code Board} gets entirely filled,
      *     otherwise the {@code Bag} gets emptied and the {@code Board} gets partially filled.
-     * </p>*/
+     */
     public void checkBoardToBeFilled(){
         if(board.checkBoardStatus()){
             for(int r=0;r<9;r++){
                 for(int c=0;c<9;c++){
                     if(board.getBoard()[r][c].getType()!=Type.NOTHING && board.getBoard()[r][c].getType()!=Type.BLOCKED){
-                        bag.addTile(board.removeTile(r,c));
-                    }
+                        bag.addTile(board.removeTile(r,c));}
                 }
             }
             if(bag.getTilesContained().size()>= board.getNumOfCells()){
@@ -166,7 +163,6 @@ public class Controller  {
     }
 
     /**
-     * <p>
      *     Method that gets the number of tiles that a player wants to pick.<br>
      *     This method, given an int as a parameter, controls if there are enough
      *     tiles on the board and returns an event accordingly. <br>
@@ -176,7 +172,6 @@ public class Controller  {
      *     - <b>{@code Event.INVALID_VALUE}</b> if there are not enough free slots in the player's bookshelf
      *     or if the board doesn't contain enough tiles <br>
      *     - <b>{@code Event.OK}</b> if everything worked.
-     * </p>
      * @param numberOfChosenTiles an int in between 1 and 3
      * @return an {@code Event} accordingly to the input*/
     private Event numOfChosenTiles(int numberOfChosenTiles) {
@@ -223,11 +218,8 @@ public class Controller  {
         return Event.OK;
     }
 
-    //this method will work together with the view, maybe showing the player which tiles can be chosen
-    //FIXME: Si possono pescare tiles dappertutto, non viene controllato se è disponibile
-    //FIXME: Va avanti all'infinito se la scelta è diversa da 1
+
     /**
-     * <p>
      *     Method that given a list of coordinates picks up tiles from the board (only if the player chose correct tiles).<br>
      *     This method returns a specific {@code Event} based on the input:<br>
      *     - if the player tries to pick up a tile that is not on the board it returns an {@code Event.OUT_OF_BOUNDS}; <br>
@@ -236,7 +228,6 @@ public class Controller  {
      *     - if the player tries to pick up tiles that are not on the border it returns an {@code Event.NOT_ON_BORDER}; <br>
      *     - if the player tries to pick up tiles that are not adjacent it returns an {@code Event.NOT_ADJACENT}; <br>
      *     - if the player picks up correct tiles it returns an {@code Event.OK}.
-     * </p>
      * @param cords is an {@code ArrayList} of {@link Cord} that represents a list of coordinates of the chosen tiles
      * @return an {@code Event} based on the input*/
 
@@ -267,14 +258,11 @@ public class Controller  {
         }
         return Event.OK;
     }
-    //FIXME se qualcuno ha voglia si può notevolmente ottimizzare
 
     /**
-     * <p>
      *     Method that checks that all the chosen tiles are adjacent.<br>
      *     This method returns <b>true</b> if all the chosen tiles
      *     are on the same row or column and are also adjacent to one another, <b>false</b> otherwise.
-     * </p>
      * @param cords is an {@code ArrayList} of {@link Cord} that represents a list of coordinates of the chosen tiles
      * @return a boolean, based on the conditions listed above*/
     private boolean checkAdj(@NotNull ArrayList<Cord> cords) {
@@ -320,10 +308,8 @@ public class Controller  {
 
 
     /**
-     * <p>
      *     Method that checks if a tile is available.<br>
      *     This method returns <b>true</b> if a tile has two or more free sides, <b>false</b> otherwise.
-     * </p>
      * @param cord is a {@link Cord} that represents the two coordinates of a specific tile
      * @return a boolean, based on the conditions listed above */
     private boolean isTileFreeTile(@NotNull Cord cord) {
@@ -399,13 +385,12 @@ public class Controller  {
 
 
     /**
-     * <p>
      *     Method that given an int permits the player to chose the column in which it wants to put its tiles.<br>
      *     This method returns a specific {@code Event} based on the input:<br>
      *     - if {@code chosenColumn<0 || chosenColumn >4} it returns an {@code Event.INVALID_VALUE};<br>
      *     - if the player tries to put its tiles in a column that doesn't have enough slots it returns an {@code Event.OUT_OF_BOUNDS};<br>
      *     - if the player made a correct choice it returns an {@code Event.OK}.
-     * </p>
+     *
      * @param chosenColumn an int in between 0 and 4 that represents the number of a column
      * @return an {@code Event} based on the input*/
     public Event chooseColumn(int chosenColumn) {
@@ -419,8 +404,6 @@ public class Controller  {
         return Event.OK;
     }
 
-
-    //after chooseColumn has been invoked
 
     /**
      * <p>
@@ -446,10 +429,8 @@ public class Controller  {
     }
 
 
-    /**
-     * <p>
-     *     Method that calculates the total score of a player.
-     * </p>*/
+    /**Method that calculates the total score of a player.
+     **/
     public void calculateScore(){
         int cgc = game.checkCommonGoalCard();
         int pgc = game.getPlayerInTurn().checkCompletePGC();
@@ -483,7 +464,6 @@ public class Controller  {
                 if(index==0) //If the PIT is also the first one to finish the game is over instantly
                 {
                     System.out.println("PIT ha riempito la shelf ed è quello con index 0. La partita finisce subito");
-                    //endOfGame();
                     return Event.GAME_OVER;
                 }
                 else {
@@ -514,9 +494,7 @@ public class Controller  {
 
 
     /**
-     * <p>
-     *     Method that given a {@code Player} as input sets it as the player in turn.<br>
-     * </p>
+     * Method that given a {@code Player} as input sets it as the player in turn.<br>
      * @param playerInTurn a player that has to be set as the player in turn*/
     public void goToNext(Player playerInTurn){
         int i = game.getPlayers().indexOf(playerInTurn)+1;
@@ -528,35 +506,8 @@ public class Controller  {
         System.out.println("NickPIT: "+game.getPlayerInTurn().getNickname());
     }
 
-
     /**
-     * <p>
-     *     Method that calls the end of the match and creates the rank.
-     * </p>*/
-    public void endOfGame() {
-        ArrayList<Integer> rankNumber = new ArrayList<>();
-        for(int i=0; i<game.getPlayers().size(); i++){
-            rankNumber.add(game.getPlayers().get(i).getScore());
-        }
-        Collections.sort(rankNumber);
-        this.finalRank = new ArrayList<>(game.getPlayers());
-        for(int i=game.getPlayers().size()-1; i>=0; i--) {
-            for(int j=0; j<game.getPlayers().size(); j++){
-                if(rankNumber.get(j)!=-1 && game.getPlayers().get(i).getScore() == rankNumber.get(j)){
-                    this.finalRank.set(j, game.getPlayers().get(i));
-                    rankNumber.set(j, -1);
-                    j=5;
-                }
-            }
-        }
-        System.out.println("GAME OVER!!!!!!!!!!!");
-        System.exit(0);
-    }
-
-    /**
-     * <p>
-     *     Method that removes the tiles from the board.<br>
-     * </p>
+     * Method that removes the tiles from the board.<br>
      * @return an {@code ArrayList} of {@code Tile}
      * that represents the list of tiles removed from the board*/
     public ArrayList<Tile> getTilesFromBoard() {
@@ -568,13 +519,10 @@ public class Controller  {
         playerCords.clear();
         System.out.println("TEST DELLE TILES NELL HAND: "+removedTiles);
         return removedTiles;
-        //TODO: UPDATE OBSERVERS!
     }
 
     /**
-     * <p>
-     *     Method that updates the controller based on the two received parameters.<br>
-     * </p>
+     * Method that updates the controller based on the two received parameters.<br>
      * @param event is a specific {@code Event} needed to do a specific update
      * @param obj is the object that has to be set as an update
      * @return a specific type of error, for brevity the list of possible errors won't be described*/
@@ -605,14 +553,12 @@ public class Controller  {
                 else
                     error = Event.WAIT;
             }
-            case TURN_AMOUNT -> {
-                error = numOfChosenTiles((int) obj);
-            }
+            case TURN_AMOUNT -> error = numOfChosenTiles((int) obj);
+
             case TURN_PICKED_TILES -> error = chooseTiles((ArrayList<Cord>) obj);
 
-            case TURN_COLUMN -> {
-                error = chooseColumn((int) obj);
-            }
+            case TURN_COLUMN -> error = chooseColumn((int) obj);
+
             case TURN_POSITION -> error = chooseTilesDisposition((int) obj);
 
             case END_OF_TURN -> {
@@ -641,9 +587,7 @@ public class Controller  {
                     return Event.BOARD_NOT_EMPTY;
             }
             case CHECK_ENDGAME -> {
-                {
                     return checkIfGameEnd();
-                }
             }
             case ADD_OBSERVER -> {
                 addGui((GUIView) obj);

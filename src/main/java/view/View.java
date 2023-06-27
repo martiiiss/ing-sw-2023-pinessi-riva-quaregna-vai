@@ -18,7 +18,6 @@ public class View implements Observer {
     }
     @Override
     public void update(Observable observable, Message message) {
-
     }
 
     /**
