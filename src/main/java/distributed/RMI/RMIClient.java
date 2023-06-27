@@ -185,7 +185,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         } else if (this.viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
-               // this.board.addObserver(gui);
                 server.sendMessage(matchIndex, gui, ADD_OBSERVER);
                 this.isFirstTurn = false;
                 gui.updateBoard(this.board);

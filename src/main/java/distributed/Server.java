@@ -122,6 +122,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     public Board getServerBoard(){ return this.controller.getBoard();}
 
     public Event sendServerMessage(int gameIndex, Object obj, Event event) throws IOException {
+        //System.out.println(" " + gameIndex + " "  + obj + " " + event);
         if(event==Event.ASK_NUM_PLAYERS)
             matchList.get(gameIndex).getGameController().updateController(matchList.get(gameIndex).getMaxSize(),Event.ASK_NUM_PLAYERS);
         return matchList.get(gameIndex).getGameController().updateController(obj,event);
