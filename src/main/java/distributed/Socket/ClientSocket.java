@@ -8,6 +8,7 @@ import util.Event;
 import view.GUI.GUIView;
 import view.UserView;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -111,6 +112,7 @@ public class ClientSocket {
                 sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, Event.SET_NICKNAME));
             }
             case ALL_CONNECTED -> {
+                System.out.println("Starta il thread");
                 startThread();
                 getModel();
             }
@@ -135,13 +137,11 @@ public class ClientSocket {
     }
 
     public void startThread() throws IOException {
-        ObjectInputStream threadInputStream =  new ObjectInputStream(socket.getInputStream());;
-        ObjectOutputStream threadOutputStream  = new ObjectOutputStream(socket.getOutputStream());;
         this.threadWaitTurn = new Thread(() -> {
             synchronized (lock) {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
-                        waitTurn(threadInputStream, threadOutputStream);
+                        waitTurn();
                         lock.wait();
                     } catch (InterruptedException | IOException | ClassNotFoundException e) {
                         //throw new RuntimeException(e);
@@ -152,23 +152,21 @@ public class ClientSocket {
         }, "WaitForTurnThread");
     }
 
-    public void waitTurn(ObjectInputStream i, ObjectOutputStream o) throws IOException, ClassNotFoundException, InterruptedException {
+    public void waitTurn() throws IOException, ClassNotFoundException, InterruptedException {
         int pitIndex;
         do {
             threadWaitTurn.sleep(100);
-            try{
-                //invio messaggio:
-                o.writeObject(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
-                o.flush();
-                o.reset();
-            }catch (IOException e){
-                //TODO disconnessione
-                //notifyObserver con messaggio di errore
+            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
+            Message msg = receivedMessageC();
+            //System.out.println(msg.getMessageEvent());
+            if(msg.getMessageEvent()==GAME_PIT) {
+                pitIndex = (int) msg.getObj();
+            } else{
+                System.out.println("altro mess " + msg.getMessageEvent());
+                pitIndex = indexOfPIT;
             }
-            SocketMessage message = (SocketMessage) i.readObject();
-            pitIndex = (int) message.getObj();
-        } while (pitIndex != myIndex);
 
+        } while (pitIndex != myIndex);
         if(viewChosen==1) {
             System.out.println("You turn");
             System.out.println("Press enter to start your turn....");
@@ -444,6 +442,7 @@ public class ClientSocket {
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
         System.out.println("It's not your turn, here are some actions you can do!");
         do {
+
             passivePlayerMenu();
         } while (!isYourTurn);
         isYourTurn = false;
