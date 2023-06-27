@@ -31,7 +31,7 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
         try{
             serverSocket = new ServerSocket(port);
         } catch (IOException e){
-            System.err.println(e.getMessage());
+            //System.err.println(e.getMessage());
             return;
         }
         System.out.println("ServerSocket ready on port: "+port);
@@ -47,7 +47,7 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
                 clientThread.start();
                 System.out.println("un nuovo client si è connesso!");
             } catch (IOException e){
-                e.printStackTrace();
+               // e.printStackTrace();
             }
         }
 

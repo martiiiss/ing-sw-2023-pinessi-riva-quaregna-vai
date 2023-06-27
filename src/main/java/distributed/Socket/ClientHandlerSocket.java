@@ -45,6 +45,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (inputLock) {
                     SocketMessage message = receivedMessage();
+                    //System.out.println("ricevo " + message.getObj() + " ev " + message.getMessageEvent());
                     Object obj=null;
                     if(message.getMessageEvent()!=Event.OK) {
                         obj = socketServer.receivedMessage(message);
@@ -52,7 +53,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                     if(message.getObj() == Event.ASK_MODEL){
                         sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), obj, message.getMessageEvent()));
                     } else{
-                        System.out.println("update");
                         update(obj, message);
                     }
                 }
@@ -103,13 +103,10 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 }while (obj!=Event.OK);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.OK));
             }
-            case TURN_AMOUNT, TURN_PICKED_TILES, TURN_COLUMN, TURN_POSITION, CHECK_REFILL, END_OF_TURN -> {
+            case TURN_AMOUNT, TURN_PICKED_TILES, TURN_COLUMN, TURN_POSITION, CHECK_REFILL, END_OF_TURN, CHECK_MY_TURN, SET_UP_BOARD -> {
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, (Event)obj));
             }
-            case CHECK_MY_TURN -> {
-                System.out.println("check " + obj);
-                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, (Event) obj));
-            }
+
 
         }
     }

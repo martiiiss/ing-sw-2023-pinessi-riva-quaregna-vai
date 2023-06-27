@@ -1,14 +1,18 @@
 package distributed.Socket;
 
+import distributed.messages.Message;
 import distributed.messages.SocketMessage;
 import model.*;
 import util.Cord;
 import util.Event;
+import view.GUI.GUIView;
 import view.UserView;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.rmi.UnmarshalException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,8 +47,9 @@ public class ClientSocket {
     private int numberOfChosenTiles;
     private ArrayList<Cord> cords = new ArrayList<>();
     private int column;
-
-
+    private GUIView gui;
+    private ArrayList<Cord> tilesCords = new ArrayList<>();
+    private ArrayList<Tile> tilesInHand;
     public ClientSocket(String address, int port) throws IOException {
         this.port = port;
         this.address = address;
@@ -62,7 +67,6 @@ public class ClientSocket {
         uView = userView;
         this.lock = new Object();
 
-        System.out.println("istanzio uView!!");
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
@@ -144,39 +148,45 @@ public class ClientSocket {
         }, "WaitForTurnThread");
     }
 
-    public void waitTurn() throws IOException, ClassNotFoundException {
+    public void waitTurn() throws IOException, ClassNotFoundException, InterruptedException {
         int pitIndex;
         do {
+            threadWaitTurn.sleep(100);
             sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
-            pitIndex = (int) receivedMessageC().getObj();
+            pitIndex = (Integer) receivedMessageC().getObj();
         } while (pitIndex != myIndex);
         if(viewChosen==1) {
             System.out.println("You turn");
             System.out.println("Press enter to start your turn....");
+        } else{
+            System.out.println("you turn");
         }
         disabledInput = true;
     }
 
     public void getModel() throws IOException, ClassNotFoundException, InterruptedException {
+        System.out.println("model");
         disabledInput = false;
-        if(!hasGameStarted){
-            sendMessageC(new SocketMessage(this.myIndex, this.myMatch,null, GAME_STARTED));
-            if(receivedMessageC().getMessageEvent()==Event.OK){
-                System.out.println("ricevuto ok");
-                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
-                this.board = (Board) receivedMessageC().getObj();
-                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
-                this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
-                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
-                this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
-                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
-                this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
-                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
-                this.indexOfPIT = (int) receivedMessageC().getObj();
-                this.playerInTurn = listOfPlayers.get(indexOfPIT);
+        if(!hasGameStarted) {
+            System.out.println("game non iniziato");
+            sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
+            while (receivedMessageC().getObj()!=Event.OK) {
+                sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
             }
-
+            hasGameStarted = true;
         }
+        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+        this.board = (Board) receivedMessageC().getObj();
+        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
+        this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
+        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
+        this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
+        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
+        this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
+        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
+        this.indexOfPIT = (int) receivedMessageC().getObj();
+        this.playerInTurn = listOfPlayers.get(indexOfPIT);
+
         System.out.println("ho il model ora devo startare la partita!");
 
         if(viewChosen==1){
@@ -193,41 +203,56 @@ public class ClientSocket {
                 getModel();
             }
         } else if(viewChosen==2){
-            //TODO GUI
-            /*if (this.isFirstTurn) {
+            if (this.isFirstTurn) {
                 gui = new GUIView();
-                // this.board.addObserver(gui);
-                server.sendMessage(matchIndex, gui, ADD_OBSERVER);
+                sendMessageC(new SocketMessage(myIndex, myMatch, gui, ADD_OBSERVER));
                 this.isFirstTurn = false;
+
                 gui.updateBoard(this.board);
-                gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
-                gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(1));
-                gui.setupPGC(((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex)).getNumber());
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
+                this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
+                gui.setupCGC(commonGoalCard.get(0));
+                gui.setupCGC(commonGoalCard.get(1));
+                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
+                this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
+                gui.setupPGC(this.myPersonalGoalCard.getNumber());
+                System.out.println("fine setup gui");
             }
             if (myIndex == indexOfPIT) {
+                System.out.println("MIO TURNO ");
+                gui.showError(START_YOUR_TURN);
                 flowGui();
+                System.out.println("next");
                 getModel();
             } else {
+                System.out.println("non è il mio turno");
+                gui.showError(NOT_YOUR_TURN);
                 synchronized (lock) {
                     this.lock.notifyAll();
                 }
+                /*
                 if(!threadWaitTurn.isAlive()){
                     threadWaitTurn.start();
-                }
+                }*/
+                //da inserire nel thread
                 Event status = Event.WAIT;
                 do {
                     try {
-                        status = server.sendMessage(this.matchIndex,myIndex, CHECK_MY_TURN);
-                        Event e = server.sendMessage(this.matchIndex, myIndex, SET_UP_BOARD);
+                        sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+                        status = (Event) receivedMessageC().getObj();
+                        sendMessageC(new SocketMessage(myIndex, myMatch, board, SET_UP_BOARD));
+                        Event e = (Event) receivedMessageC().getObj();
                         if(e==SET_UP_BOARD) {
-                            board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
+                            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+                            this.board = (Board) receivedMessageC().getObj();
                             gui.update(board, new Message(board, SET_UP_BOARD));
                         }
                     } catch (SocketException | UnmarshalException ex) {}
                 } while (status != Event.OK);
+
+                System.out.println("new");
                 getModel();
             }
-            */
         }
     }
 
@@ -403,13 +428,23 @@ public class ClientSocket {
 
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
         System.out.println("It's not your turn, here are some actions you can do!");
-        passivePlayerMenu();
+        Event status;
+        do {
+            System.out.println("pre");
+            sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+            System.out.println("inviato");
+            status = receivedMessageC().getMessageEvent();
+            System.out.println("status " + status);
+            if (status != Event.OK)
+                passivePlayerMenu();
+        } while (status != Event.OK);
         getModel();
     }
 
     private void passivePlayerMenu() throws IOException, ClassNotFoundException {
         uView.askPassiveAction();
         int choice = uView.waitInput();
+        System.out.println("choice " + choice);
         if (!disabledInput) {
             switch (choice) {
                 case 1 -> {
@@ -444,6 +479,69 @@ public class ClientSocket {
                     uView.showPlayers(listOfPlayers);
                 }
             }
+        }
+    }
+
+    public void flowGui() throws IOException, InterruptedException, ClassNotFoundException {
+        int tilesToPick;
+        SocketMessage message;
+        do {
+            tilesToPick = gui.askTiles(); //ask number of tiles
+            sendMessageC(new SocketMessage(myIndex, myMatch, tilesToPick, TURN_AMOUNT));
+            message = receivedMessageC();
+            gui.showError((Event) message.getObj());
+        } while (message.getObj() != Event.OK);
+
+
+        Event errorReceived;
+        do {
+            gui.getBoardView().setTilesPicked(tilesToPick);
+            tilesCords = gui.getTilesClient();
+            sendMessageC(new SocketMessage(myIndex, myMatch, tilesCords, TURN_PICKED_TILES));
+            errorReceived = (Event) receivedMessageC().getObj();
+            System.out.println(errorReceived.getTUIMsg());
+            gui.showError(errorReceived);
+        } while (errorReceived != Event.OK);
+
+        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
+        tilesInHand = (ArrayList<Tile>) receivedMessageC().getObj();
+
+        gui.pickTiles(tilesCords, tilesInHand); //adds the tile to tiles in hand
+
+        do {
+            int column = gui.chooseColumn();
+            sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
+            errorReceived = (Event) receivedMessageC().getObj();
+            System.out.println("errore colonna: " + errorReceived);
+            gui.showError(errorReceived);
+        }while(errorReceived!=Event.OK);
+
+        for(int i=0; i<tilesToPick; i++){
+            int pos = gui.chooseTile();
+            gui.addTile(tilesInHand.get(pos));
+            sendMessageC(new SocketMessage(myIndex, myMatch, pos, TURN_POSITION));
+            errorReceived = (Event) receivedMessageC().getObj();
+        }
+        gui.endInsertion();
+        gui.getHandView().setTileToInsert(-1);
+
+        //FIXME sistemare i seguenti (fine)
+        sendMessageC(new SocketMessage(myIndex, myMatch, null, CHECK_REFILL));
+        errorReceived = (Event) receivedMessageC().getObj();
+        if (errorReceived == Event.REFILL) {
+            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+            this.board = (Board) receivedMessageC().getObj();
+            gui.update(board,new Message(board,SET_UP_BOARD));
+            gui.showError(errorReceived);
+        }
+        sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
+        errorReceived = (Event) receivedMessageC().getObj();
+        if(errorReceived != OK)
+            gui.showError(errorReceived);
+        if (errorReceived == GAME_OVER) {
+            gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
+            wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
+            System.exit(10);
         }
     }
 
