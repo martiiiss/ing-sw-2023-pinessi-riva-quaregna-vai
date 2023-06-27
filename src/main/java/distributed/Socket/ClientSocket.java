@@ -153,7 +153,7 @@ public class ClientSocket {
         do {
             threadWaitTurn.sleep(100);
             sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
-            pitIndex = (Integer) receivedMessageC().getObj();
+            pitIndex = (int) receivedMessageC().getObj();
         } while (pitIndex != myIndex);
         if(viewChosen==1) {
             System.out.println("You turn");
@@ -230,8 +230,8 @@ public class ClientSocket {
                 synchronized (lock) {
                     this.lock.notifyAll();
                 }
-                /*
-                if(!threadWaitTurn.isAlive()){
+
+                /*if(!threadWaitTurn.isAlive()){
                     threadWaitTurn.start();
                 }*/
                 //da inserire nel thread
