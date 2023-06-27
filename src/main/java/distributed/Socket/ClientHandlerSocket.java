@@ -47,13 +47,23 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                     SocketMessage message = receivedMessage();
                     //System.out.println("ricevo " + message.getObj() + " ev " + message.getMessageEvent());
                     Object obj=null;
-                    if(message.getMessageEvent()!=Event.OK) {
+                    if(message.getObj()==Event.CHECK_MY_TURN){
                         obj = socketServer.receivedMessage(message);
-                    }
-                    if(message.getObj() == Event.ASK_MODEL){
-                        sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), obj, message.getMessageEvent()));
-                    } else{
-                        update(obj, message);
+                        int index=(int)obj;
+                        if(index== message.getClientIndex()){
+                            sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), index, Event.START_YOUR_TURN));
+                        } else{
+                            sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), index, Event.NOT_YOUR_TURN));
+                        }
+                    } else {
+                        if (message.getMessageEvent() != Event.OK) {
+                            obj = socketServer.receivedMessage(message);
+                        }
+                        if (message.getObj() == Event.ASK_MODEL) {
+                            sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), obj, message.getMessageEvent()));
+                        } else {
+                            update(obj, message);
+                        }
                     }
                 }
             }

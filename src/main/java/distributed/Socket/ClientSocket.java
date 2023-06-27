@@ -52,6 +52,7 @@ public class ClientSocket {
     private ArrayList<Cord> tilesCords = new ArrayList<>();
     private ArrayList<Tile> tilesInHand;
     private boolean isYourTurn;
+    private boolean active = false;
 
     public ClientSocket(String address, int port) throws IOException {
         this.port = port;
@@ -113,10 +114,59 @@ public class ClientSocket {
             }
             case ALL_CONNECTED -> {
                 System.out.println("Starta il thread");
-                startThread();
+                //startThread();
                 getModel();
+                update(new SocketMessage(myIndex, myMatch, null, START));
             }
+            case START -> {
+                sendMessageC(new SocketMessage(myIndex, myMatch, CHECK_MY_TURN, GAME_PIT ));
+            }
+            case START_YOUR_TURN -> {
+                active = true;
+                if(viewChosen==1){
+                    isFirstTurn = false;
+                    playerInTurn = listOfPlayers.get(myIndex);
+                    activePlayerMenu();
+                    System.out.println("Here's your Bookshelf:");
+                    uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
+                    uView.showTUIBoard(this.board);
+
+                } if(viewChosen==2){
+                    System.out.println("MIO TURNO ");
+                    gui.showError(START_YOUR_TURN);
+                    flowGui();
+                    System.out.println("next");
+                }
+            }
+            case NOT_YOUR_TURN -> {
+                active = false;
+                if(viewChosen==1){
+                    passivePlay();
+                } else if(viewChosen==2){
+
+                }
+            }
+            case GAME_BOARD -> {
+                this.board = (Board) message.getObj();
+                if(!active) {
+                    System.out.println("Here's the game board...");
+                    uView.showTUIBoard(board);
+                }
+            }
+            case GAME_PLAYERS -> {
+                this.listOfPlayers = (ArrayList<Player>) message.getObj();
+                if(!active) {
+                    for (Player player : listOfPlayers) {
+                        System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
+                        uView.showTUIBookshelf(player.getMyBookshelf());
+                    }
+                }
+            }
+
+
         }
+
+
     }
 
     public void sendMessageC(SocketMessage mess) throws IOException {
@@ -202,20 +252,7 @@ public class ClientSocket {
 
         System.out.println("ho il model ora devo startare la partita!");
 
-        if(viewChosen==1){
-            if (myIndex == indexOfPIT) {
-                activePlay();
-            } else {
-                synchronized (lock) {
-                    this.lock.notifyAll();
-                }
-                if(!threadWaitTurn.isAlive()){
-                    threadWaitTurn.start();
-                }
-                passivePlay();
-                getModel();
-            }
-        } else if(viewChosen==2){
+        if(viewChosen==2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
                 sendMessageC(new SocketMessage(myIndex, myMatch, gui, ADD_OBSERVER));
@@ -231,12 +268,31 @@ public class ClientSocket {
                 gui.setupPGC(this.myPersonalGoalCard.getNumber());
                 System.out.println("fine setup gui");
             }
+        }
+/*
+        if(viewChosen==1){
+            if (myIndex == indexOfPIT) {
+                activePlay();
+            } else {
+                synchronized (lock) {
+                    this.lock.notifyAll();
+                }
+                if(!threadWaitTurn.isAlive()){
+                    threadWaitTurn.start();
+                }
+                passivePlay();
+                getModel();
+            }
+
+        }
+
+        if(viewChosen==2){
             if (myIndex == indexOfPIT) {
                 System.out.println("MIO TURNO ");
                 gui.showError(START_YOUR_TURN);
                 flowGui();
                 System.out.println("next");
-                getModel();
+               // getModel();
             } else {
                 System.out.println("non è il mio turno");
                 gui.showError(NOT_YOUR_TURN);
@@ -244,10 +300,9 @@ public class ClientSocket {
                     this.lock.notifyAll();
                 }
 
-                /*if(!threadWaitTurn.isAlive()){
+                if(!threadWaitTurn.isAlive()){
                     threadWaitTurn.start();
-                }*/
-                //da inserire nel thread
+                }
                 Event status = Event.WAIT;
                 do {
                     try {
@@ -267,6 +322,8 @@ public class ClientSocket {
                 getModel();
             }
         }
+        */
+
     }
 
     private void activePlay() throws IOException, InterruptedException, ClassNotFoundException {
@@ -456,9 +513,11 @@ public class ClientSocket {
             switch (choice) {
                 case 1 -> {
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+                    /*
                     this.board = (Board) receivedMessageC().getObj();
                     System.out.println("Here's the game board...");
                     uView.showTUIBoard(board);
+                    */
                 }
                 case 2 -> {
                     System.out.println("Here are the CommonGoalCards...");
@@ -471,11 +530,13 @@ public class ClientSocket {
                 case 4 -> {
                     System.out.println("Here's everyone's Bookshelf");
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
+                    /*
                     this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
                     for (Player player : listOfPlayers) {
                         System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
+                     */
                 }
                 case 5 -> {
                     uView.chatOptions(listOfPlayers.get(myIndex));

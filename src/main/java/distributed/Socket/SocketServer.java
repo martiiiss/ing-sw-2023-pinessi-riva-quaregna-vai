@@ -67,17 +67,21 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
 
     public Object receivedMessage(SocketMessage message) throws IOException, ClassNotFoundException {
         Object obj;
-        if(message.getObj()==Event.ASK_MODEL){
-            obj = server.getServerModel(message.getMatchIndex(), message.getMessageEvent(), message.getClientIndex());
-        } else if(message.getMessageEvent()==Event.ASK_NUM_PLAYERS){
-            obj = askMyIndex();
-        } else {
-            obj = server.sendServerMessage(message.getMatchIndex(), message.getObj(), message.getMessageEvent());
+        if(message.getObj()==Event.CHECK_MY_TURN){
+            Object indexPit = server.getServerModel(message.getMatchIndex(), message.getMessageEvent(), message.getClientIndex());
+            return indexPit;
+        } else{
+            if(message.getObj()==Event.ASK_MODEL){
+                obj = server.getServerModel(message.getMatchIndex(), message.getMessageEvent(), message.getClientIndex());
+            } else if(message.getMessageEvent()==Event.ASK_NUM_PLAYERS){
+                obj = askMyIndex();
+            } else {
+                obj = server.sendServerMessage(message.getMatchIndex(), message.getObj(), message.getMessageEvent());
+            }
+            // server return an Error
+            return obj;
+            //updateView(message, clientIndex, matchIndex);
         }
-        // server return an Error
-
-        //updateView(message, clientIndex, matchIndex);
-        return obj;
     }
 
 
