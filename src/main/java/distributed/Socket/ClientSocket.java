@@ -53,6 +53,8 @@ public class ClientSocket {
     private ArrayList<Tile> tilesInHand;
     private boolean isYourTurn;
     private boolean active = false;
+    private int choice=0;
+    private int count=0;
 
     public ClientSocket(String address, int port) throws IOException {
         this.port = port;
@@ -96,40 +98,45 @@ public class ClientSocket {
             case SET_CLIENT_INDEX ->{
                 this.myIndex = message.getClientIndex();
                 this.myMatch = message.getMatchIndex();
-                update(new SocketMessage(myIndex, myMatch, null, Event.CHOOSE_VIEW));
+                update(new SocketMessage(myIndex, myMatch, null, CHOOSE_VIEW));
             }
             case CHOOSE_VIEW -> {
                 if(message.getObj()!=null){
                     System.out.println(((Event)message.getObj()).getMsg());
                 }
                 this.viewChosen = uView.userInterface();
-                sendMessageC(new SocketMessage(myIndex, myMatch, this.viewChosen, Event.CHOOSE_VIEW));
+                sendMessageC(new SocketMessage(myIndex, myMatch, this.viewChosen, CHOOSE_VIEW));
             }
             case SET_NICKNAME -> {
                 if(message.getObj()!=null){
                     System.out.println(((Event)message.getObj()).getMsg());
                 }
                 this.nickname = uView.askPlayerNickname();
-                sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, Event.SET_NICKNAME));
+                sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, SET_NICKNAME));
             }
             case ALL_CONNECTED -> {
                 System.out.println("Starta il thread");
                 //startThread();
                 getModel();
+                //wait(500);
                 update(new SocketMessage(myIndex, myMatch, null, START));
             }
-            case START -> {
+            case START, CHECK_MY_TURN -> {
                 sendMessageC(new SocketMessage(myIndex, myMatch, CHECK_MY_TURN, GAME_PIT ));
             }
             case START_YOUR_TURN -> {
                 active = true;
                 if(viewChosen==1){
+                    if(!isFirstTurn)
+                        getModel();
                     isFirstTurn = false;
                     playerInTurn = listOfPlayers.get(myIndex);
                     activePlayerMenu();
                     System.out.println("Here's your Bookshelf:");
-                    uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
+                    uView.showTUIBookshelf(listOfPlayers.get(myIndex).getMyBookshelf());
                     uView.showTUIBoard(this.board);
+
+                    activeAskNumOfTiles();
 
                 } if(viewChosen==2){
                     System.out.println("MIO TURNO ");
@@ -148,25 +155,110 @@ public class ClientSocket {
             }
             case GAME_BOARD -> {
                 this.board = (Board) message.getObj();
+                System.out.println("act " + active);
                 if(!active) {
                     System.out.println("Here's the game board...");
                     uView.showTUIBoard(board);
                 }
+                passivePlay();
             }
             case GAME_PLAYERS -> {
                 this.listOfPlayers = (ArrayList<Player>) message.getObj();
+                System.out.println("choice " +choice + "active"+ active);
                 if(!active) {
-                    for (Player player : listOfPlayers) {
-                        System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
-                        uView.showTUIBookshelf(player.getMyBookshelf());
+                    if(choice==4){
+                        for (Player player : listOfPlayers) {
+                            System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
+                            uView.showTUIBookshelf(player.getMyBookshelf());
+                        }
+                        passivePlay();
+                    } else if(choice==6){
+                        this.listOfPlayers = (ArrayList<Player>) message.getObj();
+                        uView.showPlayers(listOfPlayers);
+                        passivePlay();
+                    }
+                } else if(active){
+                    this.listOfPlayers = (ArrayList<Player>) message.getObj();
+                    uView.showPlayers(listOfPlayers);
+                }
+            }
+            case TURN_AMOUNT -> {
+                if(message.getObj()!=null) {
+                    if (message.getObj() != OK) {
+                        System.out.println(((Event) message.getObj()).getMsg());
+                        activeAskNumOfTiles();
+                    } else {
+                        System.out.println("ACTIVE ASK TILE");
+                        activeAskTiles();
                     }
                 }
             }
+            case TURN_PICKED_TILES -> {
+                if(message.getObj()!= OK) {
+                    System.out.println(((Event) message.getObj()).getMsg());
+                    activeAskTiles();
+                } else {
+                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
+                }
+            }
+            case TURN_TILE_IN_HAND -> {
+                tilesInHand = (ArrayList<Tile>) message.getObj();
+                System.out.println(tilesInHand);
+                uView.printTilesInHand(tilesInHand);
+                uView.showTUIBookshelf(listOfPlayers.get(myIndex).getMyBookshelf());
+                activeAskColumn((ArrayList<Tile>) message.getObj());
 
+            }
+            case TURN_COLUMN -> {
+                if (message.getObj() == OK) {
+                    activePlaceTile(tilesInHand);
+                }else {
+                    System.out.println(((Event) message.getObj()).getMsg());
+                    activeAskColumn(tilesInHand);
+                }
+            }
+            case TURN_POSITION -> {
+                System.out.println("ogg" + message.getObj());
+                if(message.getObj()!=OK){
+                    System.out.println(((Event)message.getObj()).getMsg());
+                    activePlaceTile(tilesInHand);
+                } else if(count<numberOfChosenTiles){
+                    count++;
+                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, UPDATE_BOOKSHELF));
+                }
+            } case UPDATE_BOOKSHELF -> {
+                System.out.println("count" + count);
+                if(count<=numberOfChosenTiles){
+                    System.out.println("aggiorno la bookshelf ");
+                    Bookshelf bookshelf = (Bookshelf) message.getObj();
+                    playerInTurn.setMyBookshelf(bookshelf);
+                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GET_TILES_HAND));
+                }
+            }
+            case GET_TILES_HAND -> {
+                uView.printTilesInHand((ArrayList<Tile>) message.getObj());
+                uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
 
+                if(count<numberOfChosenTiles) {
+                    activePlaceTile((ArrayList<Tile>) message.getObj());
+                }else {
+                    count = 0;
+                    sendMessageC(new SocketMessage(myIndex, myMatch, null, CHECK_REFILL));
+                }
+
+            }
+            case CHECK_REFILL -> {
+                if (message.getObj() == REFILL)
+                    System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
+                sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
+
+            }
+            case END_OF_TURN -> {
+                System.out.println(((Event)(message.getObj())).getMsg());
+                getModel();
+                sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+            }
         }
-
-
     }
 
     public void sendMessageC(SocketMessage mess) throws IOException {
@@ -184,47 +276,6 @@ public class ClientSocket {
     public SocketMessage receivedMessageC() throws IOException, ClassNotFoundException {
         SocketMessage message = (SocketMessage) inputStream.readObject();
         return message;
-    }
-
-    public void startThread() throws IOException {
-        this.threadWaitTurn = new Thread(() -> {
-            synchronized (lock) {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        waitTurn();
-                        lock.wait();
-                    } catch (InterruptedException | IOException | ClassNotFoundException e) {
-                        //throw new RuntimeException(e);
-                    }
-                }
-
-            }
-        }, "WaitForTurnThread");
-    }
-
-    public void waitTurn() throws IOException, ClassNotFoundException, InterruptedException {
-        int pitIndex;
-        do {
-            threadWaitTurn.sleep(100);
-            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
-            Message msg = receivedMessageC();
-            //System.out.println(msg.getMessageEvent());
-            if(msg.getMessageEvent()==GAME_PIT) {
-                pitIndex = (int) msg.getObj();
-            } else{
-                System.out.println("altro mess " + msg.getMessageEvent());
-                pitIndex = indexOfPIT;
-            }
-
-        } while (pitIndex != myIndex);
-        if(viewChosen==1) {
-            System.out.println("You turn");
-            System.out.println("Press enter to start your turn....");
-        } else{
-            System.out.println("you turn");
-        }
-        isYourTurn = true;
-        disabledInput = true;
     }
 
     public void getModel() throws IOException, ClassNotFoundException, InterruptedException {
@@ -270,22 +321,6 @@ public class ClientSocket {
             }
         }
 /*
-        if(viewChosen==1){
-            if (myIndex == indexOfPIT) {
-                activePlay();
-            } else {
-                synchronized (lock) {
-                    this.lock.notifyAll();
-                }
-                if(!threadWaitTurn.isAlive()){
-                    threadWaitTurn.start();
-                }
-                passivePlay();
-                getModel();
-            }
-
-        }
-
         if(viewChosen==2){
             if (myIndex == indexOfPIT) {
                 System.out.println("MIO TURNO ");
@@ -326,58 +361,9 @@ public class ClientSocket {
 
     }
 
-    private void activePlay() throws IOException, InterruptedException, ClassNotFoundException {
-        isFirstTurn = false;
-        playerInTurn = listOfPlayers.get(myIndex);
-        activePlayerMenu();
-        System.out.println("Here's your Bookshelf:");
-        uView.showTUIBookshelf(listOfPlayers.get(indexOfPIT).getMyBookshelf());
-        uView.showTUIBoard(this.board);
-
-        Event errorReceived;
-        //ASK NUM OF TILES
-        do {
-            errorReceived = activeAskNumOfTiles();
-        } while (errorReceived != Event.OK);
-
-        //Asks the client the coordinates
-        do {
-            errorReceived = activeAskTiles();
-        } while (errorReceived != Event.OK);
-
-        ArrayList<Tile> tilesInHand;
-        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
-        tilesInHand = (ArrayList<Tile>) (receivedMessageC().getObj());
-        uView.printTilesInHand(tilesInHand);
-        uView.showTUIBookshelf(listOfPlayers.get(myIndex).getMyBookshelf());
-
-        //Asking in which column the player wishes to place the picked tiles
-        do {
-            errorReceived = activeAskColumn(tilesInHand);
-        } while (errorReceived != Event.OK);
-
-
-        //Asking the order of insertion
-        sendMessageC(new SocketMessage(myIndex, myMatch, null, CHECK_REFILL));
-        errorReceived = (Event) receivedMessageC().getObj();
-
-        //The server checks if the board had to be refilled, the client asks the server
-        //if it has been done, if true then it receives an update of the board so that it can be printed
-        if (errorReceived == Event.REFILL)
-            System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
-
-        sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
-        errorReceived = (Event) receivedMessageC().getObj();
-        System.out.println(errorReceived.getMsg());
-        getModel();
-    }
-
-
     private void activePlayerMenu() throws IOException, ClassNotFoundException {
-        int choice;
         System.out.println("Would you like to do any of these actions before making your move?");
-        do {
-            //TODO:Sposta l'opzione "continua con il turno" ad un numero più decente di "6"
+        do{
             choice = uView.askAction();
             switch (choice) {
                 case 1 -> {
@@ -394,51 +380,33 @@ public class ClientSocket {
                 }
                 case 4 -> {
                     System.out.println("Here's everyone's Bookshelf");
-                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
-                    this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
                     for (Player player : listOfPlayers) {
                         System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
                 }
-                case 5 -> {
-                    uView.chatOptions(listOfPlayers.get(myIndex));
-                }
-                case 7 -> {
-                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
-                    this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
-                    uView.showPlayers(listOfPlayers);
-                }
+                case 5 -> uView.chatOptions(listOfPlayers.get(myIndex));
+                case 7 -> uView.showPlayers(listOfPlayers);
             }
             if (choice != 6)
                 System.out.println("What else would you like to do?");
         } while (choice != 6);
     }
 
-    private Event activeAskNumOfTiles() throws IOException, ClassNotFoundException {
-        this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
-        if(this.numberOfChosenTiles!=-1){
-            sendMessageC(new SocketMessage(myIndex, myMatch, numberOfChosenTiles, TURN_AMOUNT));
-            SocketMessage message = receivedMessageC();
-            if(message.getObj()!=null){
-                if(message.getObj()!=Event.OK)
-                    System.out.println(((Event)message.getObj()).getMsg());
-                return (Event)message.getObj();
-            } else {
-                return Event.OK;
+    private void activeAskNumOfTiles() throws IOException, ClassNotFoundException {
+        do{
+            this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
+            if(this.numberOfChosenTiles!=-1){
+                sendMessageC(new SocketMessage(myIndex, myMatch, numberOfChosenTiles, TURN_AMOUNT));
+            } else{
+                System.out.println(Event.OUT_OF_BOUNDS.getMsg());
             }
-        } else{
-            return OUT_OF_BOUNDS;
-        }
+        } while(this.numberOfChosenTiles==-1);
     }
 
-    private Event activeAskTiles() throws IOException, ClassNotFoundException {
+    private void activeAskTiles() throws IOException, ClassNotFoundException {
         chooseTiles();
         sendMessageC(new SocketMessage(myIndex, myMatch, cords, TURN_PICKED_TILES));
-        SocketMessage message = receivedMessageC();
-        if(message.getObj()!=Event.OK)
-            System.out.println(((Event)message.getObj()).getMsg());
-        return (Event)message.getObj();
     }
 
     public void chooseTiles() throws IOException {
@@ -460,64 +428,34 @@ public class ClientSocket {
         }
     }
 
-    private Event activeAskColumn(ArrayList<Tile> tilesInHand) throws IOException, ClassNotFoundException {
+    private void activeAskColumn(ArrayList<Tile> tilesInHand) throws IOException, ClassNotFoundException {
         column = uView.askColumn();
         sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
-        SocketMessage message = receivedMessageC();
-        if (message.getObj() == Event.OK) {
-            activePlaceTile(tilesInHand);
-        }else
-            System.out.println(((Event)message.getObj()).getMsg());
-        return (Event) message.getObj();
     }
 
     private void activePlaceTile(ArrayList<Tile> tilesInHand) throws IOException, ClassNotFoundException {
-        int pos;
-        for (int i = 0; i < numberOfChosenTiles; i++) {
-            SocketMessage message;
-            do {
-                pos = uView.askTileToInsert(tilesInHand);
-                sendMessageC(new SocketMessage(myIndex, myMatch, pos, TURN_POSITION));
-                message = receivedMessageC();
-                System.out.println(((Event)message.getObj()).getMsg());
-            } while ((Event)message.getObj() != Event.OK);
-
-            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, UPDATE_BOOKSHELF));
-            Bookshelf bookshelf = (Bookshelf) receivedMessageC().getObj();
-            playerInTurn.setMyBookshelf(bookshelf);
-
-            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_POSITION));
-            tilesInHand = (ArrayList<Tile>) receivedMessageC().getObj();
-
-            uView.printTilesInHand(tilesInHand);
-            uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
-        }
+        int pos = uView.askTileToInsert(tilesInHand);
+        sendMessageC(new SocketMessage(myIndex, myMatch, pos, TURN_POSITION));
     }
-
-
 
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
         System.out.println("It's not your turn, here are some actions you can do!");
+        active=false;
         do {
-
             passivePlayerMenu();
-        } while (!isYourTurn);
-        isYourTurn = false;
-        getModel();
+            System.out.println("choice " + choice);
+        } while (!active && choice!=1 && choice!=4 && choice!=6);
+        System.out.println("ciao");
+        //getModel();
     }
     private void passivePlayerMenu() throws IOException, ClassNotFoundException {
         uView.askPassiveAction();
-        int choice = uView.waitInput();
+        choice = uView.waitInput();
         System.out.println("choice " + choice);
         if (!disabledInput) {
             switch (choice) {
                 case 1 -> {
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
-                    /*
-                    this.board = (Board) receivedMessageC().getObj();
-                    System.out.println("Here's the game board...");
-                    uView.showTUIBoard(board);
-                    */
                 }
                 case 2 -> {
                     System.out.println("Here are the CommonGoalCards...");
@@ -530,21 +468,12 @@ public class ClientSocket {
                 case 4 -> {
                     System.out.println("Here's everyone's Bookshelf");
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
-                    /*
-                    this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
-                    for (Player player : listOfPlayers) {
-                        System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
-                        uView.showTUIBookshelf(player.getMyBookshelf());
-                    }
-                     */
                 }
                 case 5 -> {
                     uView.chatOptions(listOfPlayers.get(myIndex));
                 }
                 case 6 -> {
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
-                    this.listOfPlayers = (ArrayList<Player>) receivedMessageC().getObj();
-                    uView.showPlayers(listOfPlayers);
                 }
             }
         }

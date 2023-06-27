@@ -114,7 +114,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.OK));
             }
             case TURN_AMOUNT, TURN_PICKED_TILES, TURN_COLUMN, TURN_POSITION, CHECK_REFILL, END_OF_TURN, CHECK_MY_TURN, SET_UP_BOARD -> {
-                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, (Event)obj));
+                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, message.getMessageEvent()));
             }
 
 

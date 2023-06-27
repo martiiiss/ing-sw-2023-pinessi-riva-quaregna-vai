@@ -616,7 +616,7 @@ public class Controller  {
             case GAME_PGC -> obj = game.getPlayers().get((int)playerIndex).getPersonalGoalCard();
             case GAME_PIT -> obj = game.getPlayers().indexOf(game.getPlayerInTurn());
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
-            case TURN_POSITION -> obj = this.playerHand;
+            case TURN_POSITION, GET_TILES_HAND -> obj = this.playerHand;
             case UPDATE_BOOKSHELF-> obj =  game.getPlayerInTurn().getMyBookshelf();
         }
         return obj;

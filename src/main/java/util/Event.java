@@ -21,6 +21,7 @@ public enum Event {
     GAME_STARTED(""),
     TURN_AMOUNT(""),
     TURN_TILE_IN_HAND(""),
+    GET_TILES_HAND(""),
     TURN_COLUMN(""),
     TURN_POSITION(""),
     TURN_BOOKSHELF(""),
