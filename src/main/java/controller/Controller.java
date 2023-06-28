@@ -133,7 +133,12 @@ public class Controller  {
         game.setCommonGoalCards();
         //board.setNumOfCells(game.getNumOfPlayers());
         ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
-        board.setUpBoard(tiles);
+        try {
+            board.setUpBoard(tiles);
+        } catch (NullPointerException e) {
+            System.err.println("Entra nell'eccezione in initGame");
+            board.setUpBoard(tiles);
+        }
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
         game.setGameStarted();
