@@ -282,15 +282,13 @@ public class GUIView implements Observer, Serializable { //class that contains a
     }
     public void showError(Event e, Object o){
         errorLog.setForeground(Color.RED);
-        if(e==Event.OK) {
+        if(e==Event.OK)
             errorLog.setForeground(Color.GREEN);
-            errorLog.setText("<html>" + e.getMsg() + "</p><html>");
-        }
-        if(e==Event.START_YOUR_TURN || e==Event.NOT_YOUR_TURN) {
+        if(e==Event.START_YOUR_TURN || e==Event.NOT_YOUR_TURN)
             errorLog.setForeground(Color.BLACK);
+        if(e!=Event.END)
             errorLog.setText("<html>" + e.getMsg() + "</p><html>");
-        }
-        if(e==Event.END) {
+        else {
             errorLog.setForeground(Color.black);
             Player winner = (Player) o;
             errorLog.setText("Game over, The winner is "+winner.getNickname()+" with "+winner.getScore()+" points");
