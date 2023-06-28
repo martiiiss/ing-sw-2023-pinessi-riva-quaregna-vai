@@ -2,16 +2,17 @@ package view.GUI;
 
 import distributed.messages.Message;
 import model.*;
+import org.jetbrains.annotations.NotNull;
 import util.*;
 import util.Event;
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class GUIView implements Observer, Serializable { //class that contains all the GUI elements
+/**Class that contains all the Graphic User Interface elements*/
+public class GUIView implements Observer, Serializable {
     @Serial
     private static final long serialVersionUID = 3573316570282498841L;
     private transient BoardView boardView;
@@ -36,7 +37,10 @@ public class GUIView implements Observer, Serializable { //class that contains a
     private final JButton bksButton;
 
     private boolean bksReturned = false;
+    private ArrayList<Player> listPlayers = new ArrayList<>();
 
+    /**
+     * Constructor of the class. This creates all the "blocks" of the interface.*/
     public GUIView () {
         //All the page
         GridBagConstraints constraints = new GridBagConstraints();
@@ -152,48 +156,84 @@ public class GUIView implements Observer, Serializable { //class that contains a
 
     }
 
-    public void changeScoringToken(ScoringToken sc) { //changes the scoring token displayed in the romanNumber position
+    /**
+     * Method that changes the scoring token displayed in the romanNumber position.
+     * @param sc is a {@link ScoringToken}*/
+    public void changeScoringToken(@NotNull ScoringToken sc) {
         scv[sc.getRomanNumber()].popSCV(sc.getValue());
         hand.setSC(sc.getValue(), sc.getRomanNumber());
     }
 
+    /**
+     * Method used to get the hand view.
+     * @return {@link HandView}*/
     public HandView getHandView() {
         return this.hand;
     }
 
+    /**
+     * Method used to get the BookshelfView.
+     * @return {@link BookshelfView}*/
     public BookshelfView getBookshelfView() {
         return this.bookshelfView;
     }
 
+    /**
+     * Method used to get the BoardView.
+     * @return {@link BoardView}*/
     public BoardView getBoardView() {
         return this.boardView;
     }
 
+    /**
+     * Method used to get the ScoringTokenView.
+     * @return {@link ScoringTokenView}*/
     public ScoringTokenView getScv(int i) {
         return scv[i-1];
     }
 
+    /**
+     * Method used to get the PGCView.
+     * @return {@link PGCView}*/
     public PGCView getPGC() {
         return pgc;
     }
 
+    /**
+     * Method used to get the CGCView.
+     * @return {@link CGCView}*/
     public CGCView getCGC(int i) {
         return cgc[i-1];
     }
 
-    public void updateBoard(Board board){ //set up the board or update it after someone else pick tiles
+    /**
+     * Method used to set up the board or update it after someone else pick tiles.
+     * @param board is the {@code Board} that has been modified*/
+    public void updateBoard(Board board){
         if(boardView!=null)
             boardView.updateBoard(board);
     }
-    public void setupCGC(CommonGoalCard cgc){ //set up the cgc and the scoring token
+
+    /**
+     * Method used to set up the cgc and the scoring token.
+     * @param cgc is the {@code CommonGoalCard} that has been modified*/
+    public void setupCGC(@NotNull CommonGoalCard cgc){
         System.out.println("cgc " + cgc.getRomanNumber());
         getCGC(cgc.getRomanNumber()).setCGCView(cgc.getIdCGC());
         getScv(cgc.getRomanNumber()).setDisplayedImage(cgc.getTokenStack().lastElement().getValue());
     }
-    public void setupPGC(int pgcID){  //set up the pgc
+
+    /**
+     * Method used to set up the personal goal card.
+     * @param pgcID is an int that represents the id of a {@code PersonalGalCard}*/
+    public void setupPGC(int pgcID){
         this.pgc.setDisplayedImage(pgcID);
     }
-    public int askTiles(){ //invoked by client, asks the GUI to choose tiles and returns an arraylist of them
+
+    /**
+     * Method that asks the GUI to choose a number of tiles.
+     * @return an int that represents the number of chosen tiles*/
+    public int askTiles(){
         JFrame frame = new JFrame();
         for(int i=1 ; i<4; i++){
             JButton button = new JButton();
@@ -224,6 +264,8 @@ public class GUIView implements Observer, Serializable { //class that contains a
         return this.tilesToPick;
     }
 
+    /**Method that asks the GUI to choose tiles and returns an arraylist of them.
+     * @return an {@code ArrayList} of {@code Cord}*/
     public ArrayList <Cord> getTilesClient(){
         boardView.getListTilesPicked().clear();
         System.out.println("setta a true can pick");
@@ -242,7 +284,11 @@ public class GUIView implements Observer, Serializable { //class that contains a
         return boardView.getListTilesPicked();
     }
 
-    public void pickTiles(ArrayList<Cord> cords, ArrayList<Tile> tiles){ //pick the tiles from the board and put them in the hand
+    /**
+     * Method used to pick tiles from the board and put the in the hand.
+     * @param tiles is an {@code ArrayList} of {@code Tile}
+     * @param cords is an {@code ArrayList} of {@code Cord}*/
+    public void pickTiles(ArrayList<Cord> cords, @NotNull ArrayList<Tile> tiles){
         int i=0;
         while(i<tiles.size()) {
             boardView.pickTile(cords.get(i).getRowCord(), cords.get(i).getColCord());
@@ -250,7 +296,10 @@ public class GUIView implements Observer, Serializable { //class that contains a
             i++;
         }
     }
-    public int chooseColumn(){ //choose the column where i want to put the tile and return it
+
+    /**Method used to choose the column where the player wants to put the tile.
+     * @return an int that represents the column*/
+    public int chooseColumn(){
         synchronized (bksButton){
             bookshelfView.setCanChange(false);
             bksReturned = true;
@@ -268,7 +317,11 @@ public class GUIView implements Observer, Serializable { //class that contains a
         bookshelfView.getBookshelfDisplayed().setTitle("Bookshelf");
         return bookshelfView.getColumnChosen();
     }
-    public int chooseTile(){ //choose the tile to insert and return its position
+
+    /**
+     * Method used to choose the tile to insert and return its position.
+     * @return an int that represents the index of a tile*/
+    public int chooseTile(){
         hand.setTileToInsert(0);
         hand.getImageDisplayed().setTitle("Choose the first tile to insert by clicking on it");
         synchronized (hand){
@@ -280,9 +333,18 @@ public class GUIView implements Observer, Serializable { //class that contains a
         }
         return hand.getTileToInsert();
     }
-    public void addTile(Tile tile){ //add the tile to the bookshelf
+
+    /**
+     * Method used to add the tile to the bookshelf.
+     * @param tile a {@link Tile} tat has to be put into the bookshelf*/
+    public void addTile(Tile tile){
         bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
     }
+
+    /**
+     * Method used to show the errors and messages.
+     * @param e an {@link Event}
+     * @param o an {@code Object}*/
     public void showError(Event e, Object o){
         errorLog.setForeground(Color.RED);
         if(e==Event.OK)
@@ -305,7 +367,10 @@ public class GUIView implements Observer, Serializable { //class that contains a
             //TODO: aggiungere i vari errori!
         }*/
     }
-    private ArrayList<Player> listPlayers = new ArrayList<>();
+
+    /**
+     * Method used to show the list of players for a match with their score.
+     * @param list is an {@code ArrayList} of {@code Player}*/
     public void loadPlayers(ArrayList<Player> list) {
         if (listPlayers.isEmpty())
             listPlayers = list;
@@ -315,11 +380,18 @@ public class GUIView implements Observer, Serializable { //class that contains a
         }
         playerList.setText(textToPrint.toString());
     }
-    public void scoringTokenTakenByMe(ScoringToken sc){ //put the scoring token in my hand
+
+    /**
+     * Method used to put the scoring token in the player's hand
+     * @param sc is a {@code ScoringToken}*/
+    public void scoringTokenTakenByMe(@NotNull ScoringToken sc){
         hand.setSC(sc.getValue(), sc.getRomanNumber());
         changeScoringToken(sc);
     }
-    public void firstToFinish(){ //assign me the token for the first player to finish
+
+    /**
+     * Method used to assign the player the token for the first player to finish*/
+    public void firstToFinish(){
         hand.setEndgame();
     }
     /*public void results(String nickname, int myPoints){ //show the winner and my points
@@ -331,12 +403,20 @@ public class GUIView implements Observer, Serializable { //class that contains a
         frame.setLayout(new GridLayout());
         frame.setSize(400,200);
     }*/
+
+    /**
+     * Method that detects that a player has finished to insert tiles into its bookshelf*/
     public void endInsertion(){
         synchronized (bksButton) {
             hand.getImageDisplayed().setTitle("Hand");
             bookshelfView.setCanChange(true);
         }
     }
+
+    /**
+     * Method used to show the bookshelves of the different players.
+     * @param players is an {@code ArrayList} of {@code Player}
+     * @param nextPlayerIndex is an int that represents the index of the next player*/
     public boolean nextBookshelf(ArrayList <Player> players, int nextPlayerIndex) {
         synchronized (bksButton){
             while (!bksChanged && !bksReturned) {
@@ -359,11 +439,17 @@ public class GUIView implements Observer, Serializable { //class that contains a
 
         }
     }
-    public void returnToMyBookshelf(ArrayList <Player> players, int nextPlayerIndex){
+
+    //TODO: DELETE THIS METHOD
+    public void returnToMyBookshelf(@NotNull ArrayList <Player> players, int nextPlayerIndex){
         bookshelfView.changeBookshelf(players.get(nextPlayerIndex).getMyBookshelf());
         bookshelfView.getBookshelfDisplayed().setTitle("" + players.get(nextPlayerIndex).getNickname() + "'s Bookshelf");
     }
 
+    /**
+     * Method used to update a specific object.
+     * @param o is an {@code Object}
+     * @param message is a {@link Message}*/
     @Override
     public void update(Observable o, Message message) {
         switch(message.getMessageEvent()){
@@ -385,6 +471,9 @@ public class GUIView implements Observer, Serializable { //class that contains a
         }
     }
 
+    /**
+     * Method used to perform an action after receiving a specific message.
+     * @param message is a {@link Message}*/
     @Override
     public void onUpdate(Message message){
 

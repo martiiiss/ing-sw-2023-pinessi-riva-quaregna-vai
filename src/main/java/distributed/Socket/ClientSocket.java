@@ -3,21 +3,21 @@ package distributed.Socket;
 import distributed.messages.Message;
 import distributed.messages.SocketMessage;
 import model.*;
+import org.jetbrains.annotations.NotNull;
 import util.Cord;
 import util.Event;
 import view.GUI.GUIView;
 import view.UserView;
-
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import static util.Event.*;
 import static util.Event.GAME_PIT;
 
+/**Class that represents a Socket client*/
 public class ClientSocket {
     private String address;
     private int port;
@@ -53,7 +53,15 @@ public class ClientSocket {
     private int count=0;
     private Thread passiveThread;
     private Object lockPrint;
+    private Object passiveLock;
+    private boolean enterHasBeenPressed;
+    private boolean disablePassivePrint;
 
+    /**
+     * Constructor of the Class. This initializes the connection of a client.
+     * @param port is an int thar represents the port
+     * @param address is a {@code String} that represents the address
+     * @throws IOException if an error occurs*/
     public ClientSocket(String address, int port) throws IOException {
         this.port = port;
         this.address = address;
@@ -66,7 +74,11 @@ public class ClientSocket {
         this.myMatch = -1;
     }
 
-    private Object passiveLock;
+    /**
+     * Method used as the lobby of a match for a client.
+     * @param userView is a {@link UserView}
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found*/
     public void lobby(UserView userView) throws IOException, ClassNotFoundException {
         uView = userView;
         this.lock = new Object();
@@ -92,6 +104,8 @@ public class ClientSocket {
       clientThread.start();
     }
 
+    /**
+     * Method used to create a thread for the passive Player.*/
     public void startThreadPassive() {
         passiveThread = new Thread(()-> {while(!Thread.currentThread().isInterrupted()) {
             try {
@@ -109,8 +123,15 @@ public class ClientSocket {
         },"startThreadPassive");
         passiveThread.start();
     }
-    private boolean enterHasBeenPressed;
-    public void update(SocketMessage message) throws IOException, ClassNotFoundException, InterruptedException {
+
+    /**
+     * Method used to perform a specific update, based on the received message.
+     * @param message is a {@link Message} that contains the information used to perform the update
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found
+     * @throws InterruptedException if a thread gets interrupted
+     * */
+    public void update(@NotNull SocketMessage message) throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("switch su " + message.getMessageEvent());
         switch (message.getMessageEvent()){
             case SET_CLIENT_INDEX ->{
@@ -382,6 +403,10 @@ public class ClientSocket {
         }
     }
 
+    /**
+     * Method used to send a socket Message.
+     * @param mess is a {@link SocketMessage} that has to be sent
+     * @throws IOException if an error occurs*/
     public void sendMessageC(SocketMessage mess) throws IOException {
         try{
             //invio messaggio:
@@ -396,11 +421,22 @@ public class ClientSocket {
         }
     }
 
+    /**
+     * Method used to receive a socket Message.
+     * @return a {@link SocketMessage}
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found
+     * */
     public SocketMessage receivedMessageC() throws IOException, ClassNotFoundException {
         SocketMessage message = (SocketMessage) inputStream.readObject();
         return message;
     }
 
+    /**
+     * Method used to get information from the model.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found
+     * @throws InterruptedException if a thread gets interrupted*/
     public void getModel() throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("model");
         //disabledInput = false;
@@ -448,6 +484,9 @@ public class ClientSocket {
 
     //TODO gestire aggiornamento: turno, e per la gui anche setupboard
 
+    /**Method used to create an active player menu.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found*/
     private void activePlayerMenu() throws IOException, ClassNotFoundException {
         System.out.println("Would you like to do any of these actions before making your move?");
         do{
@@ -480,6 +519,10 @@ public class ClientSocket {
         } while (choice != 6);
     }
 
+    /**
+     * Method used to ask a player the number of tiles it wants to pick.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found */
     private void activeAskNumOfTiles() throws IOException, ClassNotFoundException {
         do{
             this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
@@ -491,11 +534,18 @@ public class ClientSocket {
         } while(this.numberOfChosenTiles==-1);
     }
 
+    /**
+     * Method used to ask a player the tiles it wants to pick. This sends a message.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found */
     private void activeAskTiles() throws IOException, ClassNotFoundException {
         chooseTiles();
         sendMessageC(new SocketMessage(myIndex, myMatch, cords, TURN_PICKED_TILES));
     }
 
+    /**
+     * Method used to make a player pick the tiles from the board.
+     * @throws IOException if an error occurs*/
     public void chooseTiles() throws IOException {
         cords.removeAll(cords);
         while (cords.size() < this.numberOfChosenTiles) {
@@ -515,23 +565,41 @@ public class ClientSocket {
         }
     }
 
+    /**
+     * Method used to ask a player te column.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found */
     private void activeAskColumn() throws IOException, ClassNotFoundException {
         column = uView.askColumn();
         sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
     }
 
+    /**
+     * Method used to ask a player the order of the tiles.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found */
     private void activePlaceTile(ArrayList<Tile> tilesInHand) throws IOException, ClassNotFoundException {
         int pos = uView.askTileToInsert(tilesInHand);
         sendMessageC(new SocketMessage(myIndex, myMatch, pos, TURN_POSITION));
     }
 
+    /**
+     * Method used to define the actions for a passive player.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found
+     * @throws InterruptedException if a thread gets interrupted */
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
         System.out.println("It's not your turn, here are some actions you can do!");
         active=false;
         enterHasBeenPressed = false;
         passivePlayerMenu();
     }
-    private boolean disablePassivePrint;
+
+    /**
+     * Method that represents the passive player menu.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found
+     * @throws InterruptedException if a thread gets interrupted */
     private void passivePlayerMenu() throws IOException, ClassNotFoundException, InterruptedException {
         uView.askPassiveAction();
         choice = uView.waitInput();
@@ -572,22 +640,34 @@ public class ClientSocket {
         }
     }
 
+    /**
+     * Method used to ask a player how many tiles it wants to pick (for GUI).
+     * @throws IOException if an error occurs*/
     public void askNumOfTileToPickGUI () throws IOException {
         numberOfChosenTiles = gui.askTiles(); //ask number of tiles
         sendMessageC(new SocketMessage(myIndex, myMatch, numberOfChosenTiles, TURN_AMOUNT));
     }
 
+    /**
+     * Method used to set the number of chosen tiles (for GUI).
+     * @throws IOException if an error occurs*/
     public void setTilesPickedGUI() throws IOException {
         gui.getBoardView().setTilesPicked(numberOfChosenTiles);
         tilesCords = gui.getTilesClient();
         sendMessageC(new SocketMessage(myIndex, myMatch, tilesCords, TURN_PICKED_TILES));
     }
 
+    /**
+     * Method used to ask the number of a column (for GUI).
+     * @throws IOException if an error occurs*/
     public void askColumnGUI() throws IOException {
         int column = gui.chooseColumn();
         sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
     }
 
+    /**
+     * Method used to add the picked tiles into the hand (for GUI).
+     * @throws IOException if an error occurs*/
     public void addTilesInHandGUI() throws IOException {
         for(int i=0; i<numberOfChosenTiles; i++) {
             int pos = gui.chooseTile();
@@ -600,10 +680,14 @@ public class ClientSocket {
 
     }
 
+    /**Method used to get the index.
+     * @return an int that represents the index*/
     public int getMyIndex(){
         return myIndex;
     }
 
+    /**Method used to get the match.
+     * @return an int that represents the match*/
     public int getMyMatch(){
         return myMatch;
     }

@@ -3,6 +3,7 @@ package distributed.Socket;
 import distributed.ClientInterface;
 import distributed.messages.SocketMessage;
 import model.Board;
+import org.jetbrains.annotations.NotNull;
 import util.Event;
 
 import java.io.IOException;
@@ -18,13 +19,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static util.Event.*;
 
+/**Class that represents the communication in between the socket client and its server*/
 public class ClientHandlerSocket implements Runnable, ClientInterface {
     private Socket socketClient;
     private SocketServer socketServer;
     private final Object inputLock;
     private final Object outputLock;
-    private ObjectOutputStream output; //per inviare
-    private ObjectInputStream input; //per ricevere
+    private ObjectOutputStream output; //used to send
+    private ObjectInputStream input; //used to receive
     private Object inputObject;
     private int clientIndex;
     private int matchIndex;
@@ -36,6 +38,11 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private Object upLock;
     private boolean first = true;
     private int pit;
+    private boolean stoppati;
+
+    /**Constructor of the Class. This initializes the connection and starts the need threads.
+     * @param socket is a {@link Socket}
+     * @param socketServer is a {@link SocketServer}*/
     public ClientHandlerSocket(Socket socket, SocketServer socketServer) {
         this.socketServer = socketServer;
         this.socketClient = socket;
@@ -77,6 +84,12 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             }
         },"CheckUpdateBoard");
     }
+
+    /**
+     * Method used to get updated from the board.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found
+     * @throws InterruptedException if a thread gets interrupted  */
     private void askControllerBoardUpdate() throws IOException, ClassNotFoundException, InterruptedException {
         do {
             Event e = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, clientIndex, SET_UP_BOARD));
@@ -88,7 +101,9 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         } while(!stoppati);
         upLock.wait();
     }
-    private boolean stoppati;
+
+    /**
+     * Method used to ask the server if there has been a disconnection.*/
     private void askServerDisconnection() {
         boolean serverAns = false;
         do {
@@ -98,6 +113,12 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         threadAskDisconnection.interrupt();
         threadAskPit.interrupt();
     }
+
+    /**
+     * Method used to get the controller for the player in turn.
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found
+     * @throws InterruptedException if a thread gets interrupted  */
     private void askPitController() throws IOException, ClassNotFoundException, InterruptedException {
         stoppati=false;
         do {
@@ -116,8 +137,10 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         lock.wait();
     }
 
+    /**
+     * Method used to get input from a client and sent it to another client*/
     @Override
-    public void run() {  //METODO PER RICEVERE INPUT DA CLIENT E INVIARE A CLIENT
+    public void run() {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (inputLock) {
@@ -174,6 +197,8 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         }*/
     }
 
+    /**
+     * Method used to handle the disconnection.*/
     public void disconnect() {
         try{
             if(!socketClient.isClosed()){
@@ -187,7 +212,15 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     }
 
     //SWITCH ERRORI DA SERVER/CONTROLLER
-    public void update(Object obj, SocketMessage message) throws IOException, ClassNotFoundException {
+
+    /**
+     * Method used to perform updates on a specific object based on the message received.
+     * @param obj is the {@code Object} on which the update will be performed
+     * @param message is the {@link SocketMessage} that is used to decide the type of action
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found
+     * */
+    public void update(Object obj, @NotNull SocketMessage message) throws IOException, ClassNotFoundException {
         switch (message.getMessageEvent()){
             case OK ->{
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
@@ -233,7 +266,10 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     }
 
 
-    public void sendMessage(SocketMessage message){ //per inviare i messaggi al client
+    /**
+     * Method used to send messages to the client.
+     * @param message is a {@link SocketMessage}*/
+    public void sendMessage(SocketMessage message){
         try {
             output.writeObject(message);
             output.flush();
@@ -243,18 +279,29 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         }
     }
 
+    /**
+     * Method used to receive messages from the client.
+     * @return a {@link SocketMessage}
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found */
     public SocketMessage receivedMessage() throws IOException, ClassNotFoundException {
         Object o = input.readObject();
-        SocketMessage message = (SocketMessage) o ; //per ricevere i messaggi dal client
+        SocketMessage message = (SocketMessage) o ;
         return message;
     }
 
-
+    /**
+     * Method used to handle the disconnection.
+     * @throws RemoteException if an error occurs during a remote call*/
     @Override
     public void ping() throws RemoteException {
-
     }
 
+    /**
+     * Method used to ask the first client to connect (for a match) the number of players accepted for a match.
+     * @return an int that represents the number of players for a match
+     * @throws IOException if an error occurs
+     * @throws ClassNotFoundException if a class cannot be found*/
     @Override
     public int askNumOfPlayers() throws IOException, ClassNotFoundException {
         sendMessage(new SocketMessage(clientIndex, matchIndex, numOfPlayers, Event.ASK_NUM_PLAYERS));
