@@ -512,7 +512,6 @@ public class UserView extends Observable implements Serializable {
      *     Method that shows a list of actions for a passive player.<br>
      * </p>*/
     public void askPassiveAction()  {
-        //BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         System.out.println("1) Look at the Board");
         System.out.println("2) Check the CommonGoalCards");
         System.out.println("3) Check your PersonalGoalCard");
@@ -532,7 +531,7 @@ public class UserView extends Observable implements Serializable {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         try {
             return Integer.parseInt(reader.readLine());
-        } catch (NumberFormatException | IOException e) {}
+        } catch (NumberFormatException | IOException ignored) {}
         return -1;
     }
 

@@ -131,7 +131,6 @@ public class Controller  {
         for(int i=0;i<game.getNumOfPlayers();i++){game.getPlayers().get(i).setMyBookshelf(new Bookshelf());}
         game.assignPersonalGoalCard(game.getNumOfPlayers());
         game.setCommonGoalCards();
-        //board.setNumOfCells(game.getNumOfPlayers());
         ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
         try {
             board.setUpBoard(tiles);

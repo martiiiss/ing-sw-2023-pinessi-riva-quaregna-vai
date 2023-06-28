@@ -48,10 +48,10 @@ public class ClientSocket {
     private GUIView gui;
     private ArrayList<Cord> tilesCords = new ArrayList<>();
     private ArrayList<Tile> tilesInHand;
-    private boolean isYourTurn;
     private boolean active = false;
     private int choice=0;
     private int count=0;
+    private Thread passiveThread;
     private Object lockPrint;
 
     public ClientSocket(String address, int port) throws IOException {
@@ -106,7 +106,7 @@ public class ClientSocket {
                 //throw new RuntimeException(e);
             }
         }
-        },"awdhu");
+        },"startThreadPassive");
         passiveThread.start();
     }
     private boolean enterHasBeenPressed;
@@ -206,14 +206,10 @@ public class ClientSocket {
                                 uView.showTUIBookshelf(player.getMyBookshelf());
                             }
                             disablePassivePrint = false;
-
-                            //passivePlay();
-
                         } else if (choice == 6) {
                             this.listOfPlayers = (ArrayList<Player>) message.getObj();
                             uView.showPlayers(listOfPlayers);
                             disablePassivePrint = false;
-
                         }
                     } else if (active) {
                         this.listOfPlayers = (ArrayList<Player>) message.getObj();
@@ -227,8 +223,6 @@ public class ClientSocket {
                     gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
                     gui.loadPlayers(listOfPlayers);
                     sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
-
-//                    sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
                 }
             }
             case TURN_AMOUNT -> {
@@ -277,7 +271,7 @@ public class ClientSocket {
                     System.out.println(tilesInHand);
                     uView.printTilesInHand(tilesInHand);
                     uView.showTUIBookshelf(listOfPlayers.get(myIndex).getMyBookshelf());
-                    activeAskColumn((ArrayList<Tile>) message.getObj());
+                    activeAskColumn();
                 } else if (viewChosen==2){
                     gui.pickTiles(tilesCords, tilesInHand); //adds the tile to tiles in hand
                     askColumnGUI();
@@ -289,7 +283,7 @@ public class ClientSocket {
                         activePlaceTile(tilesInHand);
                     }else {
                         System.out.println(((Event) message.getObj()).getTUIMsg());
-                        activeAskColumn(tilesInHand);
+                        activeAskColumn();
 
                     }
                 } else if(viewChosen==2){
@@ -387,7 +381,7 @@ public class ClientSocket {
             outputStream.flush();
             outputStream.reset();
         }catch (IOException e){
-            System.out.println("DISCONNESSO IL SEBBEN");
+            System.out.println("Server crashed!\n");
             System.exit(-1);
             //TODO disconnessione
             //notifyObserver con messaggio di errore
@@ -430,7 +424,7 @@ public class ClientSocket {
                 gui = new GUIView();
                 sendMessageC(new SocketMessage(myIndex, myMatch, gui, ADD_OBSERVER));
                 this.isFirstTurn = false;
-
+                gui.update(null, new Message(listOfPlayers, UPDATED_SCORE));
                 gui.updateBoard(this.board);
                 sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
                 this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
@@ -442,44 +436,6 @@ public class ClientSocket {
                 System.out.println("fine setup gui");
             }
         }
-/*
-        if(viewChosen==2){
-            if (myIndex == indexOfPIT) {
-                System.out.println("MIO TURNO ");
-                gui.showError(START_YOUR_TURN);
-                flowGui();
-                System.out.println("next");
-               // getModel();
-            } else {
-                System.out.println("non è il mio turno");
-                gui.showError(NOT_YOUR_TURN);
-                synchronized (lock) {
-                    this.lock.notifyAll();
-                }
-
-                if(!threadWaitTurn.isAlive()){
-                    threadWaitTurn.start();
-                }
-                Event status = Event.WAIT;
-                do {
-                    try {
-                        sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
-                        status = (Event) receivedMessageC().getObj();
-                        sendMessageC(new SocketMessage(myIndex, myMatch, board, SET_UP_BOARD));
-                        Event e = (Event) receivedMessageC().getObj();
-                        if(e==SET_UP_BOARD) {
-                            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
-                            this.board = (Board) receivedMessageC().getObj();
-                            gui.update(board, new Message(board, SET_UP_BOARD));
-                        }
-                    } catch (SocketException | UnmarshalException ex) {}
-                } while (status != Event.OK);
-
-                System.out.println("new");
-                getModel();
-            }
-        }
-        */
     }
 
     //TODO gestire aggiornamento: turno, e per la gui anche setupboard
@@ -551,7 +507,7 @@ public class ClientSocket {
         }
     }
 
-    private void activeAskColumn(ArrayList<Tile> tilesInHand) throws IOException, ClassNotFoundException {
+    private void activeAskColumn() throws IOException, ClassNotFoundException {
         column = uView.askColumn();
         sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
     }
@@ -561,7 +517,6 @@ public class ClientSocket {
         sendMessageC(new SocketMessage(myIndex, myMatch, pos, TURN_POSITION));
     }
 
-    Thread passiveThread;
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
         System.out.println("It's not your turn, here are some actions you can do!");
         active=false;
@@ -643,32 +598,5 @@ public class ClientSocket {
 
     public int getMyMatch(){
         return myMatch;
-    }
-
-
-    public void closeConnection(){
-        //TODO implement this
-    }
-
-    /**
-     *
-     */
-    public void disconnected() {
-
-    }
-
-
-
-    public void disconnect(){
-        //TODO implement this
-    };
-
-
-    public void setMatchIndex(int i){
-        this.myMatch = i;
-    }
-
-    public void setMyIndex(int i){
-        this.myIndex = i;
     }
 }

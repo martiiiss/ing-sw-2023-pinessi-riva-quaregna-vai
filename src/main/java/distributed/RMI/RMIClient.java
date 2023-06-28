@@ -210,6 +210,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                     try {
                         status = server.sendMessage(this.matchIndex,myIndex, CHECK_MY_TURN);
                         Event e = server.sendMessage(this.matchIndex, myIndex, SET_UP_BOARD);
+                       ///TODO Event e2 = server.sendMessage(this.matchIndex, myIndex, UPDATE_SCORINGTOKEN);
                         if(e==SET_UP_BOARD) {
                             board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
                             gui.update(board, new Message(board, SET_UP_BOARD));

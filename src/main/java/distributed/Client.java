@@ -8,7 +8,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Timer;
-public abstract class Client extends UnicastRemoteObject implements Remote, Serializable, ClientInterface {
+public abstract class Client extends UnicastRemoteObject implements Remote, Serializable {
     @Serial
     private static final long serialVersionUID = -8499166750855847908L;
     //transient DisconnectionListener disconnectionListener
