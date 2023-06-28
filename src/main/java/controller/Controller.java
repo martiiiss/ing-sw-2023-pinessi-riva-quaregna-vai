@@ -639,7 +639,6 @@ public class Controller  {
         return -1;
     }
     public int getPITIndex() {
-        System.err.println("IL PIT IN CONTROLLER: "+game.getPlayers().indexOf(game.getPlayerInTurn()));
         return game.getPlayers().indexOf(game.getPlayerInTurn());
     }
 
