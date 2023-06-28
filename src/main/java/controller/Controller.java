@@ -618,7 +618,7 @@ public class Controller  {
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
             case TURN_POSITION -> obj = this.playerHand;
             case UPDATE_BOOKSHELF-> obj =  game.getPlayerInTurn().getMyBookshelf();
-            case GET_WINNER -> obj = game.getWinner();
+            case GET_WINNER -> obj = game.getWinner(); //AA
         }
         return obj;
     }

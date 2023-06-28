@@ -523,6 +523,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
      * @throws IOException if an error occurs
      * @throws InterruptedException if a thread gets interrupted*/
     public void waitTurn() throws IOException, InterruptedException {
+        //AA
         int pitIndex;
         do {
             if(viewChosen==2) {

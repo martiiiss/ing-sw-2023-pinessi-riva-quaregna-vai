@@ -603,6 +603,7 @@ public class ClientSocket {
             gui.showError(errorReceived,null);
         }
         sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
+        //AA
         errorReceived = (Event) receivedMessageC().getObj();
         if(errorReceived != OK)
             gui.showError(errorReceived,null);

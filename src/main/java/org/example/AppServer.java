@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import static java.lang.Integer.parseInt;
 
 public class AppServer {
+    //AA
     public static void main(String[] args) throws IOException {
         int portSocket = 43808;
         int portRMI = 45398;

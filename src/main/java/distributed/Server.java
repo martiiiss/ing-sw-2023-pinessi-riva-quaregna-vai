@@ -37,6 +37,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
         System.out.println("\u001B[32mServer Ready! \u001B[0m");
     }
+    //AA
 
     public Server getInstanceOfServer(){ return this; }
     public Controller getInstanceOfController(){

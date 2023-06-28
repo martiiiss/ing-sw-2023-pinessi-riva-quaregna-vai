@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class AppGUITry {
     static GUIView view;
     static Board board;
-
+//AA
     public static void main(String[] args) throws IOException {
         Bag bag = new Bag();
         board = new Board(3);
