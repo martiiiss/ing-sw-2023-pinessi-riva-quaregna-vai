@@ -52,6 +52,7 @@ public class ClientSocket {
     private boolean active = false;
     private int choice=0;
     private int count=0;
+    private Object lockPrint;
 
     public ClientSocket(String address, int port) throws IOException {
         this.port = port;
@@ -70,6 +71,7 @@ public class ClientSocket {
         uView = userView;
         this.lock = new Object();
         passiveLock = new Object();
+        lockPrint = new Object();
 
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
@@ -107,6 +109,7 @@ public class ClientSocket {
         },"awdhu");
         passiveThread.start();
     }
+    private boolean enterHasBeenPressed;
     public void update(SocketMessage message) throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("switch su " + message.getMessageEvent());
         switch (message.getMessageEvent()){
@@ -140,15 +143,14 @@ public class ClientSocket {
             case START_YOUR_TURN -> {
                 System.out.println("It's your turn!");
                 active = true;
-                System.out.println("Qui ci arriviamo");
                 if(viewChosen==1){
-                    System.out.println("in the if");
                     if(!isFirstTurn) {
-                       // if(passiveThread.getState() == Thread.State.NEW)
-                        System.out.println("Ammazzo tutti");
                         disabledInput = true;
                             passiveThread.interrupt();
-                        System.out.println("Press to start your turn!");
+                        System.out.println("Press enter to start your turn!");
+                        synchronized (lockPrint) {
+                            lockPrint.wait();
+                        }
                         getModel();
                     }
                     isFirstTurn = false;
@@ -172,8 +174,6 @@ public class ClientSocket {
                 active = false;
                 if(viewChosen==1){
                     disabledInput = false;
-                    System.err.println("Dentro not yourtunr");
-                    System.out.println("Starta il thread dato che era notalive");
                     startThreadPassive();
                     isFirstTurn=false;
                 } else if(viewChosen==2){
@@ -424,6 +424,7 @@ public class ClientSocket {
 
         System.out.println("ho il model ora devo startare la partita!");
 
+
         if (viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
@@ -564,12 +565,20 @@ public class ClientSocket {
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
         System.out.println("It's not your turn, here are some actions you can do!");
         active=false;
+        enterHasBeenPressed = false;
         passivePlayerMenu();
     }
     private boolean disablePassivePrint;
     private void passivePlayerMenu() throws IOException, ClassNotFoundException, InterruptedException {
         uView.askPassiveAction();
         choice = uView.waitInput();
+        if(disabledInput) {
+            enterHasBeenPressed = true;
+            synchronized (lockPrint) {
+                lockPrint.notifyAll();
+            }
+            return;
+        }
         if (!disabledInput && !disablePassivePrint) {
             switch (choice) {
                 case 1 -> {
