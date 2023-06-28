@@ -9,7 +9,6 @@ import util.Event;
 import util.Observable;
 import util.TileForMessages;
 
-
 /**Class that represents the Bookshelf*/
 public class Bookshelf extends Observable implements Serializable {
     @Serial

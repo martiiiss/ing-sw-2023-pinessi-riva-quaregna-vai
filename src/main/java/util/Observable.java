@@ -34,17 +34,6 @@ public class Observable{
 
     /**
      * <p>
-     *     Method that given an <code>Observer</code> removes it from the list of observers.
-     * </p>
-     * @param o an <code>Observer</code>
-     * @throws NullPointerException if the given parameter <code>o==null</code>*/
-    public synchronized void deleteObserver(Observer o) {
-        if(o==null) throw new NullPointerException();
-        observers.remove(o);
-    }
-
-    /**
-     * <p>
      *     Method that, given a parameter accepts its input.
      * </p>
      * @param lambda a {@link Consumer} with <code>Observer</code> as parameter*/
@@ -64,11 +53,6 @@ public class Observable{
             this.observers.get(i).update(this, arg);
         }
     }
-
-    /**
-     * Method that clears the observer list so that this object no longer has any observers.
-     */
-    public synchronized void deleteObservers() {this.observers.clear();}
 
     /**
      * <p>
@@ -108,16 +92,8 @@ public class Observable{
     }
 
     /**
-     * Returns the number of observers of this {@code Observable} object.
-     *
-     * @return  the number of observers of this object.
-     */
-    public synchronized int countObservers() {
-        return observers.size();
-    }
-
-
-
+     * Method used to get the Observers of a Class.
+     * @return an {@code ArrayList} of {@code Observer}*/
     public ArrayList<Observer> getObservers(){
         return observers;
     }

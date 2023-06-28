@@ -9,29 +9,35 @@ import model.Bookshelf;
 
 class CGC68Test {
     Tile cat = new Tile(Type.CAT,1);
-    Tile book = new Tile(Type.BOOK,2);
-    Tile game = new Tile(Type.GAME,3);
-    Tile frame = new Tile(Type.FRAME,2);
+    Tile cat2 = new Tile(Type.CAT,2);
+    Tile book = new Tile(Type.BOOK,1);
+    Tile book2 = new Tile(Type.BOOK,2);
+    Tile game = new Tile(Type.GAME,1);
+    Tile game2 = new Tile(Type.GAME,2);
+    Tile frame = new Tile(Type.FRAME,1);
+    Tile frame2 = new Tile(Type.FRAME,2);
     Tile trophy = new Tile(Type.TROPHY,1);
-    Tile plant = new Tile(Type.PLANT,3);
+    Tile trophy2 = new Tile(Type.TROPHY,2);
+    Tile plant = new Tile(Type.PLANT,1);
+    Tile plant2 = new Tile(Type.PLANT,2);
     Tile nothing = new Tile(Type.NOTHING,0);
 
     Tile[][] bookshelfT1_6 = {
             { cat, book, nothing, nothing, cat },
-            { plant, cat, game, cat, game},
+            { plant, cat2, game, cat2, game},
             { frame, trophy, cat, book, plant},
-            { trophy, game, cat, cat, trophy},
-            { game, frame, book, cat, book},
+            { trophy, game, cat2, cat, trophy},
+            { game, frame, book, plant2, book},
             { book, plant, cat, plant, frame}
     };
 
     Tile[][] bookshelfF1_6 = {
-            { cat, nothing, nothing, nothing, cat},
-            { plant, cat, game, book, game},
-            { frame, trophy, cat, book, game},
-            { trophy, trophy, cat, cat, book},
-            { game, cat, book, frame, trophy},
-            { book, game, trophy, plant, cat}
+            { cat, cat, nothing, nothing, cat},
+            { plant, cat2, game, book, game2},
+            { frame, trophy, cat, book2, game},
+            { trophy, trophy2, cat2, cat, book},
+            { game, plant, book, frame, trophy},
+            { book2, game, trophy, plant, cat2}
     };
     Tile[][] bookshelfT1_8 = {
             { cat, trophy, nothing, nothing, cat },
@@ -43,11 +49,11 @@ class CGC68Test {
     };
     Tile[][] bookshelfF1_8 = {
             {cat, nothing, nothing, nothing, plant},
-            {plant, cat, nothing, book, game},
-            {frame, trophy, nothing, book, trophy},
-            {book, trophy, nothing, cat, book},
+            {plant, cat2, nothing, book, game},
+            {frame, trophy, nothing, book, trophy2},
+            {book, trophy, trophy2, cat, book},
             {game, cat, nothing, nothing, frame},
-            {trophy, game, frame, book, cat}
+            {trophy, game2, frame, book, cat}
     };
 
     private final CGC68 cgc68 = new CGC68();

@@ -9,10 +9,10 @@ import java.util.Stack;
 public class CommonGoalCard extends Observable implements Serializable {
     @Serial
     private static final long serialVersionUID = 6808176289351890649L;
-    private Stack<ScoringToken> tokenStack;
-    private int romanNumber;
+    private final Stack<ScoringToken> tokenStack;
+    private final int romanNumber;
     private CGCStrategy strategy; // reference to CGMStrategy
-    private int idCGC;
+    private final int idCGC;
 
     /**
      * <p>

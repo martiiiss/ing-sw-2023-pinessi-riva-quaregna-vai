@@ -11,7 +11,6 @@ public class TileForMessages implements Serializable {
     private final Object object;
     private final int row;
     private final int column;
-
     private final Tile tile;
 
     /**

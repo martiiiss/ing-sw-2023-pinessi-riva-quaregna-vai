@@ -10,8 +10,8 @@ import java.io.Serializable;
 public class PersonalGoalCard implements Serializable {
     @Serial
     private static final long serialVersionUID = -5786944275606187567L;
-    private Tile[][] seedOfCard;
-    private int number;
+    private final Tile[][] seedOfCard;
+    private final int number;
 
     //numOfPGC is the "name of the card that has to be generated" this number is extracted in game by Rand(). It has to be
     //passed as a param since it needs to be different from all the previous and next generated numOfCards (Every player must
