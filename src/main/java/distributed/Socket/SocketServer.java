@@ -84,6 +84,10 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
         }
     }
 
+    public int askPit(int matchIndex) {
+        return server.askPitController(matchIndex);
+    }
+
 
     public void updateView(Message message, int clientIndex, int matchIndex) throws IOException {
         clientsView.get(clientIndex).ask(message); //TODO: devo gestire una lista di client co myIndex e matchIndex

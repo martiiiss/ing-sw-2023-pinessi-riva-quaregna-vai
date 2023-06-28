@@ -2,7 +2,6 @@ package distributed.Socket;
 
 import distributed.ClientInterface;
 import distributed.messages.SocketMessage;
-import model.Tile;
 import util.Event;
 
 import java.io.IOException;
@@ -11,6 +10,12 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static util.Event.*;
 
 public class ClientHandlerSocket implements Runnable, ClientInterface {
     private Socket socketClient;
@@ -23,11 +28,15 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private int clientIndex;
     private int matchIndex;
     private int numOfPlayers;
-
+    private Thread threadAskPit;
+    private Object lock;
+    private boolean first = true;
+    private int pit;
     public ClientHandlerSocket(Socket socket, SocketServer socketServer) {
         this.socketServer = socketServer;
         this.socketClient = socket;
 
+        this.lock = new Object();
         this.inputLock = new Object();
         this.outputLock = new Object();
 
@@ -37,6 +46,35 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        threadAskPit = new Thread(()-> {
+            synchronized (lock) {
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        askPitController();
+                    } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                        //throw new RuntimeException(e);
+                    }
+                }
+            }
+        },"AskPITToController");
+    }
+    private void askPitController() throws IOException, ClassNotFoundException, InterruptedException {
+        System.out.println("askPIT!!!!!");
+        do {
+
+            pit = socketServer.askPit(matchIndex);
+            System.out.println("heow " + clientIndex + " " + pit);
+            if(first && pit!=clientIndex){
+                first=false;
+                System.out.println("pit diverso" + pit + "cl " + clientIndex);
+                sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.NOT_YOUR_TURN));
+            }
+            Thread.sleep(1000);
+        } while(pit !=clientIndex);
+        first = true;
+        System.out.println("manda messaggio è il tuo turno! " + clientIndex);
+        sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.START_YOUR_TURN));
+        lock.wait();
     }
 
     @Override
@@ -47,6 +85,13 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                     SocketMessage message = receivedMessage();
                     //System.out.println("ricevo " + message.getObj() + " ev " + message.getMessageEvent());
                     Object obj=null;
+                    if(message.getMessageEvent() == START_THREAD) {
+                        if (!threadAskPit.isAlive()) {
+                            System.out.println("STARTA IL THR");
+                            threadAskPit.start();
+                        }
+                    }
+
                     if(message.getObj()==Event.CHECK_MY_TURN){
                         obj = socketServer.receivedMessage(message);
                         int index=(int)obj;
@@ -54,6 +99,14 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                             sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), index, Event.START_YOUR_TURN));
                         } else{
                             sendMessage(new SocketMessage(message.getClientIndex(), message.getMatchIndex(), index, Event.NOT_YOUR_TURN));
+                        }
+
+                    } else  if(message.getMessageEvent() == END_OF_TURN && message.getObj()==END_OF_TURN){
+                        System.out.println("");
+                        sendMessage(new SocketMessage(clientIndex, matchIndex, null, NOT_YOUR_TURN));
+                        System.out.println("non è il tuo turno");
+                        synchronized (lock) {
+                            this.lock.notifyAll();
                         }
                     } else {
                         if (message.getMessageEvent() != Event.OK) {
@@ -128,7 +181,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             output.flush();
             output.reset();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
     }
 

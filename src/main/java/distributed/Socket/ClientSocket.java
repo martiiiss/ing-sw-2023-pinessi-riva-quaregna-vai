@@ -91,6 +91,7 @@ public class ClientSocket {
     }
 
     public void update(SocketMessage message) throws IOException, ClassNotFoundException, InterruptedException {
+        System.out.println("switch su " + message.getMessageEvent());
         switch (message.getMessageEvent()){
             case SET_CLIENT_INDEX ->{
                 this.myIndex = message.getClientIndex();
@@ -112,16 +113,15 @@ public class ClientSocket {
                 sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, SET_NICKNAME));
             }
             case ALL_CONNECTED -> {
-                System.out.println("Starta il thread");
-                //startThread();
                 getModel();
-                //wait(500);
-                update(new SocketMessage(myIndex, myMatch, null, START));
+                sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
+                //update(new SocketMessage(myIndex, myMatch, null, START));
             }
             case START, CHECK_MY_TURN -> {
                 sendMessageC(new SocketMessage(myIndex, myMatch, CHECK_MY_TURN, GAME_PIT ));
             }
             case START_YOUR_TURN -> {
+                System.out.println("It's your turn!");
                 active = true;
                 if(viewChosen==1){
                     if(!isFirstTurn)
@@ -154,7 +154,6 @@ public class ClientSocket {
             case GAME_BOARD -> {
                 if(viewChosen==1) {
                     this.board = (Board) message.getObj();
-                    System.out.println("act " + active);
                     if (!active) {
                         System.out.println("Here's the game board...");
                         uView.showTUIBoard(board);
@@ -169,7 +168,6 @@ public class ClientSocket {
             case GAME_PLAYERS -> {
                 if(viewChosen==1) {
                     this.listOfPlayers = (ArrayList<Player>) message.getObj();
-                    System.out.println("choice " + choice + "active" + active);
                     if (!active) {
                         if (choice == 4) {
                             for (Player player : listOfPlayers) {
@@ -185,13 +183,17 @@ public class ClientSocket {
                     } else if (active) {
                         this.listOfPlayers = (ArrayList<Player>) message.getObj();
                         uView.showPlayers(listOfPlayers);
+                        sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
+                        System.out.println("invio");
                     }
                 } else if(viewChosen==2){
                     System.out.println(message.getObj());
                     listOfPlayers = (ArrayList<Player>) message.getObj(); //Used to update the score after placing my tiles
                     gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
                     gui.loadPlayers(listOfPlayers);
-                    sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+                    sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
+
+//                    sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
                 }
             }
             case TURN_AMOUNT -> {
@@ -253,6 +255,7 @@ public class ClientSocket {
                     }else {
                         System.out.println(((Event) message.getObj()).getMsg());
                         activeAskColumn(tilesInHand);
+
                     }
                 } else if(viewChosen==2){
                     gui.showError((Event) message.getObj(),null);
@@ -294,7 +297,8 @@ public class ClientSocket {
                         activePlaceTile((ArrayList<Tile>) message.getObj());
                     }else {
                         count = 0;
-                        sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+                        System.out.println("invio");
+                        sendMessageC(new SocketMessage(myIndex, myMatch, null, CHECK_REFILL));
                     }
                 }
             }
@@ -313,8 +317,13 @@ public class ClientSocket {
             case END_OF_TURN -> {
                 if(viewChosen==1){
                     System.out.println(((Event)(message.getObj())).getMsg());
-                    getModel();
-                    sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+                    //getModel();
+                    if (message.getObj() == GAME_OVER) {
+                        //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
+                        wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
+                        System.exit(10);
+                    }
+                    sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
                 } else if(viewChosen==2){
                     System.out.println(message.getObj());
                     if(message.getObj() != OK) {

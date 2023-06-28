@@ -166,4 +166,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
                 }
             }
     }
+    public int askPitController(int matchIndex) {
+        return matchList.get(matchIndex).getGameController().getPITIndex();
+    }
 }

@@ -77,6 +77,7 @@ public enum Event {
     TILES_NOT_VALID(""),
     TILE_PICKED(""),
     COLUMN_NOT_VALID(""),
+    START_THREAD(""),
     SET_TILE_ORDER(""),
     COLUMN_CHOSEN(""),
     ORDER_CHOSEN(""),

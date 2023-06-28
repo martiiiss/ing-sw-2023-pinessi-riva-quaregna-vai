@@ -564,6 +564,7 @@ public class Controller  {
             case END_OF_TURN -> {
                 calculateScore();
                 error = checkIfGameEnd();
+                System.out.println(error + " " + getPITIndex());
                 return error;
             }
             case CHECK_MY_TURN -> {
@@ -636,6 +637,10 @@ public class Controller  {
             }
         }
         return -1;
+    }
+    public int getPITIndex() {
+        System.err.println("IL PIT IN CONTROLLER: "+game.getPlayers().indexOf(game.getPlayerInTurn()));
+        return game.getPlayers().indexOf(game.getPlayerInTurn());
     }
 
     public void addGui(GUIView gui){
