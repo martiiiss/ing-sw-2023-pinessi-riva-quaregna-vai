@@ -120,14 +120,14 @@ public class ClientSocket {
             }
             case CHOOSE_VIEW -> {
                 if(message.getObj()!=null){
-                    System.out.println(((Event)message.getObj()).getMsg());
+                    System.out.println(((Event)message.getObj()).getTUIMsg());
                 }
                 this.viewChosen = uView.userInterface();
                 sendMessageC(new SocketMessage(myIndex, myMatch, this.viewChosen, CHOOSE_VIEW));
             }
             case SET_NICKNAME -> {
                 if(message.getObj()!=null){
-                    System.out.println(((Event)message.getObj()).getMsg());
+                    System.out.println(((Event)message.getObj()).getTUIMsg());
                 }
                 this.nickname = uView.askPlayerNickname();
                 sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, SET_NICKNAME));
@@ -235,7 +235,7 @@ public class ClientSocket {
                 if(viewChosen==1){
                     if(message.getObj()!=null) {
                         if (message.getObj() != OK) {
-                            System.out.println(((Event) message.getObj()).getMsg());
+                            System.out.println(((Event) message.getObj()).getTUIMsg());
                             activeAskNumOfTiles();
                         } else {
                             System.out.println("ACTIVE ASK TILE");
@@ -255,7 +255,7 @@ public class ClientSocket {
             case TURN_PICKED_TILES -> {
                 if(viewChosen==1){
                     if(message.getObj()!= OK) {
-                        System.out.println(((Event) message.getObj()).getMsg());
+                        System.out.println(((Event) message.getObj()).getTUIMsg());
                         activeAskTiles();
                     } else {
                         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
@@ -288,7 +288,7 @@ public class ClientSocket {
                     if (message.getObj() == OK) {
                         activePlaceTile(tilesInHand);
                     }else {
-                        System.out.println(((Event) message.getObj()).getMsg());
+                        System.out.println(((Event) message.getObj()).getTUIMsg());
                         activeAskColumn(tilesInHand);
 
                     }
@@ -305,7 +305,7 @@ public class ClientSocket {
                 if(viewChosen==1){
                     System.out.println("ogg" + message.getObj());
                     if(message.getObj()!=OK){
-                        System.out.println(((Event)message.getObj()).getMsg());
+                        System.out.println(((Event)message.getObj()).getTUIMsg());
                         activePlaceTile(tilesInHand);
                     } else if(count<numberOfChosenTiles){
                         count++;
@@ -351,7 +351,7 @@ public class ClientSocket {
             }
             case END_OF_TURN -> {
                 if(viewChosen==1){
-                    System.out.println(((Event)(message.getObj())).getMsg());
+                    System.out.println(((Event)(message.getObj())).getTUIMsg());
                     //getModel();
                     if (message.getObj() == GAME_OVER) {
                         //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
@@ -522,7 +522,7 @@ public class ClientSocket {
             if(this.numberOfChosenTiles!=-1){
                 sendMessageC(new SocketMessage(myIndex, myMatch, numberOfChosenTiles, TURN_AMOUNT));
             } else{
-                System.out.println(Event.OUT_OF_BOUNDS.getMsg());
+                System.out.println(Event.OUT_OF_BOUNDS.getTUIMsg());
             }
         } while(this.numberOfChosenTiles==-1);
     }
