@@ -131,13 +131,12 @@ public class Controller  {
         for(int i=0;i<game.getNumOfPlayers();i++){game.getPlayers().get(i).setMyBookshelf(new Bookshelf());}
         game.assignPersonalGoalCard(game.getNumOfPlayers());
         game.setCommonGoalCards();
-        board.setNumOfCells(game.getNumOfPlayers());
+        //board.setNumOfCells(game.getNumOfPlayers());
         ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
         board.setUpBoard(tiles);
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
         game.setGameStarted();
-        System.err.println(board);
     }
 
     /**
