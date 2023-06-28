@@ -103,7 +103,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
 
                     } else  if(message.getMessageEvent() == END_OF_TURN && message.getObj()==END_OF_TURN){
                         System.out.println("");
-                        sendMessage(new SocketMessage(clientIndex, matchIndex, null, NOT_YOUR_TURN));
+                       // sendMessage(new SocketMessage(clientIndex, matchIndex, null, NOT_YOUR_TURN));
                         System.out.println("non è il tuo turno");
                         synchronized (lock) {
                             this.lock.notifyAll();

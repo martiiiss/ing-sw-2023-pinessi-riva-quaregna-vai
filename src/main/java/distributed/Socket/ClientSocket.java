@@ -65,10 +65,11 @@ public class ClientSocket {
         this.myMatch = -1;
     }
 
-
+    private Object passiveLock;
     public void lobby(UserView userView) throws IOException, ClassNotFoundException {
         uView = userView;
         this.lock = new Object();
+        passiveLock = new Object();
 
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
@@ -86,10 +87,25 @@ public class ClientSocket {
               System.out.println("esco");
           });
       });
-
       clientThread.start();
     }
 
+    public void startThreadPassive() {
+        passiveThread = new Thread(()-> {while(!Thread.currentThread().isInterrupted()) {
+            try {
+                if (choice == 1 || choice == 4 || choice == 6) {
+                    // passiveLock.wait();
+                }
+                System.out.println("DENTRO TRY PRIMA DI PASSIVE PLAY");
+                passivePlay();
+                //(!active && choice!=1 && choice!=4 && choice!=6)
+            } catch (IOException | InterruptedException | ClassNotFoundException e) {
+                //throw new RuntimeException(e);
+            }
+        }
+        },"awdhu");
+        passiveThread.start();
+    }
     public void update(SocketMessage message) throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("switch su " + message.getMessageEvent());
         switch (message.getMessageEvent()){
@@ -123,9 +139,17 @@ public class ClientSocket {
             case START_YOUR_TURN -> {
                 System.out.println("It's your turn!");
                 active = true;
+                System.out.println("Qui ci arriviamo");
                 if(viewChosen==1){
-                    if(!isFirstTurn)
+                    System.out.println("in the if");
+                    if(!isFirstTurn) {
+                       // if(passiveThread.getState() == Thread.State.NEW)
+                        System.out.println("Ammazzo tutti");
+                        disabledInput = true;
+                            passiveThread.interrupt();
+                        System.out.println("Press to start your turn!");
                         getModel();
+                    }
                     isFirstTurn = false;
                     playerInTurn = listOfPlayers.get(myIndex);
                     activePlayerMenu();
@@ -146,7 +170,11 @@ public class ClientSocket {
             case NOT_YOUR_TURN -> {
                 active = false;
                 if(viewChosen==1){
-                    passivePlay();
+                    disabledInput = false;
+                    System.err.println("Dentro not yourtunr");
+                    System.out.println("Starta il thread dato che era notalive");
+                    startThreadPassive();
+                    isFirstTurn=false;
                 } else if(viewChosen==2){
                     gui.showError(NOT_YOUR_TURN,null);
                 }
@@ -158,7 +186,8 @@ public class ClientSocket {
                         System.out.println("Here's the game board...");
                         uView.showTUIBoard(board);
                     }
-                    passivePlay();
+
+                   // passivePlay();
                 } else if(viewChosen==2){
                     this.board = (Board) message.getObj();
                     gui.update(board,new Message(board,SET_UP_BOARD));
@@ -174,12 +203,17 @@ public class ClientSocket {
                                 System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
                                 uView.showTUIBookshelf(player.getMyBookshelf());
                             }
-                            passivePlay();
+                            //passivePlay();
+                            synchronized (passiveLock) {
+                                passiveLock.notifyAll();
+                            }
+
                         } else if (choice == 6) {
                             this.listOfPlayers = (ArrayList<Player>) message.getObj();
                             uView.showPlayers(listOfPlayers);
-                            passivePlay();
-                        }
+                            synchronized (passiveLock) {
+                                passiveLock.notifyAll();
+                            }                        }
                     } else if (active) {
                         this.listOfPlayers = (ArrayList<Player>) message.getObj();
                         uView.showPlayers(listOfPlayers);
@@ -360,7 +394,7 @@ public class ClientSocket {
 
     public void getModel() throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("model");
-        disabledInput = false;
+        //disabledInput = false;
         if (!hasGameStarted) {
             System.out.println("game non iniziato");
             sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
@@ -519,20 +553,15 @@ public class ClientSocket {
         sendMessageC(new SocketMessage(myIndex, myMatch, pos, TURN_POSITION));
     }
 
+    Thread passiveThread;
     private void passivePlay() throws IOException, InterruptedException, ClassNotFoundException {
         System.out.println("It's not your turn, here are some actions you can do!");
         active=false;
-        do {
-            passivePlayerMenu();
-            System.out.println("choice " + choice);
-        } while (!active && choice!=1 && choice!=4 && choice!=6);
-        System.out.println("ciao");
-        //getModel();
+        passivePlayerMenu();
     }
-    private void passivePlayerMenu() throws IOException, ClassNotFoundException {
+    private void passivePlayerMenu() throws IOException, ClassNotFoundException, InterruptedException {
         uView.askPassiveAction();
         choice = uView.waitInput();
-        System.out.println("choice " + choice);
         if (!disabledInput) {
             switch (choice) {
                 case 1 -> {
