@@ -451,7 +451,11 @@ public class UserView extends Observable implements Serializable {
             System.out.println("\u001B[35mThere are no more Scoring Tokens for this Common Goal Card...");
         }
         System.out.println("\u001B[35mScoring Token of Common Goal Card #"+commonGoalCard.getIdCGC());
-        System.out.println(commonGoalCard.getTokenStack().get(commonGoalCard.getTokenStack().size()-1).getValue()+"\u001B[0m");
+        if(commonGoalCard.getTokenStack().size()==0){
+            System.out.println("0"+"\u001B[0m");
+        } else{
+            System.out.println(commonGoalCard.getTokenStack().get(commonGoalCard.getTokenStack().size()-1).getValue()+"\u001B[0m");
+        }
     }
 
     /**
