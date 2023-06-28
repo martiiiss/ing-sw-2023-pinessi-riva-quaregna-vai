@@ -41,6 +41,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
         //All the page
         GridBagConstraints constraints = new GridBagConstraints();
         JFrame GUI = new JFrame();
+        GUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ImageReader imageReader = new ImageReader();
         image = imageReader.readImage("resources/parquet.jpg", 2000, 2000);
         JPanel imagePanel = new JPanel(){
@@ -147,6 +148,8 @@ public class GUIView implements Observer, Serializable { //class that contains a
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         GUI.setBounds(0,0, screenSize.width, screenSize.height);
         GUI.setResizable(true);
+
+
     }
 
     public void changeScoringToken(ScoringToken sc) { //changes the scoring token displayed in the romanNumber position
