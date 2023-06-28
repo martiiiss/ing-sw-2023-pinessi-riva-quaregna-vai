@@ -11,7 +11,7 @@ import static model.Type.NOTHING;
         private static final long serialVersionUID = 6808001289351890649L;
         public boolean compareRule(Bookshelf bks, int id) {
             Tile[][] bookshelf = bks.getBookshelf();
-            return bookshelf[5][0] == bookshelf[5][4] && bookshelf[0][0] == bookshelf[0][4] && bookshelf[0][0] == bookshelf[5][0] && !(bookshelf[0][0].getType() == BLOCKED || bookshelf[0][0].getType() == NOTHING);
+            return bookshelf[5][0].getType() == bookshelf[5][4].getType() && bookshelf[0][0].getType() == bookshelf[0][4].getType() && bookshelf[0][0].getType() == bookshelf[5][0].getType() && !(bookshelf[0][0].getType() == BLOCKED || bookshelf[0][0].getType() == NOTHING);
         }
     }
 
