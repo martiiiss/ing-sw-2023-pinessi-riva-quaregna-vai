@@ -32,7 +32,7 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     public Server(int portSocket, int portRMI) throws IOException {
         matchList = new ArrayList<>();
         this.socketPort = portSocket;
-        this.RMIPort = RMIPort;
+        this.RMIPort = portRMI;
         this.matchList= Collections.synchronizedList(new ArrayList<>());
 
         System.out.println("\u001B[32mServer Ready! \u001B[0m");

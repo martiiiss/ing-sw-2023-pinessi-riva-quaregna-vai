@@ -23,7 +23,7 @@ public class AppGUITry {
         board.setUpBoard(tiles);//filled the board
         view = new GUIView();
         view.updateBoard(board);
-        view.showError(Event.COLUMN_NOT_VALID);
+        view.showError(Event.COLUMN_NOT_VALID,null);
         view.askTiles();
         ArrayList <Cord> array;
         array = view.getTilesClient();

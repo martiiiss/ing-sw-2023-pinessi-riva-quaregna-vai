@@ -537,9 +537,10 @@ public class UserView extends Observable implements Serializable {
      *     Method that prints the final rank of a match.<br>
      * </p>
      * @param listOfPlayers an {@code ArrayList} of {@code Player} that represents the final rank of a match*/
-    public void gameOver(ArrayList<Player> listOfPlayers) {
+    public void gameOver(ArrayList<Player> listOfPlayers, Player winner) {
         System.out.println("\n\n\n\n\n<GAME OVER>");
         System.out.println("FINAL SCOREBOARD:");
         showPlayers(listOfPlayers);
+        System.out.println("WINNER: "+winner.getNickname());
     }
 }
