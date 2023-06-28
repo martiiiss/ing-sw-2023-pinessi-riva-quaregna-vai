@@ -15,7 +15,7 @@ public class ScoringTokenView extends JPanel implements Serializable { //manages
     /**Constructor of the Class. This sets the background of a scoring token*/
     public ScoringTokenView (){
         ImageReader imageReader = new ImageReader();
-        this.displayedImage = new JLabel(imageReader.readIcon("resources/ScoringTokenImages/back.jpg", 75, 75));
+        this.displayedImage = new JLabel(imageReader.readIcon("resources/ScoringTokenImages/back.jpg", 120, 120));
         setVisible(true);
     }
 
@@ -32,7 +32,7 @@ public class ScoringTokenView extends JPanel implements Serializable { //manages
     public void setDisplayedImage(int valueDisplayed) {
         this.valueDisplayed = valueDisplayed;
         ImageReader imageReader = new ImageReader();
-        displayedImage.setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 75, 75));
+        displayedImage.setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 120, 120));
     }
 
     /**

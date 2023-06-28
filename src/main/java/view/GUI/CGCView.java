@@ -13,7 +13,7 @@ public class CGCView extends JLabel implements Serializable {
     /**Constructor of the Class. This sets the image of the two Common Goal Cards.*/
     public CGCView(){
         ImageReader imageReader = new ImageReader();
-        setIcon(imageReader.readIcon("resources/CommonGoalCardImages/back.jpg", 75, 75));
+        setIcon(imageReader.readIcon("resources/CommonGoalCardImages/back.jpg", 120, 120));
         setVisible(true);
     }
 
@@ -22,6 +22,6 @@ public class CGCView extends JLabel implements Serializable {
      * @param id an int that represents the id of a common goal card*/
     public void setCGCView(int id){
         ImageReader imageReader = new ImageReader();
-        setIcon(imageReader.readIcon("resources/CommonGoalCardImages/"+id+".jpg", 75,75));
+        setIcon(imageReader.readIcon("resources/CommonGoalCardImages/"+id+".jpg", 120,120));
     }
 }

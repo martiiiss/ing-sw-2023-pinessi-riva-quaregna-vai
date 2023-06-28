@@ -107,7 +107,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
         constraints.gridx = 4;
         //constraints.insets = new Insets(5, 5,5,5);
         constraints.gridwidth = 1;
-        constraints.gridheight = 1;
+        constraints.gridheight = 2;
         GUI.add(CGCArea, constraints);
 
         //Scoring token
