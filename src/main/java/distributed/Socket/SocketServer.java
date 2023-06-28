@@ -92,5 +92,11 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
     public void updateView(Message message, int clientIndex, int matchIndex) throws IOException {
         clientsView.get(clientIndex).ask(message); //TODO: devo gestire una lista di client co myIndex e matchIndex
     }
+    public void onDisconnect(int matchIndex) {
+        server.onDisconnect(matchIndex);
+    }
+    public boolean askDisconnection(int matchIndex) {
+        return server.askMatchDisconnection(matchIndex);
+    }
 }
 

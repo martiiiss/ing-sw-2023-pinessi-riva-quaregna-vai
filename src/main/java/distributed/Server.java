@@ -2,6 +2,7 @@ package distributed;
 
 import controller.Controller;
 import distributed.RMI.*;
+import distributed.Socket.ClientHandlerSocket;
 import distributed.Socket.SocketServer;
 import model.Board;
 import model.Game;
@@ -168,5 +169,13 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
     }
     public int askPitController(int matchIndex) {
         return matchList.get(matchIndex).getGameController().getPITIndex();
+    }
+
+    public void onDisconnect(int matchIndex) {
+        Match match = matchList.get(matchIndex);
+        match.setClientsConnected();
+    }
+    public boolean askMatchDisconnection(int matchIndex) {
+        return matchList.get(matchIndex).getClientDisconnected();
     }
 }

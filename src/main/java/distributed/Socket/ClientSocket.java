@@ -373,6 +373,10 @@ public class ClientSocket {
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
                 }
             }
+            case DISCONNECTED -> {
+                System.out.println("ESPLOSO TUTTOOOOO");
+                System.exit(2929);
+            }
         }
     }
 
@@ -383,6 +387,8 @@ public class ClientSocket {
             outputStream.flush();
             outputStream.reset();
         }catch (IOException e){
+            System.out.println("DISCONNESSO IL SEBBEN");
+            System.exit(-1);
             //TODO disconnessione
             //notifyObserver con messaggio di errore
         }

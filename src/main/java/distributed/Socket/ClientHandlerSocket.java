@@ -29,6 +29,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private int matchIndex;
     private int numOfPlayers;
     private Thread threadAskPit;
+    private Thread threadAskDisconnection;
     private Object lock;
     private boolean first = true;
     private int pit;
@@ -46,6 +47,9 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        threadAskDisconnection = new Thread(()->{
+            askServerDisconnection();
+        },"AskDisconnection");
         threadAskPit = new Thread(()-> {
             synchronized (lock) {
                 while (!Thread.currentThread().isInterrupted()) {
@@ -58,12 +62,19 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             }
         },"AskPITToController");
     }
+    private void askServerDisconnection() {
+        boolean serverAns = false;
+        do {
+            serverAns = socketServer.askDisconnection(matchIndex);
+        }while (!serverAns);
+        sendMessage(new SocketMessage(clientIndex,matchIndex,null,Event.DISCONNECTED));
+        threadAskDisconnection.interrupt();
+        threadAskPit.interrupt();
+    }
     private void askPitController() throws IOException, ClassNotFoundException, InterruptedException {
-        System.out.println("askPIT!!!!!");
         do {
 
             pit = socketServer.askPit(matchIndex);
-            System.out.println("heow " + clientIndex + " " + pit);
             if(first && pit!=clientIndex){
                 first=false;
                 System.out.println("pit diverso" + pit + "cl " + clientIndex);
@@ -90,6 +101,8 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                             System.out.println("STARTA IL THR");
                             threadAskPit.start();
                         }
+                        if(!threadAskDisconnection.isAlive())
+                            threadAskDisconnection.start();
                     }
 
                     if(message.getObj()==Event.CHECK_MY_TURN){
@@ -121,13 +134,25 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 }
             }
         }catch(ClassCastException | ClassNotFoundException | IOException e) {
-            System.out.println("");
+            disconnect();
         }
-        try {
+        /*try {
             socketClient.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }*/
+    }
+
+    public void disconnect() {
+        try{
+            if(!socketClient.isClosed()){
+                socketClient.close();
+            }
+        }catch(IOException e){
+            e.printStackTrace();
         }
+        Thread.currentThread().interrupt();
+        socketServer.onDisconnect(matchIndex);
     }
 
     //SWITCH ERRORI DA SERVER/CONTROLLER
