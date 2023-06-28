@@ -11,19 +11,14 @@ import java.util.Random;
 /**Class that represents the Game*/
 public class Game extends Observable implements Serializable {
     @Serial
-    private static final long serialVersionUID = -5788544275616187567L; //random number
+    private static final long serialVersionUID = -5788544275616187567L;
     private Player winner;
     private int numberOfPlayers;
     private Player playerInTurn;
     private Player finisher;
-
-    public void setLastTurn(boolean lastTurn) {
-        isLastTurn = lastTurn;
-    }
-
     private boolean isLastTurn;
-    private ArrayList<Player> players;
-    private ArrayList<CommonGoalCard> commonGoalCards;
+    private final ArrayList<Player> players;
+    private final ArrayList<CommonGoalCard> commonGoalCards;
     private boolean gameStarted;
     /**
      * <p>
@@ -257,6 +252,13 @@ public class Game extends Observable implements Serializable {
             }
         }
         return scoreST;
+    }
+
+    /**
+     * Method used to set the last turn.
+     * @param lastTurn is a boolean, <b>true</b> if is the last turn <b>false</b> otherwise*/
+    public void setLastTurn(boolean lastTurn) {
+        isLastTurn = lastTurn;
     }
 }
 

@@ -8,8 +8,8 @@ import java.util.List;
 
 /**Class that represents a single match*/
 public class Match implements Serializable {
-    private List<ClientInterface> clientsConnected;
-    private Controller gameController;
+    private final List<ClientInterface> clientsConnected;
+    private final Controller gameController;
     private int maxSize = 5;
     private boolean clientDisconnected = false;
 
