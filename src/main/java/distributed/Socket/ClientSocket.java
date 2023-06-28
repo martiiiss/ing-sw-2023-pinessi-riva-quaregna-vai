@@ -94,7 +94,8 @@ public class ClientSocket {
         passiveThread = new Thread(()-> {while(!Thread.currentThread().isInterrupted()) {
             try {
                 if (choice == 1 || choice == 4 || choice == 6) {
-                    // passiveLock.wait();
+                    while(disablePassivePrint){
+                    }
                 }
                 System.out.println("DENTRO TRY PRIMA DI PASSIVE PLAY");
                 passivePlay();
@@ -185,6 +186,7 @@ public class ClientSocket {
                     if (!active) {
                         System.out.println("Here's the game board...");
                         uView.showTUIBoard(board);
+                        disablePassivePrint = false;
                     }
 
                    // passivePlay();
@@ -203,17 +205,16 @@ public class ClientSocket {
                                 System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
                                 uView.showTUIBookshelf(player.getMyBookshelf());
                             }
+                            disablePassivePrint = false;
+
                             //passivePlay();
-                            synchronized (passiveLock) {
-                                passiveLock.notifyAll();
-                            }
 
                         } else if (choice == 6) {
                             this.listOfPlayers = (ArrayList<Player>) message.getObj();
                             uView.showPlayers(listOfPlayers);
-                            synchronized (passiveLock) {
-                                passiveLock.notifyAll();
-                            }                        }
+                            disablePassivePrint = false;
+
+                        }
                     } else if (active) {
                         this.listOfPlayers = (ArrayList<Player>) message.getObj();
                         uView.showPlayers(listOfPlayers);
@@ -559,12 +560,14 @@ public class ClientSocket {
         active=false;
         passivePlayerMenu();
     }
+    private boolean disablePassivePrint;
     private void passivePlayerMenu() throws IOException, ClassNotFoundException, InterruptedException {
         uView.askPassiveAction();
         choice = uView.waitInput();
-        if (!disabledInput) {
+        if (!disabledInput && !disablePassivePrint) {
             switch (choice) {
                 case 1 -> {
+                    disablePassivePrint = true;
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
                 }
                 case 2 -> {
@@ -577,12 +580,14 @@ public class ClientSocket {
                 }
                 case 4 -> {
                     System.out.println("Here's everyone's Bookshelf");
+                    disablePassivePrint = true;
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
                 }
                 case 5 -> {
                     uView.chatOptions(listOfPlayers.get(myIndex));
                 }
                 case 6 -> {
+                    disablePassivePrint = true;
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
                 }
             }
