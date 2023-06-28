@@ -81,7 +81,8 @@ public enum Event {
     COLUMN_CHOSEN(""),
     ORDER_CHOSEN(""),
     ASK_MODEL(""),
-    ADD_OBSERVER("");
+    ADD_OBSERVER(""),
+    GET_WINNER("");
 
     private final String msg;
 

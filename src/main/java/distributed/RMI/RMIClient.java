@@ -194,11 +194,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                 gui.setupPGC(((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex)).getNumber());
             }
             if (myIndex == indexOfPIT) {
-                gui.showError(START_YOUR_TURN);
+                gui.showError(START_YOUR_TURN,null);
                 flowGui();
                 getModel();
             } else {
-                gui.showError(NOT_YOUR_TURN);
+                gui.showError(NOT_YOUR_TURN,null);
                 synchronized (lock) {
                     this.lock.notifyAll();
                 }
@@ -259,7 +259,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
         System.out.println(errorReceived.getTUIMsg());
         if (errorReceived == GAME_OVER) {
-            uView.gameOver(listOfPlayers);
+            Player winner = (Player) server.getModel(matchIndex,GET_WINNER,myIndex);
+            uView.gameOver(listOfPlayers,winner);
             wait(10000); //FIXME POTREBBE NON FUNZIONARE NON CANCELLARE STO FIXME
             System.exit(0);
         }
@@ -461,7 +462,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         do {
             tilesToPick = gui.askTiles(); //ask number of tiles
             errorReceived = server.sendMessage(this.matchIndex,tilesToPick, TURN_AMOUNT);
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
         } while (errorReceived != Event.OK);
 
         do {
@@ -471,7 +472,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             System.out.println("tiles cords " + tilesCords.size());
             errorReceived = server.sendMessage(this.matchIndex,tilesCords, TURN_PICKED_TILES);
             System.out.println(errorReceived.getTUIMsg());
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
             System.out.println("errore: " + errorReceived.getMsg());
         } while (errorReceived != Event.OK);
 
@@ -483,7 +484,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             int column = gui.chooseColumn();
             errorReceived = server.sendMessage(this.matchIndex, column, TURN_COLUMN);
             System.out.println("errore colonna: " + errorReceived);
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
         }while(errorReceived!=Event.OK);
 
         for(int i=0; i<tilesToPick; i++){
@@ -501,13 +502,14 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             //visualizzare errore
             this.board = (Board) server.getModel(matchIndex,GAME_BOARD,myIndex);
             gui.update(board,new Message(board,SET_UP_BOARD));
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
         }
         errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
         if(errorReceived != OK)
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
         if (errorReceived == GAME_OVER) {
-            gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
+            Player winner = (Player) server.getModel(matchIndex,GET_WINNER,myIndex);
+            gui.showError(GAME_OVER,winner);
             wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
             System.exit(10);
         }
@@ -521,6 +523,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
      * @throws IOException if an error occurs
      * @throws InterruptedException if a thread gets interrupted*/
     public void waitTurn() throws IOException, InterruptedException {
+        //AA
         int pitIndex;
         do {
             if(viewChosen==2) {
@@ -535,7 +538,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             System.out.println("Press enter to start your turn....");
         }
         else
-            gui.showError(START_YOUR_TURN);
+            gui.showError(START_YOUR_TURN,null);
         disabledInput = true;
     }
 

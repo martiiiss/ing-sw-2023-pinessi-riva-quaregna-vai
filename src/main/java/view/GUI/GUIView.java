@@ -280,13 +280,21 @@ public class GUIView implements Observer, Serializable { //class that contains a
     public void addTile(Tile tile){ //add the tile to the bookshelf
         bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
     }
-    public void showError(Event e){
+    public void showError(Event e, Object o){
         errorLog.setForeground(Color.RED);
-        if(e==Event.OK)
+        if(e==Event.OK) {
             errorLog.setForeground(Color.GREEN);
-        if(e==Event.START_YOUR_TURN || e==Event.NOT_YOUR_TURN)
+            errorLog.setText("<html>" + e.getMsg() + "</p><html>");
+        }
+        if(e==Event.START_YOUR_TURN || e==Event.NOT_YOUR_TURN) {
             errorLog.setForeground(Color.BLACK);
-        errorLog.setText("<html>"+e.getMsg()+"</p><html>");
+            errorLog.setText("<html>" + e.getMsg() + "</p><html>");
+        }
+        if(e==Event.END) {
+            errorLog.setForeground(Color.black);
+            Player winner = (Player) o;
+            errorLog.setText("Game over, The winner is "+winner.getNickname()+" with "+winner.getScore()+" points");
+        }
        /* switch (e){
             case TILES_NOT_VALID-> errorLog.setText("<html><p>Tiles not valid, select again</p><html>");
             case COLUMN_NOT_VALID -> errorLog.setText("<html><p>You selected a column with not enough space,try again</p><html>");
@@ -313,7 +321,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
     public void firstToFinish(){ //assign me the token for the first player to finish
         hand.setEndgame();
     }
-    public void results(String nickname, int myPoints){ //show the winner and my points
+    /*public void results(String nickname, int myPoints){ //show the winner and my points
         JFrame frame = new JFrame();
         JLabel label = new JLabel(""+nickname+" won, you got "+myPoints+ " points");
         frame.setVisible(true);
@@ -321,7 +329,7 @@ public class GUIView implements Observer, Serializable { //class that contains a
         frame.setTitle("Game ended");
         frame.setLayout(new GridLayout());
         frame.setSize(400,200);
-    }
+    }*/
     public void endInsertion(){
         synchronized (bksButton) {
             hand.getImageDisplayed().setTitle("Hand");
@@ -357,7 +365,6 @@ public class GUIView implements Observer, Serializable { //class that contains a
 
     @Override
     public void update(Observable o, Message message) {
-        System.out.println("update in gui della board ");
         switch(message.getMessageEvent()){
             case SET_UP_BOARD, REMOVE_TILE_BOARD -> {
                 updateBoard((Board)o);
@@ -370,6 +377,9 @@ public class GUIView implements Observer, Serializable { //class that contains a
             case UPDATED_SCORE -> {
                 ArrayList<Player> listRec = (ArrayList<Player>) message.getObj();
                 loadPlayers(listRec);
+            }
+            case END -> {
+                showError(Event.END,message.getObj()); //Object is the Winner
             }
         }
     }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class AppGUITry {
     static GUIView view;
     static Board board;
-
+//AA
     public static void main(String[] args) throws IOException {
         Bag bag = new Bag();
         board = new Board(3);
@@ -23,7 +23,7 @@ public class AppGUITry {
         board.setUpBoard(tiles);//filled the board
         view = new GUIView();
         view.updateBoard(board);
-        view.showError(Event.COLUMN_NOT_VALID);
+        view.showError(Event.COLUMN_NOT_VALID,null);
         view.askTiles();
         ArrayList <Cord> array;
         array = view.getTilesClient();

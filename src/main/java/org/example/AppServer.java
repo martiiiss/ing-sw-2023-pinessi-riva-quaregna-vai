@@ -11,11 +11,13 @@ import java.rmi.RemoteException;
 import static java.lang.Integer.parseInt;
 
 public class AppServer {
+    //AA
     public static void main(String[] args) throws IOException {
         int portSocket = 43808;
         int portRMI = 45398;
         Server server= new Server(portSocket, portRMI);
         //server RMI
+        System.setProperty("java.rmi.server.hostname", "localhost");
         ServerRMIInterface serverRMI = new RMIServer(portRMI, server);
         serverRMI.startServer(serverRMI);
 

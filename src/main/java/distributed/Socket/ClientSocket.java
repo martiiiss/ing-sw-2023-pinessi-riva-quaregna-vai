@@ -140,7 +140,7 @@ public class ClientSocket {
 
                 } if(viewChosen==2){
                     System.out.println("MIO TURNO ");
-                    gui.showError(START_YOUR_TURN);
+                    gui.showError(START_YOUR_TURN,null);
                     flowGui();
                     System.out.println("next");
                 }
@@ -486,7 +486,7 @@ public class ClientSocket {
             tilesToPick = gui.askTiles(); //ask number of tiles
             sendMessageC(new SocketMessage(myIndex, myMatch, tilesToPick, TURN_AMOUNT));
             message = receivedMessageC();
-            gui.showError((Event) message.getObj());
+            gui.showError((Event) message.getObj(),null);
         } while (message.getObj() != Event.OK);
 
 
@@ -497,7 +497,7 @@ public class ClientSocket {
             sendMessageC(new SocketMessage(myIndex, myMatch, tilesCords, TURN_PICKED_TILES));
             errorReceived = (Event) receivedMessageC().getObj();
             System.out.println(errorReceived.getTUIMsg());
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
         } while (errorReceived != Event.OK);
 
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
@@ -510,7 +510,7 @@ public class ClientSocket {
             sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
             errorReceived = (Event) receivedMessageC().getObj();
             System.out.println("errore colonna: " + errorReceived);
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
         }while(errorReceived!=Event.OK);
 
         for(int i=0; i<tilesToPick; i++){
@@ -529,14 +529,15 @@ public class ClientSocket {
             sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
             this.board = (Board) receivedMessageC().getObj();
             gui.update(board,new Message(board,SET_UP_BOARD));
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
         }
         sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
+        //AA
         errorReceived = (Event) receivedMessageC().getObj();
         if(errorReceived != OK)
-            gui.showError(errorReceived);
+            gui.showError(errorReceived,null);
         if (errorReceived == GAME_OVER) {
-            gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
+            //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
             wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
             System.exit(10);
         }
