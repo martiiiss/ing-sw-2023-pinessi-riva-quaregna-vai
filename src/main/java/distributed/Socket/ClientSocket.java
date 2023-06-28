@@ -8,12 +8,9 @@ import util.Event;
 import view.GUI.GUIView;
 import view.UserView;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
-import java.rmi.UnmarshalException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -139,10 +136,11 @@ public class ClientSocket {
                     activeAskNumOfTiles();
 
                 } if(viewChosen==2){
-                    System.out.println("MIO TURNO ");
+                    if(!isFirstTurn)
+                        getModel();
+                    isFirstTurn = false;
                     gui.showError(START_YOUR_TURN,null);
-                    flowGui();
-                    System.out.println("next");
+                    askNumOfTileToPickGUI();
                 }
             }
             case NOT_YOUR_TURN -> {
@@ -150,113 +148,186 @@ public class ClientSocket {
                 if(viewChosen==1){
                     passivePlay();
                 } else if(viewChosen==2){
-
+                    gui.showError(NOT_YOUR_TURN,null);
                 }
             }
             case GAME_BOARD -> {
-                this.board = (Board) message.getObj();
-                System.out.println("act " + active);
-                if(!active) {
-                    System.out.println("Here's the game board...");
-                    uView.showTUIBoard(board);
+                if(viewChosen==1) {
+                    this.board = (Board) message.getObj();
+                    System.out.println("act " + active);
+                    if (!active) {
+                        System.out.println("Here's the game board...");
+                        uView.showTUIBoard(board);
+                    }
+                    passivePlay();
+                } else if(viewChosen==2){
+                    this.board = (Board) message.getObj();
+                    gui.update(board,new Message(board,SET_UP_BOARD));
+                    gui.showError((Event) message.getObj(),null);
                 }
-                passivePlay();
             }
             case GAME_PLAYERS -> {
-                this.listOfPlayers = (ArrayList<Player>) message.getObj();
-                System.out.println("choice " +choice + "active"+ active);
-                if(!active) {
-                    if(choice==4){
-                        for (Player player : listOfPlayers) {
-                            System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
-                            uView.showTUIBookshelf(player.getMyBookshelf());
+                if(viewChosen==1) {
+                    this.listOfPlayers = (ArrayList<Player>) message.getObj();
+                    System.out.println("choice " + choice + "active" + active);
+                    if (!active) {
+                        if (choice == 4) {
+                            for (Player player : listOfPlayers) {
+                                System.out.println("\u001B[36m" + player.getNickname() + "\u001B[0m's bookshelf:");
+                                uView.showTUIBookshelf(player.getMyBookshelf());
+                            }
+                            passivePlay();
+                        } else if (choice == 6) {
+                            this.listOfPlayers = (ArrayList<Player>) message.getObj();
+                            uView.showPlayers(listOfPlayers);
+                            passivePlay();
                         }
-                        passivePlay();
-                    } else if(choice==6){
+                    } else if (active) {
                         this.listOfPlayers = (ArrayList<Player>) message.getObj();
                         uView.showPlayers(listOfPlayers);
-                        passivePlay();
                     }
-                } else if(active){
-                    this.listOfPlayers = (ArrayList<Player>) message.getObj();
-                    uView.showPlayers(listOfPlayers);
+                } else if(viewChosen==2){
+                    System.out.println(message.getObj());
+                    listOfPlayers = (ArrayList<Player>) message.getObj(); //Used to update the score after placing my tiles
+                    gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
+                    gui.loadPlayers(listOfPlayers);
+                    sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
                 }
             }
             case TURN_AMOUNT -> {
-                if(message.getObj()!=null) {
-                    if (message.getObj() != OK) {
-                        System.out.println(((Event) message.getObj()).getMsg());
-                        activeAskNumOfTiles();
-                    } else {
-                        System.out.println("ACTIVE ASK TILE");
-                        activeAskTiles();
+                if(viewChosen==1){
+                    if(message.getObj()!=null) {
+                        if (message.getObj() != OK) {
+                            System.out.println(((Event) message.getObj()).getMsg());
+                            activeAskNumOfTiles();
+                        } else {
+                            System.out.println("ACTIVE ASK TILE");
+                            activeAskTiles();
+                        }
+                    }
+                } else if(viewChosen==2){
+                    gui.showError((Event) message.getObj(),null);
+                    if(message.getObj()!=Event.OK){
+                        askNumOfTileToPickGUI();
+                    } else{
+                        setTilesPickedGUI();
                     }
                 }
+
             }
             case TURN_PICKED_TILES -> {
-                if(message.getObj()!= OK) {
-                    System.out.println(((Event) message.getObj()).getMsg());
-                    activeAskTiles();
-                } else {
-                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
+                if(viewChosen==1){
+                    if(message.getObj()!= OK) {
+                        System.out.println(((Event) message.getObj()).getMsg());
+                        activeAskTiles();
+                    } else {
+                        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
+                    }
+                } else if(viewChosen==2){
+                    System.out.println(((Event)message.getObj()).getTUIMsg());
+                    gui.showError(((Event)message.getObj()),null);
+                    if(((Event)message.getObj())!=OK){
+                        setTilesPickedGUI();
+                    } else{
+                        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
+                    }
                 }
+
             }
             case TURN_TILE_IN_HAND -> {
                 tilesInHand = (ArrayList<Tile>) message.getObj();
-                System.out.println(tilesInHand);
-                uView.printTilesInHand(tilesInHand);
-                uView.showTUIBookshelf(listOfPlayers.get(myIndex).getMyBookshelf());
-                activeAskColumn((ArrayList<Tile>) message.getObj());
-
+                if(viewChosen==1){
+                    System.out.println(tilesInHand);
+                    uView.printTilesInHand(tilesInHand);
+                    uView.showTUIBookshelf(listOfPlayers.get(myIndex).getMyBookshelf());
+                    activeAskColumn((ArrayList<Tile>) message.getObj());
+                } else if (viewChosen==2){
+                    gui.pickTiles(tilesCords, tilesInHand); //adds the tile to tiles in hand
+                    askColumnGUI();
+                }
             }
             case TURN_COLUMN -> {
-                if (message.getObj() == OK) {
-                    activePlaceTile(tilesInHand);
-                }else {
-                    System.out.println(((Event) message.getObj()).getMsg());
-                    activeAskColumn(tilesInHand);
+                if(viewChosen==1){
+                    if (message.getObj() == OK) {
+                        activePlaceTile(tilesInHand);
+                    }else {
+                        System.out.println(((Event) message.getObj()).getMsg());
+                        activeAskColumn(tilesInHand);
+                    }
+                } else if(viewChosen==2){
+                    gui.showError((Event) message.getObj(),null);
+                    if(message.getObj()!=OK){
+                        askColumnGUI();
+                    } else {
+                        addTilesInHandGUI();
+                    }
                 }
             }
             case TURN_POSITION -> {
-                System.out.println("ogg" + message.getObj());
-                if(message.getObj()!=OK){
-                    System.out.println(((Event)message.getObj()).getMsg());
-                    activePlaceTile(tilesInHand);
-                } else if(count<numberOfChosenTiles){
-                    count++;
-                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, UPDATE_BOOKSHELF));
+                if(viewChosen==1){
+                    System.out.println("ogg" + message.getObj());
+                    if(message.getObj()!=OK){
+                        System.out.println(((Event)message.getObj()).getMsg());
+                        activePlaceTile(tilesInHand);
+                    } else if(count<numberOfChosenTiles){
+                        count++;
+                        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, UPDATE_BOOKSHELF));
+                    }
                 }
             } case UPDATE_BOOKSHELF -> {
-                System.out.println("count" + count);
-                if(count<=numberOfChosenTiles){
-                    System.out.println("aggiorno la bookshelf ");
-                    Bookshelf bookshelf = (Bookshelf) message.getObj();
-                    playerInTurn.setMyBookshelf(bookshelf);
-                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GET_TILES_HAND));
+                if(viewChosen==1){
+                    System.out.println("count" + count);
+                    if(count<=numberOfChosenTiles){
+                        System.out.println("aggiorno la bookshelf ");
+                        Bookshelf bookshelf = (Bookshelf) message.getObj();
+                        playerInTurn.setMyBookshelf(bookshelf);
+                        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GET_TILES_HAND));
+                    }
                 }
             }
             case GET_TILES_HAND -> {
-                uView.printTilesInHand((ArrayList<Tile>) message.getObj());
-                uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
+                if(viewChosen==1){
+                    uView.printTilesInHand((ArrayList<Tile>) message.getObj());
+                    uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
 
-                if(count<numberOfChosenTiles) {
-                    activePlaceTile((ArrayList<Tile>) message.getObj());
-                }else {
-                    count = 0;
-                    sendMessageC(new SocketMessage(myIndex, myMatch, null, CHECK_REFILL));
+                    if(count<numberOfChosenTiles) {
+                        activePlaceTile((ArrayList<Tile>) message.getObj());
+                    }else {
+                        count = 0;
+                        sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+                    }
                 }
-
             }
             case CHECK_REFILL -> {
-                if (message.getObj() == REFILL)
-                    System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
-                sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
-
+                if (viewChosen == 1) {
+                    if (message.getObj() == REFILL)
+                        System.out.println("\u001B[35mThe board had to be refilled and is now ready for the next turn...\u001B[0m");
+                    sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
+                } else if(viewChosen==2){
+                    if (message.getObj() == Event.REFILL) {
+                        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+                    }
+                    sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
+                }
             }
             case END_OF_TURN -> {
-                System.out.println(((Event)(message.getObj())).getMsg());
-                getModel();
-                sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+                if(viewChosen==1){
+                    System.out.println(((Event)(message.getObj())).getMsg());
+                    getModel();
+                    sendMessageC(new SocketMessage(myIndex, myMatch, myIndex, CHECK_MY_TURN));
+                } else if(viewChosen==2){
+                    System.out.println(message.getObj());
+                    if(message.getObj() != OK) {
+                        gui.showError(((Event) message.getObj()),null);
+                    }
+                    if (message.getObj() == GAME_OVER) {
+                        //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
+                        wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
+                        System.exit(10);
+                    }
+                    System.out.println("invio");
+                    sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
+                }
             }
         }
     }
@@ -281,10 +352,10 @@ public class ClientSocket {
     public void getModel() throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("model");
         disabledInput = false;
-        if(!hasGameStarted) {
+        if (!hasGameStarted) {
             System.out.println("game non iniziato");
             sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
-            while (receivedMessageC().getObj()!=Event.OK) {
+            while (receivedMessageC().getObj() != Event.OK) {
                 sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
             }
             hasGameStarted = true;
@@ -303,7 +374,7 @@ public class ClientSocket {
 
         System.out.println("ho il model ora devo startare la partita!");
 
-        if(viewChosen==2) {
+        if (viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
                 sendMessageC(new SocketMessage(myIndex, myMatch, gui, ADD_OBSERVER));
@@ -358,8 +429,9 @@ public class ClientSocket {
             }
         }
         */
-
     }
+
+    //TODO gestire aggiornamento: turno, e per la gui anche setupboard
 
     private void activePlayerMenu() throws IOException, ClassNotFoundException {
         System.out.println("Would you like to do any of these actions before making your move?");
@@ -479,68 +551,32 @@ public class ClientSocket {
         }
     }
 
-    public void flowGui() throws IOException, InterruptedException, ClassNotFoundException {
-        int tilesToPick;
-        SocketMessage message;
-        do {
-            tilesToPick = gui.askTiles(); //ask number of tiles
-            sendMessageC(new SocketMessage(myIndex, myMatch, tilesToPick, TURN_AMOUNT));
-            message = receivedMessageC();
-            gui.showError((Event) message.getObj(),null);
-        } while (message.getObj() != Event.OK);
+    public void askNumOfTileToPickGUI () throws IOException {
+        numberOfChosenTiles = gui.askTiles(); //ask number of tiles
+        sendMessageC(new SocketMessage(myIndex, myMatch, numberOfChosenTiles, TURN_AMOUNT));
+    }
 
+    public void setTilesPickedGUI() throws IOException {
+        gui.getBoardView().setTilesPicked(numberOfChosenTiles);
+        tilesCords = gui.getTilesClient();
+        sendMessageC(new SocketMessage(myIndex, myMatch, tilesCords, TURN_PICKED_TILES));
+    }
 
-        Event errorReceived;
-        do {
-            gui.getBoardView().setTilesPicked(tilesToPick);
-            tilesCords = gui.getTilesClient();
-            sendMessageC(new SocketMessage(myIndex, myMatch, tilesCords, TURN_PICKED_TILES));
-            errorReceived = (Event) receivedMessageC().getObj();
-            System.out.println(errorReceived.getTUIMsg());
-            gui.showError(errorReceived,null);
-        } while (errorReceived != Event.OK);
+    public void askColumnGUI() throws IOException {
+        int column = gui.chooseColumn();
+        sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
+    }
 
-        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
-        tilesInHand = (ArrayList<Tile>) receivedMessageC().getObj();
-
-        gui.pickTiles(tilesCords, tilesInHand); //adds the tile to tiles in hand
-
-        do {
-            int column = gui.chooseColumn();
-            sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
-            errorReceived = (Event) receivedMessageC().getObj();
-            System.out.println("errore colonna: " + errorReceived);
-            gui.showError(errorReceived,null);
-        }while(errorReceived!=Event.OK);
-
-        for(int i=0; i<tilesToPick; i++){
+    public void addTilesInHandGUI() throws IOException {
+        for(int i=0; i<numberOfChosenTiles; i++) {
             int pos = gui.chooseTile();
             gui.addTile(tilesInHand.get(pos));
             sendMessageC(new SocketMessage(myIndex, myMatch, pos, TURN_POSITION));
-            errorReceived = (Event) receivedMessageC().getObj();
         }
         gui.endInsertion();
         gui.getHandView().setTileToInsert(-1);
-
-        //FIXME sistemare i seguenti (fine)
         sendMessageC(new SocketMessage(myIndex, myMatch, null, CHECK_REFILL));
-        errorReceived = (Event) receivedMessageC().getObj();
-        if (errorReceived == Event.REFILL) {
-            sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
-            this.board = (Board) receivedMessageC().getObj();
-            gui.update(board,new Message(board,SET_UP_BOARD));
-            gui.showError(errorReceived,null);
-        }
-        sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
-        //AA
-        errorReceived = (Event) receivedMessageC().getObj();
-        if(errorReceived != OK)
-            gui.showError(errorReceived,null);
-        if (errorReceived == GAME_OVER) {
-            //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
-            wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
-            System.exit(10);
-        }
+
     }
 
     public int getMyIndex(){

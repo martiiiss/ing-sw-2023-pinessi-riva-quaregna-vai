@@ -98,9 +98,11 @@ public enum Event {
 
     /**
      * <p>
-     *     Method that returns an error message.
+     * Method that returns an error message.
      * </p>
-     * @return <code>String</code> that represents an error message*/
+     *
+     * @return <code>String</code> that represents an error message
+     */
     public String getMsg(){
         return msg;
     }
