@@ -2,6 +2,7 @@ package distributed.Socket;
 
 import distributed.ClientInterface;
 import distributed.messages.SocketMessage;
+import model.Board;
 import util.Event;
 
 import java.io.IOException;
@@ -30,7 +31,9 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private int numOfPlayers;
     private Thread threadAskPit;
     private Thread threadAskDisconnection;
+    private Thread threadCheckUpdates;
     private Object lock;
+    private Object upLock;
     private boolean first = true;
     private int pit;
     public ClientHandlerSocket(Socket socket, SocketServer socketServer) {
@@ -40,6 +43,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         this.lock = new Object();
         this.inputLock = new Object();
         this.outputLock = new Object();
+        this.upLock = new Object();
 
         try{
             this.output = new ObjectOutputStream(socketClient.getOutputStream());
@@ -61,7 +65,30 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 }
             }
         },"AskPITToController");
+        threadCheckUpdates = new Thread(()-> {
+            synchronized (upLock) {
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        askControllerBoardUpdate();
+                    } catch (IOException | ClassNotFoundException | InterruptedException e) {
+                        //throw new RuntimeException(e);
+                    }
+                }
+            }
+        },"CheckUpdateBoard");
     }
+    private void askControllerBoardUpdate() throws IOException, ClassNotFoundException, InterruptedException {
+        do {
+            Event e = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, clientIndex, SET_UP_BOARD));
+            ///TODO Event e2 = server.sendMessage(this.matchIndex, myIndex, UPDATE_SCORINGTOKEN);
+            if (e == SET_UP_BOARD) {
+                Board board = (Board) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_BOARD));
+                sendMessage(new SocketMessage(clientIndex, matchIndex, board, UPDATED_GAME_BOARD));
+            }
+        } while(!stoppati);
+        upLock.wait();
+    }
+    private boolean stoppati;
     private void askServerDisconnection() {
         boolean serverAns = false;
         do {
@@ -72,8 +99,8 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         threadAskPit.interrupt();
     }
     private void askPitController() throws IOException, ClassNotFoundException, InterruptedException {
+        stoppati=false;
         do {
-
             pit = socketServer.askPit(matchIndex);
             if(first && pit!=clientIndex){
                 first=false;
@@ -82,6 +109,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             }
             Thread.sleep(1000);
         } while(pit !=clientIndex);
+        stoppati=true;
         first = true;
         System.out.println("manda messaggio è il tuo turno! " + clientIndex);
         sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.START_YOUR_TURN));
@@ -101,8 +129,8 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                             System.out.println("STARTA IL THR");
                             threadAskPit.start();
                         }
-                        if(!threadAskDisconnection.isAlive())
-                            threadAskDisconnection.start();
+                        if(!threadCheckUpdates.isAlive())
+                            threadCheckUpdates.start();
                     }
 
                     if(message.getObj()==Event.CHECK_MY_TURN){
@@ -120,6 +148,9 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                         System.out.println("non è il tuo turno");
                         synchronized (lock) {
                             this.lock.notifyAll();
+                        }
+                        synchronized (upLock) {
+                            this.upLock.notifyAll();
                         }
                     } else {
                         if (message.getMessageEvent() != Event.OK) {
@@ -167,6 +198,8 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
             }
             case CHOOSE_VIEW -> {
+                if(!threadAskDisconnection.isAlive())
+                    threadAskDisconnection.start();
                 if((Event)obj != Event.GUI_VIEW &&  (Event)obj != Event.TUI_VIEW){
                     System.out.println(((Event)obj).getMsg());
                     sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.CHOOSE_VIEW));

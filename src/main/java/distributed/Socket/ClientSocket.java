@@ -367,6 +367,14 @@ public class ClientSocket {
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
                 }
             }
+            case UPDATED_GAME_BOARD -> {
+                if(viewChosen==2) {
+                    this.board = (Board) message.getObj();
+                    gui.update(board,new Message(board,SET_UP_BOARD));
+                    //gui.showError((Event) message.getObj(),null);
+                    System.out.println("FATTO L'UPP");
+                }
+            }
             case DISCONNECTED -> {
                 System.out.println("ESPLOSO TUTTOOOOO");
                 System.exit(2929);
