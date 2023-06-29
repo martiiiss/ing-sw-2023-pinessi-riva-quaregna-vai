@@ -15,8 +15,8 @@ import java.io.Serializable;
 public class BookshelfView implements Serializable {
     @Serial
     private static final long serialVersionUID = 4758892563965792612L;
-    private JInternalFrame bookshelfDisplayed;
-    private JButton [][] bookshelfTiles;
+    private final JInternalFrame bookshelfDisplayed;
+    private final JButton [][] bookshelfTiles;
     private boolean canChange = true;
     private int columnChosen = -1;
 
