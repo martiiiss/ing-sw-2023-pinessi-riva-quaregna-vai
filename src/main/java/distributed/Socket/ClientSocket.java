@@ -6,6 +6,7 @@ import model.*;
 import org.jetbrains.annotations.NotNull;
 import util.Cord;
 import util.Event;
+import util.Observable;
 import view.GUI.GUIView;
 import view.UserView;
 import java.io.*;
@@ -391,13 +392,19 @@ public class ClientSocket {
                 if(viewChosen==2) {
                     this.board = (Board) message.getObj();
                     gui.update(board,new Message(board,SET_UP_BOARD));
-                    //gui.showError((Event) message.getObj(),null);
-                    System.out.println("FATTO L'UPP");
                 }
             }
             case DISCONNECTED -> {
                 System.out.println("ESPLOSO TUTTOOOOO");
                 System.exit(2929);
+            }
+            case UPDATE_SCORINGTOKEN_1 -> {
+                if(viewChosen==2)
+                    gui.update((Observable) message.getObj(),new Message(message.getObj(),UPDATE_SCORINGTOKEN_1));
+            }
+            case UPDATE_SCORINGTOKEN_2 ->{
+                if(viewChosen==2)
+                    gui.update((Observable) message.getObj(),new Message(message.getObj(),UPDATE_SCORINGTOKEN_2));
             }
         }
     }
@@ -457,15 +464,6 @@ public class ClientSocket {
         this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
         this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
-        /*
-        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
-        this.indexOfPIT = (int) receivedMessageC().getObj();
-        if(indexOfPIT != myIndex){
-            sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
-            System.out.println("PIT " + indexOfPIT + " my " + myIndex);
-        }
-        this.playerInTurn = listOfPlayers.get(indexOfPIT);
-        */
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
         int index = (int) receivedMessageC().getObj();
         System.out.println("indexPit ricevuto: "+indexOfPIT+ "myIndex: "+myIndex);
@@ -484,8 +482,6 @@ public class ClientSocket {
             }
         }
     }
-
-    //TODO gestire aggiornamento: turno, e per la gui anche setupboard
 
     /**Method used to create an active player menu.
      * @throws IOException if an error occurs

@@ -98,7 +98,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             if (e == SET_UP_BOARD) {
                 Board board = (Board) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_BOARD));
                 sendMessage(new SocketMessage(clientIndex, matchIndex, board, UPDATED_GAME_BOARD));
-               // Thread.currentThread().wait(1000);
             }
             if(e2==UPDATE_SCORINGTOKEN_1) {
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));

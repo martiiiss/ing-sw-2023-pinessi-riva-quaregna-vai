@@ -1,4 +1,4 @@
-package controller;
+package distributed.Socket;
 
 import distributed.Socket.ClientSocket;
 import distributed.messages.Message;

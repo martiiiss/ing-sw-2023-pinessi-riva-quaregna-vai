@@ -192,9 +192,15 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                     this.board = (Board) server.getModel(this.matchIndex,GAME_BOARD, myIndex);
                 }
                 gui.updateBoard(this.board);
-                gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
-                gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(1));
-                gui.setupPGC(((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex)).getNumber());
+                while(commonGoalCard==null){
+                    this.commonGoalCard = (ArrayList<CommonGoalCard>) server.getModel(this.matchIndex,GAME_CGC, myIndex);
+                }
+                gui.setupCGC((this.commonGoalCard).get(0));
+                gui.setupCGC((this.commonGoalCard).get(1));
+                while(myPersonalGoalCard==null){
+                    this.myPersonalGoalCard = ((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex));
+                }
+                gui.setupPGC(myPersonalGoalCard.getNumber());
             }
             if (myIndex == indexOfPIT) {
                 gui.showError(START_YOUR_TURN);
@@ -434,11 +440,17 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                 }
                 case 2 -> {
                     System.out.println("Here are the CommonGoalCards...");
+                    do{
+                        commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+                    } while (commonGoalCard==null);
                     uView.showCGC(commonGoalCard);
                 }
                 case 3 -> {
                     System.out.println("Here's your PersonalGoalCard (Shhh don't tell anyone!)");
-                    uView.showPGC(listOfPlayers.get(myIndex).getPersonalGoalCard());
+                    do{
+                        myPersonalGoalCard = (PersonalGoalCard) server.getModel(matchIndex, GAME_PGC, myIndex);
+                    } while(myPersonalGoalCard==null);
+                    uView.showPGC(myPersonalGoalCard);
                 }
                 case 4 -> {
                     System.out.println("Here's everyone's Bookshelf");
@@ -521,15 +533,13 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             //System.exit(10);
         }
         listOfPlayers = (ArrayList<Player>) server.getModel(matchIndex,GAME_PLAYERS,myIndex); //Used to update the score after placing my tiles
-        //Event e2 = server.sendMessage(this.matchIndex, myIndex, UPDATE_SCORINGTOKEN);
-       // if(e2==UPDATE_SCORINGTOKEN_1) {
+
         this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
         gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
-       // }
-        //if(e2==UPDATE_SCORINGTOKEN_2) {
+
         this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
         gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
-      //  }
+
         errorReceived = server.sendMessage(matchIndex,myIndex,END);
         gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
         gui.loadPlayers(listOfPlayers);
