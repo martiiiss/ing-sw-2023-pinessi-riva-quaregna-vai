@@ -544,6 +544,5 @@ public class UserView extends Observable implements Serializable {
         System.out.println("\n\n\n\n\n<GAME OVER>");
         System.out.println("FINAL SCOREBOARD:");
         showPlayers(listOfPlayers);
-        System.out.println("WINNER: "+winner.getNickname());
     }
 }

@@ -188,7 +188,7 @@ public class ClientSocket {
                     if(!isFirstTurn)
                         getModel();
                     isFirstTurn = false;
-                    gui.showError(START_YOUR_TURN,null);
+                    gui.showError(START_YOUR_TURN);
                     askNumOfTileToPickGUI();
                 }
             }
@@ -199,7 +199,7 @@ public class ClientSocket {
                     startThreadPassive();
                     isFirstTurn=false;
                 } else if(viewChosen==2){
-                    gui.showError(NOT_YOUR_TURN,null);
+                    gui.showError(NOT_YOUR_TURN);
                 }
             }
             case GAME_BOARD -> {
@@ -215,7 +215,7 @@ public class ClientSocket {
                 } else if(viewChosen==2){
                     this.board = (Board) message.getObj();
                     gui.update(board,new Message(board,SET_UP_BOARD));
-                    gui.showError((Event) message.getObj(),null);
+                    gui.showError((Event) message.getObj());
                 }
             }
             case GAME_PLAYERS -> {
@@ -259,7 +259,7 @@ public class ClientSocket {
                         }
                     }
                 } else if(viewChosen==2){
-                    gui.showError((Event) message.getObj(),null);
+                    gui.showError((Event) message.getObj());
                     if(message.getObj()!=Event.OK){
                         askNumOfTileToPickGUI();
                     } else{
@@ -278,7 +278,7 @@ public class ClientSocket {
                     }
                 } else if(viewChosen==2){
                     System.out.println(((Event)message.getObj()).getTUIMsg());
-                    gui.showError(((Event)message.getObj()),null);
+                    gui.showError(((Event)message.getObj()));
                     if(((Event)message.getObj())!=OK){
                         setTilesPickedGUI();
                     } else{
@@ -309,7 +309,7 @@ public class ClientSocket {
 
                     }
                 } else if(viewChosen==2){
-                    gui.showError((Event) message.getObj(),null);
+                    gui.showError((Event) message.getObj());
                     if(message.getObj()!=OK){
                         askColumnGUI();
                     } else {
@@ -370,18 +370,16 @@ public class ClientSocket {
                     System.out.println(((Event)(message.getObj())).getTUIMsg());
                     if (message.getObj() == GAME_OVER) {
                         //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
-                        wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
                         System.exit(10);
                     }
                     sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
                 } else if(viewChosen==2){
                     System.out.println(message.getObj());
                     if(message.getObj() != OK) {
-                        gui.showError(((Event) message.getObj()),null);
+                        gui.showError(((Event) message.getObj()));
                     }
                     if (message.getObj() == GAME_OVER) {
                         //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
-                        wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
                         System.exit(10);
                     }
                     System.out.println("invio");

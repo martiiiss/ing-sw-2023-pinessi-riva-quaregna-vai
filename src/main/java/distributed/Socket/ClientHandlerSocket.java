@@ -3,6 +3,7 @@ package distributed.Socket;
 import distributed.ClientInterface;
 import distributed.messages.SocketMessage;
 import model.Board;
+import model.CommonGoalCard;
 import org.jetbrains.annotations.NotNull;
 import util.Event;
 
@@ -38,7 +39,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private Object upLock;
     private boolean first = true;
     private int pit;
-    private boolean stoppati;
+    private boolean stopModelUpdate;
 
     /**Constructor of the Class. This initializes the connection and starts the need threads.
      * @param socket is a {@link Socket}
@@ -93,13 +94,21 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private void askControllerBoardUpdate() throws IOException, ClassNotFoundException, InterruptedException {
         do {
             Event e = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, clientIndex, SET_UP_BOARD));
-            ///TODO Event e2 = server.sendMessage(this.matchIndex, myIndex, UPDATE_SCORINGTOKEN);
+            Event e2 = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex,matchIndex,clientIndex,UPDATE_SCORINGTOKEN));
             if (e == SET_UP_BOARD) {
                 Board board = (Board) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_BOARD));
                 sendMessage(new SocketMessage(clientIndex, matchIndex, board, UPDATED_GAME_BOARD));
                // Thread.currentThread().wait(1000);
             }
-        } while(!stoppati);
+            if(e2==UPDATE_SCORINGTOKEN_1) {
+                ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
+                sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(0),UPDATE_SCORINGTOKEN_1)));
+            }
+            if(e2==UPDATE_SCORINGTOKEN_2) {
+                ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
+                sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(1),UPDATE_SCORINGTOKEN_2)));
+            }
+        } while(!stopModelUpdate);
         upLock.wait();
     }
 
@@ -121,7 +130,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
      * @throws ClassNotFoundException if a class cannot be found
      * @throws InterruptedException if a thread gets interrupted  */
     private void askPitController() throws IOException, ClassNotFoundException, InterruptedException {
-        stoppati=false;
+        stopModelUpdate=false;
         do {
             pit = socketServer.askPit(matchIndex);
             if(first && pit!=clientIndex){
@@ -136,7 +145,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             }
             Thread.sleep(1000);
         } while(pit !=clientIndex);
-        stoppati=true;
+        stopModelUpdate=true;
         first = true;
         System.out.println("manda messaggio è il tuo turno! " + clientIndex +"Match" +matchIndex);
         sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.START_YOUR_TURN));
