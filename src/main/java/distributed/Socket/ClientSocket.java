@@ -158,6 +158,7 @@ public class ClientSocket {
                 hasGameStarted = true;
                 getModel();
                 sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
+                System.err.println("Dopo START_THREAD");
             }
             case START, CHECK_MY_TURN -> {
                 sendMessageC(new SocketMessage(myIndex, myMatch, CHECK_MY_TURN, GAME_PIT));
@@ -465,6 +466,11 @@ public class ClientSocket {
         }
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
         */
+        sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
+        int index = (int) receivedMessageC().getObj();
+        System.out.println("indexPit ricevuto: "+indexOfPIT+ "myIndex: "+myIndex);
+        if(index != myIndex)
+            sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
         if (viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();

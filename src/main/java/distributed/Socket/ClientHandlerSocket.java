@@ -131,6 +131,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
      * @throws InterruptedException if a thread gets interrupted  */
     private void askPitController() throws IOException, ClassNotFoundException, InterruptedException {
         stopModelUpdate=false;
+        Thread.sleep(2000);
         do {
             pit = socketServer.askPit(matchIndex);
             if(first && pit!=clientIndex){
@@ -171,7 +172,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                         if(!threadCheckUpdates.isAlive())
                             threadCheckUpdates.start();
                     }
-                   // if(message.getMessageEvent() == SET_ALL_CONNECTED)
 
 
                     if(message.getObj()==Event.CHECK_MY_TURN){
