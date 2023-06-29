@@ -460,9 +460,6 @@ public class ClientSocket {
         this.indexOfPIT = (int) receivedMessageC().getObj();
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
 
-        System.out.println("ho il model ora devo startare la partita!");
-
-
         if (viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
@@ -470,14 +467,13 @@ public class ClientSocket {
                 this.isFirstTurn = false;
                 gui.update(null, new Message(listOfPlayers, UPDATED_SCORE));
                 gui.updateBoard(this.board);
-                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
-                this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
+//                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
+//                this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
                 gui.setupCGC(commonGoalCard.get(0));
                 gui.setupCGC(commonGoalCard.get(1));
-                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
-                this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
+              //  sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
+              //  this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
                 gui.setupPGC(this.myPersonalGoalCard.getNumber());
-                System.out.println("fine setup gui");
             }
         }
     }

@@ -56,18 +56,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
 
 
     public ArrayList<Integer> connection (ClientInterface client) throws IOException, ClassNotFoundException {
-        /*if(getNumberOfClientsConnected()<maxNumOfClients) {
-            if(clientsConnected.size()==1){
-                Thread disconnection = new Thread(()-> {
-                    startClientStatusCheckTimer();
-                }, "Thread disconnection handler");
-                disconnection.start();
-            }
-            this.clientsConnected.add(client);
-            System.out.println("Clients: " + getNumberOfClientsConnected());
-            return clientsConnected.size() - 1;
-        }
-        return -1;*/
         Match match = new Match();
         ArrayList<Integer> indexes = new ArrayList<>();
         if(matchList.isEmpty()) {
@@ -105,10 +93,6 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         match.getGameController().updateController(match.getMaxSize(),Event.ASK_NUM_PLAYERS);
         return indexes;
     }
-    /*public int returnClientIndex(int matchIndex, ClientInterface client) {
-        return matchList.get(matchIndex).getListOfClients().indexOf(client);
-    }*/
-
 
     private void readyToStart() throws RemoteException{
         //TODO: raggiunto il numero di giocatori necessario la partita può iniziare

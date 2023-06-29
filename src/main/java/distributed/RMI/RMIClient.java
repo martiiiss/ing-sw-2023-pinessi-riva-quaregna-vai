@@ -123,7 +123,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             System.out.println(errorReceived.getTUIMsg());
             errorReceived = server.sendMessage(this.matchIndex,uView.askPlayerNickname(), SET_NICKNAME);
         }
-        myIndex = (int) server.getModel(this.matchIndex,SET_INDEX, nickname);
         if (myIndex == 0) {
             errorReceived = server.sendMessage(this.matchIndex,null, ALL_CONNECTED);
             while (errorReceived != Event.OK) {
@@ -165,12 +164,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         this.myPersonalGoalCard = (PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex);
         this.indexOfPIT = (int) server.getModel(this.matchIndex,GAME_PIT, myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
-       /* if (threadEndGame.getState() == Thread.State.NEW) {
-           threadEndGame.start();
-        }*/
         if (this.viewChosen == 1) {
-            out.println("observers: " + board.getObservers());
             if (myIndex == indexOfPIT) {
+                out.println("my index " + myIndex + " pit " + indexOfPIT);
                 activePlay();
             } else {
                 synchronized (lock) {
