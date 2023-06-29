@@ -19,7 +19,7 @@ public class Game extends Observable implements Serializable {
     private boolean isLastTurn;
     private final ArrayList<Player> players;
     private final ArrayList<CommonGoalCard> commonGoalCards;
-    private boolean gameStarted = false;
+    private boolean gameStarted;
     /**
      * <p>
      *     Constructor of the Class.<br>

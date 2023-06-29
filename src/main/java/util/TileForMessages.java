@@ -35,13 +35,6 @@ public class TileForMessages implements Serializable {
     }
 
     /**
-     * Method used to get the row.
-     * @return an int that represents the row*/
-    public int getRow() {
-        return row;
-    }
-
-    /**
      * Method used to get the column.
      * @return an int that represents the column*/
     public int getColumn() {

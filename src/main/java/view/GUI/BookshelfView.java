@@ -17,7 +17,6 @@ public class BookshelfView implements Serializable {
     private static final long serialVersionUID = 4758892563965792612L;
     private final JInternalFrame bookshelfDisplayed;
     private final JButton [][] bookshelfTiles;
-    private boolean canChange = true;
     private int columnChosen = -1;
 
     /**Constructor of the Class. This creates the bookshelf GUI section. */
@@ -104,16 +103,8 @@ public class BookshelfView implements Serializable {
     }
 
     /**
-     * Method used to return a boolean on a column.
-     * @return <b>true</b> if a column can be changed, <b>false</b> otherwise*/
-    public boolean isCanChange() {
-        return canChange;
-    }
-
-    /**
      * Method used to set a boolean on a column.
      * @param canChange is <b>true</b> if a column can be changed, <b>false</b> otherwise*/
     public void setCanChange(boolean canChange) {
-        this.canChange = canChange;
     }
 }

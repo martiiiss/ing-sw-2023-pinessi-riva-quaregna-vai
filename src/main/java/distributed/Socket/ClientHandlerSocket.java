@@ -6,40 +6,34 @@ import model.Board;
 import model.CommonGoalCard;
 import org.jetbrains.annotations.NotNull;
 import util.Event;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static util.Event.*;
 
-/**Class that represents the communication in between the socket client and its server*/
+/**Class that represents the communication between the socket client and its server*/
 public class ClientHandlerSocket implements Runnable, ClientInterface {
-    private Socket socketClient;
-    private SocketServer socketServer;
+    private final Socket socketClient;
+    private final SocketServer socketServer;
     private final Object inputLock;
-    private final Object outputLock;
-    private ObjectOutputStream output; //used to send
-    private ObjectInputStream input; //used to receive
-    private Object inputObject;
+    private final ObjectOutputStream output; //used to send
+    private final ObjectInputStream input; //used to receive
+
     private int clientIndex;
     private int matchIndex;
     private int numOfPlayers;
-    private Thread threadAskPit;
-    private Thread threadAskDisconnection;
-    private Thread threadCheckUpdates;
-    private Object lock;
-    private Object upLock;
+    private final Thread threadAskPit;
+    private final Thread threadAskDisconnection;
+    private final Thread threadCheckUpdates;
+    private final Object lock;
+    private final Object upLock;
     private boolean first = true;
     private int pit;
     private boolean stopModelUpdate;
+    private boolean allConn = false;
 
     /**Constructor of the Class. This initializes the connection and starts the need threads.
      * @param socket is a {@link Socket}
@@ -50,7 +44,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
 
         this.lock = new Object();
         this.inputLock = new Object();
-        this.outputLock = new Object();
         this.upLock = new Object();
 
         try{
@@ -68,7 +61,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                     try {
                         askPitController();
                     } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                        //throw new RuntimeException(e);
                     }
                 }
             }
@@ -79,7 +71,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                     try {
                         askControllerBoardUpdate();
                     } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                        //throw new RuntimeException(e);
                     }
                 }
             }
@@ -114,7 +105,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     /**
      * Method used to ask the server if there has been a disconnection.*/
     private void askServerDisconnection() {
-        boolean serverAns = false;
+        boolean serverAns;
         do {
             serverAns = socketServer.askDisconnection(matchIndex);
         }while (!serverAns);
@@ -134,20 +125,14 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         do {
             pit = socketServer.askPit(matchIndex);
             if(first && pit!=clientIndex){
-                if(matchIndex==1)
-                    System.out.println("Spammo il secondo Match!");
                 if(allConn)
                     first=false;
-                System.out.println("in match "+matchIndex+" ho client index "+clientIndex);
-                System.out.println("pit diverso" + pit + "cl " + clientIndex);
-                System.out.println("send message client, match, pit, NOTYOURTURN "+clientIndex+" "+matchIndex+" "+pit+" "+ NOT_YOUR_TURN);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.NOT_YOUR_TURN));
             }
             Thread.sleep(1000);
         } while(pit !=clientIndex);
         stopModelUpdate=true;
         first = true;
-        System.out.println("manda messaggio è il tuo turno! " + clientIndex +"Match" +matchIndex);
         sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.START_YOUR_TURN));
         lock.wait();
     }
@@ -160,18 +145,15 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             while (!Thread.currentThread().isInterrupted()) {
                 synchronized (inputLock) {
                     SocketMessage message = receivedMessage();
-                    //System.out.println("ricevo " + message.getObj() + " ev " + message.getMessageEvent());
                     Object obj=null;
                     if(message.getMessageEvent() == START_THREAD) {
                         if (!threadAskPit.isAlive()) {
-                            System.out.println("STARTA IL THR" + clientIndex);
                             threadAskPit.start();
                         }
                         allConn = true;
                         if(!threadCheckUpdates.isAlive())
                             threadCheckUpdates.start();
                     }
-
 
                     if(message.getObj()==Event.CHECK_MY_TURN){
                         obj = socketServer.receivedMessage(message);
@@ -183,9 +165,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                         }
 
                     } else  if(message.getMessageEvent() == END_OF_TURN && message.getObj()==END_OF_TURN){
-                        System.out.println("");
-                       // sendMessage(new SocketMessage(clientIndex, matchIndex, null, NOT_YOUR_TURN));
-                        System.out.println("non è il tuo turno");
                         synchronized (lock) {
                             this.lock.notifyAll();
                         }
@@ -207,11 +186,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         }catch(ClassCastException | ClassNotFoundException | IOException e) {
             disconnect();
         }
-        /*try {
-            socketClient.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }*/
     }
 
     /**
@@ -228,8 +202,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         socketServer.onDisconnect(matchIndex);
     }
 
-    //SWITCH ERRORI DA SERVER/CONTROLLER
-
     /**
      * Method used to perform updates on a specific object based on the message received.
      * @param obj is the {@code Object} on which the update will be performed
@@ -237,21 +209,20 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
      * @throws IOException if an error occurs
      * @throws ClassNotFoundException if a class cannot be found
      * */
-    boolean allConn = false;
+
     public void update(Object obj, @NotNull SocketMessage message) throws IOException, ClassNotFoundException {
         switch (message.getMessageEvent()){
-            case OK ->{
-                sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
-            }
+            case OK -> sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
+
             case ASK_NUM_PLAYERS ->{
-                this.matchIndex = (int) ((ArrayList)obj).get(0);
-                this.clientIndex = (int) ((ArrayList)obj).get(1);
+                this.matchIndex = (int) ((ArrayList<?>)obj).get(0);
+                this.clientIndex = (int) ((ArrayList<?>)obj).get(1);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_CLIENT_INDEX));
             }
             case CHOOSE_VIEW -> {
                 if(!threadAskDisconnection.isAlive())
                     threadAskDisconnection.start();
-                if((Event)obj != Event.GUI_VIEW &&  (Event)obj != Event.TUI_VIEW){
+                if(obj != Event.GUI_VIEW && obj != Event.TUI_VIEW){
                     System.out.println(((Event)obj).getMsg());
                     sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.CHOOSE_VIEW));
                 } else{
@@ -259,7 +230,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 }
             }
             case SET_NICKNAME -> {
-                if((Event)obj != Event.OK){
+                if(obj != Event.OK){
                     System.out.println(((Event)obj).getMsg());
                     sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_NICKNAME));
                 } else{
@@ -275,11 +246,8 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 }while (obj!=Event.OK);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.OK));
             }
-            case TURN_AMOUNT, TURN_PICKED_TILES, TURN_COLUMN, TURN_POSITION, CHECK_REFILL, END_OF_TURN, CHECK_MY_TURN, SET_UP_BOARD -> {
+            case TURN_AMOUNT, TURN_PICKED_TILES, TURN_COLUMN, TURN_POSITION, CHECK_REFILL, END_OF_TURN, CHECK_MY_TURN, SET_UP_BOARD ->
                 sendMessage(new SocketMessage(clientIndex, matchIndex, obj, message.getMessageEvent()));
-            }
-
-
         }
     }
 
@@ -293,7 +261,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             output.flush();
             output.reset();
         } catch (IOException e) {
-            //throw new RuntimeException(e);
         }
     }
 

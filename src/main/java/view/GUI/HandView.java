@@ -15,11 +15,10 @@ public class HandView implements Serializable {
     private final JButton [] hand;
     private final JInternalFrame imageDisplayed;
     private int tileToInsert = -1;
-    private final int [] order;
 
     /**Constructor of the Class.*/
     public HandView(){
-        order = new int[3];
+        int[] order = new int[3];
         for (int i=0; i<3; i++){
             order[0]= -1;
         }
@@ -85,15 +84,6 @@ public class HandView implements Serializable {
     }
 
     /**
-     * Method used to set the scoring tokens.
-     * @param romanNumber is an int used to identify the CGC t which the Scoring token belongs
-     * @param valueDisplayed is an int that represents the value of the Scoring token*/
-    public void setSC(int valueDisplayed, int romanNumber){
-        ImageReader imageReader = new ImageReader();
-        this.hand[romanNumber+3].setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 50, 50));
-    }
-
-    /**
      * Method that sets the given position in the hand to null when a tile it's picked
      * @param i is the index of the tile to remove*/
     public void removeTileInHand(int i){
@@ -110,12 +100,6 @@ public class HandView implements Serializable {
         return this.imageDisplayed;
     }
 
-    /**
-     * Method used to change the image after the game has ended*/
-    public void setEndgame(){
-        ImageReader imageReader = new ImageReader();
-        this.hand[5].setIcon(imageReader.readIcon("resources/ScoringTokenImages/endgame.jpg", 50, 50));
-    }
 
     /**
      * Method used to get an int that represents the index of tile to insert

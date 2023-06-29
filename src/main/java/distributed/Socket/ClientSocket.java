@@ -6,11 +6,12 @@ import model.*;
 import org.jetbrains.annotations.NotNull;
 import util.Cord;
 import util.Event;
-import util.Observable;
 import view.GUI.GUIView;
 import view.UserView;
+import util.Observable;
 import java.io.*;
 import java.net.InetSocketAddress;
+
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -20,32 +21,22 @@ import static util.Event.GAME_PIT;
 
 /**Class that represents a Socket client*/
 public class ClientSocket {
-    private String address;
-    private int port;
-    private final Socket socket;
     private final ObjectInputStream inputStream;
     private final ObjectOutputStream outputStream;
     private final ExecutorService executorService;
-    private Object serverObj;
     private int myIndex;
     private int myMatch;
     private UserView uView;
     private int viewChosen;
-    private String nickname;
     private boolean hasGameStarted = false;
     private Board board;
     private ArrayList<Player> listOfPlayers;
     private ArrayList<CommonGoalCard> commonGoalCard;
-    private PersonalGoalCard myPersonalGoalCard;
-    private int indexOfPIT;
     private Player playerInTurn;
-    private Thread threadWaitTurn;
-    private Object lock;
     private boolean disabledInput;
     private boolean isFirstTurn = true;
     private int numberOfChosenTiles;
-    private ArrayList<Cord> cords = new ArrayList<>();
-    private int column;
+    private final ArrayList<Cord> cords = new ArrayList<>();
     private GUIView gui;
     private ArrayList<Cord> tilesCords = new ArrayList<>();
     private ArrayList<Tile> tilesInHand;
@@ -54,7 +45,6 @@ public class ClientSocket {
     private int count=0;
     private Thread passiveThread;
     private Object lockPrint;
-    private Object passiveLock;
     private boolean enterHasBeenPressed;
     private boolean disablePassivePrint;
 
@@ -65,10 +55,8 @@ public class ClientSocket {
      * @param address is a {@code String} that represents the address
      * @throws IOException if an error occurs*/
     public ClientSocket(String address, int port) throws IOException {
-        this.port = port;
-        this.address = address;
-        this.socket = new Socket();
-        this.socket.connect(new InetSocketAddress(address, port), 1000);
+        Socket socket = new Socket();
+        socket.connect(new InetSocketAddress(address, port), 1000);
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.inputStream = new ObjectInputStream(socket.getInputStream());
         this.executorService = Executors.newSingleThreadScheduledExecutor();
@@ -83,26 +71,19 @@ public class ClientSocket {
      * @throws ClassNotFoundException if a class cannot be found*/
     public void lobby(UserView userView) throws IOException, ClassNotFoundException {
         uView = userView;
-        this.lock = new Object();
-        passiveLock = new Object();
         lockPrint = new Object();
-
 
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
                   try{
-                      System.out.println("attendo messaggio...");
+                      System.out.println("Fetching message from server...");
                       SocketMessage message = receivedMessageC();
-                      System.out.println(message.getMessageEvent());
-                      System.out.println("ho ricevuto " + message.getMessageEvent());
                       update(message);
                   } catch (IOException | ClassNotFoundException | InterruptedException e) {
                       throw new RuntimeException(e);
                   }
-                  //notifyObservers(message);
               }
-              System.out.println("esco");
           });
       },"ClientThread");
       clientThread.start();
@@ -117,7 +98,6 @@ public class ClientSocket {
                     while(disablePassivePrint){
                     }
                 }
-                System.out.println("DENTRO TRY PRIMA DI PASSIVE PLAY");
                 passivePlay();
             } catch (IOException | InterruptedException | ClassNotFoundException e) {
             }
@@ -134,7 +114,6 @@ public class ClientSocket {
      * @throws InterruptedException if a thread gets interrupted
      * */
     public void update(@NotNull SocketMessage message) throws IOException, ClassNotFoundException, InterruptedException {
-        System.out.println("switch su " + message.getMessageEvent());
         switch (message.getMessageEvent()){
             case SET_CLIENT_INDEX ->{
                 this.myIndex = message.getClientIndex();
@@ -152,14 +131,13 @@ public class ClientSocket {
                 if(message.getObj()!=null){
                     System.out.println(((Event)message.getObj()).getTUIMsg());
                 }
-                this.nickname = uView.askPlayerNickname();
-                sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, SET_NICKNAME));
+                String nickname = uView.askPlayerNickname();
+                sendMessageC(new SocketMessage(myIndex, myMatch, nickname, SET_NICKNAME));
             }
             case ALL_CONNECTED -> {
                 hasGameStarted = true;
                 getModel();
                 sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
-                System.err.println("Dopo START_THREAD");
             }
             case START, CHECK_MY_TURN -> {
                 sendMessageC(new SocketMessage(myIndex, myMatch, CHECK_MY_TURN, GAME_PIT));
@@ -213,7 +191,6 @@ public class ClientSocket {
                         disablePassivePrint = false;
                     }
 
-                   // passivePlay();
                 } else if(viewChosen==2){
                     this.board = (Board) message.getObj();
                     gui.update(board,new Message(board,SET_UP_BOARD));
@@ -235,11 +212,10 @@ public class ClientSocket {
                             uView.showPlayers(listOfPlayers);
                             disablePassivePrint = false;
                         }
-                    } else if (active) {
+                    } else {
                         this.listOfPlayers = (ArrayList<Player>) message.getObj();
                         uView.showPlayers(listOfPlayers);
                         sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
-                        System.out.println("invio");
                     }
                 } else if(viewChosen==2){
                     System.out.println(message.getObj());
@@ -256,7 +232,6 @@ public class ClientSocket {
                             System.out.println(((Event) message.getObj()).getTUIMsg());
                             activeAskNumOfTiles();
                         } else {
-                            System.out.println("ACTIVE ASK TILE");
                             activeAskTiles();
                         }
                     }
@@ -281,7 +256,7 @@ public class ClientSocket {
                 } else if(viewChosen==2){
                     System.out.println(((Event)message.getObj()).getTUIMsg());
                     gui.showError(((Event)message.getObj()));
-                    if(((Event)message.getObj())!=OK){
+                    if(message.getObj() !=OK){
                         setTilesPickedGUI();
                     } else{
                         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, TURN_TILE_IN_HAND));
@@ -321,7 +296,6 @@ public class ClientSocket {
             }
             case TURN_POSITION -> {
                 if(viewChosen==1){
-                    System.out.println("ogg" + message.getObj());
                     if(message.getObj()!=OK){
                         System.out.println(((Event)message.getObj()).getTUIMsg());
                         activePlaceTile(tilesInHand);
@@ -332,9 +306,7 @@ public class ClientSocket {
                 }
             } case UPDATE_BOOKSHELF -> {
                 if(viewChosen==1){
-                    System.out.println("count" + count);
                     if(count<=numberOfChosenTiles){
-                        System.out.println("aggiorno la bookshelf ");
                         Bookshelf bookshelf = (Bookshelf) message.getObj();
                         playerInTurn.setMyBookshelf(bookshelf);
                         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GET_TILES_HAND));
@@ -345,12 +317,10 @@ public class ClientSocket {
                 if(viewChosen==1){
                     uView.printTilesInHand((ArrayList<Tile>) message.getObj());
                     uView.showTUIBookshelf(playerInTurn.getMyBookshelf());
-
                     if(count<numberOfChosenTiles) {
                         activePlaceTile((ArrayList<Tile>) message.getObj());
-                    }else {
+                    } else {
                         count = 0;
-                        System.out.println("invio");
                         sendMessageC(new SocketMessage(myIndex, myMatch, null, CHECK_REFILL));
                     }
                 }
@@ -371,7 +341,6 @@ public class ClientSocket {
                 if(viewChosen==1){
                     System.out.println(((Event)(message.getObj())).getTUIMsg());
                     if (message.getObj() == GAME_OVER) {
-                        //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
                         System.exit(10);
                     }
                     sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
@@ -381,10 +350,8 @@ public class ClientSocket {
                         gui.showError(((Event) message.getObj()));
                     }
                     if (message.getObj() == GAME_OVER) {
-                        //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
                         System.exit(10);
                     }
-                    System.out.println("invio");
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
                 }
             }
@@ -395,8 +362,8 @@ public class ClientSocket {
                 }
             }
             case DISCONNECTED -> {
-                System.out.println("ESPLOSO TUTTOOOOO");
-                System.exit(2929);
+                System.out.println("Disconnection!\n");
+                System.exit(-1);
             }
             case UPDATE_SCORINGTOKEN_1 -> {
                 if(viewChosen==2)
@@ -415,15 +382,12 @@ public class ClientSocket {
      * @throws IOException if an error occurs*/
     public void sendMessageC(SocketMessage mess) throws IOException {
         try{
-            //invio messaggio:
             outputStream.writeObject(mess);
             outputStream.flush();
             outputStream.reset();
         }catch (IOException e){
             System.out.println("Server crashed!\n");
             System.exit(-1);
-            //TODO disconnessione
-            //notifyObserver con messaggio di errore
         }
     }
 
@@ -434,28 +398,22 @@ public class ClientSocket {
      * @throws ClassNotFoundException if a class cannot be found
      * */
     public SocketMessage receivedMessageC() throws IOException, ClassNotFoundException {
-        SocketMessage message = (SocketMessage) inputStream.readObject();
-        System.out.println("Is ShuTDOWN? "+executorService.isShutdown());
-        System.out.println(message.getMessageEvent());
-        return message;
+        return (SocketMessage) inputStream.readObject();
     }
 
     /**
      * Method used to get information from the model.
      * @throws IOException if an error occurs
      * @throws ClassNotFoundException if a class cannot be found
-     * @throws InterruptedException if a thread gets interrupted*/
-    public void getModel() throws IOException, ClassNotFoundException, InterruptedException {
-        System.out.println("model");
+     */
+    public void getModel() throws IOException, ClassNotFoundException {
         if (!hasGameStarted) {
-            System.out.println("game non iniziato");
             sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
             while (receivedMessageC().getObj() != Event.OK) {
                 sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
             }
             hasGameStarted = true;
         }
-        System.out.println("Game iniziato");
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
         this.board = (Board) receivedMessageC().getObj();
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
@@ -463,10 +421,9 @@ public class ClientSocket {
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
         this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
-        this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
+        PersonalGoalCard myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
         int index = (int) receivedMessageC().getObj();
-        System.out.println("indexPit ricevuto: "+indexOfPIT+ "myIndex: "+myIndex);
         if(index != myIndex)
             sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
         if (viewChosen == 2) {
@@ -478,15 +435,16 @@ public class ClientSocket {
                 gui.updateBoard(this.board);
                 gui.setupCGC(commonGoalCard.get(0));
                 gui.setupCGC(commonGoalCard.get(1));
-                gui.setupPGC(this.myPersonalGoalCard.getNumber());
+                gui.setupPGC(myPersonalGoalCard.getNumber());
             }
         }
     }
 
+
     /**Method used to create an active player menu.
      * @throws IOException if an error occurs
-     * @throws ClassNotFoundException if a class cannot be found*/
-    private void activePlayerMenu() throws IOException, ClassNotFoundException {
+     */
+    private void activePlayerMenu() throws IOException {
         System.out.println("Would you like to do any of these actions before making your move?");
         do{
             choice = uView.askAction();
@@ -510,7 +468,6 @@ public class ClientSocket {
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
                 }
-                case 5 -> uView.chatOptions(listOfPlayers.get(myIndex));
                 case 7 -> uView.showPlayers(listOfPlayers);
             }
             if (choice != 6)
@@ -521,8 +478,8 @@ public class ClientSocket {
     /**
      * Method used to ask a player the number of tiles it wants to pick.
      * @throws IOException if an error occurs
-     * @throws ClassNotFoundException if a class cannot be found */
-    private void activeAskNumOfTiles() throws IOException, ClassNotFoundException {
+     */
+    private void activeAskNumOfTiles() throws IOException {
         do{
             this.numberOfChosenTiles = uView.askNumberOfChosenTiles();
             if(this.numberOfChosenTiles!=-1){
@@ -536,8 +493,8 @@ public class ClientSocket {
     /**
      * Method used to ask a player the tiles it wants to pick. This sends a message.
      * @throws IOException if an error occurs
-     * @throws ClassNotFoundException if a class cannot be found */
-    private void activeAskTiles() throws IOException, ClassNotFoundException {
+     */
+    private void activeAskTiles() throws IOException {
         chooseTiles();
         sendMessageC(new SocketMessage(myIndex, myMatch, cords, TURN_PICKED_TILES));
     }
@@ -567,17 +524,17 @@ public class ClientSocket {
     /**
      * Method used to ask a player te column.
      * @throws IOException if an error occurs
-     * @throws ClassNotFoundException if a class cannot be found */
-    private void activeAskColumn() throws IOException, ClassNotFoundException {
-        column = uView.askColumn();
+     */
+    private void activeAskColumn() throws IOException {
+        int column = uView.askColumn();
         sendMessageC(new SocketMessage(myIndex, myMatch, column, TURN_COLUMN));
     }
 
     /**
      * Method used to ask a player the order of the tiles.
      * @throws IOException if an error occurs
-     * @throws ClassNotFoundException if a class cannot be found */
-    private void activePlaceTile(ArrayList<Tile> tilesInHand) throws IOException, ClassNotFoundException {
+     */
+    private void activePlaceTile(ArrayList<Tile> tilesInHand) throws IOException {
         int pos = uView.askTileToInsert(tilesInHand);
         sendMessageC(new SocketMessage(myIndex, myMatch, pos, TURN_POSITION));
     }
@@ -597,9 +554,8 @@ public class ClientSocket {
     /**
      * Method that represents the passive player menu.
      * @throws IOException if an error occurs
-     * @throws ClassNotFoundException if a class cannot be found
-     * @throws InterruptedException if a thread gets interrupted */
-    private void passivePlayerMenu() throws IOException, ClassNotFoundException, InterruptedException {
+     */
+    private void passivePlayerMenu() throws IOException {
         uView.askPassiveAction();
         choice = uView.waitInput();
         if(disabledInput) {
@@ -609,7 +565,7 @@ public class ClientSocket {
             }
             return;
         }
-        if (!disabledInput && !disablePassivePrint) {
+        if (!disablePassivePrint) {
             switch (choice) {
                 case 1 -> {
                     disablePassivePrint = true;
@@ -627,9 +583,6 @@ public class ClientSocket {
                     System.out.println("Here's everyone's Bookshelf");
                     disablePassivePrint = true;
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
-                }
-                case 5 -> {
-                    uView.chatOptions(listOfPlayers.get(myIndex));
                 }
                 case 6 -> {
                     disablePassivePrint = true;

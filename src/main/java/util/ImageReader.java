@@ -26,8 +26,7 @@ public class ImageReader implements Serializable {
         try {
             img = ImageIO.read(is);
             Image scaledImg = img.getScaledInstance(x, y, Image.SCALE_SMOOTH);
-            ImageIcon im = new ImageIcon(scaledImg);
-            return im;
+            return new ImageIcon(scaledImg);
         } catch (IOException e) {
             //System.err.println("It was impossible to read the image...");
         }

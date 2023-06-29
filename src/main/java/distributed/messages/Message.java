@@ -10,8 +10,8 @@ import java.io.Serializable;
  * </code>*/
 public class Message implements Serializable {
     private static final long serialVersionUID = -3913971069968788739L;
-    private Event event;
-    private Object obj;
+    private final Event event;
+    private final Object obj;
 
     /**
      * <p>
@@ -23,15 +23,6 @@ public class Message implements Serializable {
     public Message(Object obj, Event event) {
         this.obj = obj;
         this.event = event;
-    }
-
-    /**
-     * <p>
-     *     Method that given a parameter sets the{@code Object} of the message.
-     * </p>
-     * @param obj a {@code Object} passed by the method that calls this method*/
-    public void setObj(Object obj) {
-        this.obj = obj;
     }
 
     /**
@@ -52,12 +43,4 @@ public class Message implements Serializable {
         return this.event;
     }
 
-    /**
-     * <p>
-     *     Method that given an {@code Event} as a parameter sets it as the message event.
-     * </p>
-     * @param event is the event that has to be set as the message event*/
-    public void setMessageEvent(Event event) {
-        this.event = event;
-    }
 }

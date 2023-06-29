@@ -52,8 +52,8 @@ public class Observable{
      * </p>
      * @param arg a <code>Message</code> created by the Class that calls this method*/
     public void notifyObservers(Message arg) {
-        for (int i = 0; i<this.observers.size(); i++) {
-            this.observers.get(i).update(this, arg);
+        for (Observer observer : this.observers) {
+            observer.update(this, arg);
         }
     }
 
@@ -103,10 +103,4 @@ public class Observable{
         return changed;
     }
 
-    /**
-     * Method used to get the Observers of a Class.
-     * @return an {@code ArrayList} of {@code Observer}*/
-    public ArrayList<Observer> getObservers(){
-        return observers;
-    }
 }

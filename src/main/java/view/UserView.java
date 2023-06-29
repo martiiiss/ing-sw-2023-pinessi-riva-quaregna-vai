@@ -72,30 +72,6 @@ public class UserView extends Observable implements Serializable {
         return nickname;
     }
 
-
-//TODO: this method is never used, it probably will be deleted
-    public int webProtocol() {
-        BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
-        try {
-            System.out.print("\nChoose a communication protocol, \ndigit 1 for 'Socket', 2 for 'JavaRMI':");
-            try {
-                int webProtocol = Integer.parseInt(reader.readLine());
-                notifyObservers(o -> {
-                    try {
-                        o.onUpdate(new Message(webProtocol, CHOOSE_NETWORK_PROTOCOL));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                return webProtocol;
-            }catch(NumberFormatException e) {
-            }
-        } catch (IllegalArgumentException | IOException e) {
-            System.err.println("Invalid input!");
-        }
-        return -1;
-    }
-
 /**
  * <p>
  *     Method used to ask a player which type of interface he prefers.<br>
@@ -166,7 +142,7 @@ public class UserView extends Observable implements Serializable {
         Tile[][] tilesInBookshelf = bookshelf.getBookshelf();
         System.out.println("╔═══╦═══╦═══╦═══╦═══╗");
         for (int i = 0; i < 6; i++) {
-            if(i>0 && i<=5)
+            if(i>0)
                 System.out.println("\n╠═══╬═══╬═══╬═══╬═══╣");
             for (int j = 0; j < 5; j++) {
                 if(j==0)
@@ -467,7 +443,7 @@ public class UserView extends Observable implements Serializable {
         Tile[][] pgc = personalGoalCard.getPGC();
         System.out.println("╔═══╦═══╦═══╦═══╦═══╗");
         for (int i = 0; i < 6; i++) {
-            if(i>0 && i<=5)
+            if(i>0)
                 System.out.println("\n╠═══╬═══╬═══╬═══╬═══╣");
             for (int j = 0; j < 5; j++) {
                 if(j==0)
@@ -487,10 +463,6 @@ public class UserView extends Observable implements Serializable {
         System.out.println("\n╠═══╩═══╩═══╩═══╩═══╣");
         System.out.println("║      YourPGC      ║");
         System.out.println("╚═══════════════════╝");
-    }
-
-    public void chatOptions(Player player) {
-        System.err.println("\uD83D\uDDEA NON ANCORA IMPLEMENTATO :P");
     }
 
     /**
@@ -540,7 +512,7 @@ public class UserView extends Observable implements Serializable {
      *     Method that prints the final rank of a match.<br>
      * </p>
      * @param listOfPlayers an {@code ArrayList} of {@code Player} that represents the final rank of a match*/
-    public void gameOver(ArrayList<Player> listOfPlayers, Player winner) {
+    public void gameOver(ArrayList<Player> listOfPlayers) {
         System.out.println("\n\n\n\n\n<GAME OVER>");
         System.out.println("FINAL SCOREBOARD:");
         showPlayers(listOfPlayers);

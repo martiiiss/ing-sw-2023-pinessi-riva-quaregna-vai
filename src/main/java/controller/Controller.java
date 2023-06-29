@@ -16,24 +16,9 @@ public class Controller  {
     private Bag bag;
     private Board board;
     private int chosenColumn;
-    private Object lock = new Object();
-
-    public void setNumberOfChosenTiles(int numberOfChosenTiles) {
-        this.numberOfChosenTiles = numberOfChosenTiles;
-    }
-
+    private final Object lock = new Object();
     private int numberOfChosenTiles;
-    private int protocol = 0;
-    private ArrayList<Player> finalRank;
-
-    public void setPlayerHand(ArrayList<Tile> playerHand) {
-        this.playerHand = playerHand;
-    }
-
     private ArrayList<Tile> playerHand;
-    public void setPlayerCords(ArrayList<Cord> playerCords) {
-        this.playerCords = playerCords;
-    }
     private ArrayList<Cord> playerCords = new ArrayList<>();
     private boolean hasGameStarted;
     /**
@@ -126,7 +111,7 @@ public class Controller  {
      * </p>*/
     public void initializeGame() {
         game.setGameStarted();
-        boolean goodSetUp = true;
+        boolean goodSetUp;
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
         for(int i=0;i<game.getNumOfPlayers();i++){game.getPlayers().get(i).setMyBookshelf(new Bookshelf());}
@@ -386,7 +371,7 @@ public class Controller  {
 
 
     /**
-     *     Method that given an int permits the player to chose the column in which it wants to put its tiles.<br>
+     *     Method that given an int permits the player to choose the column in which it wants to put its tiles.<br>
      *     This method returns a specific {@code Event} based on the input:<br>
      *     - if {@code chosenColumn<0 || chosenColumn >4} it returns an {@code Event.INVALID_VALUE};<br>
      *     - if the player tries to put its tiles in a column that doesn't have enough slots it returns an {@code Event.OUT_OF_BOUNDS};<br>
@@ -660,5 +645,18 @@ public class Controller  {
     public void addGui(GUIView gui){
         board.addObserver(gui, game.getNumOfPlayers());
     }
+
+    public void setNumberOfChosenTiles(int numberOfChosenTiles) {
+        this.numberOfChosenTiles = numberOfChosenTiles;
+    }
+
+    public void setPlayerHand(ArrayList<Tile> playerHand) {
+        this.playerHand = playerHand;
+    }
+
+    public void setPlayerCords(ArrayList<Cord> playerCords) {
+        this.playerCords = playerCords;
+    }
+
 }
 

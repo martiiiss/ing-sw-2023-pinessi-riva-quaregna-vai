@@ -10,7 +10,6 @@ public class ScoringTokenView extends JPanel implements Serializable { //manages
     @Serial
     private static final long serialVersionUID = -8795948759486879869L;
     private final JLabel displayedImage;
-    private int valueDisplayed;
 
     /**Constructor of the Class. This sets the background of a scoring token*/
     public ScoringTokenView (){
@@ -30,15 +29,7 @@ public class ScoringTokenView extends JPanel implements Serializable { //manages
      * Method used to display the value of a scoring token.
      * @param valueDisplayed an int that represents the value of a scoring token*/
     public void setDisplayedImage(int valueDisplayed) {
-        this.valueDisplayed = valueDisplayed;
         ImageReader imageReader = new ImageReader();
         displayedImage.setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 120, 120));
-    }
-
-    /**
-     * Method used to change the scoring token after one has been popped
-     * @param valueDisplayed an int that represents the value of a scoring token*/
-    public void popSCV(int valueDisplayed){
-        setDisplayedImage(valueDisplayed);
     }
 }

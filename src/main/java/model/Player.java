@@ -49,15 +49,6 @@ public class Player extends Observable implements Serializable {
 
     /**
      * <p>
-     *     Method that returns the status of a player.
-     * </p>
-     * @return <b>true</b> if the player has the flag
-     * <code>isFirstPlayer</code> set to <b>true</b>, <b>false</b> otherwise*/
-    public boolean getIsFirstPlayer(){return isFirstPlayer;}
-
-
-    /**
-     * <p>
      *     Method that given a <code>String</code> parameter sets is as the player nickname,
      *     after checking that the parameter is not <b>null</b>.
      *     This also notifies the Observers with a {@link Message}

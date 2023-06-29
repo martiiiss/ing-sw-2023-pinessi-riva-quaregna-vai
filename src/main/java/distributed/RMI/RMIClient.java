@@ -24,7 +24,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
     private static final long serialVersionUID = -3489512533622391685L;
     private transient ServerRMIInterface server;
     private final String address;
-    private int port;
     private Event errorReceived;
     private int myIndex;
     private Object lock;
@@ -33,20 +32,15 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
     private UserView uView;
     private boolean isFirstTurn = true;
     private int matchIndex;
-    private int numOfPlayers = 0;
     private Thread threadWaitTurn;
-    private Thread threadEndGame;
     private Board board;
     private ArrayList<CommonGoalCard> commonGoalCard;
     private PersonalGoalCard myPersonalGoalCard;
     private ArrayList<Player> listOfPlayers;
     private Player playerInTurn;
     private int indexOfPIT;
-    private boolean hasGameStarted = false;
-    private ArrayList<Cord> cords = new ArrayList<>();
+    private final ArrayList<Cord> cords = new ArrayList<>();
     private int numberOfChosenTiles;
-    private int column;
-    private ArrayList<Cord> tilesCords = new ArrayList<>();
     private boolean disabledInput;
 
 
@@ -57,7 +51,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
      * @throws RemoteException if an error occurs during a remote call */
     public RMIClient(String address, int port) throws RemoteException {
         this.address = address;
-        this.port = port;
     }
 
 
@@ -72,7 +65,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             indexFromServer = server.initClient(this);
             this.myIndex = indexFromServer.get(1);
             this.matchIndex = indexFromServer.get(0);
-            out.println("GameIndex: "+matchIndex+" PlayerIndex"+myIndex);
             Thread connection = new Thread(controlDisconnection(),"ControlDisconnection");
             connection.start();
         } catch (Exception e) {
@@ -87,7 +79,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
      * @throws IOException if an error occurs*/
     public int askNumOfPlayers() throws IOException {
         UserView userView = new UserView();
-        numOfPlayers = userView.askNumOfPlayer();
+        int numOfPlayers = userView.askNumOfPlayer();
         while (numOfPlayers < 2 || numOfPlayers > 4) {
             System.err.println("Retry...");
             numOfPlayers = userView.askNumOfPlayer();
@@ -153,6 +145,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
     public void getModel() throws IOException, InterruptedException {
         disabledInput = false;
         errorReceived = Event.WAIT;
+        boolean hasGameStarted = false;
         if (!hasGameStarted) {
 
             errorReceived = server.sendMessage(this.matchIndex, null, GAME_STARTED);
@@ -275,9 +268,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         System.out.println(errorReceived.getTUIMsg());
         if (errorReceived == GAME_OVER) {
             Player winner = (Player) server.getModel(matchIndex,GET_WINNER,myIndex);
-            uView.gameOver(listOfPlayers,winner);
-            //wait(10000); //FIXME POTREBBE NON FUNZIONARE NON CANCELLARE STO FIXME
-            //System.exit(0);
+            uView.gameOver(listOfPlayers);
         }
         getModel();
     }
@@ -357,9 +348,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
                 }
-                case 5 -> {
-                    uView.chatOptions(listOfPlayers.get(myIndex));
-                }
                 case 7 -> {
                     this.listOfPlayers = (ArrayList<Player>) server.getModel(this.matchIndex,GAME_PLAYERS, myIndex);
                     uView.showPlayers(listOfPlayers);
@@ -398,8 +386,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
      * @return an {@link Event} that is the event returned by the server
      * @throws IOException if an error occurs*/
     private Event activeAskColumn(ArrayList<Tile> tilesInHand) throws IOException {
-        column = uView.askColumn();
-        errorReceived = server.sendMessage(this.matchIndex,column, TURN_COLUMN);
+        int column = uView.askColumn();
+        errorReceived = server.sendMessage(this.matchIndex, column, TURN_COLUMN);
         System.out.println(errorReceived.getTUIMsg());
         if (errorReceived == Event.OK)
             activePlaceTile(tilesInHand);
@@ -460,9 +448,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
                 }
-                case 5 -> {
-                    uView.chatOptions(listOfPlayers.get(myIndex));
-                }
                 case 6 -> {
                     this.listOfPlayers = (ArrayList<Player>) server.getModel(this.matchIndex,GAME_PLAYERS, myIndex); //get the latest update
                     uView.showPlayers(listOfPlayers);
@@ -486,12 +471,13 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             gui.showError(errorReceived);
         } while (errorReceived != Event.OK);
 
+        ArrayList<Cord> tilesCords = new ArrayList<>();
         do {
             gui.getBoardView().setTilesPicked(tilesToPick);
             System.out.println("tiles picked " + gui.getBoardView().getTilesPicked());
             tilesCords = gui.getTilesClient();
             System.out.println("tiles cords " + tilesCords.size());
-            errorReceived = server.sendMessage(this.matchIndex,tilesCords, TURN_PICKED_TILES);
+            errorReceived = server.sendMessage(this.matchIndex, tilesCords, TURN_PICKED_TILES);
             System.out.println(errorReceived.getTUIMsg());
             gui.showError(errorReceived);
             System.out.println("errore: " + errorReceived.getMsg());
@@ -516,10 +502,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         gui.endInsertion();
         gui.getHandView().setTileToInsert(-1);
 
-        //FIXME sistemare i seguenti (fine)
         errorReceived = server.sendMessage(this.matchIndex,null, CHECK_REFILL);
         if (errorReceived == Event.REFILL) {
-            //visualizzare errore
             this.board = (Board) server.getModel(matchIndex,GAME_BOARD,myIndex);
             gui.update(board,new Message(board,SET_UP_BOARD));
             gui.showError(errorReceived);
@@ -528,9 +512,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         if(errorReceived != OK)
             gui.showError(errorReceived);
         if (errorReceived == GAME_OVER) {
-            Player winner = (Player) server.getModel(matchIndex,GET_WINNER,myIndex);
             gui.showError(GAME_OVER);
-            //System.exit(10);
+
         }
         listOfPlayers = (ArrayList<Player>) server.getModel(matchIndex,GAME_PLAYERS,myIndex); //Used to update the score after placing my tiles
 

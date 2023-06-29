@@ -18,7 +18,6 @@ public class Bookshelf extends Observable implements Serializable {
     public static final int SHELF_ROW = 6;
     /**The bookshelf column max value*/
     public static final int SHELF_COLUMN = 5;
-    private boolean isFull = false;
 
     //constructor -> it initializes the bookshelf at NOTHING tiles, without this I cannot test the Player class
     /**
@@ -76,7 +75,7 @@ public class Bookshelf extends Observable implements Serializable {
      *     Method that sets a bookshelf as full.
      * </p>*/
     public void setAsFull() {
-        this.isFull=true;
+        boolean isFull = true;
         }
 
     /*The method gets invoked by player during their turn, tilesInHand is the list of tiles that the player wishes to

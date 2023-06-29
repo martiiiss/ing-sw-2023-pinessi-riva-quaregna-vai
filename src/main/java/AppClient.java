@@ -3,14 +3,11 @@ import distributed.Socket.ClientController;
 import distributed.ClientInterface;
 import distributed.RMI.RMIClient;
 import view.UserView;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.rmi.NotBoundException;
-
 public class AppClient {
-    public static void main(String[] args) throws IOException, NotBoundException, InterruptedException {
+    public static void main(String[] args) throws IOException,InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
         int choice = 0;
         do {
@@ -38,7 +35,6 @@ public class AppClient {
             int portSocket = 43808;
             UserView tui = new UserView();
             ClientController clientController = new ClientController(tui);
-          //  tui.addObserver(clientController);
             try{
                 clientController.initClient(address,portSocket);
                 System.out.println("You chose Socket!");

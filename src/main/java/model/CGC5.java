@@ -1,7 +1,6 @@
 package model;
 
 import util.Cord;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;

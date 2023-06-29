@@ -30,13 +30,10 @@ public class GUIView implements Observer, Serializable {
 
     private int tilesToPick = 0;
 
-    private transient Image image;
-
-    private boolean bksChanged = false;
+    private final transient Image image;
 
     private final JButton bksButton;
 
-    private boolean bksReturned = false;
     private ArrayList<Player> listPlayers = new ArrayList<>();
 
     /**
@@ -158,25 +155,10 @@ public class GUIView implements Observer, Serializable {
     }
 
     /**
-     * Method that changes the scoring token displayed in the romanNumber position.
-     * @param sc is a {@link ScoringToken}*/
-    public void changeScoringToken(@NotNull ScoringToken sc) {
-        scv[sc.getRomanNumber()].popSCV(sc.getValue());
-        hand.setSC(sc.getValue(), sc.getRomanNumber());
-    }
-
-    /**
      * Method used to get the hand view.
      * @return {@link HandView}*/
     public HandView getHandView() {
         return this.hand;
-    }
-
-    /**
-     * Method used to get the BookshelfView.
-     * @return {@link BookshelfView}*/
-    public BookshelfView getBookshelfView() {
-        return this.bookshelfView;
     }
 
     /**
@@ -193,12 +175,6 @@ public class GUIView implements Observer, Serializable {
         return scv[i-1];
     }
 
-    /**
-     * Method used to get the PGCView.
-     * @return {@link PGCView}*/
-    public PGCView getPGC() {
-        return pgc;
-    }
 
     /**
      * Method used to get the CGCView.
@@ -303,7 +279,6 @@ public class GUIView implements Observer, Serializable {
     public int chooseColumn(){
         synchronized (bksButton){
             bookshelfView.setCanChange(false);
-            bksReturned = true;
             bksButton.notify();
         }
         bookshelfView.getBookshelfDisplayed().setTitle("Choose the column to insert tiles by clicking one of its buttons");
@@ -337,7 +312,7 @@ public class GUIView implements Observer, Serializable {
 
     /**
      * Method used to add the tile to the bookshelf.
-     * @param tile a {@link Tile} tat has to be put into the bookshelf*/
+     * @param tile a {@link Tile} that has to be put into the bookshelf*/
     public void addTile(Tile tile){
         bookshelfView.insertTile(bookshelfView.getColumnChosen(), tile);
     }
@@ -359,14 +334,6 @@ public class GUIView implements Observer, Serializable {
             //Player winner = (Player) o;
             errorLog.setText("GAME OVER!");
         }
-       /* switch (e){
-            case TILES_NOT_VALID-> errorLog.setText("<html><p>Tiles not valid, select again</p><html>");
-            case COLUMN_NOT_VALID -> errorLog.setText("<html><p>You selected a column with not enough space,try again</p><html>");
-            case INVALID_VALUE -> errorLog.setText("<html><p>Retry, invalid value... </p><html>");
-            case REPETITION, BLOCKED_NOTHING, NOT_ON_BORDER, NOT_ADJACENT -> errorLog.setText("<html>"+e.getMsg()+"</p><html>");
-
-            //TODO: aggiungere i vari errori!
-        }*/
     }
 
     /**
@@ -383,29 +350,6 @@ public class GUIView implements Observer, Serializable {
     }
 
     /**
-     * Method used to put the scoring token in the player's hand
-     * @param sc is a {@code ScoringToken}*/
-    public void scoringTokenTakenByMe(@NotNull ScoringToken sc){
-        hand.setSC(sc.getValue(), sc.getRomanNumber());
-        changeScoringToken(sc);
-    }
-
-    /**
-     * Method used to assign the player the token for the first player to finish*/
-    public void firstToFinish(){
-        hand.setEndgame();
-    }
-    /*public void results(String nickname, int myPoints){ //show the winner and my points
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel(""+nickname+" won, you got "+myPoints+ " points");
-        frame.setVisible(true);
-        frame.add(label);
-        frame.setTitle("Game ended");
-        frame.setLayout(new GridLayout());
-        frame.setSize(400,200);
-    }*/
-
-    /**
      * Method that detects that a player has finished to insert tiles into its bookshelf*/
     public void endInsertion(){
         synchronized (bksButton) {
@@ -413,40 +357,6 @@ public class GUIView implements Observer, Serializable {
             bookshelfView.setCanChange(true);
         }
     }
-
-    /**
-     * Method used to show the bookshelves of the different players.
-     * @param players is an {@code ArrayList} of {@code Player}
-     * @param nextPlayerIndex is an int that represents the index of the next player*/
-    public boolean nextBookshelf(ArrayList <Player> players, int nextPlayerIndex) {
-        synchronized (bksButton){
-            while (!bksChanged && !bksReturned) {
-                try {
-                    bksButton.wait();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            if(bksChanged) {
-                bookshelfView.changeBookshelf(players.get(nextPlayerIndex).getMyBookshelf());
-                bookshelfView.getBookshelfDisplayed().setTitle("" + players.get(nextPlayerIndex).getNickname() + "'s Bookshelf");
-            }
-            if(bksReturned) {
-                bksReturned = false;
-                return true;
-            }
-            bksChanged = false;
-            return false;
-
-        }
-    }
-
-    //TODO: DELETE THIS METHOD
-    public void returnToMyBookshelf(@NotNull ArrayList <Player> players, int nextPlayerIndex){
-        bookshelfView.changeBookshelf(players.get(nextPlayerIndex).getMyBookshelf());
-        bookshelfView.getBookshelfDisplayed().setTitle("" + players.get(nextPlayerIndex).getNickname() + "'s Bookshelf");
-    }
-
     /**
      * Method used to update a specific object.
      * @param o is an {@code Object}
@@ -466,9 +376,7 @@ public class GUIView implements Observer, Serializable {
                 ArrayList<Player> listRec = (ArrayList<Player>) message.getObj();
                 loadPlayers(listRec);
             }
-            case END -> {
-                showError(Event.END);
-            }
+            case END -> showError(Event.END);
             case UPDATE_SCORINGTOKEN_1 -> {
                 CommonGoalCard cgc = (CommonGoalCard) message.getObj();
                 scv[0].setDisplayedImage(cgc.getTokenStack().lastElement().getValue());

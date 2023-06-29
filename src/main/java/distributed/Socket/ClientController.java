@@ -1,6 +1,5 @@
 package distributed.Socket;
 
-import distributed.Socket.ClientSocket;
 import distributed.messages.Message;
 import distributed.messages.SocketMessage;
 import model.Board;
@@ -8,7 +7,6 @@ import util.Event;
 import util.Observable;
 import util.Observer;
 import view.UserView;
-
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,7 +14,7 @@ import java.util.concurrent.Executors;
 public class ClientController implements Observer {
     private final UserView uView;
     private ClientSocket clientSocket;
-    private ExecutorService executor;
+    private final ExecutorService executor;
     private int numOfPlayers;
 
 
@@ -25,12 +23,9 @@ public class ClientController implements Observer {
         this.executor = Executors.newSingleThreadExecutor();
     }
 
-    //devo inizializzare il clientSocket
-
 
     public void initClient(String address, int portSocket) throws IOException {
         this.clientSocket = new ClientSocket(address, portSocket);
-        //this.clientSocket.addObserver(this);
         executor.execute(() -> {
             try {
                 clientSocket.sendMessageC(new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), numOfPlayers, Event.ASK_NUM_PLAYERS));
@@ -65,14 +60,11 @@ public class ClientController implements Observer {
         });
     }
 
-    //PROBABILMENTE SI PUç RIMUOVERE
     @Override
     public void update(Observable o, Message message) {
-        //switch case per gestire il flusso di gioco con chiamate a view
+
         switch (message.getMessageEvent()){
-            //TODO | SERVER -> CLIENT
-            // si parte dalla View (UserView) che chiede all'utente le varie cose e crea il messaggio -> ClientHandlerSocket manda il messaggio -> Client legge il messaggio -> notifyObserver() -> verrà fatto l'aggiornamento e vari
-            case SET_UP_BOARD -> //show board
+           case SET_UP_BOARD -> //show board
                     executor.execute(() -> {
                         uView.showTUIBoard((Board) message.getObj());
                     });
@@ -81,9 +73,7 @@ public class ClientController implements Observer {
     }
 
     @Override
-    public void onUpdate(Message message) throws IOException {
-       // SocketMessage socketMessage = new SocketMessage(clientSocket.getMyIndex(), clientSocket.getMyMatch(), message.getObj(), message.getMessageEvent());
-       // clientSocket.sendMessageC(socketMessage);
+    public void onUpdate(Message message){
     }
 
 }

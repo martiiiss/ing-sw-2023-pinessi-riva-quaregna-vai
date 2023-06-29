@@ -2,9 +2,7 @@ package distributed;
 
 import controller.Controller;
 import distributed.RMI.*;
-import distributed.Socket.ClientHandlerSocket;
 import distributed.Socket.SocketServer;
-import model.Board;
 import model.Game;
 import util.Event;
 import util.Match;
@@ -16,44 +14,17 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
 
-public class Server extends UnicastRemoteObject implements Runnable, Remote {
-    private int socketPort;
-    private int RMIPort;
-    private List<Match> matchList;
-    //private List<ClientInterface> clientsConnected; //username - connection
-    private Object clientsLock;
+public class Server extends UnicastRemoteObject implements Remote {
+    private final List<Match> matchList;
     private Controller controller ;
     private Game game ;
     private SocketServer serverSocket;
     private ServerRMIInterface rmiServer;
 
-    // private int numOfClientsConnected=0;
-    private int maxNumOfClients = 200;
-
     public Server(int portSocket, int portRMI) throws IOException {
-        matchList = new ArrayList<>();
-        this.socketPort = portSocket;
-        this.RMIPort = portRMI;
         this.matchList= Collections.synchronizedList(new ArrayList<>());
-
         System.out.println("\u001B[32mServer Ready! \u001B[0m");
     }
-    //AA
-
-    public Server getInstanceOfServer(){ return this; }
-    public Controller getInstanceOfController(){
-        return controller;
-    }
-
-    public SocketServer getInstanceOfSocketServer(){
-        return serverSocket;
-    }
-
-    public ServerRMIInterface getInstanceOfRMIServer(){
-        return rmiServer;
-    }
-
-
 
     public ArrayList<Integer> connection (ClientInterface client) throws IOException, ClassNotFoundException {
         Match match = new Match();
@@ -94,37 +65,19 @@ public class Server extends UnicastRemoteObject implements Runnable, Remote {
         return indexes;
     }
 
-    private void readyToStart() throws RemoteException{
-        //TODO: raggiunto il numero di giocatori necessario la partita può iniziare
-    }
-
-
-
-    @Override
-    public void run() { //throws InterruptedException {
-        //TODO
-    }
-
-    public Board getServerBoard(){ return this.controller.getBoard();}
-
-    public Event sendServerMessage(int gameIndex, Object obj, Event event) throws IOException {
-        //System.out.println(" " + gameIndex + " "  + obj + " " + event);
+    public Event sendServerMessage(int gameIndex, Object obj, Event event) {
         if(event==Event.ASK_NUM_PLAYERS)
             matchList.get(gameIndex).getGameController().updateController(matchList.get(gameIndex).getMaxSize(),Event.ASK_NUM_PLAYERS);
         return matchList.get(gameIndex).getGameController().updateController(obj,event);
     }
 
     public Object getServerModel(int gameIndex, Event event, Object clientIndex) {
-        //System.out.println("Event Rec: "+ event+" Match number "+gameIndex);
         return matchList.get(gameIndex).getGameController().getControllerModel(event, clientIndex);
     }
-    private boolean clientDisconnected = false;
 
     public boolean getDisconnections(int matchIndex) {
         return matchList.get(matchIndex).getClientDisconnected();
     }
-
-
 
     private void startClientStatusCheckTimer() {
         Timer timer = new Timer();

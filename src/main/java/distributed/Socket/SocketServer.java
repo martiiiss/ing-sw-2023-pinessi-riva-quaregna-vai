@@ -1,12 +1,10 @@
 package distributed.Socket;
 
-import distributed.ClientInterface;
+
 import distributed.Server;
-import distributed.messages.Message;
 import distributed.messages.SocketMessage;
 import org.jetbrains.annotations.NotNull;
 import util.Event;
-import view.View;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,10 +15,8 @@ import java.util.*;
 public class SocketServer extends UnicastRemoteObject implements Runnable{
     private final Server server;
     private final int port;
-    private ServerSocket serverSocket;
-    private static List<ClientHandlerSocket> clients = new ArrayList<>();
-    private static List<View> clientsView = new ArrayList<>();
-    private int numOfClients;
+    private static final List<ClientHandlerSocket> clients = new ArrayList<>();
+
 
     /**
      * Constructor of the Class. This initializes the port and the server for the socket server.
@@ -35,10 +31,10 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
      * This method starts the server and waits the connection of a Client.*/
     @Override
     public void run()  {
+        ServerSocket serverSocket;
         try{
             serverSocket = new ServerSocket(port);
         } catch (IOException e){
-            //System.err.println(e.getMessage());
             return;
         }
         System.out.println("ServerSocket ready on port: "+port);
@@ -47,12 +43,10 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
                 Socket socketClient = serverSocket.accept(); //client socket
                 socketClient.setSoTimeout(0); //inf
                 ClientHandlerSocket clientHandlerSocket = new ClientHandlerSocket(socketClient, this);
-                View view = new View(clientHandlerSocket);
                 clients.add(clientHandlerSocket);
-                clientsView.add(view);
                 Thread clientThread = new Thread(clientHandlerSocket);
                 clientThread.start();
-                System.out.println("un nuovo client si è connesso!");
+                System.out.println("A new client connected!");
             } catch (IOException e){
             }
         }
@@ -65,17 +59,7 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
      * @throws IOException if an error occurs
      * @throws ClassNotFoundException if a class cannot be found*/
     public synchronized Object askMyIndex () throws IOException, ClassNotFoundException {
-        ArrayList<Integer> indexFromServer = server.connection((ClientInterface) clients.get(clients.size()-1));
-        return indexFromServer;
-    }
-
-    /**
-     * Method used to send a message to all the clients.
-     * @param message is a {@link SocketMessage} that has to be broadcast*/
-    private static void broadcastMessage(SocketMessage message){
-        for(ClientHandlerSocket client : clients){
-            client.sendMessage(message);
-        }
+        return server.connection(clients.get(clients.size()-1));
     }
 
     /**
@@ -87,8 +71,7 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
     public Object receivedMessage(@NotNull SocketMessage message) throws IOException, ClassNotFoundException {
         Object obj;
         if(message.getObj()==Event.CHECK_MY_TURN){
-            Object indexPit = server.getServerModel(message.getMatchIndex(), message.getMessageEvent(), message.getClientIndex());
-            return indexPit;
+            return server.getServerModel(message.getMatchIndex(), message.getMessageEvent(), message.getClientIndex());
         } else{
             if(message.getObj()==Event.ASK_MODEL){
                 obj = server.getServerModel(message.getMatchIndex(), message.getMessageEvent(), message.getClientIndex());
@@ -97,9 +80,7 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
             } else {
                 obj = server.sendServerMessage(message.getMatchIndex(), message.getObj(), message.getMessageEvent());
             }
-            // server return an Error
             return obj;
-            //updateView(message, clientIndex, matchIndex);
         }
     }
 
@@ -111,16 +92,6 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
         return server.askPitController(matchIndex);
     }
 
-    /**
-     * Method used to update the view of a specific client in a specific match.
-     * @param matchIndex an int that represents the index of a match
-     * @param message is a {@link Message} that contains some information
-     * @param clientIndex an int that represents the index of a player
-     * @throws IOException if an error occurs
-     * */
-    public void updateView(Message message, int clientIndex, int matchIndex) throws IOException {
-        clientsView.get(clientIndex).ask(message); //TODO: devo gestire una lista di client co myIndex e matchIndex
-    }
 
     /**
      * Method used to handle the disconnections.
