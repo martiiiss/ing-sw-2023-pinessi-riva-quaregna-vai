@@ -272,6 +272,14 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         if (errorReceived == GAME_OVER) {
             Player winner = (Player) server.getModel(matchIndex,GET_WINNER,myIndex);
             uView.gameOver(listOfPlayers);
+            if(viewChosen == 2){
+                errorReceived = server.sendMessage(matchIndex,myIndex,END);
+                if (errorReceived==END) {
+                    gui.showError(END);
+                    gui.update(null, new Message(END, END));
+                    System.exit(0);
+                }
+            }
         }
         getModel();
     }

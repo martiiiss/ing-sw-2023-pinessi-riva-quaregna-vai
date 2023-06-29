@@ -23,6 +23,7 @@ public class Controller  {
     private ArrayList<Tile> playerHand;
     private ArrayList<Cord> playerCords = new ArrayList<>();
     private boolean hasGameStarted;
+    private boolean gameOver = false;
     /**
      * <p>
      *     Constructor of the Class.<br>
@@ -31,7 +32,6 @@ public class Controller  {
     public Controller(){
         createGame();
     }
-
     /**
      * <p>
      *     Method that instantiates the Game.
@@ -451,6 +451,7 @@ public class Controller  {
                 if(index==0) //If the PIT is also the first one to finish the game is over instantly
                 {
                     System.out.println("PIT ha riempito la shelf ed è quello con index 0. La partita finisce subito");
+                    gameOver = true;
                     return Event.GAME_OVER;
                 }
                 else {
@@ -469,6 +470,7 @@ public class Controller  {
             if(index==0) {
                 System.out.println("Il pit è il primo, partita finisce");
                 //endOfGame();
+                gameOver = true;
                 return GAME_OVER;
             }
             else {
@@ -601,6 +603,10 @@ public class Controller  {
                     upScore--;
                     return UPDATED_SCORE;
                 }
+            }
+            case END -> {
+                if (gameOver)
+                    return END;
             }
         }
         return error;
