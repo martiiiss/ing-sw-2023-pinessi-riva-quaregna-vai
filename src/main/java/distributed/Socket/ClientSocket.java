@@ -47,6 +47,7 @@ public class ClientSocket {
     private Object lockPrint;
     private boolean enterHasBeenPressed;
     private boolean disablePassivePrint;
+    private boolean refill = false;
 
 
     /**
@@ -194,7 +195,10 @@ public class ClientSocket {
                 } else if(viewChosen==2){
                     this.board = (Board) message.getObj();
                     gui.update(board,new Message(board,SET_UP_BOARD));
-                    gui.showError((Event) message.getObj());
+                    if(this.refill){
+                        sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
+                        refill=false;
+                    }
                 }
             }
             case GAME_PLAYERS -> {
@@ -332,9 +336,12 @@ public class ClientSocket {
                     sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
                 } else if(viewChosen==2){
                     if (message.getObj() == Event.REFILL) {
+                        this.refill=true;
+                        System.out.println("REFILL!!!" + refill); //FIXME
                         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
+                    } else{
+                        sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
                     }
-                    sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));
                 }
             }
             case END_OF_TURN -> {
@@ -372,6 +379,11 @@ public class ClientSocket {
             case UPDATE_SCORINGTOKEN_2 ->{
                 if(viewChosen==2)
                     gui.update((Observable) message.getObj(),new Message(message.getObj(),UPDATE_SCORINGTOKEN_2));
+            }
+            case UPDATED_SCORE -> {
+                if(viewChosen==2){
+                    gui.update(null, new Message(message.getObj(), UPDATED_SCORE));
+                }
             }
         }
     }

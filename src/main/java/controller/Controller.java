@@ -17,6 +17,8 @@ public class Controller  {
     private Board board;
     private int chosenColumn;
     private final Object lock = new Object();
+    private int upScore = -1;
+
     private int numberOfChosenTiles;
     private ArrayList<Tile> playerHand;
     private ArrayList<Cord> playerCords = new ArrayList<>();
@@ -422,7 +424,6 @@ public class Controller  {
         int pgc = game.getPlayerInTurn().checkCompletePGC();
         int adjacency = game.getPlayerInTurn().checkAdjacentBookshelf();
         game.getPlayerInTurn().updateScore(cgc+pgc+adjacency);
-        System.out.println("SCORE PIT: "+game.getPlayerInTurn().getScore());
     }
 
 
@@ -553,6 +554,7 @@ public class Controller  {
 
             case END_OF_TURN -> {
                 calculateScore();
+                upScore= game.getNumOfPlayers();
                 error = checkIfGameEnd();
                 System.out.println(error + " " + getPITIndex());
                 return error;
@@ -592,6 +594,12 @@ public class Controller  {
                 if(game.getCommonGoalCard().get(1).hasChanged()) {
                     game.getCommonGoalCard().get(1).clearChanged();
                     return UPDATE_SCORINGTOKEN_2;
+                }
+            }
+            case UPDATED_SCORE -> {
+                if(upScore>=0){
+                    upScore--;
+                    return UPDATED_SCORE;
                 }
             }
         }

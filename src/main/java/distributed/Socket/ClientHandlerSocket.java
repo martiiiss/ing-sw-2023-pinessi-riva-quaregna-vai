@@ -4,6 +4,7 @@ import distributed.ClientInterface;
 import distributed.messages.SocketMessage;
 import model.Board;
 import model.CommonGoalCard;
+import model.Player;
 import org.jetbrains.annotations.NotNull;
 import util.Event;
 import java.io.IOException;
@@ -86,11 +87,12 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         do {
             Event e = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, clientIndex, SET_UP_BOARD));
             Event e2 = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex,matchIndex,clientIndex,UPDATE_SCORINGTOKEN));
+            Event e3 = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, clientIndex, UPDATED_SCORE));
             if (e == SET_UP_BOARD) {
                 Board board = (Board) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_BOARD));
                 sendMessage(new SocketMessage(clientIndex, matchIndex, board, UPDATED_GAME_BOARD));
             }
-            if(e2==UPDATE_SCORINGTOKEN_1) {
+            if(e2 == UPDATE_SCORINGTOKEN_1) {
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
                 sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(0),UPDATE_SCORINGTOKEN_1)));
             }
@@ -98,6 +100,11 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
                 sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(1),UPDATE_SCORINGTOKEN_2)));
             }
+            if(e3==UPDATED_SCORE){
+                ArrayList<Player> listOfPlayers = (ArrayList<Player>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_PLAYERS));
+                sendMessage((new SocketMessage(clientIndex, matchIndex, listOfPlayers, UPDATED_SCORE)));
+            }
+            Thread.sleep(500);
         } while(!stopModelUpdate);
         upLock.wait();
     }
