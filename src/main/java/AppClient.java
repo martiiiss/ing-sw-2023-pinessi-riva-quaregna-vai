@@ -1,4 +1,3 @@
-package org.example;
 
 import controller.ClientController;
 import distributed.ClientInterface;
@@ -24,8 +23,8 @@ public class AppClient {
 
         }while (choice != 2 && choice != 1);
 
-      //  String add = "192.168.1.68";
-        String add = "localhost";
+         String add = "192.168.1.68";
+        //String add = "localhost";
         if(choice==2) {
             String name = "rmi://"+add+":45398/server";
             ClientInterface client = new RMIClient(name, 45398);

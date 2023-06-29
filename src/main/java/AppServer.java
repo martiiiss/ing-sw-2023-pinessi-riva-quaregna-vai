@@ -1,5 +1,3 @@
-package org.example;
-
 import distributed.RMI.RMIServer;
 import distributed.RMI.ServerRMIInterface;
 import distributed.Server;
