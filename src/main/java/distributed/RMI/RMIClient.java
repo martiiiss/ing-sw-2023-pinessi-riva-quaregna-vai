@@ -229,6 +229,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                 getModel();
             }
         }
+
     }
 
     /**

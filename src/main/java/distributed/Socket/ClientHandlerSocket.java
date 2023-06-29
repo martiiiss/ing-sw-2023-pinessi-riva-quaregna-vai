@@ -109,6 +109,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         upLock.wait();
     }
 
+
     /**
      * Method used to ask the server if there has been a disconnection.*/
     private void askServerDisconnection() {

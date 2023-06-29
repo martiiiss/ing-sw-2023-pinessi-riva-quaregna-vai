@@ -254,6 +254,7 @@ public class Game extends Observable implements Serializable {
         return scoreST;
     }
 
+
     /**
      * Method used to set the last turn.
      * @param lastTurn is a boolean, <b>true</b> if is the last turn <b>false</b> otherwise*/

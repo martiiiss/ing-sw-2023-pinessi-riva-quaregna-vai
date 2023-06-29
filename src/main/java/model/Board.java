@@ -218,4 +218,5 @@ public class Board extends Observable implements Serializable {
      * @return an integer in between 0 and 3
      * */
     public int getSelectedNumType(int row, int column) {return (livingRoomBoard[row][column]).getNumType();}
+
 }

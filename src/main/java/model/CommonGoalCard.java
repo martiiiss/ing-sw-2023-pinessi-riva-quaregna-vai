@@ -60,6 +60,7 @@ public class CommonGoalCard extends Observable implements Serializable {
         return this.tokenStack.pop();
     }
 
+
     /**
      * <p>
      *     Method used in the initialization of the CommonGoalCard. It adds a ScoringToken to the stack.

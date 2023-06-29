@@ -69,6 +69,7 @@ public class Observable{
         changed = true;
     }
 
+
     /**
      * Indicates that this object has no longer changed, or that it has
      * already notified all of its observers of its most recent change,

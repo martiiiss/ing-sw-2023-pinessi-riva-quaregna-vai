@@ -511,6 +511,7 @@ public class ClientSocket {
         sendMessageC(new SocketMessage(myIndex, myMatch, cords, TURN_PICKED_TILES));
     }
 
+
     /**
      * Method used to make a player pick the tiles from the board.
      * @throws IOException if an error occurs*/

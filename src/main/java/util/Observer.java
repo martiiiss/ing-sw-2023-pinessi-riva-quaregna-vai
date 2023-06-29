@@ -15,6 +15,7 @@ public interface Observer {
      * @param message is a {@code Message}, that is used to identify a specific event*/
     void update(Observable observable, Message message);
 
+
     /**
      * <p>
      *      Method that gets override in the implementations.<br>

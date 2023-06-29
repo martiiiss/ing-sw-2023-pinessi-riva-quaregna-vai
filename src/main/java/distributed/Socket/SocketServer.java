@@ -50,7 +50,6 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
             } catch (IOException e){
             }
         }
-
     }
 
     /**

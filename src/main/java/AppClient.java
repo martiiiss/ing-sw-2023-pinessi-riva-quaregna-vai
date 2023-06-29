@@ -17,7 +17,6 @@ public class AppClient {
             } catch (NumberFormatException e) {
                 System.err.println("Invalid value!");
             }
-
         }while (choice != 2 && choice != 1);
 
         // String add = "192.168.1.68";
