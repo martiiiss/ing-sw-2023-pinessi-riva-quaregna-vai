@@ -154,6 +154,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         disabledInput = false;
         errorReceived = Event.WAIT;
         if (!hasGameStarted) {
+
             errorReceived = server.sendMessage(this.matchIndex,null, GAME_STARTED);
             while (errorReceived != Event.OK)
                 errorReceived = server.sendMessage(this.matchIndex,null, GAME_STARTED);
@@ -184,6 +185,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                 gui.loadPlayers(listOfPlayers); //FIXME: Nulla da fixare solo il comando da copiare in Socket una volta finito
                 server.sendMessage(matchIndex, gui, ADD_OBSERVER);
                 this.isFirstTurn = false;
+                while(board==null){
+                    this.board = (Board) server.getModel(this.matchIndex,GAME_BOARD, myIndex);
+                }
                 gui.updateBoard(this.board);
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(0));
                 gui.setupCGC((CommonGoalCard) ((ArrayList<?>) server.getModel(this.matchIndex,GAME_CGC, myIndex)).get(1));

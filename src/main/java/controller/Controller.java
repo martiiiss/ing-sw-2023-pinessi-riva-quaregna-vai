@@ -16,6 +16,7 @@ public class Controller  {
     private Bag bag;
     private Board board;
     private int chosenColumn;
+    private Object lock = new Object();
 
     public void setNumberOfChosenTiles(int numberOfChosenTiles) {
         this.numberOfChosenTiles = numberOfChosenTiles;
@@ -539,7 +540,7 @@ public class Controller  {
             }
             case CHOOSE_VIEW -> error = chooseUserInterface((int) obj);
             case ALL_CONNECTED -> {
-                synchronized (game) {
+                synchronized (lock) {
                     if (!hasGameStarted && game.getNumOfPlayers() == game.getPlayers().size()) {
                         hasGameStarted = true;
                         System.out.println("The game is starting");
