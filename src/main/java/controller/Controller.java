@@ -30,13 +30,11 @@ public class Controller  {
     }
 
     private ArrayList<Tile> playerHand;
-
     public void setPlayerCords(ArrayList<Cord> playerCords) {
         this.playerCords = playerCords;
     }
-
     private ArrayList<Cord> playerCords = new ArrayList<>();
-
+    private boolean hasGameStarted;
     /**
      * <p>
      *     Constructor of the Class.<br>
@@ -126,6 +124,7 @@ public class Controller  {
      *     <b>NOTE:</b> This method gets called after all the clients needed to start the game are connected.
      * </p>*/
     public void initializeGame() {
+        game.setGameStarted();
         boolean goodSetUp = true;
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
@@ -139,7 +138,6 @@ public class Controller  {
         }while (!goodSetUp);
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
-        game.setGameStarted();
     }
 
     /**
@@ -541,13 +539,17 @@ public class Controller  {
             }
             case CHOOSE_VIEW -> error = chooseUserInterface((int) obj);
             case ALL_CONNECTED -> {
-                if(game.getNumOfPlayers() == game.getPlayers().size()) {
-                    System.out.println("The game is starting");
-                    initializeGame();
-                    error = Event.OK;
+                synchronized (game) {
+                    if (!hasGameStarted && game.getNumOfPlayers() == game.getPlayers().size()) {
+                        hasGameStarted = true;
+                        System.out.println("The game is starting");
+                        initializeGame();
+                        return error;
+                    } else if (hasGameStarted && game.getNumOfPlayers() == game.getPlayers().size()) {
+                        return error;
+                    } else
+                        error = Event.WAIT;
                 }
-                else
-                    error = Event.WAIT;
             }
             case GAME_STARTED -> {
                 if(game.getGameStarted())
@@ -655,7 +657,7 @@ public class Controller  {
     }
 
     public void addGui(GUIView gui){
-        board.addObserver(gui);
+        board.addObserver(gui, game.getNumOfPlayers());
     }
 }
 

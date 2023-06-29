@@ -29,7 +29,6 @@ public class Bag extends Observable implements Serializable {
                 int i;
                 do {
                     i = (new Random()).nextInt(tilesContained.size());
-                    System.out.println(i + " size " + tilesContained.size()); //FIXME
                 } while (i >= tilesContained.size());
                 returnedTiles.add(tilesContained.get(i));
                 tilesContained.remove(tilesContained.get(i));//Remove the tiles from the ArrayList

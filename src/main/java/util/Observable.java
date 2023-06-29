@@ -8,6 +8,8 @@ import java.util.function.Consumer;
 public class Observable{
     private boolean changed = false;
     private ArrayList<Observer> observers;
+    private int numberOfPlayer;
+    private int num;
 
     /**Constructor of the Class. <br>
      * This creates an <code>ArrayList</code> of observers.*/
@@ -21,7 +23,7 @@ public class Observable{
      * </p>
      * @param o an <code>Observer</code>
      * @throws NullPointerException if the given parameter <code>o==null</code>*/
-    public synchronized void addObserver(Observer o) {
+    public synchronized void addObserver(Observer o, int numberOfPlayer) {
         if (o == null)
             throw new NullPointerException();
         if (observers == null){
@@ -30,6 +32,7 @@ public class Observable{
         if (!this.observers.contains(o)) {
             this.observers.add(o);
         }
+        this.numberOfPlayer = numberOfPlayer;
     }
 
     /**
@@ -61,6 +64,7 @@ public class Observable{
      * </p>
      */
     protected synchronized void setChanged() {
+        this.num = this.numberOfPlayer;
         changed = true;
     }
 
@@ -74,7 +78,15 @@ public class Observable{
 
      */
     public synchronized void clearChanged() {
-        changed = false;
+        System.out.println("clear");
+        if(num==0){
+            changed = false;
+            System.out.println("settato a false changed");
+        }
+        else {
+            num--;
+            System.out.println("num " + num);
+        }
     }
 
     /**

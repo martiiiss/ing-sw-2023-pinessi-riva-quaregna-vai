@@ -112,9 +112,9 @@ public class Player extends Observable implements Serializable {
      *     This also notifies the Observers with a {@link Message}.
      * </p>
      * @param score an int that represents one of the three possible partial scores */
-    public void updateScore (int score) {this.score += score;
+    public void updateScore (int score) {
+        this.score += score;
         notifyObservers(new Message(this, Event.UPDATED_SCORE));
-
     }
 
 

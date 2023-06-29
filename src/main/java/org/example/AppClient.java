@@ -24,8 +24,8 @@ public class AppClient {
 
         }while (choice != 2 && choice != 1);
 
-        String add = "192.168.1.68";
-        //String add = "localhost";
+      //  String add = "192.168.1.68";
+        String add = "localhost";
         if(choice==2) {
             String name = "rmi://"+add+":45398/server";
             ClientInterface client = new RMIClient(name, 45398);
@@ -39,7 +39,7 @@ public class AppClient {
             int portSocket = 43808;
             UserView tui = new UserView();
             ClientController clientController = new ClientController(tui);
-            tui.addObserver(clientController);
+          //  tui.addObserver(clientController);
             try{
                 clientController.initClient(address,portSocket);
                 System.out.println("You chose Socket!");

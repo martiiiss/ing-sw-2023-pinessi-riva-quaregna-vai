@@ -118,9 +118,7 @@ public class ClientSocket {
                 }
                 System.out.println("DENTRO TRY PRIMA DI PASSIVE PLAY");
                 passivePlay();
-                //(!active && choice!=1 && choice!=4 && choice!=6)
             } catch (IOException | InterruptedException | ClassNotFoundException e) {
-                //throw new RuntimeException(e);
             }
         }
         },"startThreadPassive");
@@ -140,7 +138,6 @@ public class ClientSocket {
             case SET_CLIENT_INDEX ->{
                 this.myIndex = message.getClientIndex();
                 this.myMatch = message.getMatchIndex();
-                System.err.println("Match: "+myMatch+" Player: "+myIndex);
                 update(new SocketMessage(myIndex, myMatch, null, CHOOSE_VIEW));
             }
             case CHOOSE_VIEW -> {
@@ -159,12 +156,8 @@ public class ClientSocket {
             }
             case ALL_CONNECTED -> {
                 hasGameStarted = true;
-               /* synchronized (hasGameStartedLock) {
-                    hasGameStartedLock.notifyAll();
-                }*/
                 getModel();
                 sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
-                //update(new SocketMessage(myIndex, myMatch, null, START));
             }
             case START, CHECK_MY_TURN -> {
                 sendMessageC(new SocketMessage(myIndex, myMatch, CHECK_MY_TURN, GAME_PIT));
@@ -375,7 +368,6 @@ public class ClientSocket {
             case END_OF_TURN -> {
                 if(viewChosen==1){
                     System.out.println(((Event)(message.getObj())).getTUIMsg());
-                    //getModel();
                     if (message.getObj() == GAME_OVER) {
                         //gui.results(listOfPlayers.get(myIndex).getNickname(),listOfPlayers.get(myIndex).getScore());
                         wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
@@ -457,20 +449,7 @@ public class ClientSocket {
             }
             hasGameStarted = true;
         }
-        //disabledInput = false;
-        /*System.out.println("hasGameStarted: "+hasGameStarted);
-        System.out.println("game non iniziato");
-        synchronized (hasGameStartedLock) {
-            hasGameStartedLock.wait();
-        }
-        sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
-        while (receivedMessageC().getObj() != Event.OK) {
-            sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
-        }
-        hasGameStarted = true;*/
         System.out.println("Game iniziato");
-        if (viewChosen==1)
-            System.out.println("Devo lanciare il passiveMenu");
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
         this.board = (Board) receivedMessageC().getObj();
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
@@ -479,12 +458,15 @@ public class ClientSocket {
         this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
         this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
+        /*
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
         this.indexOfPIT = (int) receivedMessageC().getObj();
-        if(indexOfPIT != myIndex)
+        if(indexOfPIT != myIndex){
             sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
+            System.out.println("PIT " + indexOfPIT + " my " + myIndex);
+        }
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
-
+        */
         if (viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
@@ -492,12 +474,8 @@ public class ClientSocket {
                 this.isFirstTurn = false;
                 gui.update(null, new Message(listOfPlayers, UPDATED_SCORE));
                 gui.updateBoard(this.board);
-//                sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_CGC));
-//                this.commonGoalCard = (ArrayList<CommonGoalCard>) receivedMessageC().getObj();
                 gui.setupCGC(commonGoalCard.get(0));
                 gui.setupCGC(commonGoalCard.get(1));
-              //  sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PGC));
-              //  this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
                 gui.setupPGC(this.myPersonalGoalCard.getNumber());
             }
         }

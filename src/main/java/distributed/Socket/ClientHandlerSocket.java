@@ -97,6 +97,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             if (e == SET_UP_BOARD) {
                 Board board = (Board) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_BOARD));
                 sendMessage(new SocketMessage(clientIndex, matchIndex, board, UPDATED_GAME_BOARD));
+               // Thread.currentThread().wait(1000);
             }
         } while(!stoppati);
         upLock.wait();
@@ -154,7 +155,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                     Object obj=null;
                     if(message.getMessageEvent() == START_THREAD) {
                         if (!threadAskPit.isAlive()) {
-                            System.out.println("STARTA IL THR");
+                            System.out.println("STARTA IL THR" + clientIndex);
                             threadAskPit.start();
                         }
                         allConn = true;
