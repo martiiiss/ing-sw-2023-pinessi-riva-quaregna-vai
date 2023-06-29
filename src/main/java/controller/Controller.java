@@ -130,10 +130,11 @@ public class Controller  {
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
         for(int i=0;i<game.getNumOfPlayers();i++){game.getPlayers().get(i).setMyBookshelf(new Bookshelf());}
+        //TODO: SE LANCIA L'ECCEZIONE METTI QUESTE 3 RIGHE DENTRO IL WHILE
+        game.assignPersonalGoalCard(game.getNumOfPlayers());
+        game.setCommonGoalCards();
+        ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
         do {
-            game.assignPersonalGoalCard(game.getNumOfPlayers());
-            game.setCommonGoalCards();
-            ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
             goodSetUp = board.setUpBoard(tiles);
         }while (!goodSetUp);
         game.getPlayers().get(0).setAsFirstPlayer();

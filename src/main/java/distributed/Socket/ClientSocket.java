@@ -103,7 +103,7 @@ public class ClientSocket {
               }
               System.out.println("esco");
           });
-      });
+      },"ClientThread");
       clientThread.start();
     }
 
@@ -437,6 +437,8 @@ public class ClientSocket {
      * */
     public SocketMessage receivedMessageC() throws IOException, ClassNotFoundException {
         SocketMessage message = (SocketMessage) inputStream.readObject();
+        System.out.println("Is ShuTDOWN? "+executorService.isShutdown());
+        System.out.println(message.getMessageEvent());
         return message;
     }
 
@@ -479,6 +481,8 @@ public class ClientSocket {
         this.myPersonalGoalCard = (PersonalGoalCard) receivedMessageC().getObj();
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PIT));
         this.indexOfPIT = (int) receivedMessageC().getObj();
+        if(indexOfPIT != myIndex)
+            sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
         this.playerInTurn = listOfPlayers.get(indexOfPIT);
 
         if (viewChosen == 2) {

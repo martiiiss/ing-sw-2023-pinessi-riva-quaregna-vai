@@ -16,8 +16,8 @@ public class AppServer {
         int portRMI = 45398;
         Server server= new Server(portSocket, portRMI);
         //server RMI
-        //String add = "192.168.110.108";
-        String add = "localhost";
+        String add = "192.168.1.68";
+        //String add = "localhost";
         System.setProperty("java.rmi.server.hostname", add);
         ServerRMIInterface serverRMI = new RMIServer(portRMI, server);
         serverRMI.startServer(serverRMI);
