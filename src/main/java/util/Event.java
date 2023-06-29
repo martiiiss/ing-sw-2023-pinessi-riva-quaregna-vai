@@ -1,5 +1,8 @@
 package util;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 /**Class that represents an enumeration of events, used in {@link distributed.messages.Message}*/
 public enum Event {
     SET_INDEX(""),
@@ -112,5 +115,10 @@ public enum Event {
     public String getMsg(){
         return msg;
     }
-    public String getTUIMsg() {return "\u001B[35m"+msg+"\u001B[0m";}
+
+    /**
+     * Method used to get a message from the TUI.
+     * @return a {@code String}*/
+    @Contract(pure = true)
+    public @NotNull String getTUIMsg() {return "\u001B[35m"+msg+"\u001B[0m";}
 }

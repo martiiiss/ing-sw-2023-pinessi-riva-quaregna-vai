@@ -42,7 +42,7 @@ public class Board extends Observable implements Serializable {
      * </p>
      *
      * @param tilesToPutOnBoard is an <code>ArrayList</code> of Tile that represents the tile that will be added to the Board
-     *
+     * @return <b>true</b> if the board has been successfully set up, <b>false</b> otherwise
      * */
     public boolean setUpBoard(ArrayList<Tile> tilesToPutOnBoard) throws NullPointerException{
         int iTiles=0;

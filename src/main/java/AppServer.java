@@ -8,7 +8,7 @@ public class AppServer {
     public static void main(String[] args) throws IOException {
         int portSocket = 43808;
         int portRMI = 45398;
-        Server server= new Server(portSocket, portRMI);
+        Server server= new Server();
         //server RMI
         //String add = "192.168.1.68";
         String add = "localhost";

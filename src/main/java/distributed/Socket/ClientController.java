@@ -11,19 +11,27 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**Class that represents the controller for a player*/
 public class ClientController implements Observer {
     private final UserView uView;
     private ClientSocket clientSocket;
     private final ExecutorService executor;
     private int numOfPlayers;
 
-
+    /**
+     * Constructor of the Class. This initializes the {@code UserView} and starts a thread.
+     * @param uView is a {@link UserView}*/
     public ClientController(UserView uView) {
         this.uView = uView;
         this.executor = Executors.newSingleThreadExecutor();
     }
 
 
+    /**
+     * Method used to initialize a client.
+     * @param address is the address of the server
+     * @param portSocket is an int thar represents the port of the socket server
+     * @throws IOException if an error occurs*/
     public void initClient(String address, int portSocket) throws IOException {
         this.clientSocket = new ClientSocket(address, portSocket);
         executor.execute(() -> {
@@ -46,7 +54,8 @@ public class ClientController implements Observer {
         });
     }
 
-
+    /**
+     * Method used to make a client wait before a match starts*/
     public void lobby(){
         executor.execute(() -> {
             try{
@@ -62,7 +71,6 @@ public class ClientController implements Observer {
 
     @Override
     public void update(Observable o, Message message) {
-
         switch (message.getMessageEvent()){
            case SET_UP_BOARD -> //show board
                     executor.execute(() -> {

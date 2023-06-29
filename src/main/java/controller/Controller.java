@@ -638,22 +638,39 @@ public class Controller  {
         }
         return -1;
     }
+
+    /**
+     * Method used to get the index of the player in turn.
+     * @return an in that represents the index of the player in turn
+     */
     public int getPITIndex() {
         return game.getPlayers().indexOf(game.getPlayerInTurn());
     }
 
+    /**
+     * Method used to add a {@code GUIView}.
+     * @param gui is a {@link GUIView} */
     public void addGui(GUIView gui){
         board.addObserver(gui, game.getNumOfPlayers());
     }
 
+    /**
+     * Method used to set the number of chosen tiles.
+     * @param numberOfChosenTiles is an int that represents the number of chosen tiles*/
     public void setNumberOfChosenTiles(int numberOfChosenTiles) {
         this.numberOfChosenTiles = numberOfChosenTiles;
     }
 
+    /**
+     * Method used to set the tiles in the hand of a player.
+     * @param playerHand is an {@code ArrayList} of {@code Tile}*/
     public void setPlayerHand(ArrayList<Tile> playerHand) {
         this.playerHand = playerHand;
     }
 
+    /**
+     * Method used to set the coordinates chosen by a player.
+     * @param playerCords is an {@code ArrayList} of {@code Cord}*/
     public void setPlayerCords(ArrayList<Cord> playerCords) {
         this.playerCords = playerCords;
     }

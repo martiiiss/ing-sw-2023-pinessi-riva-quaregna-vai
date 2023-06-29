@@ -22,6 +22,7 @@ public class Observable{
      *     Method that given an <code>Observer</code> as a parameter, adds it to the list of observers.
      * </p>
      * @param o an <code>Observer</code>
+     * @param numberOfPlayer is an int that represents number of player
      * @throws NullPointerException if the given parameter <code>o==null</code>*/
     public synchronized void addObserver(Observer o, int numberOfPlayer) {
         if (o == null)
