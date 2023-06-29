@@ -97,6 +97,7 @@ public class GUIView implements Observer, Serializable {
         playerList.setMinimumSize(new Dimension(250,70));
         playerListFrame.add(playerList);
         playerListFrame.setVisible(true);
+        playerList.setEditable(false);
         constraints.gridx = 1;
         GUI.add(playerListFrame, constraints);
 
