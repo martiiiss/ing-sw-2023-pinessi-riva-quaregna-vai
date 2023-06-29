@@ -56,6 +56,7 @@ public class CommonGoalCard extends Observable implements Serializable {
      * </p>
      * @return a ScoringToken */
     public ScoringToken popScoringToken(){
+        setChanged();
         return this.tokenStack.pop();
     }
 

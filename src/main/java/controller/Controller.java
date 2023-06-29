@@ -596,6 +596,16 @@ public class Controller  {
                 addGui((GUIView) obj);
                 return Event.OK;
             }
+            case UPDATE_SCORINGTOKEN -> {
+                if (game.getCommonGoalCard().get(0).hasChanged()) {
+                    game.getCommonGoalCard().get(0).clearChanged();
+                    return UPDATE_SCORINGTOKEN_1;
+                }
+                if(game.getCommonGoalCard().get(1).hasChanged()) {
+                    game.getCommonGoalCard().get(1).clearChanged();
+                    return UPDATE_SCORINGTOKEN_2;
+                }
+            }
         }
         return error;
     }

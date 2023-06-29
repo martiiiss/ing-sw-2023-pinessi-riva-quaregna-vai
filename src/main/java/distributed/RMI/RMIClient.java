@@ -205,12 +205,12 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                 do {
                     try {
                         status = server.sendMessage(this.matchIndex,myIndex, CHECK_MY_TURN);
-                        Event e = server.sendMessage(this.matchIndex, myIndex, SET_UP_BOARD);
-                       ///TODO Event e2 = server.sendMessage(this.matchIndex, myIndex, UPDATE_SCORINGTOKEN);
-                        if(e==SET_UP_BOARD) {
-                            board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
-                            gui.update(board, new Message(board, SET_UP_BOARD));
-                        }
+                        board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
+                        gui.update(board, new Message(board, SET_UP_BOARD));
+                        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+                        gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
+                        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+                        gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
                     } catch (SocketException | UnmarshalException ex) {}
                 } while (status != Event.OK);
                 getModel();
@@ -489,7 +489,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             gui.addTile(tilesInHand.get(pos));
             errorReceived = server.sendMessage(this.matchIndex, pos, TURN_POSITION);
         }
-
         gui.endInsertion();
         gui.getHandView().setTileToInsert(-1);
 
@@ -511,6 +510,15 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             System.exit(10);
         }
         listOfPlayers = (ArrayList<Player>) server.getModel(matchIndex,GAME_PLAYERS,myIndex); //Used to update the score after placing my tiles
+        //Event e2 = server.sendMessage(this.matchIndex, myIndex, UPDATE_SCORINGTOKEN);
+       // if(e2==UPDATE_SCORINGTOKEN_1) {
+            this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+            gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
+       // }
+        //if(e2==UPDATE_SCORINGTOKEN_2) {
+            this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+            gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
+      //  }
         gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
         gui.loadPlayers(listOfPlayers);
     }

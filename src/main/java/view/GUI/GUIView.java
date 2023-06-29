@@ -469,6 +469,14 @@ public class GUIView implements Observer, Serializable {
             case END -> {
                 showError(Event.END,message.getObj()); //Object is the Winner
             }
+            case UPDATE_SCORINGTOKEN_1 -> {
+                CommonGoalCard cgc = (CommonGoalCard) message.getObj();
+                scv[0].setDisplayedImage(cgc.getTokenStack().lastElement().getValue());
+            }
+            case UPDATE_SCORINGTOKEN_2 -> {
+                CommonGoalCard cgc = (CommonGoalCard) message.getObj();
+                scv[1].setDisplayedImage(cgc.getTokenStack().lastElement().getValue());
+            }
         }
     }
 

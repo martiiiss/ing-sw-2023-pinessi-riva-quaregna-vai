@@ -34,6 +34,8 @@ public enum Event {
     UPDATE_SCORINGTOKEN(""),
     UPDATED_GAME_BOARD(""),
     SET_ALL_CONNECTED(""),
+    UPDATE_SCORINGTOKEN_1(""),
+    UPDATE_SCORINGTOKEN_2(""),
     DISCONNECTED(""),
 
    //Errors

@@ -29,7 +29,7 @@ public class ImageReader implements Serializable {
             ImageIcon im = new ImageIcon(scaledImg);
             return im;
         } catch (IOException e) {
-            System.err.println("It was impossible to read the image...");
+            //System.err.println("It was impossible to read the image...");
         }
         return null;
      }
