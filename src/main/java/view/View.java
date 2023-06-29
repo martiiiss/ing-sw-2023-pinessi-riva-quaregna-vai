@@ -6,7 +6,7 @@ import util.Observable;
 import util.Observer;
 
 import java.io.IOException;
-
+//TODO: STA CLASSE SERVER ANCORA?????
 public class View implements Observer {
 
     private final ClientHandlerSocket clientHandler;

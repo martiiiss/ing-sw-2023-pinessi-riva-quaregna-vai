@@ -15,18 +15,18 @@ import java.util.ArrayList;
 public class GUIView implements Observer, Serializable {
     @Serial
     private static final long serialVersionUID = 3573316570282498841L;
-    private transient BoardView boardView;
-    private transient ScoringTokenView[] scv;
-    private transient BookshelfView bookshelfView;
+    private final transient BoardView boardView;
+    private final transient ScoringTokenView[] scv;
+    private final transient BookshelfView bookshelfView;
 
-    private transient HandView hand;
+    private final transient HandView hand;
 
-    private transient PGCView pgc;
+    private final transient PGCView pgc;
 
-    private transient CGCView[] cgc;
+    private final transient CGCView[] cgc;
 
-    private transient JLabel errorLog;
-    private transient  JTextArea playerList;
+    private final transient JLabel errorLog;
+    private final transient  JTextArea playerList;
 
     private int tilesToPick = 0;
 
