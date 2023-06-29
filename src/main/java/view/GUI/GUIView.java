@@ -345,8 +345,8 @@ public class GUIView implements Observer, Serializable {
     /**
      * Method used to show the errors and messages.
      * @param e an {@link Event}
-     * @param o an {@code Object}*/
-    public void showError(Event e, Object o){
+     */
+    public void showError(Event e){
         errorLog.setForeground(Color.RED);
         if(e==Event.OK)
             errorLog.setForeground(Color.GREEN);
@@ -356,8 +356,8 @@ public class GUIView implements Observer, Serializable {
             errorLog.setText("<html>" + e.getMsg() + "</p><html>");
         else {
             errorLog.setForeground(Color.black);
-            Player winner = (Player) o;
-            errorLog.setText("Game over, The winner is "+winner.getNickname()+" with "+winner.getScore()+" points");
+            //Player winner = (Player) o;
+            errorLog.setText("GAME OVER!");
         }
        /* switch (e){
             case TILES_NOT_VALID-> errorLog.setText("<html><p>Tiles not valid, select again</p><html>");
@@ -467,7 +467,7 @@ public class GUIView implements Observer, Serializable {
                 loadPlayers(listRec);
             }
             case END -> {
-                showError(Event.END,message.getObj()); //Object is the Winner
+                showError(Event.END);
             }
             case UPDATE_SCORINGTOKEN_1 -> {
                 CommonGoalCard cgc = (CommonGoalCard) message.getObj();

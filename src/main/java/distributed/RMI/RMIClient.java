@@ -190,11 +190,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                 gui.setupPGC(((PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex)).getNumber());
             }
             if (myIndex == indexOfPIT) {
-                gui.showError(START_YOUR_TURN,null);
+                gui.showError(START_YOUR_TURN);
                 flowGui();
                 getModel();
             } else {
-                gui.showError(NOT_YOUR_TURN,null);
+                gui.showError(NOT_YOUR_TURN);
                 synchronized (lock) {
                     this.lock.notifyAll();
                 }
@@ -211,6 +211,11 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                         gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
                         this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
                         gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
+                        errorReceived = server.sendMessage(matchIndex,myIndex,END);
+                        if (errorReceived==END) {
+                            gui.showError(END);
+                            gui.update(null, new Message(END, END));
+                        }
                     } catch (SocketException | UnmarshalException ex) {}
                 } while (status != Event.OK);
                 getModel();
@@ -258,8 +263,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         if (errorReceived == GAME_OVER) {
             Player winner = (Player) server.getModel(matchIndex,GET_WINNER,myIndex);
             uView.gameOver(listOfPlayers,winner);
-            wait(10000); //FIXME POTREBBE NON FUNZIONARE NON CANCELLARE STO FIXME
-            System.exit(0);
+            //wait(10000); //FIXME POTREBBE NON FUNZIONARE NON CANCELLARE STO FIXME
+            //System.exit(0);
         }
         getModel();
     }
@@ -459,7 +464,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         do {
             tilesToPick = gui.askTiles(); //ask number of tiles
             errorReceived = server.sendMessage(this.matchIndex,tilesToPick, TURN_AMOUNT);
-            gui.showError(errorReceived,null);
+            gui.showError(errorReceived);
         } while (errorReceived != Event.OK);
 
         do {
@@ -469,7 +474,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             System.out.println("tiles cords " + tilesCords.size());
             errorReceived = server.sendMessage(this.matchIndex,tilesCords, TURN_PICKED_TILES);
             System.out.println(errorReceived.getTUIMsg());
-            gui.showError(errorReceived,null);
+            gui.showError(errorReceived);
             System.out.println("errore: " + errorReceived.getMsg());
         } while (errorReceived != Event.OK);
 
@@ -481,7 +486,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             int column = gui.chooseColumn();
             errorReceived = server.sendMessage(this.matchIndex, column, TURN_COLUMN);
             System.out.println("errore colonna: " + errorReceived);
-            gui.showError(errorReceived,null);
+            gui.showError(errorReceived);
         }while(errorReceived!=Event.OK);
 
         for(int i=0; i<tilesToPick; i++){
@@ -498,27 +503,27 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             //visualizzare errore
             this.board = (Board) server.getModel(matchIndex,GAME_BOARD,myIndex);
             gui.update(board,new Message(board,SET_UP_BOARD));
-            gui.showError(errorReceived,null);
+            gui.showError(errorReceived);
         }
         errorReceived = server.sendMessage(this.matchIndex,myIndex, END_OF_TURN);
         if(errorReceived != OK)
-            gui.showError(errorReceived,null);
+            gui.showError(errorReceived);
         if (errorReceived == GAME_OVER) {
             Player winner = (Player) server.getModel(matchIndex,GET_WINNER,myIndex);
-            gui.showError(GAME_OVER,winner);
-            wait(10000); //FIXME: Lancia la IllegalMonitorStateException. Da capire come gestire il fine partita (si chiude da solo dopo un tot?)
-            System.exit(10);
+            gui.showError(GAME_OVER);
+            //System.exit(10);
         }
         listOfPlayers = (ArrayList<Player>) server.getModel(matchIndex,GAME_PLAYERS,myIndex); //Used to update the score after placing my tiles
         //Event e2 = server.sendMessage(this.matchIndex, myIndex, UPDATE_SCORINGTOKEN);
        // if(e2==UPDATE_SCORINGTOKEN_1) {
-            this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
-            gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
+        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+        gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
        // }
         //if(e2==UPDATE_SCORINGTOKEN_2) {
-            this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
-            gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
+        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+        gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
       //  }
+        errorReceived = server.sendMessage(matchIndex,myIndex,END);
         gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
         gui.loadPlayers(listOfPlayers);
     }
@@ -543,7 +548,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             System.out.println("Press enter to start your turn....");
         }
         else
-            gui.showError(START_YOUR_TURN,null);
+            gui.showError(START_YOUR_TURN);
         disabledInput = true;
     }
 

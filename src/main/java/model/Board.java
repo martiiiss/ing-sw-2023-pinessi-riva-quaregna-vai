@@ -49,7 +49,7 @@ public class Board extends Observable implements Serializable {
         for(int i=0; i<BOARD_ROW; i++){
             for(int j=0; j<BOARD_COLUMN; j++){
                 try {
-                    if (this.livingRoomBoard[i][j].getType() == Type.NOTHING) {
+                    if (this.livingRoomBoard[i][j].getType() == Type.NOTHING && tilesToPutOnBoard.size()>iTiles) {
                         this.livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
                         setChanged();
                         iTiles++;
