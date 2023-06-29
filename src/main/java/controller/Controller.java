@@ -126,18 +126,16 @@ public class Controller  {
      *     <b>NOTE:</b> This method gets called after all the clients needed to start the game are connected.
      * </p>*/
     public void initializeGame() {
+        boolean goodSetUp = true;
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
         for(int i=0;i<game.getNumOfPlayers();i++){game.getPlayers().get(i).setMyBookshelf(new Bookshelf());}
-        game.assignPersonalGoalCard(game.getNumOfPlayers());
-        game.setCommonGoalCards();
-        ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
-        try {
-            board.setUpBoard(tiles);
-        } catch (NullPointerException e) {
-            System.err.println("Entra nell'eccezione in initGame");
-            board.setUpBoard(tiles);
-        }
+        do {
+            game.assignPersonalGoalCard(game.getNumOfPlayers());
+            game.setCommonGoalCards();
+            ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
+            goodSetUp = board.setUpBoard(tiles);
+        }while (!goodSetUp);
         game.getPlayers().get(0).setAsFirstPlayer();
         game.setPlayerInTurn(game.getPlayers().get(0));
         game.setGameStarted();

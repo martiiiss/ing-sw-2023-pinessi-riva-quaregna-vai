@@ -57,6 +57,7 @@ public class ClientSocket {
     private boolean enterHasBeenPressed;
     private boolean disablePassivePrint;
 
+
     /**
      * Constructor of the Class. This initializes the connection of a client.
      * @param port is an int thar represents the port
@@ -85,12 +86,14 @@ public class ClientSocket {
         passiveLock = new Object();
         lockPrint = new Object();
 
+
         Thread clientThread = new Thread(()-> {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
                   try{
                       System.out.println("attendo messaggio...");
                       SocketMessage message = receivedMessageC();
+                      System.out.println(message.getMessageEvent());
                       System.out.println("ho ricevuto " + message.getMessageEvent());
                       update(message);
                   } catch (IOException | ClassNotFoundException | InterruptedException e) {
@@ -137,6 +140,7 @@ public class ClientSocket {
             case SET_CLIENT_INDEX ->{
                 this.myIndex = message.getClientIndex();
                 this.myMatch = message.getMatchIndex();
+                System.err.println("Match: "+myMatch+" Player: "+myIndex);
                 update(new SocketMessage(myIndex, myMatch, null, CHOOSE_VIEW));
             }
             case CHOOSE_VIEW -> {
@@ -154,12 +158,16 @@ public class ClientSocket {
                 sendMessageC(new SocketMessage(myIndex, myMatch, this.nickname, SET_NICKNAME));
             }
             case ALL_CONNECTED -> {
+                hasGameStarted = true;
+               /* synchronized (hasGameStartedLock) {
+                    hasGameStartedLock.notifyAll();
+                }*/
                 getModel();
                 sendMessageC(new SocketMessage(myIndex, myMatch, null, START_THREAD));
                 //update(new SocketMessage(myIndex, myMatch, null, START));
             }
             case START, CHECK_MY_TURN -> {
-                sendMessageC(new SocketMessage(myIndex, myMatch, CHECK_MY_TURN, GAME_PIT ));
+                sendMessageC(new SocketMessage(myIndex, myMatch, CHECK_MY_TURN, GAME_PIT));
             }
             case START_YOUR_TURN -> {
                 System.out.println("It's your turn!");
@@ -439,7 +447,6 @@ public class ClientSocket {
      * @throws InterruptedException if a thread gets interrupted*/
     public void getModel() throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("model");
-        //disabledInput = false;
         if (!hasGameStarted) {
             System.out.println("game non iniziato");
             sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
@@ -448,6 +455,20 @@ public class ClientSocket {
             }
             hasGameStarted = true;
         }
+        //disabledInput = false;
+        /*System.out.println("hasGameStarted: "+hasGameStarted);
+        System.out.println("game non iniziato");
+        synchronized (hasGameStartedLock) {
+            hasGameStartedLock.wait();
+        }
+        sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
+        while (receivedMessageC().getObj() != Event.OK) {
+            sendMessageC(new SocketMessage(this.myIndex, this.myMatch, null, GAME_STARTED));
+        }
+        hasGameStarted = true;*/
+        System.out.println("Game iniziato");
+        if (viewChosen==1)
+            System.out.println("Devo lanciare il passiveMenu");
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
         this.board = (Board) receivedMessageC().getObj();
         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));

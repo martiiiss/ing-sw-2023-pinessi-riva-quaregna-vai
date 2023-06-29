@@ -124,15 +124,20 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         do {
             pit = socketServer.askPit(matchIndex);
             if(first && pit!=clientIndex){
-                first=false;
+                if(matchIndex==1)
+                    System.out.println("Spammo il secondo Match!");
+                if(allConn)
+                    first=false;
+                System.out.println("in match "+matchIndex+" ho client index "+clientIndex);
                 System.out.println("pit diverso" + pit + "cl " + clientIndex);
+                System.out.println("send message client, match, pit, NOTYOURTURN "+clientIndex+" "+matchIndex+" "+pit+" "+ NOT_YOUR_TURN);
                 sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.NOT_YOUR_TURN));
             }
             Thread.sleep(1000);
         } while(pit !=clientIndex);
         stoppati=true;
         first = true;
-        System.out.println("manda messaggio è il tuo turno! " + clientIndex);
+        System.out.println("manda messaggio è il tuo turno! " + clientIndex +"Match" +matchIndex);
         sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.START_YOUR_TURN));
         lock.wait();
     }
@@ -152,9 +157,12 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                             System.out.println("STARTA IL THR");
                             threadAskPit.start();
                         }
+                        allConn = true;
                         if(!threadCheckUpdates.isAlive())
                             threadCheckUpdates.start();
                     }
+                   // if(message.getMessageEvent() == SET_ALL_CONNECTED)
+
 
                     if(message.getObj()==Event.CHECK_MY_TURN){
                         obj = socketServer.receivedMessage(message);
@@ -220,6 +228,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
      * @throws IOException if an error occurs
      * @throws ClassNotFoundException if a class cannot be found
      * */
+    boolean allConn = false;
     public void update(Object obj, @NotNull SocketMessage message) throws IOException, ClassNotFoundException {
         switch (message.getMessageEvent()){
             case OK ->{

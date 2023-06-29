@@ -33,6 +33,7 @@ public enum Event {
     CHECK_ENDGAME(""),
     UPDATE_SCORINGTOKEN(""),
     UPDATED_GAME_BOARD(""),
+    SET_ALL_CONNECTED(""),
     DISCONNECTED(""),
 
    //Errors

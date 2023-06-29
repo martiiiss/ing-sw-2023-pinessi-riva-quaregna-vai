@@ -44,19 +44,24 @@ public class Board extends Observable implements Serializable {
      * @param tilesToPutOnBoard is an <code>ArrayList</code> of Tile that represents the tile that will be added to the Board
      *
      * */
-    public void setUpBoard(ArrayList<Tile> tilesToPutOnBoard) throws NullPointerException{
+    public boolean setUpBoard(ArrayList<Tile> tilesToPutOnBoard) throws NullPointerException{
         int iTiles=0;
         for(int i=0; i<BOARD_ROW; i++){
             for(int j=0; j<BOARD_COLUMN; j++){
-                if(this.livingRoomBoard[i][j].getType()==Type.NOTHING){
-                    this.livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
-                    setChanged();
-                    iTiles++;
+                try {
+                    if (this.livingRoomBoard[i][j].getType() == Type.NOTHING) {
+                        this.livingRoomBoard[i][j] = tilesToPutOnBoard.get(iTiles);
+                        setChanged();
+                        iTiles++;
+                    }
+                }catch (NullPointerException e) {
+                    return false;
                 }
             }
         }
         setChanged();
         notifyObservers(new Message(this, Event.SET_UP_BOARD));
+        return true;
     }
 
     /**
