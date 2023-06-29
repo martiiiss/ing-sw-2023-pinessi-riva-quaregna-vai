@@ -24,15 +24,18 @@ public class Bag extends Observable implements Serializable {
      */
     public ArrayList<Tile> getBagTiles(int requestedTiles) { //take tiles from bag
         ArrayList<Tile> returnedTiles = new ArrayList<>();
-        for(int e=0; e<requestedTiles && !tilesContained.isEmpty(); e++) {
-            int i;
-            do {
-                i = (new Random()).nextInt(tilesContained.size());
-            }while(i>=tilesContained.size());
-            returnedTiles.add(tilesContained.get(i));
-            tilesContained.remove(tilesContained.get(i));//Remove the tiles from the ArrayList
+        synchronized (tilesContained) {
+            for (int e = 0; e < requestedTiles && !tilesContained.isEmpty(); e++) {
+                int i;
+                do {
+                    i = (new Random()).nextInt(tilesContained.size());
+                    System.out.println(i + " size " + tilesContained.size()); //FIXME
+                } while (i >= tilesContained.size());
+                returnedTiles.add(tilesContained.get(i));
+                tilesContained.remove(tilesContained.get(i));//Remove the tiles from the ArrayList
+            }
+            return returnedTiles;
         }
-        return returnedTiles;
     }
 
     /**
@@ -44,7 +47,7 @@ public class Bag extends Observable implements Serializable {
 
     public void addTile(Tile tileAdded) {
         this.tilesContained.add(tileAdded);
-        }
+    }
 
     /**
      * <p>
@@ -64,15 +67,17 @@ public class Bag extends Observable implements Serializable {
      */
     public Bag(){
         tilesContained = new ArrayList<>();
-        for(int i=0; i<6; i++){
-            for(int j=0; j<MAX_TILES_ONE_TYPE; j++){
-                switch (i) {
-                    case 0 -> tilesContained.add(new Tile(Type.CAT, j % MAX_NUM_TYPE + 1));
-                    case 1 -> tilesContained.add(new Tile(Type.BOOK, j % MAX_NUM_TYPE + 1));
-                    case 2 -> tilesContained.add(new Tile(Type.GAME, j % MAX_NUM_TYPE + 1));
-                    case 3 -> tilesContained.add(new Tile(Type.FRAME, j % MAX_NUM_TYPE + 1));
-                    case 4 -> tilesContained.add(new Tile(Type.TROPHY, j % MAX_NUM_TYPE + 1));
-                    case 5 -> tilesContained.add(new Tile(Type.PLANT, j % MAX_NUM_TYPE + 1));
+        synchronized (tilesContained) {
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < MAX_TILES_ONE_TYPE; j++) {
+                    switch (i) {
+                        case 0 -> tilesContained.add(new Tile(Type.CAT, j % MAX_NUM_TYPE + 1));
+                        case 1 -> tilesContained.add(new Tile(Type.BOOK, j % MAX_NUM_TYPE + 1));
+                        case 2 -> tilesContained.add(new Tile(Type.GAME, j % MAX_NUM_TYPE + 1));
+                        case 3 -> tilesContained.add(new Tile(Type.FRAME, j % MAX_NUM_TYPE + 1));
+                        case 4 -> tilesContained.add(new Tile(Type.TROPHY, j % MAX_NUM_TYPE + 1));
+                        case 5 -> tilesContained.add(new Tile(Type.PLANT, j % MAX_NUM_TYPE + 1));
+                    }
                 }
             }
         }
