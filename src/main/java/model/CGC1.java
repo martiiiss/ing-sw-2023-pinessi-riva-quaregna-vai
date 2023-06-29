@@ -135,6 +135,7 @@ public class CGC1 implements CGCStrategy, Serializable {
                 }
                 if (found)
                     score++;
+
                 listOfCords.clear();
             }
         }

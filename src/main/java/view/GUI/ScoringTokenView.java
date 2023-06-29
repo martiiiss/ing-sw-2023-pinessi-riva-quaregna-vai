@@ -30,6 +30,9 @@ public class ScoringTokenView extends JPanel implements Serializable { //manages
      * @param valueDisplayed an int that represents the value of a scoring token*/
     public void setDisplayedImage(int valueDisplayed) {
         ImageReader imageReader = new ImageReader();
-        displayedImage.setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 120, 120));
+        if(valueDisplayed==0)
+            displayedImage.setIcon(imageReader.readIcon("resources/ScoringTokenImages/back.jpg", 120, 120));
+        else
+            displayedImage.setIcon(imageReader.readIcon("resources/ScoringTokenImages/" + valueDisplayed + ".jpg", 120, 120));
     }
 }

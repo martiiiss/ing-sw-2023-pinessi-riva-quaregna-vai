@@ -43,7 +43,7 @@ public class CGC1Test {
 
     Tile[][] bookshelf4 = { { cat,   game,   nothing, frame,  plant },
                             { cat,   trophy, nothing, trophy, cat},
-                            { plant, cat,   trophy,  trophy, game},
+                            { plant, trophy,   trophy,  trophy, game},
                             { frame, game,   frame,   frame,   frame},
                             { plant, book,   frame,   plant,  cat},
                             { plant, plant,  game,     game,   cat}};
@@ -52,7 +52,7 @@ public class CGC1Test {
 
     @org.junit.jupiter.api.Test
     void compareRule() {
-        Bookshelf bks1 = new Bookshelf();
+       Bookshelf bks1 = new Bookshelf();
         bks1.setBookshelf(bookshelf1);
         assertFalse(cgc1.compareRule(bks1, 1));
 
@@ -67,6 +67,8 @@ public class CGC1Test {
         Bookshelf bks4 = new Bookshelf();
         bks4.setBookshelf(bookshelf4);
         assertTrue(cgc1.compareRule(bks4,1));
+
+
     }
 
 }

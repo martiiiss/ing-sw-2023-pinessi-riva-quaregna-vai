@@ -7,83 +7,54 @@ import java.io.Serializable;
 public class CGC7 implements CGCStrategy, Serializable {
     @Serial
     private static final long serialVersionUID = 998176289351890649L;
-    public boolean compareRule(Bookshelf bks, int id){
-        int counter = 0;
-        int numOfBlocks = 0;
 
-        Tile[][] mini = new Tile[2][2];
-        Tile[][] bookshelf = bks.getBookshelf();
+    public boolean compareRule(Bookshelf bks, int id) {
+        int count = 0;
 
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 4; j++) {
-                mini[0][0] = bookshelf[i][j];
-                mini[0][1] = bookshelf[i][j + 1];
-                mini[1][0] = bookshelf[i + 1][j];
-                mini[1][1] = bookshelf[i + 1][j + 1];
-                Tile temp = bookshelf[i][j];
-                for (int x = 0; x < 2; x++) {
-                    for (int y = 0; y < 2; y++) {
-                        if (temp.getType() == mini[x][y].getType() && temp.getType() != Type.NOTHING)
-                            counter++;
-                    }
+        // creating a support matrix so we can simplify corner cases
+        Tile[][] matrix = bks.getBookshelf();
+        Tile[][] matrixSupport = new Tile[8][7];
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 7; c++) {
+                if (r > 0 && r < 7 && c > 0 && c < 6) {
+                    matrixSupport[r][c] = new Tile(matrix[r - 1][c - 1].getType(), 1);
+                } else {
+                    matrixSupport[r][c] = new Tile(Type.NOTHING, 1);
                 }
-                if (counter == 4 && j < 2 && i < 2)//TopLeft
-                    if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType())) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                if (counter == 4 && j < 2 && i >= 2 && i<4) //Left side
-                    if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()==(bookshelf[i - 1][j + 1].getType())) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                if (counter == 4 && j < 2 && i == 4) //BotLeft
-                    if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()!=(bookshelf[i - 1][j + 1].getType())) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                if (counter == 4 && j==2 && i >=3) //Bot side
-                    if (temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()!=(bookshelf[i - 1][j + 1].getType()) && temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType())) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                if (counter == 4 && j==3 && i>=3) //BotRight
-                    if (temp.getType()!=(bookshelf[i - 1][j].getType()) && (temp.getType()!=(bookshelf[i - 1][j + 1].getType())) && (temp.getType()!=(bookshelf[i][j - 1].getType())) && (temp.getType()!=(bookshelf[i + 1][j - 1].getType()))) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                if (counter == 4 && j==3 && i >= 2) //R side
-                    if ((temp.getType() != (bookshelf[i - 1][j].getType())) && (temp.getType() != (bookshelf[i - 1][j + 1].getType())) && (temp.getType() != (bookshelf[i][j - 1].getType())) && (temp.getType() != (bookshelf[i + 1][j - 1].getType())) && (temp.getType() != (bookshelf[i + 2][j].getType())) && (temp.getType() != (bookshelf[i + 2][j + 1].getType()))) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                if (counter == 4 && j==3 && i < 2) //TopRight
-                    if (temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType())) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                if (counter == 4 && j==2 && i < 2) //Upper side
-                    if (temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType()) && temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType())) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                    if (counter == 4 && j==2 && i>=2 && i<4) //Not along the borders
-                    if (temp.getType()!=(bookshelf[i][j - 1].getType()) && temp.getType()!=(bookshelf[i + 1][j - 1].getType()) && temp.getType()!=(bookshelf[i + 2][j].getType()) && temp.getType()!=(bookshelf[i + 2][j + 1].getType()) && temp.getType()!=(bookshelf[i][j + 2].getType()) && temp.getType()!=(bookshelf[i + 1][j + 2].getType()) && temp.getType()!=(bookshelf[i - 1][j].getType()) && temp.getType()!=(bookshelf[i - 1][j + 1].getType())) {
-                        numOfBlocks++;
-                        counter = 0;
-                        break;
-                    }
-                counter = 0;
             }
         }
-        return numOfBlocks == 2;
+
+        // check for 2x2 with no adiacenses
+        for (int i = 1; i < 6; i++) {
+            for (int j = 1; j < 5; j++) {
+
+
+                if (!matrixSupport[i][j].getType().equals(Type.NOTHING)
+                        //first check 2x2
+                        && matrixSupport[i][j].getType().equals(matrixSupport[i][j + 1].getType())
+                        && matrixSupport[i][j].getType().equals(matrixSupport[i + 1][j].getType())
+                        && matrixSupport[i][j].getType().equals(matrixSupport[i + 1][j + 1].getType())) {
+                    //check for no more than 2x2 (no same color adiacenses)
+
+                    //general case
+                    if (         //bottom layer
+                            !matrixSupport[i][j].getType().equals(matrixSupport[i - 1][j].getType())
+                                    && !matrixSupport[i][j].getType().equals(matrixSupport[i - 1][j + 1].getType())
+                                    //i-layer
+                                    && !matrixSupport[i][j].getType().equals(matrixSupport[i][j + 2].getType())
+                                    && !matrixSupport[i][j].getType().equals(matrixSupport[i][j - 1].getType())
+                                    //i+1 layer
+                                    && !matrixSupport[i][j].getType().equals(matrixSupport[i + 1][j + 2].getType())
+                                    && !matrixSupport[i][j].getType().equals(matrixSupport[i + 1][j - 1].getType())
+                                    //i+2 layer
+                                    && !matrixSupport[i][j].getType().equals(matrixSupport[i + 2][j].getType())
+                                    && !matrixSupport[i][j].getType().equals(matrixSupport[i + 2][j + 1].getType())) {
+
+                        count = count + 1;
+                    }
+                }
+            }
+        }
+        return count > 1;
     }
 }
