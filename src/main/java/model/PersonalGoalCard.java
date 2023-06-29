@@ -1,10 +1,8 @@
 package model;
 
 import com.google.gson.stream.JsonReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Serial;
-import java.io.Serializable;
+
+import java.io.*;
 
 /**Class that represents the Personal Goal Card*/
 public class PersonalGoalCard implements Serializable {
@@ -51,7 +49,22 @@ public class PersonalGoalCard implements Serializable {
         int i = 0, j = 0;
         Tile readTile;
         try {
-            JsonReader reader = new JsonReader(new FileReader("src/main/java/model/PersonalGoalCardDescription/" + id + ".json"));
+            InputStream in = getClass().getResourceAsStream("/PersonalGoalCardDescription/" + id + ".json");
+            BufferedReader read = new BufferedReader(new InputStreamReader(in));
+            // Use resource
+            File f = new File("output.json");
+            try (FileWriter fileWriter = new FileWriter(f);
+                 BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+
+                String line;
+                while ((line = read.readLine()) != null) {
+                    bufferedWriter.write(line);
+                    bufferedWriter.newLine();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            JsonReader reader = new JsonReader(new FileReader(f));
             reader.beginArray();
             while (reader.hasNext()) {
                 reader.beginObject();
@@ -84,6 +97,7 @@ public class PersonalGoalCard implements Serializable {
             }
             reader.endArray();
             reader.close();
+            f.deleteOnExit();
         } catch (IOException e) {
             e.printStackTrace();
         }

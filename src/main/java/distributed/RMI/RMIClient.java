@@ -155,16 +155,19 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         errorReceived = Event.WAIT;
         if (!hasGameStarted) {
 
-            errorReceived = server.sendMessage(this.matchIndex,null, GAME_STARTED);
+            errorReceived = server.sendMessage(this.matchIndex, null, GAME_STARTED);
             while (errorReceived != Event.OK)
-                errorReceived = server.sendMessage(this.matchIndex,null, GAME_STARTED);
+                errorReceived = server.sendMessage(this.matchIndex, null, GAME_STARTED);
         }
-        this.board = (Board) server.getModel(this.matchIndex,GAME_BOARD, myIndex);
-        this.listOfPlayers = (ArrayList<Player>) server.getModel(this.matchIndex,GAME_PLAYERS, myIndex);
-        this.commonGoalCard = (ArrayList<CommonGoalCard>) server.getModel(this.matchIndex,GAME_CGC, myIndex);
-        this.myPersonalGoalCard = (PersonalGoalCard) server.getModel(this.matchIndex,GAME_PGC, myIndex);
-        this.indexOfPIT = (int) server.getModel(this.matchIndex,GAME_PIT, myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
-        this.playerInTurn = listOfPlayers.get(indexOfPIT);
+        do {
+            this.board = (Board) server.getModel(this.matchIndex, GAME_BOARD, myIndex);
+            this.listOfPlayers = (ArrayList<Player>) server.getModel(this.matchIndex, GAME_PLAYERS, myIndex);
+            this.commonGoalCard = (ArrayList<CommonGoalCard>) server.getModel(this.matchIndex, GAME_CGC, myIndex);
+            this.myPersonalGoalCard = (PersonalGoalCard) server.getModel(this.matchIndex, GAME_PGC, myIndex);
+            this.myPersonalGoalCard = (PersonalGoalCard) server.getModel(this.matchIndex, GAME_PGC, myIndex);
+            this.indexOfPIT = (int) server.getModel(this.matchIndex, GAME_PIT, myIndex); //This variable/attribute can be used to check if this client is the player in turn (if so he has to make moves on the board)
+            this.playerInTurn = listOfPlayers.get(indexOfPIT);
+        }while (this.board==null || commonGoalCard == null || myPersonalGoalCard == null);
         if (this.viewChosen == 1) {
             if (myIndex == indexOfPIT) {
                 out.println("my index " + myIndex + " pit " + indexOfPIT);
