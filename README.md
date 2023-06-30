@@ -55,7 +55,8 @@ Quindi inserire come _Address_ il proprio indirizzo LAN IP. L'indirizzo IP può 
 
 Una volta aperto il Server gli altri utenti potranno connettersi aprendo i Client.jar attraverso il seguente comando: ```java -jar Client.jar```
 
-Una volta aperto ogni client dovrà inserire l'address del Server
+Una volta aperto ogni client dovrà inserire l'address del Server.
+Inizierà quindi la partita seguendo le istuzioni sullo schermo
 
 ## Componenti del gruppo
 - [__Andrea Pinessi__](https://github.com/AndreaPinessi)
