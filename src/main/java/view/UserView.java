@@ -438,7 +438,7 @@ public class UserView extends Observable implements Serializable {
      *     Method that prints the personal goal card of a player.<br>
      * </p>
      * @param personalGoalCard the {@code PersonalGoalCard} associated to a player*/
-    public void showPGC(PersonalGoalCard personalGoalCard) {
+    public void showPGC(@NotNull PersonalGoalCard personalGoalCard) {
         Tile[][] pgc = personalGoalCard.getPGC();
         System.out.println("╔═══╦═══╦═══╦═══╦═══╗");
         for (int i = 0; i < 6; i++) {

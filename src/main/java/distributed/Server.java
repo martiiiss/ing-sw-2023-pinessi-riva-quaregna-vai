@@ -15,10 +15,6 @@ import java.util.*;
 /**Class that represents a generic Server*/
 public class Server extends UnicastRemoteObject implements Remote {
     private final List<Match> matchList;
-    private Controller controller ;
-    private Game game ;
-    private SocketServer serverSocket;
-    private ServerRMIInterface rmiServer;
 
     /**
      * Constructor of the Class. This creates the list of players for a match.

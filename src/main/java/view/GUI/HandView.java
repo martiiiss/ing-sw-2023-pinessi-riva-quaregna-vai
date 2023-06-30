@@ -18,10 +18,6 @@ public class HandView implements Serializable {
 
     /**Constructor of the Class.*/
     public HandView(){
-        int[] order = new int[3];
-        for (int i=0; i<3; i++){
-            order[0]= -1;
-        }
         imageDisplayed = new JInternalFrame();
         hand = new JButton[6];
         imageDisplayed.setLayout(new GridBagLayout());

@@ -1,9 +1,6 @@
 package view.GUI;
 
-
-import model.Bookshelf;
 import model.Tile;
-import model.Type;
 import util.ImagePanel;
 import util.ImageReader;
 import javax.swing.*;
@@ -69,24 +66,6 @@ public class BookshelfView implements Serializable {
         }
     }
 
-    /**
-     * Method used to update the bookshelf.
-     * @param bks is the {@code Bookshelf} that has to be updated*/
-    public void changeBookshelf(Bookshelf bks){
-        ImageReader imageReader = new ImageReader();
-        for (int i = 0; i <= 6; i++){
-            for (int j = 0; j<= 5; j++){
-                if (bks.getBookshelf()[i][j].getType() !=Type.NOTHING){
-                    this.bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/" + bks.getBookshelf()[i][j].getType() + "/" + bks.getBookshelf()[i][j].getNumType() + ".png", 50, 50));
-                    this.bookshelfTiles[i][j].putClientProperty("status", 1);
-                 }
-                else{
-                    bookshelfTiles[i][j].setIcon(imageReader.readIcon("resources/TileImages/NOTHING.png", 50, 50));
-                    this.bookshelfTiles[i][j].putClientProperty("status", 0);
-                }
-            }
-        }
-    }
 
     /**
      * Method used to get the chosen column.

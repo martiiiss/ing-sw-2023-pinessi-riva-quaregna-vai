@@ -24,7 +24,7 @@ public class CGC7 implements CGCStrategy, Serializable {
             }
         }
 
-        // check for 2x2 with no adiacenses
+        // check for 2x2 with no adjacencies
         for (int i = 1; i < 6; i++) {
             for (int j = 1; j < 5; j++) {
 

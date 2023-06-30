@@ -108,7 +108,6 @@ public class GUIView implements Observer, Serializable {
         CGCArea.setMinimumSize(new Dimension(175, 175));
         constraints.gridy = 1;
         constraints.gridx = 4;
-        //constraints.insets = new Insets(5, 5,5,5);
         constraints.gridwidth = 1;
         constraints.gridheight = 2;
         GUI.add(CGCArea, constraints);
