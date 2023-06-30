@@ -497,7 +497,6 @@ public class Controller  {
      * @param event is a specific {@code Event} needed to do a specific update
      * @param obj is the object that has to be set as an update
      * @return a specific type of error, for brevity the list of possible errors won't be described*/
-    //REM
     public Event updateController(Object obj, @NotNull Event event) {
         Event error = Event.OK;
         switch (event) {
