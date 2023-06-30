@@ -153,7 +153,7 @@ public class Server extends UnicastRemoteObject implements Remote {
     /**
      * Method used to handle the disconnections.
      * @param matchIndex is an int that represents the index of a match
-     * @return a booelan, <b>true</b> if a client disconnected, <b>false</b> otherwise*/
+     * @return a boolean, <b>true</b> if a client disconnected, <b>false</b> otherwise*/
     public boolean askMatchDisconnection(int matchIndex) {
         return matchList.get(matchIndex).getClientDisconnected();
     }

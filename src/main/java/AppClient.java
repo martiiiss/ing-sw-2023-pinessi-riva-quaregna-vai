@@ -27,7 +27,7 @@ public class AppClient {
         //String add = "localhost";
         if(choice==2) {
             String name = "rmi://"+add+":45398/server";
-            ClientInterface client = new RMIClient(name, 45398);
+            ClientInterface client = new RMIClient(name);
             ((RMIClient) client).startConnection();
             System.out.println("You chose RMI!");
             ((RMIClient) client).lobby();

@@ -33,7 +33,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private final Object lock;
     private final Object upLock;
     private boolean first = true;
-    private int pit;
     private boolean stopModelUpdate;
     private boolean allConn = false;
 
@@ -134,9 +133,10 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private void askPitController() throws IOException, ClassNotFoundException, InterruptedException {
         stopModelUpdate=false;
         Thread.sleep(2000);
+        int pit;
         do {
             pit = socketServer.askPit(matchIndex);
-            if(first && pit!=clientIndex){
+            if(first && pit !=clientIndex){
                 if(allConn)
                     first=false;
                 sendMessage(new SocketMessage(clientIndex, matchIndex, pit, Event.NOT_YOUR_TURN));

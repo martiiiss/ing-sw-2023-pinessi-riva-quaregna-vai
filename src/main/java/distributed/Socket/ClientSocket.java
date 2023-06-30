@@ -8,10 +8,8 @@ import util.Cord;
 import util.Event;
 import view.GUI.GUIView;
 import view.UserView;
-import util.Observable;
 import java.io.*;
 import java.net.InetSocketAddress;
-
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;

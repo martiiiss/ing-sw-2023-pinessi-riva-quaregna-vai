@@ -44,8 +44,7 @@ public class RMIServer extends UnicastRemoteObject implements ServerRMIInterface
         return server.connection(rmiClient);
     }
 
-    /**@throws IOException if an error occurs*/
-    public Event sendMessage(int gameIndex, Object obj, Event event) throws IOException {
+    public Event sendMessage(int gameIndex, Object obj, Event event) {
         return server.sendServerMessage(gameIndex, obj,event);
     }
     /**@throws RemoteException if an error occurs during a remote call*/

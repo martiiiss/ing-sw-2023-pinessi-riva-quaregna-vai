@@ -46,10 +46,9 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
 
     /**
      * Constructor of rhe Class, this initializes an RMI Client with the two given parameters.
-     * @param port an int that represents the RMI port
      * @param address a {@code String} that represents the address of the server
      * @throws RemoteException if an error occurs during a remote call */
-    public RMIClient(String address, int port) throws RemoteException {
+    public RMIClient(String address) throws RemoteException {
         this.address = address;
     }
 
@@ -483,8 +482,8 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
     /**
      * Method used to handle the game flow of the Graphical User Interface.<br>
      * @throws IOException if an error occurs
-     * @throws InterruptedException if a thread gets interrupted*/
-    public void flowGui() throws IOException, InterruptedException {
+     */
+    public void flowGui() throws IOException {
         int tilesToPick;
         gui.loadPlayers(listOfPlayers);
         out.println("Score del primo:" +listOfPlayers.get(0).getScore());
@@ -494,7 +493,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             gui.showError(errorReceived);
         } while (errorReceived != Event.OK);
 
-        ArrayList<Cord> tilesCords = new ArrayList<>();
+        ArrayList<Cord> tilesCords;
         do {
             gui.getBoardView().setTilesPicked(tilesToPick);
             System.out.println("tiles picked " + gui.getBoardView().getTilesPicked());
