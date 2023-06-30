@@ -1,5 +1,5 @@
 # Prova Finale di Ingegneria del Software - AA 2022-2023
-![alt text](https://github.com/martiiiss/ing-sw-2023-pinessi-riva-quaregna-vai/blob/main/my-shelfie.jpg)
+![alt text](https://github.com/martiiiss/ing-sw-2023-pinessi-riva-quaregna-vai/blob/main/src/main/resources/resources/my-shelfie.jpg)
 
 ## Implementazione del gioco da tavolo MyShelfie.
 
@@ -56,7 +56,7 @@ Quindi inserire come _Address_ il proprio indirizzo LAN IP. L'indirizzo IP può 
 Una volta aperto il Server gli altri utenti potranno connettersi aprendo i Client.jar attraverso il seguente comando: ```java -jar Client.jar```
 
 Una volta aperto ogni client dovrà inserire l'address del Server.
-Inizierà quindi la partita seguendo le istuzioni sullo schermo
+Inizierà quindi la partita seguendo le istruzioni sullo schermo
 
 ## Componenti del gruppo
 - [__Andrea Pinessi__](https://github.com/AndreaPinessi)
