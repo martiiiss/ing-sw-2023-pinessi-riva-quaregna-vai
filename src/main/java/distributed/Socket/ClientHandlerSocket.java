@@ -13,6 +13,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.SimpleTimeZone;
+
 import static util.Event.*;
 
 /**Class that represents the communication between the socket client and its server*/
@@ -79,7 +81,7 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     }
 
     /**
-     * Method used to get updated from the board.
+     * Method used to get updates from the board.
      * @throws IOException if an error occurs
      * @throws ClassNotFoundException if a class cannot be found
      * @throws InterruptedException if a thread gets interrupted  */
@@ -88,22 +90,27 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             Event e = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, clientIndex, SET_UP_BOARD));
             Event e2 = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex,matchIndex,clientIndex,UPDATE_SCORINGTOKEN));
             Event e3 = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, clientIndex, UPDATED_SCORE));
+            Event e4 = (Event) socketServer.receivedMessage(new SocketMessage(clientIndex,matchIndex,clientIndex,END));
             if (e == SET_UP_BOARD) {
                 Board board = (Board) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_BOARD));
                 sendMessage(new SocketMessage(clientIndex, matchIndex, board, UPDATED_GAME_BOARD));
             }
             if(e2 == UPDATE_SCORINGTOKEN_1) {
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
-                sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(0),UPDATE_SCORINGTOKEN_1)));
+                if(commonGoalCards.get(0).getTokenStack().lastElement().getValue()!=8)
+                    sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(0),UPDATE_SCORINGTOKEN_1)));
             }
             if(e2==UPDATE_SCORINGTOKEN_2) {
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
-                sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(1),UPDATE_SCORINGTOKEN_2)));
+                if(commonGoalCards.get(0).getTokenStack().lastElement().getValue()!=8)
+                    sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(1),UPDATE_SCORINGTOKEN_2)));
             }
             if(e3==UPDATED_SCORE){
                 ArrayList<Player> listOfPlayers = (ArrayList<Player>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_PLAYERS));
                 sendMessage((new SocketMessage(clientIndex, matchIndex, listOfPlayers, UPDATED_SCORE)));
             }
+            if(e4==END)
+                sendMessage(new SocketMessage(clientIndex,matchIndex,END,END));
             Thread.sleep(500);
         } while(!stopModelUpdate);
         upLock.wait();

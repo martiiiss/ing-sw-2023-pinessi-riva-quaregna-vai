@@ -348,7 +348,8 @@ public class ClientSocket {
                 if(viewChosen==1){
                     System.out.println(((Event)(message.getObj())).getTUIMsg());
                     if (message.getObj() == GAME_OVER) {
-                        System.exit(10);
+                        uView.gameOver(listOfPlayers);
+                        System.exit(0);
                     }
                     sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
                 } else if(viewChosen==2){
@@ -357,7 +358,11 @@ public class ClientSocket {
                         gui.showError(((Event) message.getObj()));
                     }
                     if (message.getObj() == GAME_OVER) {
-                        System.exit(10);
+                        gui.showError(END);
+                        do {
+                            // Do Until GUI closed //TODO DA VEDERE SE FUNZIONA QUI IN SOCKET!
+                        }while (true);
+                        //System.exit(10);
                     }
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
                 }
@@ -372,17 +377,32 @@ public class ClientSocket {
                 System.out.println("Disconnection!\n");
                 System.exit(-1);
             }
-            case UPDATE_SCORINGTOKEN_1 -> {
-                if(viewChosen==2)
-                    gui.update((Observable) message.getObj(),new Message(message.getObj(),UPDATE_SCORINGTOKEN_1));
+            case UPDATE_SCORINGTOKEN_1 -> { //TODO:IDEA DELLE 02.51 FARE IN HANDLER UN CONTROLLO CHE VERIFICA SE LO SCORING TOKEN E' DIVERSO DA 8 O COMUNQUE DAL PRECEDENTE E SOLO ALLORA SPAMMARE IL CLIENT. IN QUESTO MODO MAGARI LA GUI NON VIENE MESSA SOTTO TROPPO SFORZO
+                if(viewChosen==2) { //TODO: NON C'ENTRA CON QUESTA RIGA MA TOGLIERE DAL "PASSIVE" (ANCHE SE NON ESISTE PER LA GUI) IL System.exit IN MODO CHE LEGGA IL MESSAGGIO DI GAME OVER
+                    commonGoalCard.set(0, (CommonGoalCard) message.getObj());
+                    gui.update(commonGoalCard.get(0), new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
+                }
             }
             case UPDATE_SCORINGTOKEN_2 ->{
-                if(viewChosen==2)
-                    gui.update((Observable) message.getObj(),new Message(message.getObj(),UPDATE_SCORINGTOKEN_2));
+                if(viewChosen==2) {
+                    commonGoalCard.set(1,(CommonGoalCard) message.getObj());
+                    gui.update(commonGoalCard.get(1), new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
+                }
             }
             case UPDATED_SCORE -> {
                 if(viewChosen==2){
                     gui.update(null, new Message(message.getObj(), UPDATED_SCORE));
+                }
+            }
+            case END -> {
+                if (viewChosen == 1) {
+                    uView.gameOver(listOfPlayers);
+                    System.exit(0);
+                }
+                else {
+                    gui.showError(END);
+                    gui.update(null, new Message(END, END));
+                    passiveThread.interrupt();
                 }
             }
         }
