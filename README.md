@@ -1,6 +1,7 @@
 # Prova Finale di Ingegneria del Software - AA 2022-2023
-![alt text]
-Implementazione del gioco da tavolo MyShelfie.
+![alt text](https://github.com/martiiiss/ing-sw-2023-pinessi-riva-quaregna-vai/blob/main/my-shelfie.jpg)
+
+## Implementazione del gioco da tavolo MyShelfie.
 
 Il progetto consiste nell’implementazione di un sistema distribuito composto da un singolo server in grado di gestire una partita alla volta e multipli client (uno per giocatore) che possono partecipare ad una sola partita alla volta utilizzando il pattern MVC (Model-View-Controller). La rete è stata gestita con l'utilizzo del protocollo RMI e Socket.
 
