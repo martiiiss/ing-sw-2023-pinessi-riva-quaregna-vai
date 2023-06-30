@@ -14,6 +14,8 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static java.lang.System.err;
 import static util.Event.*;
 import static util.Event.GAME_PIT;
 
@@ -371,7 +373,7 @@ public class ClientSocket {
                 }
             }
             case DISCONNECTED -> {
-                System.out.println("Disconnection!\n");
+                System.err.println("\n\nSomebody disconnected!");
                 System.exit(-1);
             }
             case UPDATE_SCORINGTOKEN_1 -> {
@@ -415,7 +417,7 @@ public class ClientSocket {
             outputStream.flush();
             outputStream.reset();
         }catch (IOException e){
-            System.out.println("Server crashed!\n");
+            System.err.println("\n\nServer crashed!");
             System.exit(-1);
         }
     }

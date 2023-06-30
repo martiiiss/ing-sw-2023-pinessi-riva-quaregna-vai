@@ -10,6 +10,7 @@ import view.GUI.GUIView;
 import view.UserView;
 import java.io.*;
 import java.net.SocketException;
+import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.UnmarshalException;
@@ -232,7 +233,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                             while (true){//Do Nothing until the User closes the GUI
                             }
                         }
-                    } catch (SocketException | UnmarshalException ex) {}
+                    } catch (SocketException | UnmarshalException | ConnectException ex) {}
                 } while (status != Event.OK);
                 getModel();
             }
@@ -486,7 +487,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
     public void flowGui() throws IOException {
         int tilesToPick;
         gui.loadPlayers(listOfPlayers);
-        out.println("Score del primo:" +listOfPlayers.get(0).getScore());
         do {
             tilesToPick = gui.askTiles(); //ask number of tiles
             errorReceived = server.sendMessage(this.matchIndex,tilesToPick, TURN_AMOUNT);
@@ -496,13 +496,10 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         ArrayList<Cord> tilesCords;
         do {
             gui.getBoardView().setTilesPicked(tilesToPick);
-            System.out.println("tiles picked " + gui.getBoardView().getTilesPicked());
             tilesCords = gui.getTilesClient();
-            System.out.println("tiles cords " + tilesCords.size());
             errorReceived = server.sendMessage(this.matchIndex, tilesCords, TURN_PICKED_TILES);
             System.out.println(errorReceived.getTUIMsg());
             gui.showError(errorReceived);
-            System.out.println("errore: " + errorReceived.getMsg());
         } while (errorReceived != Event.OK);
 
         ArrayList<Tile> tilesInHand = (ArrayList<Tile>) server.getModel(this.matchIndex,TURN_TILE_IN_HAND, myIndex);
@@ -512,7 +509,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         do {
             int column = gui.chooseColumn();
             errorReceived = server.sendMessage(this.matchIndex, column, TURN_COLUMN);
-            System.out.println("errore colonna: " + errorReceived);
+
             gui.showError(errorReceived);
         }while(errorReceived!=Event.OK);
 

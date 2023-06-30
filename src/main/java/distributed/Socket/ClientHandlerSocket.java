@@ -235,7 +235,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 if(!threadAskDisconnection.isAlive())
                     threadAskDisconnection.start();
                 if(obj != Event.GUI_VIEW && obj != Event.TUI_VIEW){
-                    System.out.println(((Event)obj).getMsg());
                     sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.CHOOSE_VIEW));
                 } else{
                     sendMessage(new SocketMessage(clientIndex, matchIndex, null, Event.SET_NICKNAME));
@@ -243,7 +242,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
             }
             case SET_NICKNAME -> {
                 if(obj != Event.OK){
-                    System.out.println(((Event)obj).getMsg());
                     sendMessage(new SocketMessage(clientIndex, matchIndex, obj, Event.SET_NICKNAME));
                 } else{
                     do{
