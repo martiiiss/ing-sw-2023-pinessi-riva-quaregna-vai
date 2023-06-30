@@ -31,7 +31,6 @@ La seguente documentazione include una descrizione per la maggior parte delle cl
 
 Per una corretta esecuzione del gioco attraverso CLI, assicurarsi di poter visualizzare i colori tramite i _Codici di escape ANSI_
 
-## Funzionalità
 ## Funzionalità implementate
 - Regole complete
 - Versione CLI
