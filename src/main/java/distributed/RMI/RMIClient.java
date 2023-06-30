@@ -320,7 +320,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
      * @throws IOException if an error occurs*/
     public void chooseTiles() throws IOException {
         cords.removeAll(cords);
-        System.out.println("Size prima della richiesta " + cords.size());
         while (cords.size() < this.numberOfChosenTiles) {
             Cord cord = new Cord();
             do {

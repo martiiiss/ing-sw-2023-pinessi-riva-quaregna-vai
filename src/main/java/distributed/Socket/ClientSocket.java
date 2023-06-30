@@ -221,7 +221,6 @@ public class ClientSocket {
                         sendMessageC(new SocketMessage(myIndex, myMatch, END_OF_TURN, END_OF_TURN));
                     }
                 } else if(viewChosen==2){
-                    System.out.println(message.getObj());
                     listOfPlayers = (ArrayList<Player>) message.getObj(); //Used to update the score after placing my tiles
                     gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
                     gui.loadPlayers(listOfPlayers);
