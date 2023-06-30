@@ -163,7 +163,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         }while (this.board==null || commonGoalCard == null || myPersonalGoalCard == null);
         if (this.viewChosen == 1) {
             if (myIndex == indexOfPIT) {
-                out.println("my index " + myIndex + " pit " + indexOfPIT);
                 activePlay();
             } else {
                 synchronized (lock) {
