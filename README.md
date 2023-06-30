@@ -42,7 +42,7 @@ Per una corretta esecuzione del gioco attraverso CLI, assicurarsi di poter visua
     - _Partite multiple:_ il server supporta più partite contemporaneamente.
  
 ### Jars
-I Jar del progetto possono essere scaricati al seguente link:
+I Jar del progetto possono essere scaricati al seguente link: [JAR](https://github.com/martiiiss/ing-sw-2023-pinessi-riva-quaregna-vai/tree/main/deliveries/jar)
 
 ## Esecuzione
 Questo progetto richiede una versione della JDK 19 o superiore per essere eseguito correttamente.
