@@ -40,7 +40,6 @@ public class RMIServer extends UnicastRemoteObject implements ServerRMIInterface
     /**@throws IOException if an error occurs
      * @throws ClassNotFoundException if a class cannot be loaded*/
     public ArrayList<Integer> initClient(ClientInterface rmiClient) throws IOException, ClassNotFoundException {
-        System.out.println(registry.list());
         return server.connection(rmiClient);
     }
 

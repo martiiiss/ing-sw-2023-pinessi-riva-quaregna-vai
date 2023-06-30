@@ -41,8 +41,7 @@ public class Server extends UnicastRemoteObject implements Remote {
             matchList.add(match);
             indexes.add(matchList.indexOf(match));
             indexes.add((match.getListOfClients().indexOf(client)));
-            System.out.println(indexes.get(0)+" "+indexes.get(1));
-            System.out.println("Match selected is: "+matchList.indexOf(match));
+            System.out.println("Match index selected is: "+matchList.indexOf(match));
             startClientStatusCheckTimer();
             return indexes;
         }
@@ -50,19 +49,18 @@ public class Server extends UnicastRemoteObject implements Remote {
             for(Match matchIterator : matchList) {
                 if(matchIterator.getMaxSize()>matchIterator.getListOfClients().size()) {
                     matchIterator.addPlayer(client);
-                    System.err.println(matchIterator.getListOfClients().indexOf(client));
-                    System.out.println("Match selected is: "+matchList.indexOf(matchIterator));
+                    System.out.println("Match index selected is: "+matchList.indexOf(matchIterator));
                     indexes.add(matchList.indexOf(matchIterator));
                     indexes.add((matchIterator.getListOfClients().indexOf(client)));
                     return indexes;
                 }
             }
         }
-        System.out.println("All Matches are full, new match!");
+        System.out.println("All Matches are full... Creating new match!");
         match.setMaxSize(client.askNumOfPlayers());
         matchList.add(match);
         match.addPlayer(client);
-        System.out.println("Match selected is: "+matchList.indexOf(match));
+        System.out.println("Match index selected is: "+matchList.indexOf(match));
         indexes.add(matchList.indexOf(match));
         indexes.add((match.getListOfClients().indexOf(client)));
         match.getGameController().updateController(match.getMaxSize(),Event.ASK_NUM_PLAYERS);

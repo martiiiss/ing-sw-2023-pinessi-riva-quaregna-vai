@@ -216,8 +216,6 @@ public class Player extends Observable implements Serializable {
      * </p>
      * @return an int that represents the adjacencies score that has to be added to the general score*/
     public int checkAdjacentBookshelf(){
-        System.out.println("\u001B[36mScore Before call: "+score);
-        System.out.println("\u001B[36mScore Adj Before call: "+scoreAdj+"\u001B[0m");
         score-=scoreAdj;
         scoreAdj=0;
         Tile[][] originalBookshelf = this.myBookshelf.getBookshelf();
@@ -320,8 +318,6 @@ public class Player extends Observable implements Serializable {
                 }
             }
             for(Cord cord1 : listOfCords) {
-                System.out.print(cord1.getRowCord() + " " + cord1.getColCord()+": ");
-                System.out.println(bookshelf[cord1.getRowCord()][cord1.getColCord()].getType());
                 bookshelf[cord1.getRowCord()][cord1.getColCord()]=nothing;
             }
             if (listOfCords.size() == 3)
@@ -332,7 +328,6 @@ public class Player extends Observable implements Serializable {
                 scoreAdj += 5;
             if (listOfCords.size() >= 6)
                 scoreAdj += 8;
-            System.out.println("\u001B[36mSize of listOfCords: "+listOfCords.size()+" score adj "+scoreAdj+"\u001B[0m");
             listOfCords.clear();
         }
         return scoreAdj;

@@ -273,7 +273,6 @@ public class Controller  {
                 col.add(cord.getColCord());
             Collections.sort(col);
             for(int i = 0; i<col.size()-1;i++) {
-                System.out.println(col.get(i + 1)+" "+(col.get(i)+1));
                 if (col.get(i + 1) != col.get(i) + 1)
                     return false;
             }
@@ -404,7 +403,6 @@ public class Controller  {
         if(index <0 || index >= playerHand.size())
             return Event.INVALID_VALUE;
         Player pit = game.getPlayerInTurn();
-        System.out.println(game.getPlayerInTurn().getNickname());
         pit.getMyBookshelf().placeTile(this.chosenColumn,playerHand.get(index));
         playerHand.add(index+1,new Tile(Type.NOTHING,0));
         playerHand.remove(index);
@@ -461,7 +459,6 @@ public class Controller  {
                 return GAME_OVER;
             }
             else {
-                System.out.println("il PIT non è il primo quindi non termina");
                 goToNext(game.getPlayerInTurn());
                 return LAST_TURN;
             }
@@ -508,7 +505,7 @@ public class Controller  {
                 game.setNumOfPlayers((int)obj);
             }
             case SET_NICKNAME -> {
-                System.out.println("Nickname Rec: "+ obj);
+                System.out.println("Nickname Received: "+ obj);
                  error = chooseNickname((String) obj);
             }
             case CHOOSE_VIEW -> error = chooseUserInterface((int) obj);
@@ -516,7 +513,7 @@ public class Controller  {
                 synchronized (lock) {
                     if (!hasGameStarted && game.getNumOfPlayers() == game.getPlayers().size()) {
                         hasGameStarted = true;
-                        System.out.println("The game is starting");
+                        System.out.println("\u001B[32mThe game is starting\u001B[0m");
                         initializeGame();
                         return error;
                     } else if (hasGameStarted && game.getNumOfPlayers() == game.getPlayers().size()) {
@@ -543,7 +540,6 @@ public class Controller  {
                 calculateScore();
                 upScore= game.getNumOfPlayers();
                 error = checkIfGameEnd();
-                System.out.println(error + " " + getPITIndex());
                 return error;
             }
             case CHECK_MY_TURN -> {

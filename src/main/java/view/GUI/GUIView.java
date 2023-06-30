@@ -194,7 +194,6 @@ public class GUIView implements Observer, Serializable {
      * Method used to set up the cgc and the scoring token.
      * @param cgc is the {@code CommonGoalCard} that has been modified*/
     public void setupCGC(@NotNull CommonGoalCard cgc){
-        System.out.println("cgc " + cgc.getRomanNumber());
         getCGC(cgc.getRomanNumber()).setCGCView(cgc.getIdCGC());
         getScv(cgc.getRomanNumber()).setDisplayedImage(cgc.getTokenStack().lastElement().getValue());
     }
@@ -219,7 +218,6 @@ public class GUIView implements Observer, Serializable {
             button.addActionListener(e ->{
                 tilesToPick= (Integer.parseInt(button.getText()));
                 frame.dispose();
-                System.out.println("selezionato: " +  tilesToPick);
                 synchronized (this){
                     this.notify();
                 }
@@ -244,7 +242,6 @@ public class GUIView implements Observer, Serializable {
      * @return an {@code ArrayList} of {@code Cord}*/
     public ArrayList <Cord> getTilesClient(){
         boardView.getListTilesPicked().clear();
-        System.out.println("setta a true can pick");
         boardView.setCanPick(true);
         boardView.getBoardDisplayed().setTitle("Click the tiles to pick them");
         synchronized (boardView){
@@ -254,7 +251,6 @@ public class GUIView implements Observer, Serializable {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("get tiles picked " + boardView.getTilesPicked() );
         boardView.setCanPick(false);
         boardView.getBoardDisplayed().setTitle("Board");
         return boardView.getListTilesPicked();
@@ -365,7 +361,6 @@ public class GUIView implements Observer, Serializable {
         switch(message.getMessageEvent()){
             case SET_UP_BOARD, REMOVE_TILE_BOARD -> {
                 updateBoard((Board)o);
-                System.out.println("aggiorna view ");
             }
             case UPDATE_SCORINGTOKEN -> {
                 CommonGoalCard cgc = (CommonGoalCard) message.getObj();
