@@ -3,7 +3,7 @@
 
 ## Implementazione del gioco da tavolo MyShelfie.
 
-Il progetto consiste nell’implementazione di un sistema distribuito composto da un singolo server in grado di gestire una partita alla volta e multipli client (uno per giocatore) che possono partecipare ad una sola partita alla volta utilizzando il pattern MVC (Model-View-Controller). La rete è stata gestita con l'utilizzo del protocollo RMI e Socket.
+Il progetto consiste nell’implementazione di un sistema distribuito composto da un singolo server in grado di gestire più partita alla volta e multipli client che possono partecipare ad una sola partita alla volta utilizzando il pattern MVC (Model-View-Controller). La rete è stata gestita con l'utilizzo del protocollo RMI e Socket.
 
 Interazione e gameplay: linea di comando (CLI) e grafica (GUI).
 
