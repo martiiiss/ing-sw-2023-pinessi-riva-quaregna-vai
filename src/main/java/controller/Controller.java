@@ -461,7 +461,6 @@ public class Controller  {
                 return GAME_OVER;
             }
             else {
-                System.out.println("il PIT non è il primo quindi non termina");
                 goToNext(game.getPlayerInTurn());
                 return LAST_TURN;
             }
@@ -504,11 +503,9 @@ public class Controller  {
         Event error = Event.OK;
         switch (event) {
             case ASK_NUM_PLAYERS -> {
-                System.out.println("Num of players set: "+(int)obj);
                 game.setNumOfPlayers((int)obj);
             }
             case SET_NICKNAME -> {
-                System.out.println("Nickname Rec: "+ obj);
                  error = chooseNickname((String) obj);
             }
             case CHOOSE_VIEW -> error = chooseUserInterface((int) obj);
@@ -543,7 +540,6 @@ public class Controller  {
                 calculateScore();
                 upScore= game.getNumOfPlayers();
                 error = checkIfGameEnd();
-                System.out.println(error + " " + getPITIndex());
                 return error;
             }
             case CHECK_MY_TURN -> {

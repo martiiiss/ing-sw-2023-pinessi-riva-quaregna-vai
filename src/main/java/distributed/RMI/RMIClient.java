@@ -1,6 +1,5 @@
 package distributed.RMI;
 
-
 import distributed.ClientInterface;
 import distributed.messages.Message;
 import model.*;
@@ -66,8 +65,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             this.matchIndex = indexFromServer.get(0);
             Thread connection = new Thread(controlDisconnection(),"ControlDisconnection");
             connection.start();
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
     }
 
 
@@ -179,7 +177,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         } else if (this.viewChosen == 2) {
             if (this.isFirstTurn) {
                 gui = new GUIView();
-                gui.loadPlayers(listOfPlayers); //FIXME: Nulla da fixare solo il comando da copiare in Socket una volta finito
+                gui.loadPlayers(listOfPlayers);
                 server.sendMessage(matchIndex, gui, ADD_OBSERVER);
                 this.isFirstTurn = false;
                 while(board==null){
@@ -221,11 +219,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                         }
                         board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
                         gui.update(board, new Message(board, SET_UP_BOARD));
-                        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
-                        gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
-                        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
-                        gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
-                        errorReceived = server.sendMessage(matchIndex,myIndex,END);
+                        getCommonGoalCard();
                         if (errorReceived==END) { //FIXME o questo o quello appena sopra potrebbero essere extra. TESTARE PRIMA DI CANCELLARE!
                             gui.showError(END);
                             gui.update(null, new Message(END, END));
@@ -238,6 +232,17 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
             }
         }
 
+    }
+
+    /**
+     * Method used to get commonGoalCard.
+     * @throws IOException if an error occurs */
+    private void getCommonGoalCard() throws IOException {
+        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+        gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
+        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
+        gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
+        errorReceived = server.sendMessage(matchIndex,myIndex,END);
     }
 
     /**
@@ -279,7 +284,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         System.out.println(errorReceived.getTUIMsg());
         if (errorReceived == GAME_OVER) {
             if(viewChosen==1) {
-                Player winner = (Player) server.getModel(matchIndex, GET_WINNER, myIndex);
                 uView.gameOver(listOfPlayers);
                 System.exit(0);
             }
@@ -539,13 +543,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         }
         listOfPlayers = (ArrayList<Player>) server.getModel(matchIndex,GAME_PLAYERS,myIndex); //Used to update the score after placing my tiles
 
-        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
-        gui.update(commonGoalCard.get(0),new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
-
-        this.commonGoalCard = ((ArrayList<CommonGoalCard>) server.getModel(matchIndex, GAME_CGC, myIndex));
-        gui.update(commonGoalCard.get(1),new Message(commonGoalCard.get(1),UPDATE_SCORINGTOKEN_2));
-
-        errorReceived = server.sendMessage(matchIndex,myIndex,END);
+        getCommonGoalCard();
         gui.update(null,new Message(listOfPlayers,UPDATED_SCORE));
         gui.loadPlayers(listOfPlayers);
     }
