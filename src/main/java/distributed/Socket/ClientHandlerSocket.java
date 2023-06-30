@@ -96,13 +96,15 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 sendMessage(new SocketMessage(clientIndex, matchIndex, board, UPDATED_GAME_BOARD));
             }
             if(e2 == UPDATE_SCORINGTOKEN_1) {
+                System.out.println("update SC1");
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
-                if(commonGoalCards.get(0).getTokenStack().lastElement().getValue()!=8)
+               // if(commonGoalCards.get(0).getTokenStack().lastElement().getValue()!=8)
                     sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(0),UPDATE_SCORINGTOKEN_1)));
             }
             if(e2==UPDATE_SCORINGTOKEN_2) {
+                System.out.println("update SC2");
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
-                if(commonGoalCards.get(0).getTokenStack().lastElement().getValue()!=8)
+               // if(commonGoalCards.get(0).getTokenStack().lastElement().getValue()!=8)
                     sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(1),UPDATE_SCORINGTOKEN_2)));
             }
             if(e3==UPDATED_SCORE){

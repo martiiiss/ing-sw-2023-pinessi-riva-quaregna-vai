@@ -633,7 +633,7 @@ public class Controller  {
             case TURN_TILE_IN_HAND -> obj = getTilesFromBoard();
             case TURN_POSITION, GET_TILES_HAND -> obj = this.playerHand;
             case UPDATE_BOOKSHELF-> obj =  game.getPlayerInTurn().getMyBookshelf();
-            case GET_WINNER -> obj = game.getWinner(); //AA
+            case GET_WINNER -> obj = game.getWinner();
         }
         return obj;
     }
@@ -667,6 +667,8 @@ public class Controller  {
      * @param gui is a {@link GUIView} */
     public void addGui(GUIView gui){
         board.addObserver(gui, game.getNumOfPlayers());
+        game.getCommonGoalCard().get(0).addObserver(gui, game.getNumOfPlayers());
+        game.getCommonGoalCard().get(1).addObserver(gui, game.getNumOfPlayers());
     }
 
     /**

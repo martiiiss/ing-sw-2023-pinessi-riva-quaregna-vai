@@ -9,6 +9,11 @@ import java.io.InputStreamReader;
 public class AppClient {
     public static void main(String[] args) throws IOException,InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader((System.in)));
+
+        String add;
+        System.out.println("Insert address:");
+        add = (reader.readLine());
+
         int choice = 0;
         do {
             System.out.println("1 for socket, 2 for RMI :");
@@ -19,8 +24,7 @@ public class AppClient {
             }
         }while (choice != 2 && choice != 1);
 
-        // String add = "192.168.1.68";
-        String add = "localhost";
+        //String add = "localhost";
         if(choice==2) {
             String name = "rmi://"+add+":45398/server";
             ClientInterface client = new RMIClient(name, 45398);

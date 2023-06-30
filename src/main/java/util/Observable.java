@@ -80,14 +80,11 @@ public class Observable{
 
      */
     public synchronized void clearChanged() {
-        System.out.println("clear");
         if(num==0){
             changed = false;
-            System.out.println("settato a false changed");
         }
         else {
             num--;
-            System.out.println("num " + num);
         }
     }
 
