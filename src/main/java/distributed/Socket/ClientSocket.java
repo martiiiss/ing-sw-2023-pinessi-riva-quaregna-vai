@@ -359,7 +359,7 @@ public class ClientSocket {
                     if (message.getObj() == GAME_OVER) {
                         gui.showError(END);
                         do {
-                            // Do Until GUI closed //TODO DA VEDERE SE FUNZIONA QUI IN SOCKET!
+                            // Do Until GUI closed
                         }while (true);
                         //System.exit(10);
                     }
