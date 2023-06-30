@@ -231,7 +231,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                             gui.showError(END);
                             gui.update(null, new Message(END, END));
                             while (true){//Do Nothing until the User closes the GUI
-                                }
+                            }
                         }
                     } catch (SocketException | UnmarshalException ex) {}
                 } while (status != Event.OK);
@@ -371,7 +371,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
                 }
-                case 7 -> {
+                case 5 -> {
                     this.listOfPlayers = (ArrayList<Player>) server.getModel(this.matchIndex,GAME_PLAYERS, myIndex);
                     uView.showPlayers(listOfPlayers);
                 }
@@ -471,7 +471,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
                 }
-                case 6 -> {
+                case 5 -> {
                     this.listOfPlayers = (ArrayList<Player>) server.getModel(this.matchIndex,GAME_PLAYERS, myIndex); //get the latest update
                     uView.showPlayers(listOfPlayers);
                 }

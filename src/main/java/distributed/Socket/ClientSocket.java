@@ -78,7 +78,6 @@ public class ClientSocket {
           executorService.execute(()->{
               while(!executorService.isShutdown()){
                   try{
-                      System.out.println("Fetching message from server...");
                       SocketMessage message = receivedMessageC();
                       update(message);
                   } catch (IOException | ClassNotFoundException | InterruptedException e) {
@@ -95,7 +94,7 @@ public class ClientSocket {
     public void startThreadPassive() {
         passiveThread = new Thread(()-> {while(!Thread.currentThread().isInterrupted()) {
             try {
-                if (choice == 1 || choice == 4 || choice == 6) {
+                if (choice == 1 || choice == 4 || choice == 5) {
                     while(disablePassivePrint){
                     }
                 }
@@ -211,7 +210,7 @@ public class ClientSocket {
                                 uView.showTUIBookshelf(player.getMyBookshelf());
                             }
                             disablePassivePrint = false;
-                        } else if (choice == 6) {
+                        } else if (choice == 5) {
                             this.listOfPlayers = (ArrayList<Player>) message.getObj();
                             uView.showPlayers(listOfPlayers);
                             disablePassivePrint = false;
@@ -377,7 +376,7 @@ public class ClientSocket {
                 System.out.println("Disconnection!\n");
                 System.exit(-1);
             }
-            case UPDATE_SCORINGTOKEN_1 -> { //TODO:IDEA DELLE 02.51 FARE IN HANDLER UN CONTROLLO CHE VERIFICA SE LO SCORING TOKEN E' DIVERSO DA 8 O COMUNQUE DAL PRECEDENTE E SOLO ALLORA SPAMMARE IL CLIENT. IN QUESTO MODO MAGARI LA GUI NON VIENE MESSA SOTTO TROPPO SFORZO
+            case UPDATE_SCORINGTOKEN_1 -> {
                 if(viewChosen==2) { //TODO: NON C'ENTRA CON QUESTA RIGA MA TOGLIERE DAL "PASSIVE" (ANCHE SE NON ESISTE PER LA GUI) IL System.exit IN MODO CHE LEGGA IL MESSAGGIO DI GAME OVER
                     commonGoalCard.set(0, (CommonGoalCard) message.getObj());
                     gui.update(commonGoalCard.get(0), new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
@@ -500,7 +499,7 @@ public class ClientSocket {
                         uView.showTUIBookshelf(player.getMyBookshelf());
                     }
                 }
-                case 7 -> uView.showPlayers(listOfPlayers);
+                case 5 -> uView.showPlayers(listOfPlayers);
             }
             if (choice != 6)
                 System.out.println("What else would you like to do?");
@@ -617,7 +616,7 @@ public class ClientSocket {
                     disablePassivePrint = true;
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
                 }
-                case 6 -> {
+                case 5 -> {
                     disablePassivePrint = true;
                     sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_PLAYERS));
                 }

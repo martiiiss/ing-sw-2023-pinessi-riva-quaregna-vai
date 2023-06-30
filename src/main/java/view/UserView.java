@@ -330,9 +330,8 @@ public class UserView extends Observable implements Serializable {
         System.out.println("2) Check the CommonGoalCards");
         System.out.println("3) Check your PersonalGoalCard");
         System.out.println("4) Look at other player's Bookshelves");
-        System.out.println("5) Open the chat");
+        System.out.println("5) Show the player list");
         System.out.println("6) Continue with my turn");
-        System.out.println("7) Show the player list");
         try {
             return Integer.parseInt(reader.readLine());
         }catch (NumberFormatException e) {
@@ -488,8 +487,7 @@ public class UserView extends Observable implements Serializable {
         System.out.println("2) Check the CommonGoalCards");
         System.out.println("3) Check your PersonalGoalCard");
         System.out.println("4) Look at other player's Bookshelves");
-        System.out.println("5) Open the chat");
-        System.out.println("6) Show the player list");
+        System.out.println("5) Show the player list");
     }
 
     /**

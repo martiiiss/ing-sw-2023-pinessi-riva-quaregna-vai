@@ -24,7 +24,6 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
     private final Object inputLock;
     private final ObjectOutputStream output; //used to send
     private final ObjectInputStream input; //used to receive
-
     private int clientIndex;
     private int matchIndex;
     private int numOfPlayers;
@@ -58,23 +57,23 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
         threadAskDisconnection = new Thread(()->{
             askServerDisconnection();
         },"AskDisconnection");
+
         threadAskPit = new Thread(()-> {
             synchronized (lock) {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
                         askPitController();
-                    } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                    }
+                    } catch (IOException | ClassNotFoundException | InterruptedException e) {}
                 }
             }
         },"AskPITToController");
+
         threadCheckUpdates = new Thread(()-> {
             synchronized (upLock) {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
                         askControllerBoardUpdate();
-                    } catch (IOException | ClassNotFoundException | InterruptedException e) {
-                    }
+                    } catch (IOException | ClassNotFoundException | InterruptedException e) {}
                 }
             }
         },"CheckUpdateBoard");
@@ -96,16 +95,12 @@ public class ClientHandlerSocket implements Runnable, ClientInterface {
                 sendMessage(new SocketMessage(clientIndex, matchIndex, board, UPDATED_GAME_BOARD));
             }
             if(e2 == UPDATE_SCORINGTOKEN_1) {
-                System.out.println("update SC1");
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
-               // if(commonGoalCards.get(0).getTokenStack().lastElement().getValue()!=8)
-                    sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(0),UPDATE_SCORINGTOKEN_1)));
+                sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(0),UPDATE_SCORINGTOKEN_1)));
             }
             if(e2==UPDATE_SCORINGTOKEN_2) {
-                System.out.println("update SC2");
                 ArrayList<CommonGoalCard> commonGoalCards = (ArrayList<CommonGoalCard>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_CGC));
-               // if(commonGoalCards.get(0).getTokenStack().lastElement().getValue()!=8)
-                    sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(1),UPDATE_SCORINGTOKEN_2)));
+                sendMessage((new SocketMessage(clientIndex, matchIndex, commonGoalCards.get(1),UPDATE_SCORINGTOKEN_2)));
             }
             if(e3==UPDATED_SCORE){
                 ArrayList<Player> listOfPlayers = (ArrayList<Player>) socketServer.receivedMessage(new SocketMessage(clientIndex, matchIndex, ASK_MODEL, GAME_PLAYERS));

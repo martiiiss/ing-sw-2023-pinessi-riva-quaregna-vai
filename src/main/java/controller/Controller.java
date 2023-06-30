@@ -18,7 +18,6 @@ public class Controller  {
     private int chosenColumn;
     private final Object lock = new Object();
     private int upScore = -1;
-
     private int numberOfChosenTiles;
     private ArrayList<Tile> playerHand;
     private ArrayList<Cord> playerCords = new ArrayList<>();
@@ -74,12 +73,9 @@ public class Controller  {
         for(int i = 0; i<game.getPlayers().size();i++) {
             if(game.getPlayers().get(i).getNickname().equals(nickname)){
                 return Event.NOT_AVAILABLE;}}
-        System.out.println("SetUp Nickname");
         Player newPlayer = new Player();
         newPlayer.setNickname(nickname);
-        System.out.println("PlayerNickSet: "+newPlayer.getNickname());
         game.addPlayer(newPlayer);
-        System.out.println("GameSize: "+game.getPlayers().size());
         return Event.OK;
     }
     /**
@@ -117,7 +113,6 @@ public class Controller  {
         this.bag = new Bag();
         this.board = new Board(game.getNumOfPlayers());
         for(int i=0;i<game.getNumOfPlayers();i++){game.getPlayers().get(i).setMyBookshelf(new Bookshelf());}
-        //TODO: SE LANCIA L'ECCEZIONE METTI QUESTE 3 RIGHE DENTRO IL WHILE
         game.assignPersonalGoalCard(game.getNumOfPlayers());
         game.setCommonGoalCards();
         ArrayList<Tile> tiles = bag.getBagTiles(board.getNumOfCells());
@@ -442,15 +437,11 @@ public class Controller  {
             index = game.getPlayers().indexOf(game.getPlayerInTurn()) + 1;
         }
         if(!game.getIsLastTurn()){
-            System.out.println("Hello");
             if(game.getPlayerInTurn().getMyBookshelf().getStatus()) {
                 game.getPlayerInTurn().updateScore(1);
-                System.out.println("Punteggio di quello che ha finito (PIT) incrementato: "+game.getPlayerInTurn().getScore());
                 game.setFinisher(game.getPlayerInTurn());
-                System.out.println("PIT SCORE: "+game.getPlayerInTurn().getScore());
                 if(index==0) //If the PIT is also the first one to finish the game is over instantly
                 {
-                    System.out.println("PIT ha riempito la shelf ed è quello con index 0. La partita finisce subito");
                     gameOver = true;
                     return Event.GAME_OVER;
                 }
@@ -460,16 +451,12 @@ public class Controller  {
                 }
             }
             else {
-                System.out.println("PIT non ha riempito la Bookshelf");
                 goToNext(game.getPlayerInTurn());
                 return Event.OK;
             }
         }
         else {
-            System.out.println("Siamo già in lastTurn");
             if(index==0) {
-                System.out.println("Il pit è il primo, partita finisce");
-                //endOfGame();
                 gameOver = true;
                 return GAME_OVER;
             }
@@ -492,7 +479,6 @@ public class Controller  {
         } else {
             game.setPlayerInTurn(game.getPlayers().get(0));
         }
-        System.out.println("NickPIT: "+game.getPlayerInTurn().getNickname());
     }
 
     /**
@@ -506,7 +492,6 @@ public class Controller  {
         }
         this.playerHand = removedTiles;
         playerCords.clear();
-        System.out.println("TEST DELLE TILES NELL HAND: "+removedTiles);
         return removedTiles;
     }
 

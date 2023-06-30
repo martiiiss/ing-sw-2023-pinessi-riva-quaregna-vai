@@ -37,7 +37,6 @@ public class SocketServer extends UnicastRemoteObject implements Runnable{
         } catch (IOException e){
             return;
         }
-        System.out.println("ServerSocket ready on port: "+port);
         while(!Thread.currentThread().isInterrupted()){
             try{
                 Socket socketClient = serverSocket.accept(); //client socket
