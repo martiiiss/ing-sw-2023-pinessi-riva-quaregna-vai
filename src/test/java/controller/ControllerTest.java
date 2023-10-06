@@ -67,7 +67,6 @@ private void creationOfGame(){
         board.getBoard()[1][3].setType(Type.CAT);
         controller.checkBoardToBeFilled();
 
-        //FIXME: questo test fallisce a causa di board, praticamente mi dice che non può mettere giù le tiles perchè non ce ne sono abbastanza
         for (int i = 0; i< board.BOARD_ROW; i++){
             for (int j = 0; j < board.BOARD_COLUMN; j++){
                 if(board.getBoard()[i][j].getType()!=Type.BLOCKED) {
@@ -130,7 +129,6 @@ private void creationOfGame(){
         cords.add(temp);
         assertEquals(controller.chooseTiles(cords),OK);
     }
-    //FIXME: magari controllare anche che vengano coperti più casi per i metodi privati
 
 
     @Test

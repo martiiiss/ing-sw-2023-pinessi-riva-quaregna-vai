@@ -220,7 +220,7 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
                         board = (Board) server.getModel(matchIndex, GAME_BOARD, myIndex);
                         gui.update(board, new Message(board, SET_UP_BOARD));
                         getCommonGoalCard();
-                        if (errorReceived==END) { //FIXME o questo o quello appena sopra potrebbero essere extra. TESTARE PRIMA DI CANCELLARE!
+                        if (errorReceived==END) {
                             gui.showError(END);
                             gui.update(null, new Message(END, END));
                             while (true){//Do Nothing until the User closes the GUI
@@ -350,7 +350,6 @@ public class RMIClient extends UnicastRemoteObject implements Serializable, Clie
         int choice;
         System.out.println("Would you like to do any of these actions before making your move?");
         do {
-            //TODO:Sposta l'opzione "continua con il turno" ad un numero più decente di "6"
             choice = uView.askAction();
             switch (choice) {
                 case 1 -> {

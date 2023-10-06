@@ -335,7 +335,7 @@ public class ClientSocket {
                 } else if(viewChosen==2){
                     if (message.getObj() == Event.REFILL) {
                         this.refill=true;
-                        System.out.println("REFILL!!!" + refill); //FIXME
+                        System.out.println("REFILL!!!" + refill);
                         sendMessageC(new SocketMessage(myIndex, myMatch, ASK_MODEL, GAME_BOARD));
                     } else{
                         sendMessageC(new SocketMessage(myIndex, myMatch, null, END_OF_TURN));

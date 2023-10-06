@@ -208,32 +208,37 @@ public class GUIView implements Observer, Serializable {
     /**
      * Method that asks the GUI to choose a number of tiles.
      * @return an int that represents the number of chosen tiles*/
-    public int askTiles(){
+    public int askTiles() {
         JFrame frame = new JFrame();
-        for(int i=1 ; i<4; i++){
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // Prevent closing
+
+        for (int i = 1; i < 4; i++) {
             JButton button = new JButton();
             frame.add(button);
-            button.setText(""+i);
+            button.setText("" + i);
             button.setVisible(true);
-            button.addActionListener(e ->{
-                tilesToPick= (Integer.parseInt(button.getText()));
+            button.addActionListener(e -> {
+                tilesToPick = Integer.parseInt(button.getText());
                 frame.dispose();
-                synchronized (this){
+                synchronized (this) {
                     this.notify();
                 }
             });
         }
-        frame.setVisible(true);
+
         frame.setLayout(new GridLayout());
-        frame.setSize(400,200);
-        frame.setTitle("How many tiles you want to pick?");
-        synchronized (this){
+        frame.setSize(400, 200);
+        frame.setTitle("How many tiles do you want to pick?");
+        frame.setVisible(true);
+
+        synchronized (this) {
             try {
                 this.wait();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+
         boardView.setTilesPicked(tilesToPick);
         return this.tilesToPick;
     }
