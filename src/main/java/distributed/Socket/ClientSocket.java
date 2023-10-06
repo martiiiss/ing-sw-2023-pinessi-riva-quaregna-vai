@@ -376,7 +376,7 @@ public class ClientSocket {
                 System.exit(-1);
             }
             case UPDATE_SCORINGTOKEN_1 -> {
-                if(viewChosen==2) { //TODO: NON C'ENTRA CON QUESTA RIGA MA TOGLIERE DAL "PASSIVE" (ANCHE SE NON ESISTE PER LA GUI) IL System.exit IN MODO CHE LEGGA IL MESSAGGIO DI GAME OVER
+                if(viewChosen==2) {
                     commonGoalCard.set(0, (CommonGoalCard) message.getObj());
                     gui.update(commonGoalCard.get(0), new Message(commonGoalCard.get(0),UPDATE_SCORINGTOKEN_1));
                 }
