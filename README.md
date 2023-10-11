@@ -59,7 +59,7 @@ Inizierà quindi la partita seguendo le istruzioni sullo schermo
 
 ## Componenti del gruppo
 - [__Andrea Pinessi__](https://github.com/AndreaPinessi)
-- [__Maritna Quaregna__](https://github.com/MartyQ17)
+- [__Martina Quaregna__](https://github.com/MartyQ17)
 - [__Martina Riva__](https://github.com/martiiiss)
 - [__Alessandro Vai__](https://github.com/Darhale01)
 
